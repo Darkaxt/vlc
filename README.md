@@ -1,5 +1,9 @@
 # VLC media player
 
+## Darkaxt redesign fork
+
+This fork currently registers the [VLC desktop redesign specification](doc/redesign/SPECIFICATION.md), [stage plan](doc/redesign/PLAN.md), and [Figma and screenshot references](doc/redesign/resources/README.md). Product implementation has not started. The original upstream project information follows.
+
 **VLC** is a libre and open source **media player** and **multimedia engine**,
 focused on **playing everything**, and **running everywhere**.
 

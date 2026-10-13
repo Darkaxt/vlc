@@ -1,0 +1,115 @@
+{
+  "repo": "https://github.com/videolan/vlc",
+  "sha": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "committed": "2026-10-12T21:48:13Z",
+  "files": [
+    {
+      "path": "doc/BUILD-win32.md",
+      "bytes": 13941,
+      "sha256": "cc5a285f804d91ed7fbec3bbf000a570515fdd66109afbe4b2a21c4bac8e51b3",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/doc/BUILD-win32.md"
+    },
+    {
+      "path": "modules/gui/Makefile.am",
+      "bytes": 1067,
+      "sha256": "6de37840b079e5fe3fd3d3737875b35adc85d7dec78ca940e1a5cd94fcd1f248",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/Makefile.am"
+    },
+    {
+      "path": "modules/gui/qt/Makefile.am",
+      "bytes": 69201,
+      "sha256": "13ae168dd4a26f5249e1ed3001f54e807c2707ad7b81148d8a4da42c01fe321a",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/Makefile.am"
+    },
+    {
+      "path": "modules/gui/qt/qt.cpp",
+      "bytes": 60936,
+      "sha256": "35ba01701d5351e799af4e7aed7d2feafdab187a01b909b74e73a5838f4baf49",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/qt.cpp"
+    },
+    {
+      "path": "modules/gui/qt/maininterface/compositor_common.cpp",
+      "bytes": 4985,
+      "sha256": "b9afd8910148aa7477572846f56122a3d2fea8e49c7b6f1429dc3213a81c1e3f",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/maininterface/compositor_common.cpp"
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainui.cpp",
+      "bytes": 24118,
+      "sha256": "ce5f9893ee014fa46149eed2cac7fc80715e48eb698313ccd381ebbfc8f94366",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/maininterface/mainui.cpp"
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainui.hpp",
+      "bytes": 2394,
+      "sha256": "060393750cdc10587e8276fe710eb9aaaaf6d18df84eb18554663785d40ecd34",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/maininterface/mainui.hpp"
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/thumbnailcollector.cpp",
+      "bytes": 3038,
+      "sha256": "13feb1d1c93e66bf755a0e576920bf6dee2c9667c678e325489ff6d3a37ebd5d",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/medialibrary/thumbnailcollector.cpp"
+    },
+    {
+      "path": "modules/gui/qt/player/player_controller.cpp",
+      "bytes": 77772,
+      "sha256": "a7ac8ecdc51b278c6e59e761e7ebdebc7194716f2090a269167a0438f0ac866d",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/player_controller.cpp"
+    },
+    {
+      "path": "modules/gui/qt/player/player_controller.hpp",
+      "bytes": 21753,
+      "sha256": "d8f8446eda6854047a5e396dcdb6ce91ae94f4e1c8445742fd3ec060bbd70435",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/player_controller.hpp"
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PIPPlayer.qml",
+      "bytes": 6387,
+      "sha256": "707369ca2255b3737ff2f21a13d3703a95421e1f1727a93003282bcfc7734f29",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/qml/PIPPlayer.qml"
+    },
+    {
+      "path": "modules/gui/qt/player/qml/Player.qml",
+      "bytes": 53782,
+      "sha256": "fac6b97d40d05b7665636e30c4983c1157e313e5507372f3f51ce246dd7eb82e",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/qml/Player.qml"
+    },
+    {
+      "path": "modules/gui/qt/player/qml/SliderBar.qml",
+      "bytes": 23552,
+      "sha256": "7f272a08fcf9b7d2f57da1fde9531fce341f85e68288ee25ae3b92e4f4763e12",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/qml/SliderBar.qml"
+    },
+    {
+      "path": "modules/gui/qt/player/qml/TracksPageSubtitle.qml",
+      "bytes": 11692,
+      "sha256": "557384d2a57890a46473bd29f0c53a434cd6fac21042d0962cb53a7f6c3594d0",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/qml/TracksPageSubtitle.qml"
+    },
+    {
+      "path": "modules/gui/qt/player/qml/controlbarcontrols/ReverseButton.qml",
+      "bytes": 1275,
+      "sha256": "c72150f2246f745cf203c0b73c5d16d57859322e872185427a0d0456e39649d7",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/player/qml/controlbarcontrols/ReverseButton.qml"
+    },
+    {
+      "path": "modules/gui/qt/maininterface/qml/MainInterface.qml",
+      "bytes": 14753,
+      "sha256": "d494a21e5a0819655cf0dfebb9a6bd6c657b9e0fb9302dcc5793d7ccb772bf79",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/maininterface/qml/MainInterface.qml"
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/preferences.cpp",
+      "bytes": 15996,
+      "sha256": "6432c69ba69786d8a03438fd64c69c267bbfeeadf2f6ee99a10197cd7af64a23",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/dialogs/preferences/preferences.cpp"
+    },
+    {
+      "path": "modules/gui/qt/dialogs/toolbar/controlbar_profile.hpp",
+      "bytes": 2983,
+      "sha256": "af54fdb0d30c6a45d98d3ea7862caf164ca8dd4c76f35026150640c01252dcc2",
+      "url": "https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/modules/gui/qt/dialogs/toolbar/controlbar_profile.hpp"
+    }
+  ]
+}

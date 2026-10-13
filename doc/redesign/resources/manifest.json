@@ -1,0 +1,397 @@
+{
+  "archive": "vlc-redesign.fig",
+  "bytes": 9264580,
+  "sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "integrity": "ZIP CRC checks passed; embedded raster images decode",
+  "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+  "editable_working_copy": "https://www.figma.com/design/aZeRFRJVMwWl1uNS4I0Hdg/VLC-Redesign--Community-",
+  "creator": "Juxtopposed",
+  "license_listing": "CC BY 4.0",
+  "metadata": {
+    "client_meta": {
+      "background_color": {
+        "r": 0.16000601649284363,
+        "g": 0.16000601649284363,
+        "b": 0.16000601649284363,
+        "a": 1
+      },
+      "thumbnail_size": {
+        "width": 400,
+        "height": 134
+      },
+      "render_coordinates": {
+        "x": -125,
+        "y": -8857,
+        "width": 46980,
+        "height": 15745
+      }
+    },
+    "file_name": "VLC Redesign (Community)",
+    "developer_related_links": [],
+    "exported_at": "2026-10-12T23:56:01.887Z"
+  },
+  "entries": [
+    {
+      "path": "canvas.fig",
+      "bytes": 1943783,
+      "sha256": "55ecb3156a1548cf163338a4b972efd2cbe53b5cf59b6a2ff21a3d07f6794dfc",
+      "signature": "fig-kiwi",
+      "fully_decoded": true,
+      "decode_scope": "Binary Message schema decoded; rendering not implemented"
+    },
+    {
+      "path": "thumbnail.png",
+      "bytes": 7677,
+      "sha256": "7b667fb74cd7c187ee109ec91e0f0703a3250a792033569f4980f84dcd75f931"
+    },
+    {
+      "path": "meta.json",
+      "bytes": 340,
+      "sha256": "205d0c6e0f536cc5add5c328d777adc8e801a126f787f86e84248f6e87f8858a"
+    },
+    {
+      "path": "images/",
+      "bytes": 0,
+      "sha256": null
+    },
+    {
+      "path": "images/c89b09ec2e33b1b41a0bd816decbd651de0116c6",
+      "bytes": 13609,
+      "sha256": "dc4e896c0fbf03d9d90deb2bcaeeae86e20bae7ed77424c2464c016ff568b31e",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/be410d19b24ea86c023a31a624db169a2a1737f8",
+      "bytes": 132645,
+      "sha256": "150cc64d128432fc9f443a20bcf2ce32aa3ec41673df0e2f435564e8d0cc547c",
+      "image_format": "PNG",
+      "width": 400,
+      "height": 225
+    },
+    {
+      "path": "images/bc96efd768bc7c1f5d533beeb60de7725eb5074a",
+      "bytes": 12248,
+      "sha256": "7d5c199b784cd6e80aa8a888139a23743afd9ef36956a96894464ed399238507",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/cdd0c9c5957e1f051960d38599d247d58c4491fc",
+      "bytes": 70617,
+      "sha256": "2cb1695b03a72a2a8cb70d7c3a1e183d132c11dd2beab02d88232d6e806c991a",
+      "image_format": "PNG",
+      "width": 480,
+      "height": 334
+    },
+    {
+      "path": "images/6cfe42050992d7204e247437eadfc42ea1c88643",
+      "bytes": 9889,
+      "sha256": "98cb995d43aa28417ed3e6d89a0fa361f45f3563ab3c25fd7c2172df751c9850",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/263af3f5ba4e58ffff30f3d3e5872e3dcabf4dc1",
+      "bytes": 16078,
+      "sha256": "927313ea1dc1d4eac417000a199002e07d09f00ff657911d7a1b793b3ca84ce3",
+      "image_format": "JPEG",
+      "width": 270,
+      "height": 270
+    },
+    {
+      "path": "images/c7a8d8c9dedf8056415c5b1f925772f3cf421028",
+      "bytes": 16263,
+      "sha256": "b4f88dbfa511dfe0d761c1f08c95efb57a9882db59a36fa9da6228b2d2165d76",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/1417086ecaba3cf60f52c2fb0f16cae8f78035ff",
+      "bytes": 20504,
+      "sha256": "acb1676d4723657c88bde24f42b69c8162e85bcd69c27b951f3251bc29d9949f",
+      "image_format": "PNG",
+      "width": 480,
+      "height": 270
+    },
+    {
+      "path": "images/767b7da1dfb7424e5bb9cdd8d1cd4cb205584e05",
+      "bytes": 7283,
+      "sha256": "33d3150ba2c9ba0ef0f7cfea6764adf22aa8a3b59903b560adfca73247f0be0b",
+      "image_format": "PNG",
+      "width": 500,
+      "height": 500
+    },
+    {
+      "path": "images/810f14c62e28b2c285e7b21eafd9e73c85941f95",
+      "bytes": 11530,
+      "sha256": "ee184d226c3d63d4488cbc9e6ab9c34f7fb8cd1e43f31f63bcf92292fb2b2d00",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/35222f8783ac41a994b956270580a3d233c49ad0",
+      "bytes": 42520,
+      "sha256": "e3332543bf18296412f58b2f7f665a6f31244779242a58792ca42ecf019b3502",
+      "image_format": "PNG",
+      "width": 480,
+      "height": 270
+    },
+    {
+      "path": "images/cda980865c9b06345dc8f656269fb21bec5142db",
+      "bytes": 27754,
+      "sha256": "a5cbf50ebc952fdd2b3117aa589342525b5503f5bdc30e2a38e29d2cb933446c",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/c3c82d0117c3bba47c5a66296c8f79c0fd387f4a",
+      "bytes": 13313,
+      "sha256": "de78b803fa83e1b89e285204090dde23eeacd004bd218401aa4e6407a4ce608a",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/f3a7e62b8687f29ef55b794b2c1c60b54e216ac1",
+      "bytes": 23380,
+      "sha256": "8ef411c93df304097627347461457269bca08e21a30cbcf5f4945dfb44524f8d",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/bbe7727b4222e5269d2a7481d27a090e2eb1a655",
+      "bytes": 40531,
+      "sha256": "083444c4f6f0030b2045389f3af9043dc7daaf73e9a23db2c9be25ebd8ae6630",
+      "image_format": "PNG",
+      "width": 480,
+      "height": 334
+    },
+    {
+      "path": "images/370b1e1f2b4f1ebdb622b02752a8806678c54706",
+      "bytes": 5582,
+      "sha256": "d720b06ad7832747e459a87e2a8c62dc082f00d803e48d455cc53a1e17561ffc",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/762f3c71fe96d8efb718dbe97f18ab1dea2d5a07",
+      "bytes": 18918,
+      "sha256": "27793a01e7fdf4d7189c849fcdf207ce82a163119aaa958d0a6bd0cd6ea501cb",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/da68ea3d6ca38c19425d771b0621fdbc47316768",
+      "bytes": 4348,
+      "sha256": "78a96088bd45ae9719a43373be41fb9a9836fe6cc3627968a84443be6693b0e9",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/06dd61341eeef60a5ea1665df021475dcdda8af7",
+      "bytes": 13780,
+      "sha256": "00992617db14b7d5349f8eb8625cb52b64678f4016d5d84682271d76c320f3b7",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/ce639cdb277101b427d5ca39d3063714fffeae95",
+      "bytes": 9791,
+      "sha256": "80d9726a8f541f05b8e317a8858bbccd31b7a5ce6a986347e71c639ca5295b58",
+      "image_format": "PNG",
+      "width": 295,
+      "height": 205
+    },
+    {
+      "path": "images/6ba25d11c00b80b641859f1249b926e9b17e8927",
+      "bytes": 7532,
+      "sha256": "1c270661c233b53531ba54b9a0e4069c3d74ae64d3585f5b920befd98e5bf984",
+      "image_format": "PNG",
+      "width": 281,
+      "height": 157
+    },
+    {
+      "path": "images/6b15ac5ab68a43557d24836ab39407fb95bc14ea",
+      "bytes": 87099,
+      "sha256": "15e4786ef0d7e3de3e4004b1952914b811817962100f1516f58a76462832bdb3",
+      "image_format": "PNG",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "images/27f4daa3eec49effb9d0d044b7bedd9b0432f19f",
+      "bytes": 1518407,
+      "sha256": "2b7968b609c326f6f906c28dc87c227f67950a8fb0548f73b6f6b37b380f7884",
+      "image_format": "PNG",
+      "width": 3840,
+      "height": 2160
+    },
+    {
+      "path": "images/ad7f51c2bbeffd5cfab550caca4a90a04659171f",
+      "bytes": 129628,
+      "sha256": "c5b3a5d5c011e5791ec946d1208a93ffbde77aad143dac063e42f88ed725c8ac",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/7f25dfccf6cb77a09a3904b11b9d3d04dc2009bc",
+      "bytes": 213378,
+      "sha256": "2f0dfccfadae35e0b6226bf55fc511cb7913fc586b5cad74d9c747a298870176",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/fef8094e69b3723690a8cdf5d474d4dda62eedf2",
+      "bytes": 183021,
+      "sha256": "fff01b6605a12e4993792a007d89b0b63bb3d41f882eb2a3c85d67fbed2857db",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/db42f55b2556d9d723a1010c41aa752147f43609",
+      "bytes": 427186,
+      "sha256": "6b29647a1845e759fef5eb136066bc9b840d30f1b0c5ad14d7bf3d9a45f0bb16",
+      "image_format": "PNG",
+      "width": 1920,
+      "height": 1334
+    },
+    {
+      "path": "images/dfe07a9b32dbf3dfdaf28131bfefacc929a6eb2b",
+      "bytes": 6499,
+      "sha256": "95fb15fc63d7eeb0ab65530c8655352c71b6cde6bd01ad200776d941c2b42c52",
+      "image_format": "PNG",
+      "width": 1000,
+      "height": 1000
+    },
+    {
+      "path": "images/66eb30d57ba73c84e4fa75ce81154cb5777a58a0",
+      "bytes": 99982,
+      "sha256": "ff41e70d749507a976a8185325c64fa7365ca17c74f744290e0fb480acac8eec",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/99edf9d9a8bf31dd8c34079a5ad1c141801788c1",
+      "bytes": 217590,
+      "sha256": "839c792ba22a4c94724feae94c6071793981b88d8bdb61812301c968f7881183",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/09677f14be6b48f9fe38fe2cc8a043968d4f4e20",
+      "bytes": 196939,
+      "sha256": "0cab180db4ccaa1485c047252e987c7ff4ce4066b8b9a1292e7c6db45131784b",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/64d6d65c29e08ab9cc86ef24a65c6775134405e7",
+      "bytes": 338870,
+      "sha256": "fa1cefed37e05672992e4b2d8242723ac6fbd0310a96df802b8f00c059aecf65",
+      "image_format": "PNG",
+      "width": 2242,
+      "height": 1250
+    },
+    {
+      "path": "images/7c1c7af0a3cbb13a0091bec943b672f85373facf",
+      "bytes": 262103,
+      "sha256": "dd5a5ff71c8e53e4e0b394a0611b69b98034001235ad854b4c753e4b74424ef3",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/6105d77c386c152e60b48d2a1682a1cae31018d2",
+      "bytes": 409350,
+      "sha256": "0d8a6f498de8ca98b4105de4de9f3be67b17f0be3e5156475387f5c18a3e43b1",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/a114160d976f37678a2348f3f62d8a234f1458c3",
+      "bytes": 41214,
+      "sha256": "027925c91042dc0732ccfd6ac9ce6905580756c6a11ce4b9caf120d1e62fd183",
+      "image_format": "JPEG",
+      "width": 1080,
+      "height": 1080
+    },
+    {
+      "path": "images/ecea4a9f9d3d7e0e65accae26553d01361da0f43",
+      "bytes": 1096925,
+      "sha256": "12662d83950fcf5562b39d598e803bab20e18266aca2fb811fa6b2ed75da3138",
+      "image_format": "PNG",
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "path": "images/ff65d25396b0e8006cb885e84abcb7a941e2490b",
+      "bytes": 117105,
+      "sha256": "ecf691cd95789ab724672cd2432eae4fcba5fab58eb451e3eaea904d63c579ef",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/1816c9dc2ae2e9774986d8b82812752e1ba28a35",
+      "bytes": 451987,
+      "sha256": "098f8e911aa097f810b8e49d8adadae3babf1b1f3dd6ce80686c2fbeaf8f48c6",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/d3241fc4fb3d6347235c3f1242edc47e33829169",
+      "bytes": 195652,
+      "sha256": "d757de7198d56179e2a474448b901185cb1ab3878006c821cf4587a8c924c59b",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/6286c7f917e594369bb32471fc3c112ce78cbe95",
+      "bytes": 343635,
+      "sha256": "5b96f26f8920cee8396e471cf380ffc630840a58cd693e3648651a653de7a081",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/883aa6260100df380b36fe455829fdd95a938bfa",
+      "bytes": 220257,
+      "sha256": "6a588b5b2e7e3f188de8125a6fc678395bf0334f49f72b8adafa44e334b6af50",
+      "image_format": "PNG",
+      "width": 2360,
+      "height": 1640
+    },
+    {
+      "path": "images/771f1d97432b966f0fe59a9fbaa6b232ed4113f1",
+      "bytes": 225710,
+      "sha256": "9cc6aa4a68ed9f8b2252468040106520d30e3f9422690b891f5e963710d50a98",
+      "image_format": "PNG",
+      "width": 1920,
+      "height": 1334
+    }
+  ],
+  "limits": "Canvas message decoded locally using embedded schema. Semantic round-trip passed; full rendering and SVG/export fidelity remain unverified.",
+  "omitted_derivatives": "PDF and PNG exports excluded from repository per user instruction; user-supplied originals preserved in Downloads.",
+  "offline_design_inventory": "design-inventory.json"
+}
