@@ -4,7 +4,7 @@ The [specification](SPECIFICATION.md) governs every stage. Current authorization
 
 | Stage | Status | Scope and requirement ownership | Acceptance evidence |
 |---|---|---|---|
-| S0 Specification and references | ACTIVE | R60 reference attribution/provenance; R63 repository registration | Fork parent verified; authoritative specification and plan committed; original Figma hash matches; every archive entry inventoried and embedded images decode; editable Figma access linked; derivative PDF/PNGs omitted; links resolve; uploaded files verified from remote Git objects. |
+| S0 Specification and references | COMPLETE | R60 reference attribution/provenance; R63 repository registration | Fork parent verified; authoritative specification and plan committed; original Figma hash matches; every archive entry inventoried and embedded images decode; editable Figma access linked; derivative PDF/PNGs omitted; links resolve; uploaded files verified by independent HTTP retrieval at commit 327b3fd94a9f4bb26676429010fee3c489e98dff. |
 | D1 Design source readiness | NOT STARTED | R64; R60 export provenance | Reproduce offline decode; inventory required variants; export representative custom vector icons and validate representative screen reconstruction against the original; document unsupported features/Figma fallback. No renderer/export pipeline has been implemented. |
 | S1 Unmodified baseline | NOT STARTED | R01, R02 baseline, R03 upstream capability inventory, R04 preservation contract | Platform scope resolved; reproducible upstream build and real playback; configuration/capability inventory; no redesign behavior required yet. |
 | S2 Working redesigned player | NOT STARTED | R10-R14 player portion; R04 relevant persistence; R52 player quality | Real open -> playback -> seek -> subtitles/audio -> queue -> fullscreen/keyboard workflow; focus/hover/resize verification. |
@@ -18,8 +18,8 @@ Execution order is S0 -> D1 -> S1 -> S2 -> S3 -> S4 -> S5 -> S6 -> S7. D1 is a p
 
 ## Current reconciliation
 
-- S0 satisfied: upstream GitHub fork created; baseline pinned; source untouched; full specification and stage map written; original Figma archive and contents inventory preserved with attribution and editable-access links. Derivative exports are being removed from the repository under the user's revised resource policy. File and remote verification are pending until the registration commit is checked.
-- S0 remaining: derivative-copy cleanup, resource integrity/link checks, commit/upload and remote verification.
+- S0 satisfied: `Darkaxt/vlc` is a GitHub fork of `videolan/vlc`; baseline pinned; application source unchanged; specification and stage map registered; intact Figma archive, archive/design inventories, attribution and editable-access links preserved. All 18 relative links resolve. ZIP contents and hashes passed, and offline semantic decode round-trip passed. All eight changed files were independently retrieved from GitHub at registration commit `327b3fd94a9f4bb26676429010fee3c489e98dff` and matched the local bytes, including the original Figma SHA-256. Remote master matched the registration commit. Derivative repository copies and temporary decoding files were removed through reviewed cleanup; the user's original Downloads files remain untouched.
+- S0 remaining: none. This status update records the verified registration; it does not activate D1 or a product stage.
 - Product stages: no acceptance criterion has been verified by compilation or playback.
 - Blockers: none for S0. Future platform/provider decisions are pre-implementation decision gates, not claims of currently blocked stages.
 - Tracked deferrals: none. Later product scope has explicit stage ownership in the table; no ACTIVE product stage exists from which work has been deferred.
