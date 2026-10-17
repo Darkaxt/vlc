@@ -28,6 +28,8 @@ At the user's request, derivative PDF and PNG exports are omitted from Git. The 
 
 ## Source provenance and reuse
 
+The S1 [Windows baseline assessment](../BASELINE.md) links its [public runtime module/options inventory](windows-baseline-inventory.json) and [source menu/dialog/configuration-path inventory](windows-baseline-source-inventory.json). These preserve capability references for later UI reconciliation. They contain no user configuration values or media. Raw overlapping scan records are distinguished from unique module roles and public setting keys. Native acceptance and build provenance are recorded in [windows-baseline-verification.json](windows-baseline-verification.json).
+
 [upstream-source-manifest.json](upstream-source-manifest.json) records selected inspected upstream files at `392bc1d0abdb7396b6c97fef206efa1d23868e19`. The creator's [video](https://www.youtube.com/watch?v=ERFeOgqk324) explains the interaction concept. Its complete transcript is not redistributed here.
 
 Preserve creator attribution. Audit fonts, images, media and trademarks separately before promoting an export into production assets. Upstream VLC licenses and notices remain in their existing files; the design listing's CC BY license does not replace the code licenses. No raster assets have been extracted into a second repository copy and no design edits were made to the preserved archive.

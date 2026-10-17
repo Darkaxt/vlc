@@ -1,0 +1,224 @@
+{
+  "plugin_cache": {
+    "exit_code": 0,
+    "elapsed_seconds": 102.70594900008291
+  },
+  "engine": {
+    "exit_code": 0,
+    "elapsed_seconds": 10.822816399857402,
+    "observation": {
+      "passed": true,
+      "end_of_stream": true,
+      "error": false,
+      "displayed_frames": 151,
+      "changing_frames": 143,
+      "audio_sample_frames": 288768,
+      "audio_peak_s16": 5009
+    }
+  },
+  "missing_file": {
+    "exit_code": 1,
+    "elapsed_seconds": 3.796308799646795,
+    "observation": {
+      "passed": false,
+      "end_of_stream": false,
+      "error": true,
+      "displayed_frames": 0,
+      "changing_frames": 0,
+      "audio_sample_frames": 0,
+      "audio_peak_s16": 0
+    }
+  },
+  "inventory": {
+    "exit_code": 0,
+    "elapsed_seconds": 4.29966580029577,
+    "module_count": 1201,
+    "option_count": 3117,
+    "version": "4.0.0-dev Otto Chriek",
+    "unique_module_roles": 586,
+    "unique_public_option_keys": 1750
+  },
+  "qt_playback": {
+    "exit_code": 0,
+    "elapsed_seconds": 19.69143379991874,
+    "qt_event_loop_exited": true,
+    "first_picture_received": true,
+    "input_released": true
+  },
+  "existing_profile_unchanged": true,
+  "plugin_loader_errors": [],
+  "fixture_sha256": "f89a6e1e460db1e6a2a12c6a9da99b4dd4422a56299b2049d4045f32a4b39c3d",
+  "runtime_hashes": {
+    "libvlccore.dll": "9b7bf60090ee465a318ae0d3b91c3c092d05fac6ecd35a53b698a36b148dad83",
+    "libvlc.dll": "83c8a775e65738ccc5d713138c8556d82a199e7b7c9a1dd0df2858ffa04fad7e",
+    "vlc.exe": "caa60991af16a1f2def8eb62dae55072c8d3dcac35b402f85123d8ce948d31aa",
+    "vlc-preparser.exe": "77ca9dfe2e236e8b56cc316116ef37314c8befe7a6441b2edaa63c80b38940fb",
+    "vlc-cache-gen.exe": "1fc8502b867fcfd9406c3e6fb30ec27943d672b5c478a218835d1e3d3fc4011a",
+    "playback-check.exe": "6f903439e6e143320f9c84eb57422656a371a737538196c7413d329298017da3",
+    "inventory.exe": "6825e249f45da1d5d97d1f339bc7f99f973e170cdc565515f1f99e5c9a0afa0e"
+  },
+  "corrected_plugin_hashes": {
+    "plugins/access/libaccess_srt_plugin.dll": "94835e1df16114c97bd1df7caf306ca6c9a04d484fc884e04aa3a28cb77bc7d0",
+    "plugins/access_output/libaccess_output_srt_plugin.dll": "da746e8f62e1e672ab771abfdab10a9d8f3bdc9ec55f26134aa8784b71763f2d",
+    "plugins/codec/libx265_plugin.dll": "7c67d8ebf24deace43ca0ef24370b8a1130fbaa103ee391082915ba5c5987a20",
+    "plugins/demux/libgme_plugin.dll": "6dee37bcb92943b85301b07fc90b62df259a6cf8ba2b987dca85150261ddd484",
+    "plugins/gui/libqt_plugin.dll": "feaed0afe240e1febbfd6e6e1b2c76a77e02f6b23aa5c4b1d5b1b963e7bbb125"
+  },
+  "passed": true,
+  "scope": "Windows x64 unmodified VLC application-source baseline. Dependency-only static unwind linkage and isolated MinGW process-exit backport. Minimized Qt/Direct3D11 with dummy audio; separate decoded PCM callbacks; no physical speaker or complete UX claim.",
+  "verified_at_utc": "2026-10-17T03:42:46.836561+00:00",
+  "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "source_diff_clean": true,
+  "source_build": {
+    "start_utc": "2026-10-17T01:45:10Z",
+    "end_utc": "2026-10-17T02:26:36Z",
+    "elapsed_seconds": 2486,
+    "compiler_workers": 2,
+    "route": "Autotools; upstream GCC CI route; portable staging only"
+  },
+  "toolchain": {
+    "image": "registry.videolan.org/vlc-debian-win64-posix:20260611225331",
+    "manifest_digest": "sha256:8e83e800036f8f4a6da1031a6b80c2b5bad8337259c072ffa22398baaeaad880",
+    "compiler": "gcc version 14-posix (GCC)",
+    "target_qt_package_and_qconfig": "6.8.3",
+    "host_qmake": "6.8.0",
+    "archive_qtcoreversion_header": "6.8.0",
+    "contrib_revision": "a5538c557d276378d5ba0f8f8010a8b87eaa6f78",
+    "contrib_sha512": "7504d2d80be566f1caced13c8acf45af67059dc159d987a5d4e82c8912ed6fc4435fba714670e53c786bd83accf6c441f1ad345d3c97c04b5bf0ab60341f8d0d",
+    "runtime_base": "MinGW-w64 v12.0.0",
+    "runtime_source_sha256": "fa41d462041ed72e29a5101049e5991d4aea5c552fd75f7ac0074989fc54ceb7",
+    "runtime_upstream_fix": "a556c6943c442465dc9a051bc6d3a6d452df4a1d",
+    "runtime_backport_sha256": "6b3bd4443d05257c6df80aec79d04014f4fc3665660a47171fa6b7701d65e9e4",
+    "backport_clean_v12_application_matches_built_sources": true,
+    "libtool_startup_objects": [
+      "/work/runtime-fixed/lib/dllcrt2.o",
+      "/work/runtime-fixed/lib/crtbegin.o"
+    ]
+  },
+  "qt_evidence": [
+    "main debug: Received first picture",
+    "main debug: destroying input for 'fixture.mp4'",
+    "qt debug: QApp exec() finished",
+    "[qt] (qt.scenegraph.general) Creating QRhi with backend D3D11 for window 0x18376be56d0 (wflags 0x1)"
+  ],
+  "pe_import_audit": {
+    "plugins/access/libaccess_srt_plugin.dll": {
+      "imports": [
+        "libvlccore.dll",
+        "ADVAPI32.dll",
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "msvcrt.dll",
+        "ncrypt.dll",
+        "WS2_32.dll",
+        "WSOCK32.dll"
+      ],
+      "high_entropy_va": true,
+      "dynamic_base": true,
+      "nx_compat": true
+    },
+    "plugins/access_output/libaccess_output_srt_plugin.dll": {
+      "imports": [
+        "libvlccore.dll",
+        "ADVAPI32.dll",
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "msvcrt.dll",
+        "ncrypt.dll",
+        "WS2_32.dll",
+        "WSOCK32.dll"
+      ],
+      "high_entropy_va": true,
+      "dynamic_base": true,
+      "nx_compat": true
+    },
+    "plugins/codec/libx265_plugin.dll": {
+      "imports": [
+        "libvlccore.dll",
+        "ADVAPI32.dll",
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ],
+      "high_entropy_va": true,
+      "dynamic_base": true,
+      "nx_compat": true
+    },
+    "plugins/demux/libgme_plugin.dll": {
+      "imports": [
+        "libvlccore.dll",
+        "ADVAPI32.dll",
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ],
+      "high_entropy_va": true,
+      "dynamic_base": true,
+      "nx_compat": true
+    },
+    "plugins/gui/libqt_plugin.dll": {
+      "imports": [
+        "libvlccore.dll",
+        "ADVAPI32.dll",
+        "AUTHZ.dll",
+        "COMCTL32.dll",
+        "comdlg32.dll",
+        "d3d11.dll",
+        "dwmapi.dll",
+        "DWrite.dll",
+        "dxgi.dll",
+        "GDI32.dll",
+        "IMM32.dll",
+        "KERNEL32.dll",
+        "msvcrt.dll",
+        "NETAPI32.dll",
+        "ole32.dll",
+        "OLEAUT32.dll",
+        "SETUPAPI.dll",
+        "SHELL32.dll",
+        "SHLWAPI.dll",
+        "USER32.dll",
+        "USERENV.dll",
+        "UxTheme.dll",
+        "VERSION.dll",
+        "WINMM.dll",
+        "WS2_32.dll",
+        "WTSAPI32.dll"
+      ],
+      "high_entropy_va": true,
+      "dynamic_base": true,
+      "nx_compat": true
+    }
+  },
+  "tool_hashes": {
+    "tools/windows-baseline/.gitattributes": "b7d91900a7d73f3fed635e65855bff34f3cd75694e387d567fae94ba1af11b37",
+    "tools/windows-baseline/build-checks.sh": "6ed9665f6301539851accd6041a63a08192481d11c7a731ef0228d79a72026b3",
+    "tools/windows-baseline/build.sh": "be226af924b7b416d208642f37ad15bbcb70a1a3e5b35a7de275370a55258691",
+    "tools/windows-baseline/inventory.c": "56fca22697fb9b532b2fec7f16a6a62f21c8ac4d801aea9049eec22c5f72ea77",
+    "tools/windows-baseline/link-fixed-qt.py": "9ea7dca94609a123422ce79650d55efb3a69f607392ab6aef178732e3204eaf2",
+    "tools/windows-baseline/patches/mingw-v12-process-exit.patch": "6b3bd4443d05257c6df80aec79d04014f4fc3665660a47171fa6b7701d65e9e4",
+    "tools/windows-baseline/patches/README.md": "4c7fbe5130f840378c4a990ae9b0c8ddf738343600e6ccbfb423ef00a25e455c",
+    "tools/windows-baseline/playback-check.c": "2e354d53d28a03c08d9bcb7f16e98cced1673c65622ff01a52c479339acb7511",
+    "tools/windows-baseline/prepare-runtime.sh": "e9538ed390ce5008dd9e97ee974903bad268163aee78254cbb5ac08f437464ad",
+    "tools/windows-baseline/README.md": "1fbdb22963c151c2fa815afa8dfab04d25329d40178ee338594a290e915ab0a7",
+    "tools/windows-baseline/relink-static-runtime.sh": "7560fc1b56667cf62123d29f8d57a2e58341437b1013b73f99066c4a22e54925",
+    "tools/windows-baseline/run-in-toolchain.sh": "1dd36f8e05045c03f92026a6d683f952de5a862047bfafd279c0b145818ec99e",
+    "tools/windows-baseline/verify.py": "e8e6ba4d96c6e7a696ca1adbd31e7504fd227aca17af3d7e6bf15f1235e36b19"
+  },
+  "cleanup": {
+    "transaction": "1687b77b32547b9bb412e762e97ba901",
+    "manifest_sha256": "4959a842b976beb08c0b7b056378802f741dcea039df9f1942c4176aedb54b1e",
+    "state": "applied",
+    "deleted_members": 859,
+    "logical_deleted_bytes": 29592019339,
+    "errors": [],
+    "excluded_count": 0,
+    "exact_scratch_root": "E:/Temp/vlc-s1-20261017",
+    "root_absent": true,
+    "temporary_wsl_registration_removed": true,
+    "other_wsl_registrations": [
+      "Ubuntu",
+      "docker-desktop"
+    ],
+    "verified_at_utc": "2026-10-17T04:09:58Z",
+    "complete_host_coverage": false
+  }
+}

@@ -1,0 +1,63 @@
+# Unmodified Windows x64 baseline
+
+S1 uses upstream VLC `392bc1d0abdb7396b6c97fef206efa1d23868e19`, without application-source patches. The [stage ledger](../../doc/redesign/PLAN.md) records acceptance status; the presence of these tools does not establish a successful build or playback.
+
+The pinned source's `extras/ci/gitlab-ci.yml` selects `registry.videolan.org/vlc-debian-win64-posix:20260611225331`. Resolve it by immutable manifest digest `sha256:8e83e800036f8f4a6da1031a6b80c2b5bad8337259c072ffa22398baaeaad880`. Its GCC/MinGW toolchain matches the Windows contrib archive for revision `a5538c557d276378d5ba0f8f8010a8b87eaa6f78`. Do not derive that revision from a depth-one checkout: shallow history can incorrectly treat the root commit as changing every path. Fetch sufficient history and run the upstream `extras/ci/get-contrib-sha.sh win64` script.
+
+The matching archive is `https://artifacts.videolan.org/vlc/win64/vlc-contrib-x86_64-w64-mingw32-a5538c557d276378d5ba0f8f8010a8b87eaa6f78.tar.zst`. [build.sh](build.sh) checks its recorded SHA-512 and source identities before invoking the upstream Windows build script. It uses Autotools, the build system used by the pinned GCC CI job, with two compiler workers, one worker per Meson contrib, and a portable staging destination. Local staging is verification work, not installation, distribution or an application release. The dependency corrections below are required for native Windows acceptance of this image/archive combination.
+
+The compiler identifies as GCC `14-posix`. Target Qt's `qconfig.h` (`QT_VERSION_STR`), CMake package metadata and module `.pri` identify **6.8.3**; host `qmake -query QT_VERSION` reports **6.8.0**. The archive's `qtcoreversion.h` also retains a 6.8.0 string. These labels are recorded separately; the pinned contrib archive is retained unchanged rather than relabeled. Runtime acceptance, the image digest and archive hash bind the tested combination.
+
+## Environment and reproduction
+
+Use an exact task-owned folder on `E:/Temp`, registered with transactional cleanup before creation. Keep downloads, Linux toolchain storage, compiler scratch, source/build trees, Wine state, native test configuration, fixtures and logs there. Preserve the maintained fork checkout in its existing location.
+
+The image filesystem can be exported without starting Docker Desktop using the official [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane) tool. This run used crane v0.22.1; its Windows x86_64 release archive SHA-256 is `0e073ea8192c3b8442ec8aaf44d53c1050a09084669fae3a6ceb0f2026cf8b21`, checked against the release checksum file. Download it from the official GitHub release. Then export the pinned image into the E: task directory:
+
+```powershell
+crane.exe export registry.videolan.org/vlc-debian-win64-posix@sha256:8e83e800036f8f4a6da1031a6b80c2b5bad8337259c072ffa22398baaeaad880 E:/Temp/<task>/toolchain-rootfs.tar
+```
+
+Import that filesystem into a uniquely named temporary WSL2 distribution stored under the same E: root, or run it inside an isolated Linux environment whose storage is on E:. This run first imported the verified Debian base layer to prove E: compatibility, then unpacked the complete image into `/toolchain` in that distribution and used `chroot`. Bind `/proc`, `/dev`, `/sys` and the current DNS file into that chroot; bind the exact Windows task root as `/scratch`. Every Linux file then resides inside the E: virtual disk. Do not change the existing Ubuntu or Docker installations. Use [run-in-toolchain.sh](run-in-toolchain.sh) for each command so mounts and the child operation share one observed lifetime; WSL can discard mounts when the temporary instance stops between commands. This script is bound to the recorded S1 scratch path; adjust that exact task path when reproducing elsewhere.
+
+Inside the pinned filesystem, set `PATH=/opt/tools/bin:/opt/tools/libexec:/opt/rust/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`, `HOME=/work/home`, `TMPDIR=/work/tmp`, `LANG=en_US.UTF-8`, `WINE_SDK_PATH=/usr/include/wine/wine/windows`, `RUST_HOME=/opt/rust`, `RUSTUP_HOME=/opt/rust/rustup` and `CARGO_HOME=/opt/rust/cargo`. Create the home/tmp/build directories. Initialize `/work/src`, add the official VLC GitHub remote, fetch the pinned source with `--depth=100`, and check out the fetched revision detached. Verify the contrib revision with the upstream script; deepen history if that revision is outside the shallow boundary. Copy this tool directory's files, including `patches`, to the E: task root (the chroot's `/scratch`). Place the downloaded contrib archive under `/scratch/downloads`.
+
+Run these commands sequentially inside the chroot, retaining each command's exit status and log:
+
+```sh
+sh /scratch/build.sh
+sh /scratch/relink-static-runtime.sh
+sh /scratch/prepare-runtime.sh
+python3 /scratch/link-fixed-qt.py
+sh /scratch/build-checks.sh
+```
+
+Before `prepare-runtime.sh`, download the [v12 runtime source](https://codeload.github.com/mingw-w64/mingw-w64/tar.gz/refs/tags/v12.0.0) as `/scratch/downloads/mingw-runtime-source.tar.gz`. The script verifies its hash and the committed backport hash. It creates fresh isolated build directories and installs only into `/work/runtime-fixed`; run it once in a clean environment. No host runtime is replaced. Do not generate installers or invoke release targets.
+
+## Required dependency corrections
+
+The SRT, x265 and GME contrib metadata explicitly requests shared `-lgcc_s`. VLC's Windows plugin loader restricts dependency lookup to System32, so four plugins failed to load. [relink-static-runtime.sh](relink-static-runtime.sh) selects static unwind support and relinks those plugins. Inspect their PE imports: only VLC core and Windows system libraries may remain. Do not weaken the loader or treat copied GCC DLLs beside VLC as a fix.
+
+Native Qt playback also reproduced a MinGW 12 DLL process-detach deadlock. Windows had already terminated the other threads; the remaining thread waited in `pthread_key_delete` from `_execute_onexit_table` during `ExitProcess`. The [upstream runtime backport](patches/README.md) preserves normal `FreeLibrary` cleanup while skipping user destructors during process termination. This is a compiler-runtime correction, with no VLC source patch. The Qt relink must regenerate libtool's cached startup objects: merely supplying `-B` at link time left the old `dllcrt2.o` in use. [link-fixed-qt.py](link-fixed-qt.py) retains the existing configure arguments/hardening flags, regenerates that configuration, asserts the corrected startup-object path, and rebuilds the Qt target. The result must still pass native playback and normal process exit.
+
+## Playback acceptance
+
+Generate a synthetic fixture on E: using a locally available FFmpeg:
+
+```powershell
+ffmpeg -f lavfi -i testsrc2=size=320x180:rate=24 -f lavfi -i sine=frequency=440:sample_rate=48000 -t 6 -c:v libx264 -preset fast -crf 23 -pix_fmt yuv420p -c:a aac -b:a 96k -threads 2 -shortest -movflags +faststart E:/Temp/<task>/fixture.mp4
+```
+
+[playback-check.c](playback-check.c) links against the newly built Windows libVLC and uses its real video/audio output callbacks. [build-checks.sh](build-checks.sh) compiles it and [inventory.c](inventory.c) against the staged SDK/import libraries. Executables live beside the staged VLC DLLs, with a `portable` directory beside the executable. Windows VLC uses that directory to redirect configuration/cache; changing `APPDATA` alone does not override its known-folder API. Set child-process `TEMP`/`TMP` and `VLC_USERDATA_PATH` to task-owned E: directories. The check ignores existing configuration and disables media-library access/plugin caching. It waits for the player's stopped event, requires natural end-of-stream, at least 100 displayed frames, at least 20 changing-frame observations, and nonzero decoded audio. Run the missing-file negative control too; it must fail. This verifies decoding/output callbacks, without claiming physical speaker presentation.
+
+Separately launch the staged Qt frontend on the fixture with `--no-one-instance --no-media-library --no-qt-privacy-ask --no-qt-updates-notif --no-metadata-network-access --play-and-exit`, keeping logging/configuration/snapshots on E:. Redirect [QML disk caching](https://doc.qt.io/qt-6.8/qmldiskcache.html) with `QML_DISK_CACHE_PATH` to E:. Leave `QML_DISABLE_DISK_CACHE` unset: disabling it prevents loading VLC's embedded cache-only QML. Disable [Qt shader disk caching](https://doc.qt.io/qt-6.8/qquickgraphicsconfiguration.html#details) with `QT_DISABLE_SHADER_DISK_CACHE=1` and `QSG_RHI_DISABLE_SHADER_DISK_CACHE=1`. Observe actual process completion and inspect Qt initialization/playback errors; a binary existing is not acceptance. The minimized Qt check exercises Direct3D11 and decoded pictures with dummy audio; callback acceptance separately checks real decoded PCM. It does not validate the complete visible UX, devices, or physical speakers.
+
+[verify.py](verify.py) runs native plugin-cache generation, real playback, a missing-file negative control, runtime inventory and Qt playback sequentially, without execution deadlines. It requires normal Qt process exit, first picture, input release, completed Qt event loop, no plugin-load errors and unchanged existing profile files. Capture an `evidence/existing-profile-before.json` containing `root` and `items` with `name`, `exists`, and (for existing files) `size`/`sha256` for `vlcrc`, `vlc-qt-interface.ini`, `ml.db`, `ml.db-wal`, and `ml.db-shm`. Keep that private snapshot on E:; publish only the comparison result. Create the E: `tmp`/`evidence` directories, generate the fixture there, then run the Windows Python verifier with child `TEMP`/`TMP` on E:. Its exact-root guard and the WSL wrapper are deliberately bound to this recorded task; change both guards explicitly for a new verification root.
+
+Inventory uses `libvlc_get_*`, `module_list_get` and `module_config_get`, avoiding the GUI executable's metadata exit path. It records module roles and public option names/types, without user values. The core API excludes internal/obsolete options; this is not a complete list of private parser flags. The explicit plugin path also scans the default directory, so preserve raw scan counts separately from deduplicated `(id, capability, name)` roles and unique public keys. Source menu labels and dialog declarations are additional navigation references, not proof that every listed workflow was exercised.
+
+S1 introduces no new persisted application state or migration. Existing option keys, VLC identities, defaults, playlist/history behavior and reset behavior remain upstream's. Testing must not reset, import, migrate or overwrite the installed profile. Later stages must retain existing media/history/privacy choices and define defaults, precedence, persistence, migration and recovery for each new stored setting before accepting it. Recovery preserves the prior configuration; migration failure must not trigger a destructive reset. The baseline menu/dialog inventory and runtime option/module inventory are preservation references, not claims that each disc, capture device, extension or network service has been tested.
+
+Once evidence has been preserved, let owned build/test processes finish, unmount the chroot bindings and terminate only the temporary distribution. Review and inspect the exact E: scratch files with transactional cleanup, issue/apply its ticket, then unregister the now-retired temporary WSL registration. Leave other distributions and builds untouched.
+
+A preliminary Meson attempt stopped at compiler sanity because Wine crashed in this WSL environment. The generated compiler executable passed on native Windows (exit 0). Installing the matching Wine64 loader did not resolve the Wine crash. The baseline therefore uses the pinned GCC CI job's Autotools route; no Wine result is substituted for native playback acceptance. The extra diagnostic Wine64 package is disposable and is not required by the documented baseline.

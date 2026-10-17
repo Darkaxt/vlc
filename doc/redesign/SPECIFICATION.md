@@ -10,7 +10,7 @@ On 17 October 2026 the user authorized the first unfinished preparatory stage (D
 
 For this bounded stage, representative outputs are the light player and global-settings screens at their source dimensions, plus monochrome/two-tone icon variants. Validate against native Figma exports where available, preserve source IDs and hashes, and explicitly record unsupported rendering features and fallback requirements. These are design-source tools and evidence, not a VLC player implementation.
 
-Windows x64 is the proposed first implementation target. This is a planning assumption, not an approved restriction on the user's eventual platform requirements. Confirm the intended delivery platforms before activating S1. Linux portability should be retained in shared Qt code; native macOS, Android, iOS, and TV interfaces require separate scope decisions and are not implied to be implemented by a Qt desktop change.
+The user subsequently authorized proceeding with S1 on Windows x64, as proposed, on 17 October 2026. S1 covers an unmodified source build, real playback, capability/configuration inventory, verification, commit and existing GitHub synchronization. All temporary files and testing must be under a task-owned folder on E:\ and cleaned afterward. This authorization supersedes the completed D1 stop boundary for S1; S2-S7 and installation/distribution/releases remain outside this turn's scope. Windows x64 is the confirmed baseline target, without restricting eventual additional platform scope. Linux portability should be retained in shared Qt code; native macOS, Android, iOS, and TV interfaces require separate scope decisions and are not implied to be implemented by a Qt desktop change.
 
 ## Reference bundle and attribution
 
@@ -21,12 +21,13 @@ Windows x64 is the proposed first implementation target. This is a planning assu
 - [Offline design inventory and decoding evidence](resources/design-inventory.json)
 - [Source inspection manifest](resources/upstream-source-manifest.json)
 - [Implementation stages and reconciliation](PLAN.md)
+- [Windows baseline assessment and reproduction evidence](BASELINE.md)
 
 Design: **VLC Redesign**, by **Juxtopposed**, [Figma Community original](https://www.figma.com/community/file/1691465999134370980/vlc-redesign), listed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The original editable export is preserved byte for byte. The resource manifest identifies every archive entry and embedded raster asset. These are design references, not a declaration that every embedded font, media image, or trademark is licensed for use in a shipped application. Preserve attribution and audit production assets before packaging.
 
 Keep access to the original Community design and the working editable copy for subsequent vector/icon exports. Obtain custom icons from the original Figma components in an appropriate vector format; do not reconstruct production icons from PDF pixels. Preserve component/variant names, export settings, provenance and attribution. The local `.fig` can be imported to recover an editable copy if hosted access changes. Figma account permissions and sign-in remain managed by Figma; never put account credentials or session data in Git. Links alone do not grant access to private drafts.
 
-Local inspection decoded the embedded schema and document message without Figma: 12,563 nodes, 1,321 blobs, 38 component sets and 208 variants under the main Icon component set. Parent references and geometry blob indices passed structural checks; semantic encode/decode round-trip passed. That initial inspection established offline access to design data. D1 subsequently added selected SVG/screen export tooling and native visual comparison, with the fidelity limits recorded in the stage ledger. Pixel-identical rendering is not established. The user's latest instruction places further design extraction/reconstruction in preparatory stage D1, before VLC implementation, and now authorizes D1 only, followed by a stop.
+Local inspection decoded the embedded schema and document message without Figma: 12,563 nodes, 1,321 blobs, 38 component sets and 208 variants under the main Icon component set. Parent references and geometry blob indices passed structural checks; semantic encode/decode round-trip passed. That initial inspection established offline access to design data. D1 subsequently added selected SVG/screen export tooling and native visual comparison, with the fidelity limits recorded in the stage ledger. Pixel-identical rendering is not established. D1 closed at its authorized stop; the subsequent instruction now authorizes S1 only, as recorded above, followed by a stop before product redesign.
 
 The creator's explanatory video is [I Redesigned VLC After 25 Years](https://www.youtube.com/watch?v=ERFeOgqk324). The specification paraphrases the concept and links to the video instead of redistributing its complete captions. The private planning conversation is not required to understand or implement this specification.
 
@@ -113,7 +114,7 @@ Video reference: 18:58-20:43.
 | R61 | Verify real integrated behavior with representative local video/audio, multiple tracks, text subtitles, playlists, network input, missing media, nonseekable media, configuration persistence and keyboard/fullscreen interactions. Use redistributable fixtures or user-authorized local files. Record actual results and limitations, not just screenshots or mocks. | S7 |
 | R62 | Document reproducible local packaging, configuration recovery and upstream synchronization. Run focused checks appropriate to changed boundaries; run broader suites when cross-cutting risk requires them. Reconcile every requirement before claiming the full redesign complete. Commit verified scope; publishing or installing builds requires separate authorization. | S7 |
 | R63 | Register this specification, stage plan, attribution, original editable Figma archive, archive contents manifest and editable-access links in the GitHub fork. Omit derivative PDF/PNG exports from Git per the user's updated instruction. Verify relative links, file integrity, upstream parentage and remote commit contents. Keep source/application behavior unchanged in this registration task. | S0 |
-| R64 | Before VLC UI implementation, establish a reproducible design-source workflow from the retained `.fig`: reproduce offline decoding, identify required screen/component variants, export representative custom vector icons, and validate representative screen reconstruction against the original appearance. Record unsupported features and any required Figma fallback. Limit tooling to the project's design needs; do not build a general Figma replacement. D1 only is authorized on 17 October 2026; stop after its verification and commit. | D1 |
+| R64 | Before VLC UI implementation, establish a reproducible design-source workflow from the retained `.fig`: reproduce offline decoding, identify required screen/component variants, export representative custom vector icons, and validate representative screen reconstruction against the original appearance. Record unsupported features and any required Figma fallback. Limit tooling to the project's design needs; do not build a general Figma replacement. D1 was authorized and completed on 17 October 2026; subsequent S1 authorization is recorded above. | D1 |
 
 ## Execution constraints
 
@@ -121,11 +122,11 @@ Use one ACTIVE implementation stage at a time, prove a narrow real player workfl
 
 Prefer deterministic state transitions and actual completion signals. Do not add arbitrary retries, sleeps or timeouts to hide lifecycle or synchronization problems. Preserve dirty worktrees, unrelated files and user configuration. Use bounded resources for previews and background media work. Keep build-generated artifacts out of version control.
 
-Any future Windows Gradle-driven work must use the user's shared `Local\Darka.AndroidGradleBuildGate` and prescribed resource profile. The present desktop documentation task runs no Gradle or VLC build.
+Any future Windows Gradle-driven work must use the user's shared `Local\Darka.AndroidGradleBuildGate` and prescribed resource profile. The S1 desktop baseline build uses no Gradle.
 
 ## Known decisions and risks before implementation
 
-- Delivery platform coverage, naming/branding, and distribution channels remain to be selected; the current working identity is a Darkaxt VLC fork, not an official VideoLAN release.
+- Windows x64 is the confirmed S1 baseline. Additional platform coverage, naming/branding, and distribution channels remain to be selected; the current working identity is a Darkaxt VLC fork, not an official VideoLAN release.
 - VLC 4 is experimental. Pin the build baseline and document subsequent upstream updates rather than claiming stability from a screenshot.
 - Provider credentials and terms for R21 must be resolved before that integration. No provider account, payment or API key has been requested or created.
 - Thumbnail generation, waveform extraction and subtitle cue access need implementation evidence. Existing library thumbnails and subtitle delay controls are useful components, not proof those workflows already exist.
