@@ -1,0 +1,155 @@
+{
+  "source_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "node_count": 12563,
+  "blob_count": 1321,
+  "node_types": {
+    "DOCUMENT": 1,
+    "CANVAS": 2,
+    "SYMBOL": 536,
+    "FRAME": 4779,
+    "VECTOR": 1557,
+    "BRUSH": 25,
+    "ROUNDED_RECTANGLE": 977,
+    "TEXT": 1954,
+    "VARIABLE_SET": 2,
+    "VARIABLE": 3,
+    "BOOLEAN_OPERATION": 35,
+    "INSTANCE": 2547,
+    "ELLIPSE": 145
+  },
+  "semantic_round_trip": true,
+  "resolved_style_references": 7362,
+  "materialized_instances": {
+    "nodes": 652,
+    "swaps": 25,
+    "overrides": 736
+  },
+  "exported": [
+    {
+      "id": "2425:13624",
+      "name": "Player - Light",
+      "file": "player-light",
+      "width": 1920,
+      "height": 1080,
+      "filename": "player-light.png",
+      "format": "png",
+      "bytes": 157945,
+      "sha256": "d631b7e4cc365bf574fcaddc8dfd049b8d293b331bfabb984cac2d091deb3fae",
+      "rendered_width": 1920,
+      "rendered_height": 1080
+    },
+    {
+      "id": "999:5047",
+      "name": "Settings - global",
+      "file": "settings-global",
+      "width": 1048,
+      "height": 865,
+      "filename": "settings-global.png",
+      "format": "png",
+      "bytes": 87908,
+      "sha256": "5a8107d52121031fca06b6ec1f1a64f44bde612fb71e5a9da92553e5845583f3",
+      "rendered_width": 1138,
+      "rendered_height": 955
+    },
+    {
+      "id": "44:419",
+      "name": "play",
+      "file": "play-mono",
+      "width": 24,
+      "height": 24,
+      "filename": "play-mono.svg",
+      "format": "svg",
+      "bytes": 1722,
+      "sha256": "7d484628015e78ebee21fcaa1dc3140d38bdfa5cd1c15041ee9d6c170d8a33bd"
+    },
+    {
+      "id": "44:419",
+      "name": "play",
+      "file": "play-mono",
+      "width": 24,
+      "height": 24,
+      "filename": "play-mono.png",
+      "format": "png",
+      "bytes": 357,
+      "sha256": "732e765c8c2e53aa618e7353169c0ee76713c7240116298edec239eb9671d4e5",
+      "rendered_width": 24,
+      "rendered_height": 24
+    },
+    {
+      "id": "42:398",
+      "name": "subtitles",
+      "file": "subtitles-mono",
+      "width": 24,
+      "height": 24,
+      "filename": "subtitles-mono.svg",
+      "format": "svg",
+      "bytes": 4324,
+      "sha256": "a63d25d4bc3440b43db1eb522ad9a53c2dc766846baf5d712761d6e357bfc1c7"
+    },
+    {
+      "id": "42:398",
+      "name": "subtitles",
+      "file": "subtitles-mono",
+      "width": 24,
+      "height": 24,
+      "filename": "subtitles-mono.png",
+      "format": "png",
+      "bytes": 420,
+      "sha256": "5f9cf51cb2718727c0a724d4c7355de9b2c32f73dbba6d4b6800dc3a21689c1d",
+      "rendered_width": 24,
+      "rendered_height": 24
+    },
+    {
+      "id": "2461:9635",
+      "name": "subtitles",
+      "file": "subtitles-two-tone",
+      "width": 24,
+      "height": 24,
+      "filename": "subtitles-two-tone.svg",
+      "format": "svg",
+      "bytes": 4324,
+      "sha256": "7658cfecb760f319f7c68b3fa425044e88f5a9cf23ae216e6d0a7dcd383542fd"
+    },
+    {
+      "id": "2461:9635",
+      "name": "subtitles",
+      "file": "subtitles-two-tone",
+      "width": 24,
+      "height": 24,
+      "filename": "subtitles-two-tone.png",
+      "format": "png",
+      "bytes": 425,
+      "sha256": "61d8b485d65e9e54648f61650c0a0cd36d537d7fde6f00c1b38a240fa8f93d5a",
+      "rendered_width": 24,
+      "rendered_height": 24
+    }
+  ],
+  "runtime": "v24.13.0",
+  "export_elapsed_seconds": 11.0909416,
+  "network": "No network calls by this exporter; default CDN font loading disabled.",
+  "limitations": [
+    "Font substitution, background blur and advanced paint/compositing may differ from native Figma. Native visual comparison must be reported separately from structural verification."
+  ],
+  "verified_at": "2026-10-17T01:06:10Z",
+  "offline_check": "Clean npm ci; unmodified published dependencies; global fetch throws; selected export succeeded.",
+  "vector_check": "Three SVGs parse as XML and contain paths/rects, without images, href attributes or URL resources.",
+  "native_comparison": {
+    "method": "Human-visible browser screenshots inspected against offline selected renders; no pixel-difference metric claimed.",
+    "working_copy": "https://www.figma.com/design/aZeRFRJVMwWl1uNS4I0Hdg/VLC-Redesign--Community-",
+    "screens": [
+      "2425:13624",
+      "999:5047"
+    ],
+    "matches": [
+      "main composition and image",
+      "light palette and sidebar",
+      "settings groups, controls and component choices"
+    ],
+    "differences": [
+      "font metrics and weight",
+      "blur and shadows",
+      "some icon geometry, placement, clipping and orientation"
+    ],
+    "fallback": "Native Figma for exact exports affected by differences; retain original source."
+  }
+}

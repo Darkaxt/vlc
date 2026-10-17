@@ -1,0 +1,13 @@
+{
+  "archive": "../../doc/redesign/resources/vlc-redesign.fig",
+  "sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "screens": [
+    { "id": "2425:13624", "name": "Player - Light", "file": "player-light", "width": 1920, "height": 1080 },
+    { "id": "999:5047", "name": "Settings - global", "file": "settings-global", "width": 1048, "height": 865 }
+  ],
+  "icons": [
+    { "id": "44:419", "name": "play", "file": "play-mono", "width": 24, "height": 24 },
+    { "id": "42:398", "name": "subtitles", "file": "subtitles-mono", "width": 24, "height": 24 },
+    { "id": "2461:9635", "name": "subtitles", "file": "subtitles-two-tone", "width": 24, "height": 24 }
+  ]
+}

@@ -14,7 +14,7 @@ The `.fig` file is a ZIP container. Its 46 entries comprise `canvas.fig`, `meta.
 
 `canvas.fig` begins with the `fig-kiwi` signature (format version 106). Local inspection decoded the raw-DEFLATE schema and Zstandard document using the official [kiwi-schema](https://github.com/evanw/kiwi) package, version 0.5.0, and Node.js built-in decompression. The message contains 12,563 nodes, including 1,557 VECTOR and 1,954 TEXT nodes, plus 1,321 blobs, 38 component sets and 208 variants under the main Icon set. All node IDs were unique; parent references and vector geometry blob indices passed structural checks. Semantic encode/decode round-trip passed, while the re-encoded byte sequence differed. The original archive is preserved unchanged.
 
-The [design inventory](design-inventory.json) records page and top-level node IDs, component/variant metadata, fonts, decoding provenance and verification limits. The complete decoded message is intentionally not duplicated in Git. No renderer, SVG exporter, pixel-fidelity validation or full editable-project reconstruction was implemented. Further offline extraction/reconstruction belongs to D1 and is **NOT STARTED** per the user's instruction.
+The [design inventory](design-inventory.json) records page and top-level node IDs, component/variant metadata, fonts, decoding provenance and verification limits. The complete decoded message is intentionally not duplicated in Git. D1 now provides [reproducible offline tooling](../../../tools/design-source/README.md) and [selected export evidence](d1-verification.json). Fresh tests check component-set/icon-variant identities against the source. The light player and global-settings screens and three custom icon variants were exported and visually inspected against native Figma. Font/effect and some icon geometry differences remain documented; full editable-project reconstruction and pixel-identical rendering are not claimed.
 
 The raster image entries are embedded assets, not a complete set of rendered UI screens. Custom vector paths exist in canvas nodes and geometry blobs, rather than standalone SVG entries. Keeping the intact archive preserves those design structures; extracting only `images/` would not preserve the complete editable source.
 
@@ -24,7 +24,7 @@ The editable UI inspected during assessment included `Designs` and `Components` 
 
 ## Resource policy
 
-At the user's request, derivative PDF and PNG exports are omitted from Git. The original `.fig` and inventory are the canonical repository references. The user's supplied PDF and ZIP remain untouched in Downloads. Screenshots or vectors can be exported from the retained editable source when a concrete implementation requirement needs them; add only those necessary resources with provenance.
+At the user's request, derivative PDF and PNG exports are omitted from Git. The original `.fig` and inventory are the canonical repository references. The user subsequently deleted the supplied PDF/ZIP; they are unnecessary for the retained source workflow. D1 keeps only tooling, source references and a small provenance manifest in Git. Selected renderings and native comparison screenshots are local ignored review outputs under `tools/design-source/output/d1`. Screenshots or vectors can be regenerated from the retained editable source when a concrete implementation requirement needs them; add only necessary production resources with provenance.
 
 ## Source provenance and reuse
 

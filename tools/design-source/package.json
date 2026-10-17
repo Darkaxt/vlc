@@ -1,0 +1,13 @@
+{
+  "name": "vlc-design-source",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": { "export": "node export.mjs", "test": "node --test test.mjs" },
+  "dependencies": {
+    "@grida/refig": "0.0.7",
+    "fflate": "0.8.2",
+    "kiwi-schema": "0.5.0"
+  }
+}
