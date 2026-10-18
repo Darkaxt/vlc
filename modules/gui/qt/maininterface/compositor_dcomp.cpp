@@ -16,11 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0603
+# undef _WIN32_WINNT
+# define _WIN32_WINNT 0x0603
+#endif
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
 #include "compositor_dcomp.hpp"
+#include "player_video_backdrop.hpp"
 
 #include "maininterface/mainctx_win32.hpp"
 
@@ -53,8 +59,15 @@
 
 #include <memory>
 #include <type_traits>
+#include <QScreen>
 
 namespace vlc {
+
+Microsoft::WRL::ComPtr<PlayerVideoBackdrop> CompositorDirectComposition::playerBackdrop() const
+{
+    QMutexLocker lock(&m_playerBackdropLock);
+    return m_playerBackdrop;
+}
 
 int CompositorDirectComposition::windowEnable(const vlc_window_cfg_t *)
 {
@@ -65,7 +78,12 @@ int CompositorDirectComposition::windowEnable(const vlc_window_cfg_t *)
 
     commonWindowEnable();
 
-    const auto ret = m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE, m_uiVisual);
+    const auto backdrop = playerBackdrop();
+    // The blur copies already exist when vout is enabled. Insert the unfiltered
+    // video below them, otherwise it covers their output beneath Qt's tint.
+    const auto ret = m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE,
+        backdrop ? backdrop->bottomVisual() : m_uiVisual);
+    if (backdrop) backdrop->setEnabled(true);
     m_dcompDevice->Commit();
 
     if (ret == S_OK)
@@ -81,6 +99,7 @@ void CompositorDirectComposition::windowDisable()
     assert(m_videoVisual);
 
     commonWindowDisable();
+    if (auto backdrop = playerBackdrop()) backdrop->setEnabled(false);
 
     const auto ret = m_rootVisual->RemoveVisual(m_videoVisual.Get());
     assert(ret == S_OK);
@@ -89,6 +108,10 @@ void CompositorDirectComposition::windowDisable()
 
 void CompositorDirectComposition::windowDestroy()
 {
+    {
+        QMutexLocker lock(&m_playerBackdropLock);
+        m_playerBackdrop.Reset();
+    }
     m_videoVisual.Reset();
     CompositorVideo::windowDestroy();
 }
@@ -276,6 +299,10 @@ bool CompositorDirectComposition::setup()
 
 void CompositorDirectComposition::cleanup()
 {
+    {
+        QMutexLocker lock(&m_playerBackdropLock);
+        m_playerBackdrop.Reset();
+    }
     m_videoVisual.Reset();
     m_acrylicSurface.reset();
 
@@ -311,6 +338,20 @@ bool CompositorDirectComposition::makeMainInterface(MainCtx* mainCtx, std::funct
     m_quickView->setColor(Qt::transparent);
 
     m_quickView->installEventFilter(this);
+
+    connect(quickViewPtr, &QQuickWindow::beforeSynchronizing, this, [this] {
+        QVariantMap state;
+        if (auto backdrop = playerBackdrop(); backdrop && m_quickView->rootObject())
+            state = backdrop->synchronize(m_quickView->rootObject(), m_quickView->devicePixelRatio());
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        auto window = m_quickView.get();
+        QMetaObject::invokeMethod(window, [window, state] {
+            window->setProperty("playerVideoBackdropState", state);
+        }, Qt::QueuedConnection);
+#else
+        Q_UNUSED(state);
+#endif
+    }, Qt::DirectConnection);
 
     connect(quickViewPtr,
             &QQuickWindow::frameSwapped, // At this stage, we can be sure that QRhi and QRhiSwapChain are valid.
@@ -359,6 +400,20 @@ bool CompositorDirectComposition::makeMainInterface(MainCtx* mainCtx, std::funct
     if (aboutToShowQuickWindowCallback)
         aboutToShowQuickWindowCallback(quickViewPtr);
 
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    // Optional composed-window capture needs DWM's input desktop. Keep this
+    // diagnostic instance beyond every screen and prevent native activation.
+    // Interactive/fullscreen audits continue to use an inactive desktop.
+    if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR")
+        && qEnvironmentVariableIntValue("VLC_PLAYER_DIAGNOSTICS_OFFSCREEN") == 1) {
+        QRect desktopBounds;
+        for (auto screen : QGuiApplication::screens()) desktopBounds |= screen->geometry();
+        m_quickView->setFlag(Qt::WindowDoesNotAcceptFocus);
+        m_quickView->setProperty("_q_showWithoutActivating", true);
+        m_quickView->setWindowState(Qt::WindowNoState);
+        m_quickView->setPosition(desktopBounds.right() + 256, desktopBounds.top());
+    }
+#endif
     m_quickView->setVisible(true);
     return true;
 }
@@ -370,6 +425,7 @@ void CompositorDirectComposition::onSurfacePositionChanged(const QPointF& positi
 
     m_videoVisual->SetOffsetX(position.x());
     m_videoVisual->SetOffsetY(position.y());
+    if (auto backdrop = playerBackdrop()) backdrop->setVideoPosition(position);
 
     // WARNING: Commit is requested explicitly through `::commitSurface()` after size
     //          and position changes are applied.
@@ -459,6 +515,17 @@ bool CompositorDirectComposition::setupVoutWindow(vlc_window_t *p_wnd, VoutDestr
 
     p_wnd->display.dcomp_device = m_dcompDevice;
     p_wnd->handle.dcomp_visual = m_videoVisual.Get();
+
+    Microsoft::WRL::ComPtr<PlayerVideoBackdrop> backdrop;
+    backdrop.Attach(new (std::nothrow) PlayerVideoBackdrop);
+    const auto backdropResult = backdrop ? backdrop->initialize(m_dcompDevice, m_videoVisual.Get(), m_rootVisual.Get(), m_uiVisual) : E_OUTOFMEMORY;
+    if (SUCCEEDED(backdropResult)) {
+        p_wnd->handle.dcomp_visual = backdrop.Get();
+        QMutexLocker lock(&m_playerBackdropLock);
+        m_playerBackdrop = std::move(backdrop);
+    } else {
+        msg_Err(p_wnd, "Player video backdrop initialization failed (0x%lx)", static_cast<unsigned long>(backdropResult));
+    }
 
     return true;
 }

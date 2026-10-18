@@ -153,6 +153,7 @@ class QmlGlobalMenu : public VLCMenuBar
 {
     Q_OBJECT
     SIMPLE_MENU_PROPERTY(MainCtx*, ctx, nullptr)
+    SIMPLE_MENU_PROPERTY(bool, playerChromeCommand, false)
 
     Q_PROPERTY(bool shown READ isShown NOTIFY shownChanged FINAL)
 
@@ -165,6 +166,7 @@ signals:
     void aboutToShow();
     void aboutToHide();
     void shownChanged();
+    void hidePlayerChromeRequested();
 
 public slots:
     void popup( QPoint pos );

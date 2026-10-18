@@ -287,6 +287,12 @@ void QmlGlobalMenu::popup(QPoint pos)
     submenu = m_menu->addMenu(qtr( "V&iew" ));
     ViewMenu( p_intf, submenu );
 
+    if (m_playerChromeCommand)
+    {
+        auto action = submenu->addAction(qtr("Hide player interface\tCtrl+Shift+H"));
+        connect(action, &QAction::triggered, this, &QmlGlobalMenu::hidePlayerChromeRequested);
+    }
+
     submenu = m_menu->addMenu(qtr( "&Help" ));
     HelpMenu( p_intf, submenu );
 

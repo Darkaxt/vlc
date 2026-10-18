@@ -18,6 +18,22 @@ Dependencies are pinned with integrity hashes: [kiwi-schema](https://github.com/
 
 ## Verified scope and limits
 
+The S2 player uses a bounded extractor for its saved outlined icon components:
+
+```powershell
+node --test ./player-assets.test.mjs
+node ./player-assets.mjs E:/Temp/<task>/player-icons
+```
+
+The explicit output directory receives SVG masks and a source-node/hash manifest.
+The production copies live in `modules/gui/qt/pixmaps/redesign`. Full nested affine
+matrices preserve reflected geometry, and rectangle primitives use current source
+dimensions and stroke alignment. This avoids the screen renderer's observed
+reflection and stale primitive-cache errors on the selected icons. Native Qt tints
+the masks. This remains a selected-component extractor, not a complete Figma
+renderer; the original Figma design governs visual verification. Keep generated
+comparison output in task-owned scratch and retain the design attribution.
+
 On 17 October 2026, a clean locked dependency installation passed the source/negative-control/style/override-path tests. Exporting with global `fetch` replaced by a throwing function succeeded in 11.09 seconds: player PNG 1920×1080, settings PNG 1138×955 (1048×865 body plus effects), and three 24×24 icons in SVG and PNG. The SVGs contain vector paths, without image elements or external resources.
 
 Visual inspection against the hosted native Figma frames confirmed the selected player composition, image, light styles, sidebar and control sequence, and the settings layout, groups, colors and component choices. Differences remain in font metrics/weight, blur/shadow appearance, and some icon placement/orientation or clipping, including the settings Advanced Options chevron. This is a validated comparison with recorded limitations, not a pixel-fidelity claim or full editable-project reconstruction. No exhaustive renderer coverage is established for other screens.

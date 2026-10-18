@@ -898,6 +898,10 @@ InterfaceWindowHandlerWin32::InterfaceWindowHandlerWin32(qt_intf_t *_p_intf, Mai
     {
         assert(mainCtx->platformHandlesResizeWithCSD() && mainCtx->platformHandlesShadowsWithCSD());
         m_CSDWindowEventHandler = new CSDWin32EventHandler(mainCtx, window, window);
+        // The handler replaces the frameless geometry restored by the base
+        // constructor with native resize borders. Apply the existing client
+        // minimum after that frame change, which can otherwise shrink it.
+        window->resize(window->size().expandedTo(window->minimumSize()));
     }
 
     auto mainCtxWin32 = qobject_cast<MainCtxWin32*>(mainCtx);

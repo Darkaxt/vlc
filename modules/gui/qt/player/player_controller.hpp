@@ -139,6 +139,7 @@ public:
     Q_PROPERTY(float buffering READ getBuffering  NOTIFY bufferingChanged FINAL)
     Q_PROPERTY(float rate READ getRate WRITE setRate NOTIFY rateChanged FINAL)
     Q_PROPERTY(QUrl url READ getUrl NOTIFY inputChanged FINAL)
+    Q_PROPERTY(QString sourceLocationName READ getSourceLocationName NOTIFY inputChanged FINAL)
 
     Q_PROPERTY(VLCTime time READ getTime WRITE setTime NOTIFY timeChanged FINAL)
     Q_PROPERTY(VLCTime remainingTime READ getRemainingTime NOTIFY remainingTimeChanged FINAL)
@@ -335,6 +336,7 @@ public slots:
     void openVLsub();
     void acknowledgeRestoreCallback();
     QUrl getUrl() const;
+    QString getSourceLocationName() const;
 
     //tracks
     TrackListModel* getVideoTracks();

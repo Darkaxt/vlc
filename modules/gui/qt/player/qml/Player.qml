@@ -51,7 +51,7 @@ FocusScope {
     }
 
     // Only applicable in video mode:
-    property bool displayFadeRectangles: !_controlsUnderVideo && (height > (implicitFadeRectangleHeight * 3))
+    property bool displayFadeRectangles: false
     property real implicitFadeRectangleHeight: VLCStyle.dp(206, VLCStyle.scale)
 
     // Private
@@ -83,7 +83,7 @@ FocusScope {
         rootPlayer.Navigation.defaultKeyAction(event)
 
         //unhandled keys are forwarded as hotkeys
-        if (!event.accepted || controlBar.state !== "visible")
+        if (!event.accepted || !controlBar.visible)
             MainCtx.sendHotkey(event.key, event.modifiers);
     }
 
@@ -94,20 +94,6 @@ FocusScope {
         _keyPressed = false
 
         rootPlayer.Navigation.defaultKeyReleaseAction(event)
-    }
-
-    on_ControlsUnderVideoChanged: {
-        lockUnlockAutoHide(_controlsUnderVideo)
-    }
-
-    // Functions
-
-    function lockUnlockAutoHide(lock) {
-        if (lock) {
-            playerToolbarVisibilityFSM.lock()
-        } else {
-            playerToolbarVisibilityFSM.unlock()
-        }
     }
 
     // Private
@@ -124,28 +110,57 @@ FocusScope {
     ColorContext {
         id: windowTheme
 
-        // NOTE: We force the night theme when playing a video.
-        palette: (MainCtx.hasEmbededVideo && MainCtx.pinVideoControls === false)
-                 ? VLCStyle.darkPalette
-                 : VLCStyle.palette
+        palette: VLCStyle.palette
 
         colorSet: ColorContext.Window
     }
 
-    PlayerToolbarVisibilityFSM {
-        id: playerToolbarVisibilityFSM
+    property bool _keyboardNavigation: false
+    readonly property bool _surfaceHovered: playerSpecializationLoader.item?.pointerHovered ?? pointer.hovered
+    readonly property point _surfacePointer: playerSpecializationLoader.item?.pointerPosition ?? pointer.point.position
 
-        onForceUnlock:{
-            controlBar.forceUnlock()
-
-            topBar.forceUnlock()
+    function _focusWithin(item) {
+        for (let current = MainCtx.intfMainWindow.activeFocusItem; current; current = current.parent) {
+            if (current === item) return true
         }
+        return false
+    }
+
+    PlayerChromeState {
+        id: chrome
+        fullscreen: MainCtx.intfMainWindow.visibility === Window.FullScreen
+        topHovered: topBar.hovered || (rootPlayer._surfaceHovered && rootPlayer._surfacePointer.y <= topBar.height)
+        bottomHovered: controlBar.hovered || (rootPlayer._surfaceHovered && rootPlayer._surfacePointer.y >= rootPlayer.height - controlBar.height)
+        topFocused: rootPlayer._keyboardNavigation && rootPlayer._focusWithin(topBar)
+        bottomFocused: rootPlayer._keyboardNavigation && !rootPlayer._focusWithin(topBar)
+        topMenuOpen: topBar.menuOpen || (MainCtx.playerMenuOpen && !controlBar.menuOpen)
+        bottomMenuOpen: controlBar.menuOpen || playlistVisibility.isPlaylistVisible
+                        || Player.canRestorePlayback || (MainCtx.playerMenuOpen && !topBar.menuOpen)
+        onHiddenChanged: {
+            if (hidden) {
+                topBar.forceUnlock()
+                controlBar.forceUnlock()
+                MainCtx.closePlayerMenus()
+                rootPlayer._keyboardNavigation = false
+                rootPlayer.forceActiveFocus(Qt.OtherFocusReason)
+            }
+        }
+    }
+    HoverHandler { id: pointer }
+    TapHandler {
+        acceptedButtons: Qt.AllButtons
+        gesturePolicy: TapHandler.DragThreshold
+        onPressedChanged: if (pressed) rootPlayer._keyboardNavigation = false
+    }
+    Shortcut {
+        sequence: "Ctrl+Shift+H"
+        enabled: rootPlayer.visible
+        onActivated: chrome.toggleHidden()
     }
 
     PlayerPlaylistVisibilityFSM {
         id: playlistVisibility
 
-        onIsPlaylistVisibleChanged: lockUnlockAutoHide(isPlaylistVisible)
     }
 
     Connections {
@@ -154,10 +169,9 @@ FocusScope {
         //playlist
         function onHasEmbededVideoChanged() {
             playlistVisibility.updateVideoEmbed()
-            playerToolbarVisibilityFSM.updateVideoEmbed()
         }
         function onAskShow() {
-            playerToolbarVisibilityFSM.askShow()
+            chrome.toggleHidden()
         }
     }
 
@@ -255,6 +269,11 @@ FocusScope {
                 // Video
 
                 focus: true
+                // VideoSurface accepts legacy hover events. Track on that
+                // item before acceptance, rather than relying on an ancestor
+                // HoverHandler to receive the consumed event.
+                readonly property bool pointerHovered: videoPointer.hovered
+                readonly property point pointerPosition: videoSurface.mapToItem(rootPlayer, videoPointer.point.position)
 
                 VideoSurface {
                     id: videoSurface
@@ -273,26 +292,27 @@ FocusScope {
 
                     focus: true
 
+                    HoverHandler { id: videoPointer }
+
                     cursorShape: playerSpecializationLoader.cursorShape
 
                     function onMouseEvent() {
                         //short interval for mouse events
                         if (Player.isInteractive)
                             interactiveAutoHideTimer.restart()
-                        else
-                            playerToolbarVisibilityFSM.mouseMove();
+
                     }
 
                     Component.onCompleted: {
                         mouseMoved.connect(videoSurface.onMouseEvent)
                         mousePressed.connect(videoSurface.onMouseEvent)
+                        mousePressed.connect(() => { rootPlayer._keyboardNavigation = false })
                         mouseReleased.connect(videoSurface.onMouseEvent)
                         mouseDblClicked.connect(videoSurface.onMouseEvent)
                     }
 
                     Binding on cursorShape {
-                        when: playerToolbarVisibilityFSM.started
-                            && !playerToolbarVisibilityFSM.isVisible
+                        when: !chrome.topVisible && !chrome.bottomVisible
                             && !interactiveAutoHideTimer.running
                         value: Qt.BlankCursor
                     }
@@ -320,7 +340,7 @@ FocusScope {
                     anchors.right: parent.right
 
                     opacity: topBar.opacity
-                    visible: rootPlayer.displayFadeRectangles && !topBarAcrylicBg.visible
+                    visible: rootPlayer.displayFadeRectangles
 
                     gradient: Gradient {
                         GradientStop { position: 0; color: Qt.rgba(0, 0, 0, .8) }
@@ -929,118 +949,45 @@ FocusScope {
         }
     }
 
-    TopBar {
+    RedesignTopBar {
         id: topBar
-
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-
-        z: 1
-
-        topMargin: VLCStyle.applicationVerticalMargin
-        sideMargin: VLCStyle.applicationHorizontalMargin
-
-        textWidth: playlistVisibility.isPlaylistVisible
-                 ? rootPlayer.width - playlistpopup.width
-                 : rootPlayer.width
-
-        // NOTE: With pinned controls, the top controls are hidden when switching to
-        //       fullScreen. Except when resume is visible
-        visible: (MainCtx.pinVideoControls === false
-                  ||
-                  MainCtx.intfMainWindow.visibility !== Window.FullScreen
-                  ||
-                  resumeVisible)
-
-        focus: true
-        title: Player.title
-
-        pinControls: MainCtx.pinVideoControls
-
-        showCSD: MainCtx.clientSideDecoration && (MainCtx.intfMainWindow.visibility !== Window.FullScreen)
-        showToolbar: MainCtx.hasToolbarMenu && (MainCtx.intfMainWindow.visibility !== Window.FullScreen)
-        playlistVisible: playlistVisibility.isPlaylistVisible
-
-        plListView: {
-            if (playlistpopup.active)
-                return playlistpopup.item
-            else if (playlistWindowLoader?.status === Loader.Ready)
-                return playlistWindowLoader.item.playlistView
-            else
-                return null
-        }
-
-        Navigation.parentItem: rootPlayer
-        Navigation.downItem: {
-            if (playlistVisibility.isPlaylistVisible)
-                return playlistpopup
-            if (MainCtx.hasEmbededVideo)
-                return playerSpecializationLoader
-            if (Player.isInteractive)
-                return toggleControlBarButton
-            return controlBar
-        }
-
-        //initial state value is "", using a binding avoid animation on startup
-        Binding on state {
-            when: playerToolbarVisibilityFSM.started
-            value: (playerToolbarVisibilityFSM.isVisible || rootPlayer._controlsUnderVideo) ? "visible" : "hidden"
-        }
-
-        onTogglePlaylistVisibility: playlistVisibility.togglePlaylistVisibility()
-
-        onRequestLockUnlockAutoHide: (lock) => {
-            rootPlayer.lockUnlockAutoHide(lock)
-        }
-
+        z: 2
+        title: Player.name
+        showCSD: MainCtx.clientSideDecoration && !chrome.fullscreen
+        visible: chrome.topVisible
+        onHideChromeRequested: chrome.hidden = true
         onBackRequested: {
-            if (MainCtx.hasEmbededVideo && !MainCtx.canShowVideoPIP) {
-               MainPlaylistController.stop()
-            }
+            if (MainCtx.hasEmbededVideo && !MainCtx.canShowVideoPIP)
+                MainPlaylistController.stop()
             MainCtx.playerView = false
         }
+        Navigation.parentItem: rootPlayer
+        Navigation.downItem: controlBar
+    }
 
-        FadeControllerStateGroup {
-            target: topBar
-        }
-
-        // TODO: Make TopBar a Control and use background
-        Widgets.AcrylicBackground {
-            id: topBarAcrylicBg
-
-            z: -1
-
-            anchors.fill: parent
-
-            opacity: {
-                if (MainCtx.hasEmbededVideo && !MainCtx.pinVideoControls && !rootPlayer.displayFadeRectangles) {
-                    return 0.6
-                } else if (MainCtx.intfMainWindow.visibility === Window.FullScreen && MainCtx.hasEmbededVideo) {
-                    return MainCtx.pinOpacity
-                } else {
-                    return 1.0
-                }
-            }
-
-            tintColor: windowTheme.bg.primary
-
-            visible: MainCtx.pinVideoControls || (MainCtx.hasEmbededVideo && !rootPlayer.displayFadeRectangles)
-        }
+    PlayerResume {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: controlBar.top
+        anchors.bottomMargin: PlayerStyle.px(24)
+        width: Math.min(PlayerStyle.px(519), parent.width - PlayerStyle.px(40))
+        visible: Player.canRestorePlayback && !chrome.hidden
+        z: 3
     }
 
     Loader {
         id: playlistpopup
 
+        z: 2
         anchors {
-            // NOTE: When the controls are pinned we display the playqueue under the topBar.
-            top: (rootPlayer._controlsUnderVideo) ? topBar.bottom
-                                                  : parent.top
-
+            top: parent.top
+            topMargin: PlayerStyle.px(60)
             right: parent.right
-            bottom: parent.bottom
-
-            bottomMargin: parent.height - rootPlayer.positionSliderY
+            rightMargin: PlayerStyle.px(20)
+            bottom: controlBar.top
+            bottomMargin: PlayerStyle.px(20)
         }
 
         focus: false
@@ -1050,7 +997,7 @@ FocusScope {
         //initial state value is "", using a binding avoid animation on startup
         Binding on state {
             when: playlistVisibility.started
-            value: (status === Loader.Ready && playlistVisibility.isPlaylistVisible) ? "expanded" : "retracted"
+            value: (status === Loader.Ready && playlistVisibility.isPlaylistVisible && !chrome.hidden) ? "expanded" : "retracted"
         }
 
         Component.onCompleted: {
@@ -1098,9 +1045,7 @@ FocusScope {
 
             property real maximumWidth: (rootPlayer.width + playlistView.rightPadding) / 2
 
-            implicitWidth: Helpers.clamp(MainCtx.playqueuePanel.width
-                                 , playlistView.minimumWidth
-                                 , playlistView.maximumWidth)
+            implicitWidth: Math.min(PlayerStyle.px(400), rootPlayer.width - PlayerStyle.px(40))
             height: playlistpopup.height
 
             useAcrylic: false
@@ -1108,18 +1053,12 @@ FocusScope {
 
             wheelEnabled: true
 
-            rightPadding: VLCStyle.applicationHorizontalMargin
-            topPadding:  {
-                if (rootPlayer._controlsUnderVideo)
-                    return VLCStyle.margin_normal
-                else
-                    // NOTE: We increase the padding accordingly to avoid overlapping the TopBar.
-                    return topBar.reservedHeight
-            }
-            bottomPadding: 0
+            redesigned: true
+            padding: 0
 
             background: Rectangle {
-                color: windowTheme.bg.primary.alpha(0.8)
+                color: PlayerStyle.panel
+                radius: PlayerStyle.px(10)
             }
 
             view.fadingEdge.pixelAlignedForDPR: !controlBar.visible
@@ -1132,56 +1071,11 @@ FocusScope {
 
             function closePlaylist() {
                 playlistVisibility.togglePlaylistVisibility()
-                if (audioControls.visible)
-                    audioControls.forceActiveFocus()
-                else
-                    controlBar.forceActiveFocus()
+                controlBar.forceActiveFocus()
             }
 
 
-            Widgets.HorizontalResizeHandle {
-                id: resizeHandle
 
-                property bool _inhibitMainCtxUpdate: false
-
-                parent: playlistView
-
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                    left: parent.left
-                }
-
-                atRight: false
-                currentWidth: playlistpopup.width
-
-                maximumWidth: playlistView.maximumWidth
-                minimumWidth: playlistView.minimumWidth
-
-                onRequestedWidthChanged: {
-                    if (!_inhibitMainCtxUpdate)
-                        MainCtx.playqueuePanel.width = requestedWidth
-                }
-
-                Component.onCompleted:  _updateFromMainCtx()
-
-                function _updateFromMainCtx() {
-                    if (requestedWidth === MainCtx.playqueuePanel.width)
-                        return
-
-                    _inhibitMainCtxUpdate = true
-                    requestedWidth = MainCtx.playqueuePanel.width
-                    _inhibitMainCtxUpdate = false
-                }
-
-                Connections {
-                    target: MainCtx.playqueuePanel
-
-                    function onWidthChanged() {
-                        resizeHandle._updateFromMainCtx()
-                    }
-                }
-            }
         }
     }
 
@@ -1250,21 +1144,21 @@ FocusScope {
                  && MainCtx.hasEmbededVideo
                  && !(MainCtx.pinVideoControls && !Player.fullscreen)
                  && (interactiveAutoHideTimer.running === true
-                     || controlBar.state !== "hidden" || toggleControlBarButton.hovered)
+                     || controlBar.visible || toggleControlBarButton.hovered)
         focus: true
         anchors {
-            bottom: controlBar.state === "hidden" ? parent.bottom : controlBar.top
+            bottom: controlBar.visible ? controlBar.top : parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
         iconSize: VLCStyle.icon_large
-        iconTxt: controlBar.state === "hidden" ? VLCIcons.expand_inverted : VLCIcons.expand
+        iconTxt: controlBar.visible ? VLCIcons.expand : VLCIcons.expand_inverted
 
         Navigation.parentItem: rootPlayer
         Navigation.upItem: playlistVisibility.isPlaylistVisible ? playlistpopup : (MainCtx.hasEmbededVideo ? playerSpecializationLoader : topBar)
         Navigation.downItem: controlBar
 
         onClicked:{
-            playerToolbarVisibilityFSM.askShow();
+            chrome.toggleHidden();
         }
     }
 
@@ -1279,83 +1173,18 @@ FocusScope {
         }
     }
 
-    ControlBar {
+    RedesignControlBar {
         id: controlBar
-
-        anchors {
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        hoverEnabled: true
-
-        focus: true
-
-        rightPadding: VLCStyle.applicationHorizontalMargin
-        leftPadding: VLCStyle.applicationHorizontalMargin
-        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.margin_xsmall
-
-        textPosition: (MainCtx.pinVideoControls)
-                      ? ControlBar.TimeTextPosition.LeftRightSlider
-                      : ControlBar.TimeTextPosition.AboveSlider
-
-        // hide right text so that it won't overlap with play queue
-        showRemainingTime: (textPosition !== ControlBar.TimeTextPosition.AboveSlider)
-                           || !playlistVisibility.isPlaylistVisible
-
-        onStateChanged: {
-            if (state === "visible")
-                showChapterMarks()
-        }
-
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        z: 2
+        popupParent: rootPlayer
+        visible: chrome.bottomVisible
+        queueVisible: playlistVisibility.isPlaylistVisible
+        onToggleQueue: playlistVisibility.togglePlaylistVisibility()
         Navigation.parentItem: rootPlayer
-        Navigation.upItem: {
-            if (playlistVisibility.isPlaylistVisible)
-                return playlistpopup
-            if (Player.isInteractive)
-                return toggleControlBarButton
-            if (!MainCtx.hasEmbededVideo)
-                return playerSpecializationLoader
-            return topBar
-        }
-
-        //initial state value is "", using a binding avoid animation on startup
-        Binding on state {
-            when: playerToolbarVisibilityFSM.started
-            value: (playerToolbarVisibilityFSM.isVisible || rootPlayer._controlsUnderVideo) ? "visible" : "hidden"
-        }
-
-        onRequestLockUnlockAutoHide: (lock) => rootPlayer.lockUnlockAutoHide(lock)
-
-        identifier: (Player.hasVideoOutput) ? PlayerControlbarModel.Videoplayer
-                                            : PlayerControlbarModel.Audioplayer
-
-        onHoveredChanged: rootPlayer.lockUnlockAutoHide(hovered)
-
-        background: Rectangle {
-            id: controlBarBackground
-
-            visible: !MainCtx.hasEmbededVideo || MainCtx.pinVideoControls || !rootPlayer.displayFadeRectangles
-
-            opacity: {
-                if (MainCtx.hasEmbededVideo && !MainCtx.pinVideoControls && !rootPlayer.displayFadeRectangles) {
-                    return 0.6
-                } else if ((Window.visibility === Window.FullScreen) && MainCtx.hasEmbededVideo) {
-                    return MainCtx.pinOpacity
-                } else if (AcrylicController.enabled || !MainCtx.hasEmbededVideo) {
-                    return 0.7
-                } else {
-                    return 1.0
-                }
-            }
-
-            color: windowTheme.bg.primary
-        }
-
-        FadeControllerStateGroup {
-            target: controlBar
-        }
+        Navigation.upItem: topBar
     }
 
     QmlAudioContextMenu {
@@ -1392,10 +1221,23 @@ FocusScope {
     target: MainCtx.intfMainWindow
 
         Keys.onPressed: (event) => {
+            // ItemKeyEventFilter treats a QML handler as accepting the event
+            // unless explicitly released. Observe navigation without stealing
+            // playback hotkeys or the queue's press/release activation pair.
+            event.accepted = false
             if (Player.isInteractive)
                 interactiveAutoHideTimer.restart()
-            else
-                playerToolbarVisibilityFSM.keyboardMove()
+            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab ||
+                event.key === Qt.Key_Left || event.key === Qt.Key_Right ||
+                event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+                rootPlayer._keyboardNavigation = true
+                if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab)
+                    chrome.hidden = false
+            }
+            if (event.key === Qt.Key_Escape && chrome.hidden) {
+                chrome.hidden = false
+                event.accepted = true
+            }
         }
     }
 }

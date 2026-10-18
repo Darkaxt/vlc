@@ -35,6 +35,7 @@
 #include <vlc_preparser.h>
 
 #include <QFile>
+#include <QFileInfo>
 #include <QDir>
 #include <QSignalMapper>
 #include <QThreadPool>
@@ -123,8 +124,8 @@ void PlayerControllerPrivate::UpdateName(input_item_t* media)
 
     if( m_name != name )
     {
-        emit q->nameChanged( name );
         m_name = std::move(name);
+        emit q->nameChanged( m_name );
     }
 }
 
@@ -2312,6 +2313,18 @@ PRIMITIVETYPE_GETTER(QString, getArtist, m_artist)
 PRIMITIVETYPE_GETTER(QString, getAlbum, m_album)
 PRIMITIVETYPE_GETTER(QUrl, getArtwork, m_artwork)
 PRIMITIVETYPE_GETTER(QUrl, getUrl, m_url)
+
+QString PlayerController::getSourceLocationName() const
+{
+    const auto url = getUrl();
+    if (url.isLocalFile())
+    {
+        const auto directory = QFileInfo(url.toLocalFile()).absoluteDir();
+        return directory.isRoot() ? QDir::toNativeSeparators(directory.absolutePath())
+                                  : directory.dirName();
+    }
+    return url.host().isEmpty() ? qtr("Media") : url.host();
+}
 
 TimedText PlayerController::getCurrentLyric() const
 {

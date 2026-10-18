@@ -1,0 +1,272 @@
+{
+  "source_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "extraction": "Saved outlined paths with nested affine matrices; white masks and original volume gradient.",
+  "icons": [
+    {
+      "id": "45:18",
+      "name": "name=previous, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "previous.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "65be52bbb93afecbca4bad7e70d032c40d61160fcb83225f91f6b83253b93207"
+    },
+    {
+      "id": "45:12",
+      "name": "name=next, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "next.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "9dad4463559b6e145f929e6751493e932978c67bfdeea92263cd0d9b18cbcb3c"
+    },
+    {
+      "id": "44:419",
+      "name": "name=play, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "play.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "3658047363d0cd0a939afa4ad8b86bc74022e6c4d3b74e8a9dfb09882583dcdd"
+    },
+    {
+      "id": "44:427",
+      "name": "name=pause, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "pause.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "ec164906334538fa8620878975ba27784596f88f654f06dcd53d17117fb46469"
+    },
+    {
+      "id": "42:398",
+      "name": "name=subtitles, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "subtitles.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "019f2ce0c2ec6c9dc27e7deb81fb1237e66fca37e1ba129627ab6b469e2257b1"
+    },
+    {
+      "id": "44:407",
+      "name": "name=audio, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "audio.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "3dab78cc136b3f4e1e25b18820018b1c2e574a705741cc491de3d8efab59ed10"
+    },
+    {
+      "id": "217:191",
+      "name": "name=lists, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "queue.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "6c4a7aa6866d89fabc7da2720d6b3857383e9abbb00f5a8d96d429fc779f4fec"
+    },
+    {
+      "id": "182:179",
+      "name": "name=volume, direction=default, state=default, value=high, EQ=default, two-tone=no",
+      "filename": "volume.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "628b3677d43d1b089d7d5675b0a38b551ee6d37a079e9dc657fb0443dffb14e4"
+    },
+    {
+      "id": "182:198",
+      "name": "name=close, direction=default, state=default, value=none, EQ=default, two-tone=no",
+      "filename": "muted.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "60fa070e523827fe76480c762af26b5cc02204186ae20fe166905a859b9473a6"
+    },
+    {
+      "id": "48:54",
+      "name": "name=fullscreen, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "fullscreen.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "ff27a602af740dd14bf9d825e42a864e69060a81de6faee0d31233ab0e8fff34"
+    },
+    {
+      "id": "187:322",
+      "name": "name=stop, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "stop.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "fbc7801b6736e51253e1b980d454428c95499fbbae1061f3fd6f6f5ed18d2ccd"
+    },
+    {
+      "id": "45:40",
+      "name": "name=close, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "close.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "7a7e5f2bdd9068c473cd2e52c15bccda6253f88b4de892a39f4b25370a9f1cc7"
+    },
+    {
+      "id": "48:46",
+      "name": "name=minimize, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "minimize.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "f16c31279735ab32421da0afea2abbede8ac256ccd331a47524214d1ff24bf4a"
+    },
+    {
+      "id": "48:51",
+      "name": "name=maximize, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "maximize.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "81365571e4c55847277c0c730f813629ea4f2e0bb5ddabdd3993976e249e96b4"
+    },
+    {
+      "id": "2230:9222",
+      "name": "name=playback settings, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "tools.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "0a151166c78a89c4221a912eb52e06162c507bdb95821ba79834b9be9f8251f7"
+    },
+    {
+      "id": "51:808",
+      "name": "name=folder, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "folder.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "17689e857fb443f09a4beb2d2a45eee33031ff4c483450273a4e8bd11f6a582d"
+    },
+    {
+      "id": "48:57",
+      "name": "name=vlc, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "vlc.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "91e8b14a02215c57e36d3375b364a112ba2c5da57df0cb41194a9f26c22042d0"
+    },
+    {
+      "id": "247:418",
+      "name": "name=more, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "more.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "7963ecaf686f63e0c3bf37f7d7cd03b84a51c2be502226712207ef81fec5814f"
+    },
+    {
+      "id": "87:1041",
+      "name": "name=sidebar, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "sidebar.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "db00cb4dfda51b01563fbfc9195385534760e71ccd24cc6e57db13cd1362d79a"
+    },
+    {
+      "id": "463:564",
+      "name": "name=sort, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "sort.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "f46269212fb119e8b90164b622a1a11115ce7cb9dc4c5f44fa54627bc09018cf"
+    },
+    {
+      "id": "463:560",
+      "name": "name=remove, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "remove.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "ed9883e32992d9fa0cb0f27502d90048f5d4c75a500a42f768b3617e403f8634"
+    },
+    {
+      "id": "463:550",
+      "name": "name=add, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "add.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "4149fb7cc611702291fdeb6b018b72af3f68701d7e13c2abdd795edcd93257cb"
+    },
+    {
+      "id": "187:470",
+      "name": "name=repeat, direction=right, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "repeat.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "da4a195a16426b2e800a4e3cba29772187a4889a78f30b24630fb4b75270593e"
+    },
+    {
+      "id": "187:474",
+      "name": "name=shuffle, direction=right, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "shuffle.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "48df117638cea6c6906c6db1baf81c2de89982bcc8259c575a3ba9624ab64580"
+    },
+    {
+      "id": "463:417",
+      "name": "name=move, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "move.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "b8599183ef18cf6ea6fb42db014e61aa62d667a4734297ff7a1050ff59bb1f29"
+    },
+    {
+      "id": "2127:7548",
+      "name": "name=bookmarks, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "bookmarks.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "c61e051fd5e2537fc9f5254b767733a4887c4e6763b64ef818b48c79f83d71f7"
+    },
+    {
+      "id": "2127:7531",
+      "name": "name=chapters, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "chapters.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "1de576908b4de6fc5a0aa2894151814eed99cd7ab35a4302ab929dae80c2d162"
+    },
+    {
+      "id": "2127:7523",
+      "name": "name=queue, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "queue-tab.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "9cf1079c9107518ba0762c55ad75ece0d14672eb021069c87328520aac004c82"
+    },
+    {
+      "id": "999:4810",
+      "name": "name=video, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "video.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "23ba9b569266b3de4e619da24ee18ff932730a19efb4d9bc7bd5561c97b49ef4"
+    },
+    {
+      "id": "494:2394",
+      "name": "name=check, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "choice-selected.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "ccdf171038293eed71b26f5a7585ca699bd87abb20f72fa476241ff21b31332a"
+    },
+    {
+      "id": "494:2400",
+      "name": "name=check, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "choice-empty.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "9a65878c79085925fe85839a30f81422bcc47b77086d2c91cb66343f9b99827e"
+    }
+  ],
+  "controls": [
+    {
+      "ids": [
+        "244:211",
+        "244:214"
+      ],
+      "filename": "volume-cone.svg",
+      "sha256": "5824a25ead0436e84722aef053c1db7fc86658cb8b10254d6c410150785b09cb"
+    },
+    {
+      "ids": [
+        "244:211",
+        "244:214"
+      ],
+      "filename": "volume-level.svg",
+      "sha256": "90816c47740dde25e60db42abcccf0ee5c9055c52c99b1ed4e019a5993330562"
+    }
+  ]
+}

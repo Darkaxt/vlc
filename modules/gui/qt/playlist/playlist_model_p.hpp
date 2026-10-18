@@ -55,6 +55,7 @@ public:
     void onItemsAdded(const QVector<PlaylistItem>&& added, size_t index);
     void onItemsMoved(size_t index, size_t count, size_t target);
     void onItemsRemoved(size_t index, size_t count);
+    void updateDuration();
 
     void notifyItemsChanged(int index, int count,
                             const QVector<int> &roles = {});
@@ -67,6 +68,7 @@ public:
     ssize_t m_current = -1;
 
     VLCDuration m_duration = VLCDuration{};
+    int m_unknownDurationCount = 0;
 };
 
 } //namespace playlist

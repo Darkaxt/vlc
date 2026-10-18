@@ -27,6 +27,7 @@
 #include <QScreen>
 #include <QQmlProperty>
 #include <cmath>
+#include <algorithm>
 
 namespace
 {
@@ -102,6 +103,13 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
         int margin = m_mainCtx->windowExtendedMargin() * 2;
         int width = 320 + margin;
         int height = 360 + margin;
+
+        // RedesignControlBar's complete compact row: 116 transport + 60 seek +
+        // 80 volume + 114 track/tools + 30 queue + 24 margins + 48 gaps.
+        // Keep this constraint with the existing window-size owner. Minimal
+        // View has its separate contract above; no stored setting is added.
+        if (m_mainCtx->isPlayerView())
+            width = std::max(width, 472 + margin);
 
         double intfScaleFactor = m_mainCtx->getIntfScaleFactor();
         int scaledWidth = std::ceil( intfScaleFactor * width );

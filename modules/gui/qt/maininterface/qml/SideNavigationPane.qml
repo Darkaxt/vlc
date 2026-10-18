@@ -148,10 +148,11 @@ T.Pane {
                 }
 
                 property bool readyForAnimations: false
+                function _enableAnimations() { readyForAnimations = true }
 
                 onModelChanged: {
                     if (!listView.readyForAnimations)
-                        Qt.callLater(() => { listView.readyForAnimations = true })
+                        Qt.callLater(listView._enableAnimations)
                 }
 
                 Navigation.parentItem: root

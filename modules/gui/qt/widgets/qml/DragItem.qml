@@ -218,6 +218,10 @@ Item {
     }
 
     function _startNativeDrag() {
+        // The explicitly instrumented audit exercises Qt's internal drag/drop
+        // path without entering Windows OLE drag, which would grab desktop input.
+        if (typeof vlcPlayerDiagnosticSession !== "undefined" && vlcPlayerDiagnosticSession)
+            return
         if (!_pendingNativeDragStart)
             return
 

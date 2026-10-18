@@ -66,6 +66,8 @@
 #include <QMimeData>
 #include <QClipboard>
 #include <QInputDialog>
+#include <QMenu>
+#include <QPointer>
 
 #include <QQmlProperty>
 
@@ -305,6 +307,32 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
     m_threadRunner = new ThreadRunner();
 
     m_initialEffectiveMainInterfaceMode = getEffectiveMainInterfaceMode();
+}
+
+void MainCtx::trackPlayerMenu(QMenu *menu)
+{
+    const auto update = [this, menu](bool open) {
+        const bool wasOpen = isPlayerMenuOpen();
+        if (open)
+            m_playerMenus.insert(menu);
+        else
+            m_playerMenus.remove(menu);
+        if (wasOpen != isPlayerMenuOpen())
+            emit playerMenuOpenChanged();
+    };
+    connect(menu, &QMenu::aboutToShow, this, [update] { update(true); });
+    connect(menu, &QMenu::aboutToHide, this, [update] { update(false); });
+    connect(menu, &QObject::destroyed, this, [update] { update(false); });
+}
+
+void MainCtx::closePlayerMenus()
+{
+    QList<QPointer<QMenu>> menus;
+    for (auto *menu : m_playerMenus)
+        menus.append(QPointer<QMenu>(menu));
+    for (const auto &menu : menus)
+        if (menu)
+            menu->close();
 }
 
 MainCtx::~MainCtx()

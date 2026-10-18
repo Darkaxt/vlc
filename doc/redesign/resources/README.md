@@ -33,3 +33,15 @@ The S1 [Windows baseline assessment](../BASELINE.md) links its [public runtime m
 [upstream-source-manifest.json](upstream-source-manifest.json) records selected inspected upstream files at `392bc1d0abdb7396b6c97fef206efa1d23868e19`. The creator's [video](https://www.youtube.com/watch?v=ERFeOgqk324) explains the interaction concept. Its complete transcript is not redistributed here.
 
 Preserve creator attribution. Audit fonts, images, media and trademarks separately before promoting an export into production assets. Upstream VLC licenses and notices remain in their existing files; the design listing's CC BY license does not replace the code licenses. No raster assets have been extracted into a second repository copy and no design edits were made to the preserved archive.
+
+## S2 production resources and native evidence
+
+[S2 verification](s2-verification.json) records the integrated Windows player and
+its normal-build acceptance. Production vectors have a [source/hash manifest](../../../modules/gui/qt/pixmaps/redesign/manifest.json)
+and [attribution/change notes](../../../modules/gui/qt/pixmaps/redesign/README.md).
+The bundled Inter font has [source provenance](../../../modules/gui/qt/fonts/redesign/source.json)
+and its unchanged [SIL OFL license](../../../modules/gui/qt/fonts/redesign/LICENSE.txt).
+Native application captures, composed video/blur regressions and fuller review
+evidence are retained locally with the portable review artifact at
+`E:/VLC-Redesign/S2/review`. These are implementation captures; the canonical
+editable design and repository policy on derivative design exports are unchanged.

@@ -178,14 +178,7 @@ void PlaylistListModelPrivate::onItemsReset(const QVector<PlaylistItem>&& newCon
     m_items = newContent;
     q->endResetModel();
 
-    m_duration = VLCDuration();
-    if (m_items.size())
-    {
-        for(const auto& i : m_items)
-        {
-            m_duration += i.getDuration();
-        }
-    }
+    updateDuration();
 
     emit q->countChanged(m_items.size());
 }
@@ -199,10 +192,7 @@ void PlaylistListModelPrivate::onItemsAdded(const QVector<PlaylistItem>&& added,
     std::move(added.cbegin(), added.cend(), m_items.begin() + index);
     q->endInsertRows();
 
-    for(const auto& i : added)
-    {
-        m_duration += i.getDuration();
-    }
+    updateDuration();
 
     emit q->countChanged(m_items.size());
 }
@@ -233,31 +223,42 @@ void PlaylistListModelPrivate::onItemsRemoved(size_t index, size_t count)
 {
     Q_Q(PlaylistListModel);
 
-    for(size_t i = index; i <= index + count - 1; ++i)
-    {
-        m_duration -= m_items.at(i).getDuration();
-    }
-
     q->beginRemoveRows({}, index, index + count - 1);
     m_items.remove(index, count);
     q->endRemoveRows();
 
-    //maybe we removed the only valid elements
-    if (m_duration.toVLCTick() == 0 && m_duration.valid())
-    {
-        m_duration = VLCDuration();
-        for(const auto& i : m_items)
-            m_duration += i.getDuration();
-    }
+    updateDuration();
 
     emit q->countChanged(m_items.size());
 }
 
 
+void PlaylistListModelPrivate::updateDuration()
+{
+    Q_Q(PlaylistListModel);
+    VLCDuration duration;
+    int unknownCount = 0;
+    for (const auto &item : m_items)
+    {
+        const auto value = item.getDuration();
+        if (value.valid())
+            duration += value;
+        else
+            ++unknownCount;
+    }
+    if (duration == m_duration && unknownCount == m_unknownDurationCount)
+        return;
+    m_duration = duration;
+    m_unknownDurationCount = unknownCount;
+    emit q->durationChanged();
+}
+
 void
 PlaylistListModelPrivate::notifyItemsChanged(int idx, int count, const QVector<int> &roles)
 {
     Q_Q(PlaylistListModel);
+    if (roles.isEmpty() || roles.contains(PlaylistListModel::DurationRole))
+        updateDuration();
     QModelIndex first = q->index(idx, 0);
     QModelIndex last = q->index(idx + count - 1);
     emit q->dataChanged(first, last, roles);
@@ -313,6 +314,12 @@ PlaylistListModel::getDuration() const
 {
     Q_D(const PlaylistListModel);
     return d->m_duration;
+}
+
+int PlaylistListModel::getUnknownDurationCount() const
+{
+    Q_D(const PlaylistListModel);
+    return d->m_unknownDurationCount;
 }
 
 PlaylistItem

@@ -1,4 +1,43 @@
 <RCC>
+    <qresource prefix="/redesign/fonts">
+        <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
+    </qresource>
+    <qresource prefix="/redesign/icons">
+        <file alias="volume-cone.svg">pixmaps/redesign/volume-cone.svg</file>
+        <file alias="volume-level.svg">pixmaps/redesign/volume-level.svg</file>
+        <file alias="video.svg">pixmaps/redesign/video.svg</file>
+        <file alias="choice-selected.svg">pixmaps/redesign/choice-selected.svg</file>
+        <file alias="choice-empty.svg">pixmaps/redesign/choice-empty.svg</file>
+        <file alias="sort.svg">pixmaps/redesign/sort.svg</file>
+        <file alias="remove.svg">pixmaps/redesign/remove.svg</file>
+        <file alias="add.svg">pixmaps/redesign/add.svg</file>
+        <file alias="repeat.svg">pixmaps/redesign/repeat.svg</file>
+        <file alias="shuffle.svg">pixmaps/redesign/shuffle.svg</file>
+        <file alias="move.svg">pixmaps/redesign/move.svg</file>
+        <file alias="bookmarks.svg">pixmaps/redesign/bookmarks.svg</file>
+        <file alias="chapters.svg">pixmaps/redesign/chapters.svg</file>
+        <file alias="queue-tab.svg">pixmaps/redesign/queue-tab.svg</file>
+
+        <file alias="audio.svg">pixmaps/redesign/audio.svg</file>
+        <file alias="close.svg">pixmaps/redesign/close.svg</file>
+        <file alias="folder.svg">pixmaps/redesign/folder.svg</file>
+        <file alias="fullscreen.svg">pixmaps/redesign/fullscreen.svg</file>
+        <file alias="maximize.svg">pixmaps/redesign/maximize.svg</file>
+        <file alias="minimize.svg">pixmaps/redesign/minimize.svg</file>
+        <file alias="more.svg">pixmaps/redesign/more.svg</file>
+        <file alias="muted.svg">pixmaps/redesign/muted.svg</file>
+        <file alias="next.svg">pixmaps/redesign/next.svg</file>
+        <file alias="pause.svg">pixmaps/redesign/pause.svg</file>
+        <file alias="play.svg">pixmaps/redesign/play.svg</file>
+        <file alias="previous.svg">pixmaps/redesign/previous.svg</file>
+        <file alias="queue.svg">pixmaps/redesign/queue.svg</file>
+        <file alias="sidebar.svg">pixmaps/redesign/sidebar.svg</file>
+        <file alias="stop.svg">pixmaps/redesign/stop.svg</file>
+        <file alias="subtitles.svg">pixmaps/redesign/subtitles.svg</file>
+        <file alias="tools.svg">pixmaps/redesign/tools.svg</file>
+        <file alias="vlc.svg">pixmaps/redesign/vlc.svg</file>
+        <file alias="volume.svg">pixmaps/redesign/volume.svg</file>
+    </qresource>
     <qresource prefix="/logo">
         <file alias="vlc256.png">../../../share/icons/256x256/vlc.png</file>
         <file alias="vlc128.png">../../../share/icons/128x128/vlc.png</file>

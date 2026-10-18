@@ -43,6 +43,7 @@ class IDCompositionTarget;
 namespace vlc {
 
 class CompositorDCompositionAcrylicSurface;
+class PlayerVideoBackdrop;
 
 class CompositorDirectComposition : public CompositorVideo
 {
@@ -78,6 +79,7 @@ protected:
 private:
     [[nodiscard]] bool setup();
     void cleanup();
+    Microsoft::WRL::ComPtr<PlayerVideoBackdrop> playerBackdrop() const;
 
 private slots:
     void onSurfacePositionChanged(const QPointF& position) override;
@@ -104,6 +106,8 @@ private:
     Microsoft::WRL::ComPtr<IDCompositionVisual> m_rootVisual;
     Microsoft::WRL::ComPtr<IDCompositionVisual> m_videoVisual;
     IDCompositionVisual *m_uiVisual = nullptr;
+    Microsoft::WRL::ComPtr<PlayerVideoBackdrop> m_playerBackdrop;
+    mutable QMutex m_playerBackdropLock;
 
     std::unique_ptr<CompositorDCompositionAcrylicSurface> m_acrylicSurface;
 };

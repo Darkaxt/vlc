@@ -30,6 +30,7 @@
 #include <QApplication>
 #include <QQuickItem>
 #include <QTimer>
+#include <QSet>
 
 Q_MOC_INCLUDE( "dialogs/toolbar/controlbar_profile_model.hpp" )
 Q_MOC_INCLUDE( "util/csdbuttonmodel.hpp" )
@@ -145,6 +146,7 @@ class MainCtx : public QObject
     // Expose Property Minimal View for Player View
     Q_PROPERTY(bool minimalView READ isMinimalView WRITE setMinimalView NOTIFY mainInterfaceModesChanged FINAL)
     Q_PROPERTY(bool playerView READ isPlayerView WRITE setPlayerView NOTIFY mainInterfaceModesChanged FINAL)
+    Q_PROPERTY(bool playerMenuOpen READ isPlayerMenuOpen NOTIFY playerMenuOpenChanged FINAL)
 
     // This Property only works if hasAcrylicSurface is set
     Q_PROPERTY(bool acrylicActive READ acrylicActive WRITE setAcrylicActive NOTIFY acrylicActiveChanged FINAL)
@@ -267,6 +269,8 @@ public:
     inline bool isbgCone() const {return m_bgCone; }
     inline bool isMinimalView() const {return m_mainInterfaceModes & MAININTERFACE_MODE_MINIMAL; }
     inline bool isPlayerView() const {return m_mainInterfaceModes & MAININTERFACE_MODE_PLAYER; }
+    bool isPlayerMenuOpen() const { return !m_playerMenus.isEmpty(); }
+    void trackPlayerMenu(QMenu *menu);
 
 
     inline bool windowSuportExtendedFrame() const { return m_windowSuportExtendedFrame; }
@@ -429,6 +433,7 @@ protected:
     bool m_hasEmbededVideo = false;
     VideoSurfaceProvider* m_videoSurfaceProvider = nullptr;
     bool m_showRemainingTime = false;
+    QSet<QMenu *> m_playerMenus;
 
     /* */
     QSettings           *settings = nullptr;
@@ -536,6 +541,7 @@ public slots:
 
     void setMinimalView(bool);
     void setPlayerView(bool);
+    void closePlayerMenus();
 
     void sendHotkey(Qt::Key key, Qt::KeyboardModifiers modifiers );
     void sendVLCHotkey(int vlcHotkey);
@@ -567,6 +573,7 @@ signals:
     void playerPlaylistWidthChanged(double);
     void interfaceAlwaysOnTopChanged(bool);
     void hasEmbededVideoChanged(bool);
+    void playerMenuOpenChanged();
     void showRemainingTimeChanged(bool);
     void gridViewChanged( bool );
     void hasGridListModeChanged( bool );

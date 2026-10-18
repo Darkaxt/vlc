@@ -27,6 +27,7 @@ import VLC.Widgets as Widgets
 import VLC.Util
 import VLC.Playlist
 import VLC.Style
+import VLC.Player
 
 T.Pane {
     id: root
@@ -37,6 +38,7 @@ T.Pane {
     readonly property ListSelectionModel selectionModel: listView?.selectionModel ?? null
 
     property bool useAcrylic: true
+    property bool redesigned: false
 
     readonly property real minimumWidth: contentItem.Layout.minimumWidth +
                                          leftPadding +
@@ -59,7 +61,7 @@ T.Pane {
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
                              implicitContentHeight + topPadding + bottomPadding)
 
-    verticalPadding: VLCStyle.margin_normal
+    verticalPadding: root.redesigned ? 0 : VLCStyle.margin_normal
 
     Accessible.role: Accessible.Pane
     Accessible.name: qsTr("Play Queue")
@@ -113,7 +115,7 @@ T.Pane {
     }
 
     contentItem: ColumnLayout {
-        spacing: VLCStyle.margin_xxsmall
+        spacing: root.redesigned ? 0 : VLCStyle.margin_xxsmall
 
         Layout.minimumWidth: Math.min(Math.max(noContentInfoColumn.implicitWidth,
                                                titleRowLayout.implicitWidth ),
@@ -122,8 +124,24 @@ T.Pane {
 
         readonly property ListView listView: listView
 
+        PlayerQueueHeader {
+            visible: root.redesigned
+            Layout.fillWidth: true
+            queueModel: root.model
+            hasSelection: root.selectionModel?.hasSelection ?? false
+            onRemoveSelection: {
+                const rows = root.selectionModel.selectedIndexesFlat.map(row => {
+                    if (listView.proxyModel && listView.model === listView.proxyModel)
+                        return listView.proxyModel.mapToSource(listView.proxyModel.index(row, 0)).row
+                    return row
+                })
+                root.model.removeItems(rows)
+            }
+        }
+
         Column {
             id: headerColumn
+            visible: !root.redesigned
 
             Layout.fillHeight: false
             Layout.fillWidth: true
@@ -148,7 +166,8 @@ T.Pane {
                     text: qsTr("Play Queue")
                     color: theme.fg.primary
                     font.weight: Font.Bold
-                    font.pixelSize: VLCStyle.dp(24, VLCStyle.scale)
+                    font.pixelSize: VLCStyle.dp(root.redesigned ? 20 : 24, VLCStyle.scale)
+                    font.family: root.redesigned ? PlayerStyle.fontFamily : Qt.application.font.family
                 }
 
                 Widgets.SortControl {
@@ -234,9 +253,11 @@ T.Pane {
                         return "" // Not visible otherwise
 
                     let duration
+                    let unknown = 0
                     const model = listView.model
                     if (model instanceof PlaylistListModel) {
                         duration = model.duration
+                        unknown = model.unknownDurationCount
                     } else {
                         // Proxy model, we need to use `QAbstractItemModel` api:
 
@@ -244,11 +265,16 @@ T.Pane {
                         for (let i = 0; i < listView.count; ++i) {
                             const itemDuration = model.data(model.index(i, 0), PlaylistListModel.DurationRole)
                             console.assert(itemDuration !== undefined && itemDuration !== null) // typeof `vlcDuration`
+                            if (!itemDuration.valid()) ++unknown
                             duration.push(itemDuration)
                         }
                         duration = duration[0].sum(duration)
                     }
 
+                    if (unknown > 0)
+                        return duration.valid()
+                            ? qsTr("%1 elements, %2 known, %3 unknown").arg(listView.count).arg(duration.formatLong()).arg(unknown)
+                            : qsTr("%1 elements, duration unknown").arg(listView.count)
                     return qsTr("%1 elements, %2").arg(listView.count).arg(duration.formatLong())
                 }
             }
@@ -256,12 +282,13 @@ T.Pane {
 
         Item {
             // Spacer
+            visible: !root.redesigned
 
             implicitHeight: VLCStyle.margin_xsmall
         }
 
         RowLayout {
-            visible: listView.count !== 0
+            visible: !root.redesigned && listView.count !== 0
 
             Layout.fillHeight: false
             Layout.leftMargin: VLCStyle.margin_normal
@@ -327,6 +354,8 @@ T.Pane {
         Widgets.ListViewExt {
             id: listView
 
+            Layout.leftMargin: root.redesigned ? PlayerStyle.px(20) : 0
+            Layout.rightMargin: Layout.leftMargin
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -499,9 +528,10 @@ T.Pane {
 
             delegate: PlaylistDelegate {
                 id: delegate
+                redesigned: root.redesigned
 
                 width: listView.contentWidth
-                rightPadding: Math.max(listView.T.ScrollBar.vertical.width, VLCStyle.margin_normal)
+                rightPadding: root.redesigned ? 0 : Math.max(listView.T.ScrollBar.vertical.width, VLCStyle.margin_normal)
 
                 contextMenu: root.contextMenu
 

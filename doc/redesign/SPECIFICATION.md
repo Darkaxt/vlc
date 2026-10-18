@@ -12,6 +12,8 @@ For this bounded stage, representative outputs are the light player and global-s
 
 The user subsequently authorized proceeding with S1 on Windows x64, as proposed, on 17 October 2026. S1 covers an unmodified source build, real playback, capability/configuration inventory, verification, commit and existing GitHub synchronization. All temporary files and testing must be under a task-owned folder on E:\ and cleaned afterward. This authorization supersedes the completed D1 stop boundary for S1; S2-S7 and installation/distribution/releases remain outside this turn's scope. Windows x64 is the confirmed baseline target, without restricting eventual additional platform scope. Linux portability should be retained in shared Qt code; native macOS, Android, iOS, and TV interfaces require separate scope decisions and are not implied to be implemented by a Qt desktop change.
 
+On 18 October 2026 the user authorized the next stage, S2 Working redesigned player, then emphasized taking the time needed to match the Figma specification as closely as possible. S2 includes its complete R10-R14 player workflows, R04 preservation and R52 player presentation/verification, along with commit and previously authorized GitHub synchronization. Figma layout, typography, colors, icon geometry and relevant states are visual acceptance requirements; the earlier offline renderer limitations do not define the target appearance. Temporary files and testing remain on E: with cleanup afterward. S3-S7, installation, distribution and application releases remain outside this authorization.
+
 ## Reference bundle and attribution
 
 - [Resource index and provenance](resources/README.md)
@@ -27,7 +29,7 @@ Design: **VLC Redesign**, by **Juxtopposed**, [Figma Community original](https:/
 
 Keep access to the original Community design and the working editable copy for subsequent vector/icon exports. Obtain custom icons from the original Figma components in an appropriate vector format; do not reconstruct production icons from PDF pixels. Preserve component/variant names, export settings, provenance and attribution. The local `.fig` can be imported to recover an editable copy if hosted access changes. Figma account permissions and sign-in remain managed by Figma; never put account credentials or session data in Git. Links alone do not grant access to private drafts.
 
-Local inspection decoded the embedded schema and document message without Figma: 12,563 nodes, 1,321 blobs, 38 component sets and 208 variants under the main Icon component set. Parent references and geometry blob indices passed structural checks; semantic encode/decode round-trip passed. That initial inspection established offline access to design data. D1 subsequently added selected SVG/screen export tooling and native visual comparison, with the fidelity limits recorded in the stage ledger. Pixel-identical rendering is not established. D1 closed at its authorized stop; the subsequent instruction now authorizes S1 only, as recorded above, followed by a stop before product redesign.
+Local inspection decoded the embedded schema and document message without Figma: 12,563 nodes, 1,321 blobs, 38 component sets and 208 variants under the main Icon component set. Parent references and geometry blob indices passed structural checks; semantic encode/decode round-trip passed. That initial inspection established offline access to design data. D1 subsequently added selected SVG/screen export tooling and native visual comparison, with the fidelity limits recorded in the stage ledger. Pixel-identical rendering is not established. D1 closed at its authorized stop; the subsequent authorizations progressed through S1 and now S2, as recorded above, with a stop after the currently authorized stage.
 
 The creator's explanatory video is [I Redesigned VLC After 25 Years](https://www.youtube.com/watch?v=ERFeOgqk324). The specification paraphrases the concept and links to the video instead of redistributing its complete captions. The private planning conversation is not required to understand or implement this specification.
 
@@ -50,11 +52,25 @@ The inspected root interface uses a compiled `qrc:` QML resource, and some prefe
 
 ## Player and controls
 
+The complete compact single-row toolbar has a 472 logical-pixel minimum before
+interface scaling: 116 transport, 60 seek, 80 volume, 114 track/tools, 30 queue,
+24 outer margins and 48 group gaps. VLC's existing window-size owner applies this
+layout constraint in player mode so controls remain reachable. Its separate
+Minimal View retains its own size contract. No persisted setting is introduced.
+
+S2 verification constraint (18 October 2026): the user stopped desktop automation,
+not implementation. Audit through app-owned diagnostics without moving the system
+pointer, typing into the foreground application or activating windows. Explicitly
+compiled test hooks may dispatch real Qt input events, export measured instantiated
+items/errors/assets and capture the app's render target. Keep hooks disabled in
+normal builds, authenticate the exact local session, and distinguish dispatched
+input, observed state, rendered pixels and physical presentation.
+
 Video reference: 1:35-5:29 and 13:56-14:08. Inspect the `Player`, `Player - Light` and `Controls` frames/components in the [editable Figma design](resources/vlc-redesign.fig).
 
 | ID | Requirement and acceptance criteria | Stage |
 |---|---|---|
-| R10 | Compact player layout: previous/play-pause/next on the left, track and queue controls on the right, cone-inspired volume control, thicker seek bar below the controls, title and window controls above. Open actual media and demonstrate working play, pause, stop, previous/next, volume/mute, seeking and fullscreen through the new controls. | S2 |
+| R10 | Compact player layout: previous/play-pause/next on the left, track and queue controls on the right, cone-inspired volume control, thicker seek bar in the same bottom row between transport and volume controls, title and window controls above. Open actual media and demonstrate working play, pause, stop, previous/next, volume/mute, seeking and fullscreen through the new controls. | S2 |
 | R11 | Keep title and controls available in fullscreen when the pointer enters the corresponding top/bottom region; hide them when it leaves, while retaining controls during keyboard focus or an open menu. Provide a discoverable hide-all-UI command and keyboard shortcut. Verify pointer, focus and menu transitions without flicker or trapped controls. Follow actual input/focus state; do not use arbitrary delays as synchronization. | S2 |
 | R12 | Distinguish the current playback queue from stored playlists. Add files by picker and drag/drop; remove and reorder queue entries; show current item and total duration where known. Verify playback order and next/previous after edits, including an empty queue and unknown-duration input. | S2 |
 | R13 | Separate subtitle and audio entry points, with audio devices in the audio view and video tracks reachable without a permanent video-track button. Verify real multi-track media, subtitle disabling, output-device changes, and the no-track case. | S2 |
@@ -136,3 +152,41 @@ Any future Windows Gradle-driven work must use the user's shared `Local\Darka.An
 ## Source basis
 
 The [source manifest](resources/upstream-source-manifest.json) pins inspected files and hashes. Relevant paths at the baseline are `modules/gui/qt/Makefile.am`, `maininterface/mainui.cpp`, `qt.cpp`, `player/player_controller.hpp`, `player/qml/SliderBar.qml`, `player/qml/TracksPageSubtitle.qml`, `player/qml/controlbarcontrols/ReverseButton.qml`, `medialibrary/thumbnailcollector.cpp` and `dialogs/toolbar/controlbar_profile.hpp` under the Qt directory, plus `doc/BUILD-win32.md` and `modules/gui/Makefile.am`. See [upstream Windows build guidance](https://github.com/videolan/vlc/blob/392bc1d0abdb7396b6c97fef206efa1d23868e19/doc/BUILD-win32.md) and [experimental nightlies](https://nightlies.videolan.org/).
+
+### S2 visual authority clarification (18 October 2026)
+
+The user explicitly selected the Figma single-row player and then instructed: "Figma, always Figma." Figma is authoritative for visual appearance and layout whenever prose differs. R10 therefore uses the 54 px source bottom strip with transport, seek and volume in one row; the previous below-controls wording is superseded. Functional requirements, accessibility and responsive behavior remain required. The original source nodes and native Figma appearance govern typography, colors, spacing, geometry and menu/sidebar placement.
+
+### Proposed post-redesign stage: MPV and the user's libplacebo fork
+
+On 18 October 2026 the user suggested an additional final stage to support the MPV engine and their libplacebo fork for correct Dolby Vision rendering. Record this as **proposed S8**, NOT STARTED, after S7. This is a future scope proposal, not authorization to implement another engine during S2 and not an added acceptance dependency of the currently authorized stage.
+
+Before S8 implementation, identify the user's exact libplacebo repository/revision and supported platform, establish the engine-selection/integration contract, and define the Dolby Vision profiles/containers and actual rendering/output acceptance matrix. Preserve VLC playback and state while proving a real MPV -> forked-libplacebo -> supported display path. A library name, decoded frames, SDR screenshot or nominal Dolby Vision flag alone does not establish correct Dolby Vision output. Any required architecture/scope changes belong in the authoritative specification before that later implementation begins.
+
+### Measured S2 visual contract
+
+The visual authority clarification above applies to all rows. Source dimensions
+are logical design pixels, scaled through VLC's existing interface scale; the
+1920 × 1080 reference is not a fixed application-window size.
+
+| Element | Original Figma source | Source geometry and appearance |
+|---|---|---|
+| Light player | `2425:13624` | 1920 × 1080; header 40 high; bottom controls 54 high; Inter Regular 14 for title/time. |
+| Dark player with controls | `247:445`, controls instance `491:1928` | Same player geometry; chrome approximately `#1b1b1b`, foreground `#8f8f8f`; light chrome `#d5d5d5`, foreground `#2e2e2e`. |
+| Bottom controls | `491:1779` | 20 outer margins and group spacing; transport 130 wide; play button 54 × 28 with radius 6 and accent `#d37918`; timeline group expands between transport and volume. |
+| Timeline | `1908:7385` | Current/end labels 76 wide, gaps 8; track 28 high, radius 6, inset progress and 8 × 24 thumb. Reference group 1406 wide at 1920. |
+| Volume | `491:1731`, `244:211` | 24 mute icon, gap 8, 88 × 28 cone with saved rounded outline; real engine volume and existing maximum. |
+| Track actions | `491:1728` | Three 30 × 32 entries spaced 12; playback/tools, subtitles, audio. Queue action is separate with a 20 gap. |
+| Track popups | `491:2243`, `496:2523` | Right aligned, 400 × 524, 20 from the right edge and 20 above the bottom strip; clamp to usable window height/width. S3 owns its effects/preset/tool expansions. |
+| Current queue | `463:831` under `491:1781` | Right popup 400 × 946 at (1500, 60); 20 right/bottom gaps. Header tabs 50 high, count/actions row 68 high, rows 32 high at 44 pitch, 20 list insets. Existing bookmarks/chapter commands remain reachable; their expanded redesign belongs to S5. |
+| Resume | Retained player resume instance | 519 × 52, 16 radius; 20 left/10 right insets; caption Inter 16 and a 146 × 32 Continue button, 10 from the right. Preserve the source's single visible action; Escape dismisses the suggestion. |
+| Video backdrop | Effect style `1702:4101` on title bar, `491:1779` and resume | Retained background blur radius 50 beneath the source translucent fills. Blur the playing video, with bounds/visibility/radii following the actual controls; desktop acrylic and flat translucent fills do not reproduce this effect. |
+| Production symbols | `modules/gui/qt/pixmaps/redesign/manifest.json` | Original outlined paths and full affine transforms; no acceptance of the earlier renderer's reflected-icon errors. |
+| Typeface | `modules/gui/qt/fonts/redesign/source.json` | Inter variable font from the recorded official rsms/inter revision, bundled unchanged with SIL OFL license. Font SHA-256 `4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf`. |
+
+At narrow sizes, reduce outer/group spacing and the volume width before hiding
+the adjacent time labels; preserve all transport/track/queue actions and an
+operable seek target. Elide or wrap real long/localized names without covering
+neighboring controls. Verify actual Qt output in light/dark, at 100/150/200 percent
+scaling, a reference-aspect window and smaller resized windows. Compare source
+appearance and measured geometry; the offline screen rendering is not the oracle.

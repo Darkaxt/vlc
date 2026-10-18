@@ -1,0 +1,26 @@
+From: Darkaxt VLC fork
+Subject: Avoid rewriting MinGW's POSIX inline definitions into recursion
+
+MinGW already declares the POSIX spellings in string.h. Defining strncasecmp
+as _strnicmp before that header renames its inline strncasecmp definition to
+_strnicmp, whose body then calls itself. GCC folds the comparison into a
+self-loop. Leave MinGW's existing names intact; retain the MSVC mappings.
+
+--- a/ixml/inc/posix_overwrites.h
++++ b/ixml/inc/posix_overwrites.h
+@@ -3,6 +3,7 @@
+ 
+ #ifdef _WIN32
+ 
++#ifndef __MINGW32__
+ 	/* POSIX names for functions */
+ 	#define fileno _fileno
+ 	#define unlink _unlink
+@@ -11,6 +12,7 @@
+ 	#define stricmp _stricmp
+ 	#define strncasecmp strnicmp
+ 	#define strnicmp _strnicmp
++#endif
+ 
+ 	/* Secure versions of functions */
+ 	/* Explicitly disable warnings by pragma/define, see:

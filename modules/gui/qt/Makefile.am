@@ -49,7 +49,7 @@ vlc_qt_check_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt)
 vlc_qt_check_LDADD = $(vlc_qt_libs)
 vlc_qt_check_LDFLAGS = $(AM_LDFLAGS) $(QT_LDFLAGS)
 
-libqt_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt) \
+libqt_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt) $(PLAYER_DIAGNOSTICS_CPPFLAGS) \
 	-DQT_STRICT_ITERATORS \
 	-DQT_USE_QSTRINGBUILDER \
 	-DQT_NO_CAST_TO_ASCII \
@@ -183,6 +183,7 @@ libqt_plugin_la_SOURCES = \
 	maininterface/mainctx_submodels.cpp maininterface/mainctx_submodels.hpp \
 	maininterface/mainui.cpp \
 	maininterface/mainui.hpp \
+	maininterface/player_diagnostics.hpp \
 	maininterface/navigationmodel.cpp maininterface/navigationmodel.hpp \
 	maininterface/videosurface.cpp \
 	maininterface/videosurface.hpp \
@@ -586,6 +587,7 @@ nodist_libqt_plugin_la_SOURCES += maininterface/mainctx_win32.moc.cpp \
 libqt_plugin_la_SOURCES += \
 	maininterface/compositor_dcomp.cpp \
 	maininterface/compositor_dcomp.hpp \
+	maininterface/player_video_backdrop.hpp \
 	maininterface/compositor_dcomp_error.hpp \
 	maininterface/compositor_dcomp_acrylicsurface.hpp \
 	maininterface/compositor_dcomp_acrylicsurface.cpp
@@ -789,7 +791,44 @@ ui_%.h: %.ui
 
 # Resources
 
+EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
+	pixmaps/redesign/manifest.json pixmaps/redesign/README.md
+
 libqt_plugin_la_RES = \
+	pixmaps/redesign/volume-cone.svg \
+	pixmaps/redesign/volume-level.svg \
+	pixmaps/redesign/sort.svg \
+	pixmaps/redesign/video.svg \
+	pixmaps/redesign/choice-selected.svg \
+	pixmaps/redesign/choice-empty.svg \
+	pixmaps/redesign/remove.svg \
+	pixmaps/redesign/add.svg \
+	pixmaps/redesign/repeat.svg \
+	pixmaps/redesign/shuffle.svg \
+	pixmaps/redesign/move.svg \
+	pixmaps/redesign/bookmarks.svg \
+	pixmaps/redesign/chapters.svg \
+	pixmaps/redesign/queue-tab.svg \
+	fonts/redesign/InterVariable.ttf \
+	pixmaps/redesign/audio.svg \
+	pixmaps/redesign/close.svg \
+	pixmaps/redesign/folder.svg \
+	pixmaps/redesign/fullscreen.svg \
+	pixmaps/redesign/maximize.svg \
+	pixmaps/redesign/minimize.svg \
+	pixmaps/redesign/more.svg \
+	pixmaps/redesign/muted.svg \
+	pixmaps/redesign/next.svg \
+	pixmaps/redesign/pause.svg \
+	pixmaps/redesign/play.svg \
+	pixmaps/redesign/previous.svg \
+	pixmaps/redesign/queue.svg \
+	pixmaps/redesign/sidebar.svg \
+	pixmaps/redesign/stop.svg \
+	pixmaps/redesign/subtitles.svg \
+	pixmaps/redesign/tools.svg \
+	pixmaps/redesign/vlc.svg \
+	pixmaps/redesign/volume.svg \
 	pixmaps/VLCIcons.ttf \
 	pixmaps/addons/addon_default.svg \
 	pixmaps/addons/addon_broken.svg \
@@ -1166,6 +1205,13 @@ libqml_module_player_a_ModulePath = VLC/Player
 libqml_module_player_a_CXXFLAGS = $(libqt_plugin_la_CXXFLAGS)
 libqml_module_player_a_CPPFLAGS = $(libqt_plugin_la_CPPFLAGS)
 libqml_module_player_a_QML = \
+	player/qml/PlayerChromeState.qml \
+	player/qml/PlayerIconButton.qml \
+	player/qml/PlayerTracksPopup.qml \
+	player/qml/PlayerQueueHeader.qml \
+	player/qml/RedesignControlBar.qml \
+	player/qml/RedesignTopBar.qml \
+	player/qml/PlayerResume.qml \
 	player/qml/ControlBar.qml \
 	player/qml/PlaybackSpeed.qml \
 	player/qml/LyricsFlickable.qml \
@@ -1190,6 +1236,7 @@ libqml_module_player_a_QML = \
 	player/qml/NavigationBox.qml
 
 libqml_module_player_a_Singleton_QML = \
+	player/qml/PlayerStyle.qml \
 	player/qml/PlayerControlbarControls.qml
 libqml_module_player_a_SOURCES = $(QML_MODULE_player_SRC)
 nodist_libqml_module_player_a_SOURCES = player/qmlassets.cpp $(QML_MODULE_player_NODIST_EXTRA)
@@ -1760,6 +1807,17 @@ QT_QTEST_COMMON_cxxflags = $(AM_CXXFLAGS) $(QT_CFLAGS) $(QT_QTEST_CFLAGS) -fPIC 
 QT_QTEST_COMMON_ldadd = $(QT_LIBS) $(LIBS_qt) $(QT_QTEST_LIBS) $(LIBVLCCORE) $(LIBVLC)
 QT_QTEST_COMMON_ldflags = $(AM_LDFLAGS) $(QT_LDFLAGS) $(QT_QTEST_LDFLAGS)
 
+
+test_player_chrome_SOURCES = tests/test_player_chrome.cpp
+nodist_test_player_chrome_SOURCES = tests/test_player_chrome.moc
+BUILT_SOURCES += tests/test_player_chrome.moc
+CLEANFILES += tests/test_player_chrome.moc
+test_player_chrome_CPPFLAGS = $(QT_QTEST_COMMON_cppflags)
+test_player_chrome_CXXFLAGS = $(QT_QTEST_COMMON_cxxflags)
+test_player_chrome_LDADD = $(QT_INDIRECT_LIBS) $(QT_QTEST_COMMON_ldadd)
+test_player_chrome_LDFLAGS = $(QT_QTEST_COMMON_ldflags)
+check_PROGRAMS += test_player_chrome
+TESTS += test_player_chrome
 
 # test_ml_model
 

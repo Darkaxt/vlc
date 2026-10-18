@@ -1,4 +1,5 @@
 #include "mainui.hpp"
+#include "player_diagnostics.hpp"
 
 #include <cassert>
 
@@ -106,6 +107,13 @@ MainUI::MainUI(qt_intf_t *p_intf, MainCtx *mainCtx, QWindow* interfaceWindow,  Q
     assert(m_mainCtx);
     assert(m_interfaceWindow);
 
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR"))
+    {
+        QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
+    }
+#endif
+
     registerQMLTypes();
 
     // FIXME: Since Qt 6.6, Qt follows a different approach for scrolling. This new approach has
@@ -149,6 +157,10 @@ MainUI::~MainUI()
 bool MainUI::setup(QQmlEngine* engine)
 {
     m_engineBound = engine;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR"))
+        engine->rootContext()->setContextProperty(QStringLiteral("vlcPlayerDiagnosticSession"), true);
+#endif
 
     if (m_mainCtx->hasMediaLibrary())
     {
@@ -211,6 +223,9 @@ QQuickItem* MainUI::createRootItem()
         msg_Err(m_intf, "unexpected type of qml root item");
         goto end;
     }
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    PlayerDiagnostics::attach(m_rootItem, m_engineBound, m_intf->p_mainPlayerController);
+#endif
 
 end:
     delete m_component; // No need to have the component around anymore.

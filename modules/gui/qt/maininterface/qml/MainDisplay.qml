@@ -637,9 +637,8 @@ FocusScope {
                 }
             }
 
-            Component.onCompleted: {
-                Qt.callLater(() => { sidebarTransition.enabled = true; })
-            }
+            function _enableTransition() { sidebarTransition.enabled = true }
+            Component.onCompleted: Qt.callLater(sidebar._enableTransition)
 
             states: State {
                 name: "expanded"
@@ -713,9 +712,8 @@ FocusScope {
                 }
             }
 
-            Component.onCompleted: {
-                Qt.callLater(() => { playlistTransition.enabled = true; })
-            }
+            function _enableTransition() { playlistTransition.enabled = true }
+            Component.onCompleted: Qt.callLater(playlistLoader._enableTransition)
 
             states: State {
                 name: "expanded"
@@ -1001,9 +999,8 @@ FocusScope {
                 value: g_mainDisplay._showMiniPlayer && MainCtx.hasEmbededVideo
             }
 
-            Component.onCompleted: {
-                Qt.callLater(() => { visibleBinding.when = true })
-            }
+            function _enableVisibilityBinding() { visibleBinding.when = true }
+            Component.onCompleted: Qt.callLater(playerPip._enableVisibilityBinding)
 
             dragXMin: VLCStyle.applicationHorizontalMargin
             dragXMax: g_mainDisplay.width - playerPip.width - VLCStyle.applicationHorizontalMargin

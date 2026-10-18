@@ -47,9 +47,11 @@ ControlBar {
                                 : "outViewport"
     }
 
-    Component.onCompleted: {
-        Qt.callLater(() => { stateBinding.when = true })
-    }
+    // Qt guards queued QObject methods against their owner's destruction.
+    function _enableStateBinding() { stateBinding.when = true }
+    function _enableHeightBehavior() { behavior.enabled = true }
+
+    Component.onCompleted: Qt.callLater(root._enableStateBinding)
 
     textPosition: (MainCtx.pinVideoControls) ? ControlBar.TimeTextPosition.LeftRightSlider
                                              : ControlBar.TimeTextPosition.Hide
@@ -69,7 +71,7 @@ ControlBar {
             // Animation should not be based on the implicit height change
             // but rather the visibility state:
             behavior.enabled = false
-            Qt.callLater(() => { behavior.enabled = true })
+            Qt.callLater(root._enableHeightBehavior)
         }
     }
 

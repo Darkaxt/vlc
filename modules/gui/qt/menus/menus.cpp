@@ -62,6 +62,15 @@
 
 using namespace vlc::playlist;
 
+VLCMenu::VLCMenu(qt_intf_t *p_intf) : QMenu()
+{
+    assert(p_intf);
+    if (isWindow())
+        QVLCDialog::setWindowTransientParent(this, nullptr, p_intf);
+    if (p_intf->p_mi)
+        p_intf->p_mi->trackPlayerMenu(this);
+}
+
 /*
   This file defines the main menus and the pop-up menu (right-click menu)
   and the systray menu (in that order in the file)

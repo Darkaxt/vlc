@@ -18,6 +18,7 @@
 
 import QtQuick
 import QtQuick.Templates as T
+import QtQuick.Controls.impl
 import QtQuick.Layouts
 import QtQml.Models
 
@@ -63,6 +64,8 @@ T.Control {
     required property bool preparsed
 
     // Optional
+    property bool redesigned: false
+
     property var contextMenu
 
     // Optional, an item to show as drag target
@@ -78,18 +81,19 @@ T.Control {
 
     hoverEnabled: true
 
-    verticalPadding: VLCStyle.margin_xxxsmall
+    topPadding: redesigned ? 0 : VLCStyle.margin_xxxsmall
+    bottomPadding: redesigned ? PlayerStyle.px(12) : VLCStyle.margin_xxxsmall
 
-    leftPadding: VLCStyle.margin_normal
+    leftPadding: redesigned ? 0 : VLCStyle.margin_normal
 
-    rightPadding: VLCStyle.margin_normal
+    rightPadding: redesigned ? 0 : VLCStyle.margin_normal
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
                              implicitContentHeight + topPadding + bottomPadding)
 
-    height: Math.round(implicitHeight)
+    height: redesigned ? PlayerStyle.px(44) : Math.round(implicitHeight)
 
     ListView.delayRemove: dragHandler.active
 
@@ -133,13 +137,18 @@ T.Control {
     }
 
     background: Widgets.AnimatedBackground {
-        color: selected ? theme.bg.highlight : theme.bg.primary
+        height: delegate.height - (delegate.redesigned ? delegate.bottomPadding : 0)
+        radius: delegate.redesigned ? PlayerStyle.px(6) : 0
+        color: delegate.redesigned ? (delegate.isCurrent ? Qt.alpha(PlayerStyle.accent, 0.24)
+                                    : delegate.selected || delegate.hovered ? PlayerStyle.hover : "transparent")
+                                   : selected ? theme.bg.highlight : theme.bg.primary
 
         enabled: theme.initialized
 
         border.color: delegate.visualFocus ? theme.visualFocus : Qt.alpha(theme.visualFocus, 0.0)
 
         Widgets.CurrentIndicator {
+            visible: !delegate.redesigned
             anchors {
                 left: parent.left
                 leftMargin: VLCStyle.margin_xxsmall
@@ -164,107 +173,119 @@ T.Control {
     contentItem: RowLayout {
         spacing: 0
 
-        property alias artworkTextureProvider: artwork.effectiveTextureProviderItem
+        readonly property Item artworkTextureProvider: artworkLoader.item?.artworkTextureProvider ?? null
 
-        Item {
-            id: artworkItem
-
+        IconImage {
+            visible: delegate.redesigned
+            Layout.preferredWidth: PlayerStyle.px(32)
+            Layout.preferredHeight: PlayerStyle.px(32)
+            source: "qrc:/redesign/icons/move.svg"
+            color: delegate.isCurrent ? PlayerStyle.accent : PlayerStyle.foreground
+            sourceSize: Qt.size(PlayerStyle.px(32), PlayerStyle.px(32))
+            Accessible.ignored: true
+        }
+        Loader {
+            id: artworkLoader
+            active: !delegate.redesigned
+            visible: active
             Layout.preferredHeight: VLCStyle.icon_playlistArt
             Layout.preferredWidth: VLCStyle.icon_playlistArt
             Layout.alignment: Qt.AlignVCenter
-
-            Accessible.role: Accessible.Graphic
-            Accessible.name: qsTr("Cover")
-            Accessible.description: {
-                if (delegate.isCurrent) {
-                    if (Player.playingState === Player.PLAYING_STATE_PLAYING)
-                        return qsTr("Playing")
-                    else if (Player.playingState === Player.PLAYING_STATE_PAUSED)
-                        return qsTr("Paused")
+            sourceComponent: Item {
+                property alias artworkTextureProvider: artwork.effectiveTextureProviderItem
+                Accessible.role: Accessible.Graphic
+                Accessible.name: qsTr("Cover")
+                Accessible.description: {
+                    if (delegate.isCurrent) {
+                        if (Player.playingState === Player.PLAYING_STATE_PLAYING)
+                            return qsTr("Playing")
+                        else if (Player.playingState === Player.PLAYING_STATE_PAUSED)
+                            return qsTr("Paused")
+                    }
+                    return qsTr("Media cover")
                 }
-                return qsTr("Media cover")
-            }
 
-            Widgets.ImageExt {
-                id: artwork
+                Widgets.ImageExt {
+                    id: artwork
 
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectFit
-                source: defaultSource
-                visible: !statusIcon.visible
-                asynchronous: true
-                opacity: (status === Image.Ready ? 1.0 : 0.0)
-                radius: VLCStyle.listAlbumCover_radius
-                backgroundColor: theme.bg.primary
+                    anchors.fill: parent
+                    fillMode: Image.PreserveAspectFit
+                    source: defaultSource
+                    visible: !statusIcon.visible
+                    asynchronous: true
+                    opacity: (status === Image.Ready ? 1.0 : 0.0)
+                    radius: VLCStyle.listAlbumCover_radius
+                    backgroundColor: theme.bg.primary
 
-                sourceSize: Qt.size(width * eDPR, height * eDPR)
+                    sourceSize: Qt.size(width * eDPR, height * eDPR)
 
-                // We do not want to update the DPR when it is updated, as that means reading
-                // the image from disk again. Wayland provides ceiled value initially, we keep
-                // using that and downsample using gpu in fractional scale case:
-                readonly property real eDPR: MainCtx.effectiveDevicePixelRatio(Window.window)
+                    // We do not want to update the DPR when it is updated, as that means reading
+                    // the image from disk again. Wayland provides ceiled value initially, we keep
+                    // using that and downsample using gpu in fractional scale case:
+                    readonly property real eDPR: MainCtx.effectiveDevicePixelRatio(Window.window)
 
-                Behavior on opacity {
-                    // WARNING: OpacityAnimator is not used because `visible` is not immediately respected in that case.
-                    NumberAnimation {
-                        duration: VLCStyle.duration_short
-                        easing.type: Easing.InSine
+                    Behavior on opacity {
+                        // WARNING: OpacityAnimator is not used because `visible` is not immediately respected in that case.
+                        NumberAnimation {
+                            duration: VLCStyle.duration_short
+                            easing.type: Easing.InSine
+                        }
+                    }
+
+                    readonly property url targetSource: (delegate?.artwork.toString()) ? VLCAccessImage.uri(delegate.artwork) : VLCStyle.noArtAlbumCover
+                    readonly property url defaultSource: delegate.preparsed ? targetSource : ""
+
+                    onStatusChanged: {
+                        if (source !== VLCStyle.noArtAlbumCover && status === Image.Error)
+                            source = VLCStyle.noArtAlbumCover
+                    }
+
+                    function resetSource() {
+                        artwork.source = Qt.binding(() => { return artwork.defaultSource })
+                        artworkTimer.running = Qt.binding(() => { return artworkTimer.defaultRunning })
+                    }
+
+                    function removeSource() {
+                        artworkTimer.running = false
+                        artwork.source = ""
+                    }
+
+                    Component.onCompleted: {
+                        delegate.ListView.reused.connect(artwork.resetSource)
+                        delegate.ListView.pooled.connect(artwork.removeSource)
+                    }
+
+                    Timer {
+                        id: artworkTimer
+                        running: defaultRunning
+                        readonly property bool defaultRunning: (artwork.status === Image.Null)
+                        interval: VLCStyle.duration_long
+                        onTriggered: {
+                            // Remove the preparse guard, enough time has passed:
+                            artwork.source = Qt.binding(() => { return artwork.targetSource; })
+                        }
+                    }
+
+                    Widgets.DefaultShadow {
+                        visible: (artwork.status === Image.Ready)
+                        z: -2
                     }
                 }
 
-                readonly property url targetSource: (delegate?.artwork.toString()) ? VLCAccessImage.uri(delegate.artwork) : VLCStyle.noArtAlbumCover
-                readonly property url defaultSource: delegate.preparsed ? targetSource : ""
+                Widgets.IconLabel {
+                    id: statusIcon
 
-                onStatusChanged: {
-                    if (source !== VLCStyle.noArtAlbumCover && status === Image.Error)
-                        source = VLCStyle.noArtAlbumCover
-                }
-
-                function resetSource() {
-                    artwork.source = Qt.binding(() => { return artwork.defaultSource })
-                    artworkTimer.running = Qt.binding(() => { return artworkTimer.defaultRunning })
-                }
-
-                function removeSource() {
-                    artworkTimer.running = false
-                    artwork.source = ""
-                }
-
-                Component.onCompleted: {
-                    delegate.ListView.reused.connect(artwork.resetSource)
-                    delegate.ListView.pooled.connect(artwork.removeSource)
-                }
-
-                Timer {
-                    id: artworkTimer
-                    running: defaultRunning
-                    readonly property bool defaultRunning: (artwork.status === Image.Null)
-                    interval: VLCStyle.duration_long
-                    onTriggered: {
-                        // Remove the preparse guard, enough time has passed:
-                        artwork.source = Qt.binding(() => { return artwork.targetSource; })
+                    anchors.centerIn: parent
+                    visible: (delegate.isCurrent && text !== "")
+                    color: theme.accent
+                    text: {
+                        if (Player.playingState === Player.PLAYING_STATE_PLAYING)
+                            return VLCIcons.volume_high
+                        else if (Player.playingState === Player.PLAYING_STATE_PAUSED)
+                            return VLCIcons.pause_filled
+                        else
+                            return ""
                     }
-                }
-
-                Widgets.DefaultShadow {
-                    visible: (artwork.status === Image.Ready)
-                    z: -2
-                }
-            }
-
-            Widgets.IconLabel {
-                id: statusIcon
-
-                anchors.centerIn: parent
-                visible: (delegate.isCurrent && text !== "")
-                color: theme.accent
-                text: {
-                    if (Player.playingState === Player.PLAYING_STATE_PLAYING)
-                        return VLCIcons.volume_high
-                    else if (Player.playingState === Player.PLAYING_STATE_PAUSED)
-                        return VLCIcons.pause_filled
-                    else
-                        return ""
                 }
             }
         }
@@ -274,7 +295,7 @@ T.Control {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.leftMargin: VLCStyle.margin_large
+            Layout.leftMargin: delegate.redesigned ? PlayerStyle.px(10) : VLCStyle.margin_large
             spacing: VLCStyle.margin_xxxsmall
 
             Widgets.ListLabel {
@@ -282,13 +303,16 @@ T.Control {
 
                 Layout.fillWidth: true
 
-                font.weight: delegate.isCurrent ? Font.Bold : Font.DemiBold
+                font.weight: delegate.redesigned ? Font.Normal : delegate.isCurrent ? Font.Bold : Font.DemiBold
+                font.family: delegate.redesigned ? PlayerStyle.fontFamily : Qt.application.font.family
+                font.pixelSize: delegate.redesigned ? PlayerStyle.px(14) : VLCStyle.fontSize_normal
                 text: delegate.title || qsTr("Unknown Title")
-                color: theme.fg.primary
+                color: delegate.redesigned ? PlayerStyle.trackForeground : theme.fg.primary
             }
 
             Widgets.ListSubtitleLabel {
                 id: textArtist
+                visible: !delegate.redesigned
 
                 Layout.fillWidth: true
 
@@ -300,11 +324,16 @@ T.Control {
         Widgets.ListLabel {
             id: textDuration
 
-            text: delegate.duration.formatHMS()
+            Layout.leftMargin: delegate.redesigned ? PlayerStyle.px(8) : 0
+            Layout.rightMargin: delegate.redesigned ? PlayerStyle.px(4) : 0
+
+            text: delegate.duration.valid() ? delegate.duration.formatHMS() : "—:—"
+            font.family: delegate.redesigned ? PlayerStyle.fontFamily : Qt.application.font.family
+            font.pixelSize: delegate.redesigned ? PlayerStyle.px(14) : VLCStyle.fontSize_normal
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            color: theme.fg.primary
-            opacity: 0.5
+            color: delegate.redesigned ? PlayerStyle.sectionForeground : theme.fg.primary
+            opacity: delegate.redesigned ? 1 : 0.5
         }
     }
 

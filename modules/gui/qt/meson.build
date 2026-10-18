@@ -304,6 +304,7 @@ qt_plugin_sources = files(
     'maininterface/mainctx_submodels.cpp',
     'maininterface/mainctx_submodels.hpp',
     'maininterface/mainui.cpp',
+    'maininterface/player_diagnostics.hpp',
     'maininterface/mainui.hpp',
     'maininterface/navigationmodel.cpp',
     'maininterface/navigationmodel.hpp',
@@ -738,6 +739,13 @@ qml_modules += {
        'player/qml/MiniPlayer.qml',
        'player/qml/PIPPlayer.qml',
        'player/qml/Player.qml',
+       'player/qml/PlayerChromeState.qml',
+       'player/qml/PlayerIconButton.qml',
+       'player/qml/PlayerQueueHeader.qml',
+       'player/qml/PlayerResume.qml',
+       'player/qml/PlayerTracksPopup.qml',
+       'player/qml/RedesignControlBar.qml',
+       'player/qml/RedesignTopBar.qml',
        'player/qml/PlayerControlLayout.qml',
        'player/qml/PlayerPlaylistVisibilityFSM.qml',
        'player/qml/PlayerToolbarVisibilityFSM.qml',
@@ -756,6 +764,7 @@ qml_modules += {
        'player/qml/NavigationBox.qml',
    ),
    'singletons' : files(
+       'player/qml/PlayerStyle.qml',
        'player/qml/PlayerControlbarControls.qml',
    )
 }
@@ -1303,6 +1312,16 @@ if qt6_dep.found()
 
     qtest_qt6_dep = dependency('qt6', version: '=' + qt6_dep.version(), modules: ['Test'], required: false)
     if qtest_qt6_dep.found()
+        vlc_tests += {
+            'name': 'test_player_chrome',
+            'sources': files('tests/test_player_chrome.cpp'),
+            'moc_sources': files('tests/test_player_chrome.cpp'),
+            'suite': ['qt'],
+            'include_directories': qt_include_dir,
+            'link_args': qt_link_args,
+            'dependencies': [qt6_dep, qt_extra_deps, qtest_qt6_dep],
+        }
+
         vlc_tests += {
             'name': 'test_qt_ml_model',
             'sources': files(
