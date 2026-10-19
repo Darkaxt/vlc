@@ -1,10 +1,8 @@
 {
   "stage": "S3",
-  "status": "ACTIVE",
+  "status": "COMPLETE",
   "product_acceptance_verified": true,
-  "delivery_remaining": [
-    "commit and authorized GitHub source synchronization"
-  ],
+  "delivery_remaining": [],
   "scope_stop": "before S4",
   "normal_runtime": {
     "plugin_cache_exit": 0,
@@ -194,7 +192,7 @@
     "R23": "satisfied and verified",
     "R24": "satisfied and verified",
     "R25": "satisfied and verified",
-    "R04/R52": "Product acceptance and cleanup verified; source synchronization remains pending."
+    "R04/R52": "satisfied and verified"
   },
   "cleanup": {
     "results": [
@@ -239,5 +237,14 @@
     "bytecode_root_absent": true,
     "disposable_wsl_retired": "VLC-S3-20261018",
     "review_portable_profile_empty": true
-  }
+  },
+  "required_blockers": [],
+  "source_delivery": {
+    "implementation_commit": "523d4146fe2678239126cc0b14fbff3315a6265f",
+    "verified_remote_implementation_commit": "523d4146fe2678239126cc0b14fbff3315a6265f",
+    "remote": "https://github.com/Darkaxt/vlc.git",
+    "branch": "master",
+    "verified_utc": "2026-10-19T03:28:43.102488+00:00"
+  },
+  "closed_utc": "2026-10-19T03:28:43.102499+00:00"
 }
