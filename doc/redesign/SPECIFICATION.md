@@ -14,6 +14,36 @@ The user subsequently authorized proceeding with S1 on Windows x64, as proposed,
 
 On 18 October 2026 the user authorized the next stage, S2 Working redesigned player, then emphasized taking the time needed to match the Figma specification as closely as possible. S2 includes its complete R10-R14 player workflows, R04 preservation and R52 player presentation/verification, along with commit and previously authorized GitHub synchronization. Figma layout, typography, colors, icon geometry and relevant states are visual acceptance requirements; the earlier offline renderer limitations do not define the target appearance. Temporary files and testing remain on E: with cleanup afterward. S3-S7, installation, distribution and application releases remain outside this authorization.
 
+On 18 October 2026 the user authorized proceeding to S3 Tracks effects and media tools. This covers R15, R20-R25 and their R04/R52 preservation, persistence and Figma presentation requirements, verification, commit and previously authorized GitHub source synchronization. S3 is the only ACTIVE implementation stage. The stop boundary is after S3; S4-S7, proposed S8, installation and application releases remain unauthorized. Temporary builds and testing use the exact task-owned `E:/Temp/vlc-s3-20261018` root and are cleaned afterward. Native verification continues through app-owned diagnostics without desktop input or activation.
+
+On 18 October 2026 the user selected OpenSubtitles.com for R21 and then explicitly added SubDL and SubSource support to the project. S3 implements these three concrete providers behind an explicit provider selection, using each documented API/terms and separate local credentials. Verify a real authorized search/download/association path for each supported provider; preserve visible authentication, quota/network/error and cancellation states. The user authorized obtaining an OpenSubtitles application key using the existing account; no payment or new provider account is authorized. Credentials and session data must not enter source control, diagnostics or published evidence.
+
+### S3 subtitle provider contract
+
+The user selected these providers before implementation. APIs are called only
+after an explicit search/download action; no background account creation,
+payment, translation service or bulk fetching is authorized.
+
+| Provider | Documented boundary | Credential and result handling |
+|---|---|---|
+| OpenSubtitles.com | [REST OpenAPI](https://stoplight.io/api/v1/projects/opensubtitles/opensubtitles-api/nodes/open_api.json), [official integration guide](https://blog.opensubtitles.com/opensubtitles/how-to-build-a-movie-subtitle-finder-cli-with-python-and-the-opensubtitles-api): HTTPS `/api/v1/subtitles`, optional `/login`, then `/download` with the selected `file_id`, followed by its temporary subtitle URL. | `Api-Key`, application `User-Agent`, optional account bearer token. Show filename/language/release and quota; an optional login uses the provider's documented default/VIP host only. On 18 October the user authorized control of their signed-in OpenSubtitles browser tab. The free `DarkaxtVLCRedesign` development consumer was registered there, and its key was transferred into task-owned Windows user-bound encrypted staging without a plaintext file. A real authenticated API search returned results; download/association and native integration acceptance remain to verify. |
+| SubDL | [Official v2 documentation](https://subdl.com/developers), [terms](https://subdl.com/terms): HTTPS `api.subdl.com/api/v2` title search, subtitle search and selected-file download. | User's own API key in a header; no shared embedded key. Preserve title/season/episode/language/file identity and explicit selection of archive members. No paid/AI endpoints. |
+| SubSource | [Official documentation](https://subsource.net/api-docs), [terms](https://subsource.net/terms): HTTPS `api.subsource.net/api/v1/movies/search`, title's `/subtitles`, selected `/subtitles/{id}/download`. | User's own `X-API-Key`. Preserve title/season/episode/language/file identity and explicit archive-member selection. No paid plan changes. |
+
+Credentials are session-only by default, blank after restart, never written into
+the new settings document, diagnostic snapshots, URLs, logs or Git. A user may
+cancel an in-flight request; completion is driven by network events, with no
+application deadline or automatic retry. Show authentication/permission,
+subscription, quota/rate-limit, network and empty-result states distinctly.
+Changing input or provider invalidates pending association work. Credentials are
+sent only to the chosen provider's documented API origin; temporary download
+origins receive no API key or bearer token. Bound responses and extraction,
+reject unsupported subtitle/archive types, and never extract provider-controlled
+paths directly. Downloading must not overwrite user subtitles. Chosen downloaded
+files use the same persisted, identity-checked association path as local files.
+
+On 19 October the user clarified that subtitles must remain distinguishable. Preserve meaningful original filename/release, language and provider context in results, archive-member choices, downloaded filenames and the Qt track list. When a provider supplies no release name, show its public subtitle/file reference. Generic `subtitle.ass`/`subtitle.srt`, opaque UUID-only filenames, and indistinguishable result/track labels do not satisfy R21. Put title/episode identity first in compact track labels so provider prefixes do not hide it. Preserve the actual subtitle format and existing track information; verify differentiation after adding multiple subtitles and after restart.
+
 ## Reference bundle and attribution
 
 - [Resource index and provenance](resources/README.md)
@@ -90,6 +120,8 @@ Video reference: 5:39-9:17. Inspect the subtitle variants in `Controls` and `Add
 | R24 | Audio and video sidebars expose existing filters with useful presets and live feedback, including equalizer, compressor, spatializer, stereo width, color, crop, rotation/flip, aspect and other supported video options. Preserve backend ranges and semantics. HDR/resolution controls must reflect actual capabilities rather than promise conversions the engine does not support. Verify representative real filters and reset behavior. | S3 |
 | R25 | Playback tools expose speed, reverse where supported, sleep timer, subtitle timeline/waveform toggles and metadata. Reverse must reflect the input's capability. A user-configured sleep timer is an intentional timed feature, not a synchronization workaround; cancellation, expiry and restart policy must be explicit. Verify actual engine behavior and clear unavailable states. | S3 |
 
+S3 subtitle type contract: local SRT, WebVTT, ASS and SSA provide decoded text cue timelines. Existing VLC SUB/IDX imports and embedded image tracks retain VLC playback while reporting that no text timeline is available. The pinned core's subtitle-import extension list excludes standalone SUP; it is not advertised for matching/import. A generic associated-input experiment selected raw PGS but did not demonstrate correct rendered output, so that experimental route is not included. Embedded PGS rendering is verified separately.
+
 ## Library navigation and opening media
 
 Video reference: 9:22-13:54.
@@ -144,7 +176,7 @@ Any future Windows Gradle-driven work must use the user's shared `Local\Darka.An
 
 - Windows x64 is the confirmed S1 baseline. Additional platform coverage, naming/branding, and distribution channels remain to be selected; the current working identity is a Darkaxt VLC fork, not an official VideoLAN release.
 - VLC 4 is experimental. Pin the build baseline and document subsequent upstream updates rather than claiming stability from a screenshot.
-- Provider credentials and terms for R21 must be resolved before that integration. No provider account, payment or API key has been requested or created.
+- Provider credentials and terms for R21 must be resolved before that integration. The three-provider contract above is authorized; the OpenSubtitles free development key is registered. No payment or new account was created.
 - Thumbnail generation, waveform extraction and subtitle cue access need implementation evidence. Existing library thumbnails and subtitle delay controls are useful components, not proof those workflows already exist.
 - Qt Widgets and QML both require integration for complete dialog coverage. Native macOS and mobile interfaces are separate.
 - There is no validated whole-project estimate. The original conversation's 40-120 hours must not become a delivery commitment. Estimate from the verified build and screen/behavior inventory before scheduling implementation.

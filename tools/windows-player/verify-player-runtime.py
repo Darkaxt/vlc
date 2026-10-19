@@ -22,7 +22,7 @@ from isolated_desktop import IsolatedProcess
 assert r.is_dir() and (r/'portable').is_dir()
 e.mkdir(parents=True,exist_ok=True)
 qt=r/'plugins/gui/libqt_plugin.dll';blob=qt.read_bytes()
-markers=['VLC_PLAYER_DIAGNOSTICS_DIR','VLC_PLAYER_DIAGNOSTICS_TOKEN','VLC_PLAYER_DIAGNOSTICS_OFFSCREEN','offscreen_session_is_capture_only','PlayerDiagnostics']
+markers=['VLC_PLAYER_DIAGNOSTICS_DIR','VLC_PLAYER_DIAGNOSTICS_TOKEN','VLC_PLAYER_DIAGNOSTICS_OFFSCREEN','VLC_PLAYER_DIAGNOSTICS_PROXY_PORT','redesignSeekRequests','offscreen_session_is_capture_only','PlayerDiagnostics']
 for marker in markers:
  for encoding in ['ascii','utf-16le']:assert marker.encode(encoding) not in blob,(marker,encoding)
 print('Normal plugin contains no diagnostic transport, authentication or offscreen mode',flush=True)
@@ -45,15 +45,16 @@ with (e/'native-ui.stdout').open('wb') as out,(e/'native-ui.stderr').open('wb') 
  records['pid']=p.pid;records['desktop']=p.desktop_name;records['exit_code']=p.wait()
 # Preserve the exact native result even when acceptance below fails.
 log=(e/'native-ui.log').read_text(encoding='utf8',errors='replace');stderr=(e/'native-ui.stderr').read_text(encoding='utf8',errors='replace')
+qml_failure_pattern=r'(TypeError:|ReferenceError:|is not installed|is not a type|is not available in|Type [^\n]+ unavailable|failed to load component|Binding loop detected|Cannot assign to non-existent property|Unable to assign \[undefined\] to)'
 requirements={
  'actual_picture': 'Received first picture' in log,
  'natural_eof': 'EOF reached' in log,
  'input_released': ("destroying input for '"+options.fixture.name+"'") in log,
  'qt_event_loop_finished': 'QApp exec() finished' in log,
  'no_plugin_load_errors':not any(x in log for x in ['cannot load module','could not load module','cannot load plug-in']),
- 'no_qml_runtime_errors':not re.search(r'(TypeError:|ReferenceError:|is not installed|failed to load component|Binding loop detected)',log+'\n'+stderr)
+ 'no_qml_runtime_errors':not re.search(qml_failure_pattern,log+'\n'+stderr)
 }
-warnings=[line for line in (log+'\n'+stderr).splitlines() if re.search(r'(TypeError:|ReferenceError:|is not installed|failed to load component|Binding loop detected)',line)]
+warnings=[line for line in (log+'\n'+stderr).splitlines() if re.search(qml_failure_pattern,line)]
 records['qml_runtime_errors']=warnings
 records.update(checks=requirements,qt_plugin_sha256=hashlib.sha256(blob).hexdigest(),upnp_plugin_sha256=hashlib.sha256((r/'plugins/services_discovery/libupnp_plugin.dll').read_bytes()).hexdigest(),debug_markers_absent=markers,profile_isolation='Existing empty portable directory beside executable',capture_scope='Inactive desktop, no OS input or desktop switching',verified_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
 records['passed']=records['exit_code']==0 and all(requirements.values())

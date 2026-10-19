@@ -1,0 +1,10 @@
+QT = core
+CONFIG += console c++17
+CONFIG -= app_bundle debug_and_release
+TEMPLATE = app
+TARGET = subtitle-data-check
+INCLUDEPATH += $$PWD/../../modules/gui/qt
+SOURCES += $$PWD/subtitle-data-check.cpp
+DEFINES += QT_USE_QSTRINGBUILDER
+CONFIG += link_pkgconfig
+PKGCONFIG += libarchive

@@ -17,7 +17,7 @@ export const icons = [
   ['463:564', 'sort'], ['463:560', 'remove'], ['463:550', 'add'],
   ['187:470', 'repeat'], ['187:474', 'shuffle'], ['463:417', 'move'],
   ['2127:7548', 'bookmarks'], ['2127:7531', 'chapters'], ['2127:7523', 'queue-tab'],
-  ['999:4810', 'video'], ['494:2394', 'choice-selected'], ['494:2400', 'choice-empty'],
+  ['999:4810', 'video'], ['999:4802', 'playback'], ['71:868', 'chevron-down'], ['494:2394', 'choice-selected'], ['494:2400', 'choice-empty'],
 ];
 
 export function pathCommands(bytes) {

@@ -1,0 +1,1236 @@
+{
+  "native-v12-audio/audio-verification.json": {
+    "baseline": {
+      "rms": 2895.61468788096,
+      "sample_count": 262133,
+      "rate": 48000,
+      "channels": 2
+    },
+    "attenuated": {
+      "rms": 72.37890645500453,
+      "sample_count": 239605,
+      "rate": 48000,
+      "channels": 2
+    },
+    "reset": {
+      "rms": 2895.7061284355154,
+      "sample_count": 252917,
+      "rate": 48000,
+      "channels": 2
+    },
+    "attenuation_ratio": 0.02499604203485103,
+    "expected_gain": 0.025,
+    "gain_contract": "Pinned equalizer.c EQZ_IN_FACTOR 0.25 times the -20 dB preamp gain",
+    "reset_ratio": 1.000031578978701
+  },
+  "native-v12-audio/pitch-verification.json": {
+    "frequency_hz": 879.8993011849473,
+    "expected": 880,
+    "method": "positive zero crossings over the middle half of decoded PCM",
+    "source_hz": 440,
+    "semitones": 12
+  },
+  "native-v13-controls/preview-verification.json": {
+    "preview_positions": [
+      0.19,
+      0.63
+    ],
+    "primary_times": [
+      0.070598,
+      0.070598
+    ],
+    "mean_absolute_pixel_difference": 115.69485294117646,
+    "changed_bbox": [
+      0,
+      0,
+      302,
+      170
+    ],
+    "image_dimensions": [
+      304,
+      170
+    ],
+    "generation_count_for_two_positions": 2
+  },
+  "native-v15-timing/srt-timing.json": {
+    "first": "cb32794f21de47e39f70c2241058638c.json",
+    "absent": "7429825f94164222ae4b7334b5d0c59b.json",
+    "fps": 48,
+    "delay_ms": 1000
+  },
+  "native-v15-timing/ass-timing.json": {
+    "first": "c71300c83c174966b0ea679380c6b268.json",
+    "absent": "b6c794e0d7d64511a11d739fd94b503e.json",
+    "fps": 48,
+    "delay_ms": 1000
+  },
+  "native-v21-repeat-seek/repeat-slider-verification.json": {
+    "volume_first": 0.3,
+    "volume_keyboard": 0.35,
+    "volume_repeat": 0.30000001192092896,
+    "primary_advanced": "9b888000bb914eb781f7dcb279b915cd.json",
+    "primary_reseek": "6494762ef5ce421798ef4c686ec0e64a.json",
+    "waveform_cancel": "251622cf6d0941889480be82a9e185cd.json"
+  },
+  "native-v22-names/track-labels.json": {
+    "labels": [
+      "Chernobyl.S01E03.INTERNAL.1080p.BluRay.X264-REWARD.en - Chernoby.en.srt [SubSource 3067660-0605e3ad] — Track 4 - [English]",
+      "Sintel.2010.Xvid-VODO - sintel_en.en.srt [OpenSubtitles 65509] — Track 5 - [English]",
+      "Sintel (2010).en.srt [OpenSubtitles 67399] — Track 6 - [English]"
+    ],
+    "response": "4310f75545f5486d808edf0f671ce136.json"
+  },
+  "native-v23-names-restart/track-labels-restart.json": {
+    "restored": "cfc66abe644741b395225a10ee6e4026.json",
+    "multiple": "5fae2d071222492c844a321bc051e41d.json",
+    "labels": [
+      "Sintel (2010).en.srt [OpenSubtitles 67399] — Track 4 - [English]",
+      "Chernobyl.S01E03.INTERNAL.1080p.BluRay.X264-REWARD.en - Chernoby.en.srt [SubSource 3067660-0605e3ad] — Track 5 - [English]"
+    ]
+  },
+  "store-recovery.json": [
+    {
+      "case": "corrupt",
+      "bytes": 7,
+      "sha256_unchanged": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73",
+      "initial": "Saved media settings have an unsupported format; the original file is preserved.",
+      "observations": [
+        {
+          "mode": "mouse",
+          "response": "31d9b6897fdf425694ac56e30915b91c.json",
+          "accepted_value": false,
+          "checked": false,
+          "visible_recovery": true
+        },
+        {
+          "mode": "keyboard",
+          "response": "0e4c9b2ef3fd486ea334ccbef1e11d0d.json",
+          "accepted_value": false,
+          "checked": false,
+          "visible_recovery": true
+        }
+      ]
+    },
+    {
+      "case": "unknown-version",
+      "bytes": 37,
+      "sha256_unchanged": "6fb7d31142ded58bd5c12f555b039c597fd03cef4b57e7820b96e9679767ae5a",
+      "initial": "Saved media settings have an unsupported format; the original file is preserved.",
+      "observations": [
+        {
+          "mode": "mouse",
+          "response": "b5b850eee77d44179db703c6fb4da869.json",
+          "accepted_value": false,
+          "checked": false,
+          "visible_recovery": true
+        },
+        {
+          "mode": "keyboard",
+          "response": "b22800f4eb3541118748cbcd48e8f77e.json",
+          "accepted_value": false,
+          "checked": false,
+          "visible_recovery": true
+        }
+      ]
+    },
+    {
+      "case": "oversized",
+      "bytes": 8388609,
+      "sha256_unchanged": "165fd9abd9a46227a44f1beba4c239fc215b5c4ca8d21e180889175f9ebb8b05",
+      "initial": "Saved media settings could not be read; the original file is preserved.",
+      "observations": [
+        {
+          "mode": "mouse",
+          "response": "ffed49c5f64945e99741b26702de9d79.json",
+          "accepted_value": false,
+          "checked": false,
+          "visible_recovery": true
+        },
+        {
+          "mode": "keyboard",
+          "response": "6d92be371c86498ea78a149ce3cedcfc.json",
+          "accepted_value": false,
+          "checked": false,
+          "visible_recovery": true
+        }
+      ]
+    }
+  ],
+  "layout-matrix.json": [
+    {
+      "theme": "light",
+      "scale": 1,
+      "pages": [
+        {
+          "page": "Playback",
+          "response": "dd05e9c168f1483692bf78b8b3c2e311.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "3d11128",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "dd05e9c168f1483692bf78b8b3c2e311.png"
+        },
+        {
+          "page": "Video",
+          "response": "5f5e2fc887e84fe3a74001f77b705985.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "3d11128",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "5f5e2fc887e84fe3a74001f77b705985.png"
+        },
+        {
+          "page": "Audio",
+          "response": "4da71616e350406488557fa6da4182aa.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "3d11128",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "4da71616e350406488557fa6da4182aa.png"
+        },
+        {
+          "page": "Subtitles",
+          "response": "8f056311dfbb4f31b6f8cae701977229.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "3d11128",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "8f056311dfbb4f31b6f8cae701977229.png"
+        }
+      ],
+      "keyboard_response": "befb4e8a2ec641d6b22844ff7fe6e812.json",
+      "resized_response": "5daa5689a3614db9a996476e9273d71a.json",
+      "resized_window": {
+        "active": true,
+        "dpr": 1,
+        "flags": "1",
+        "height": 620,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "3d11128",
+        "visibility": 2,
+        "visible": true,
+        "width": 900,
+        "x": 980,
+        "y": 566
+      },
+      "focused_field": {
+        "text": "A long show preset label with episode S01E03 and distinguishable language Englis",
+        "width": 247,
+        "height": 32,
+        "x": 500,
+        "y": 388
+      },
+      "keyboard_toggle_verified": true,
+      "run": "native-v19-light-1"
+    },
+    {
+      "run": "native-v20-light-1_5",
+      "theme": "light",
+      "scale": 1.5,
+      "pages": [
+        {
+          "page": "Playback",
+          "response": "70c72755f4dd43faaab67a85bdf6d103.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "70a0aa4",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "70c72755f4dd43faaab67a85bdf6d103.png"
+        },
+        {
+          "page": "Video",
+          "response": "487ff9ab6d1a413fac5d638fd5215d9e.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "70a0aa4",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "487ff9ab6d1a413fac5d638fd5215d9e.png"
+        },
+        {
+          "page": "Audio",
+          "response": "a7e310d0d8f848fb847c0b8f93a2ad49.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "70a0aa4",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "a7e310d0d8f848fb847c0b8f93a2ad49.png"
+        },
+        {
+          "page": "Subtitles",
+          "response": "4305e490311c4d3bb05190de3e161901.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "70a0aa4",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "4305e490311c4d3bb05190de3e161901.png"
+        }
+      ],
+      "keyboard_response": "e5a679dc2ce6468a8e197dba42fdce89.json",
+      "resized_response": "a51941f951144d06ab7cc6b589a9b14d.json",
+      "resized_window": {
+        "active": true,
+        "dpr": 1.5,
+        "flags": "1",
+        "height": 620,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "70a0aa4",
+        "visibility": 2,
+        "visible": true,
+        "width": 900,
+        "x": 553,
+        "y": 307
+      },
+      "focused_field": {
+        "text": "A long show preset label with episode S01E03 and distinguishable language Englis",
+        "width": 245,
+        "height": 32,
+        "x": 500,
+        "y": 388
+      }
+    },
+    {
+      "run": "native-v20-light-2",
+      "theme": "light",
+      "scale": 2,
+      "pages": [
+        {
+          "page": "Playback",
+          "response": "c31e02be3eff436e9df58a00975cf847.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "112a2552",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "c31e02be3eff436e9df58a00975cf847.png"
+        },
+        {
+          "page": "Video",
+          "response": "6c2f3645067c4c6599730f4071be7e4e.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "112a2552",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "6c2f3645067c4c6599730f4071be7e4e.png"
+        },
+        {
+          "page": "Audio",
+          "response": "616413191d0b4387961a047427065523.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "112a2552",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "616413191d0b4387961a047427065523.png"
+        },
+        {
+          "page": "Subtitles",
+          "response": "eb72407623c84afdaf32335c0f3c21e5.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "112a2552",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "eb72407623c84afdaf32335c0f3c21e5.png"
+        }
+      ],
+      "keyboard_response": "ab0eaf6bf13a4a308ab15b02ec7d0775.json",
+      "resized_response": "f53af6f3a21e49f4973c0fc9c362a464.json",
+      "resized_window": {
+        "active": true,
+        "dpr": 2,
+        "flags": "1",
+        "height": 620,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "112a2552",
+        "visibility": 2,
+        "visible": true,
+        "width": 900,
+        "x": 340,
+        "y": 178
+      },
+      "focused_field": {
+        "text": "A long show preset label with episode S01E03 and distinguishable language Englis",
+        "width": 245,
+        "height": 32,
+        "x": 500,
+        "y": 388
+      }
+    },
+    {
+      "run": "native-v20-dark-1",
+      "theme": "dark",
+      "scale": 1,
+      "pages": [
+        {
+          "page": "Playback",
+          "response": "f92bad7fcc8144aaa0f8a0fd38a96818.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "8601ac2",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "f92bad7fcc8144aaa0f8a0fd38a96818.png"
+        },
+        {
+          "page": "Video",
+          "response": "b15d34b1f86242828040612ab55bbea3.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "8601ac2",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "b15d34b1f86242828040612ab55bbea3.png"
+        },
+        {
+          "page": "Audio",
+          "response": "fd10c4c58bab49edab98f4f409a8a1c2.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "8601ac2",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "fd10c4c58bab49edab98f4f409a8a1c2.png"
+        },
+        {
+          "page": "Subtitles",
+          "response": "0fef730f8cc242f397113d5b9fd916ee.json",
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "8601ac2",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 980,
+            "y": 566
+          },
+          "panel": {
+            "x": 1500,
+            "y": 60,
+            "width": 400,
+            "height": 946
+          },
+          "body": {
+            "x": 1500,
+            "y": 111,
+            "width": 400,
+            "height": 769
+          },
+          "screenshot": "0fef730f8cc242f397113d5b9fd916ee.png"
+        }
+      ],
+      "keyboard_response": "abe88248f0144fa3bcae97d2e114b365.json",
+      "resized_response": "c5fe7dd2e6f6494b9baa8863eeb82ec8.json",
+      "resized_window": {
+        "active": true,
+        "dpr": 1,
+        "flags": "1",
+        "height": 620,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "8601ac2",
+        "visibility": 2,
+        "visible": true,
+        "width": 900,
+        "x": 980,
+        "y": 566
+      },
+      "focused_field": {
+        "text": "A long show preset label with episode S01E03 and distinguishable language Englis",
+        "width": 247,
+        "height": 32,
+        "x": 500,
+        "y": 388
+      }
+    },
+    {
+      "run": "native-v20-dark-1_5",
+      "theme": "dark",
+      "scale": 1.5,
+      "pages": [
+        {
+          "page": "Playback",
+          "response": "5c1d3768f5ac49feb64f85b4813b254e.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "9141748",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "5c1d3768f5ac49feb64f85b4813b254e.png"
+        },
+        {
+          "page": "Video",
+          "response": "82ccdc47c88b43a8898ff0b3231cd731.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "9141748",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "82ccdc47c88b43a8898ff0b3231cd731.png"
+        },
+        {
+          "page": "Audio",
+          "response": "ea851e73f5754d5591cb5b46e11de484.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "9141748",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "ea851e73f5754d5591cb5b46e11de484.png"
+        },
+        {
+          "page": "Subtitles",
+          "response": "f0bb6cb7973f417280b8f8db96c595d9.json",
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "9141748",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 553,
+            "y": 307
+          },
+          "panel": {
+            "x": 860,
+            "y": 60,
+            "width": 400,
+            "height": 586
+          },
+          "body": {
+            "x": 860,
+            "y": 111,
+            "width": 400,
+            "height": 409
+          },
+          "screenshot": "f0bb6cb7973f417280b8f8db96c595d9.png"
+        }
+      ],
+      "keyboard_response": "58041f5868f143a4814bf20aa6916f11.json",
+      "resized_response": "35a68e1f89ae4411a9406bc8f3845edd.json",
+      "resized_window": {
+        "active": true,
+        "dpr": 1.5,
+        "flags": "1",
+        "height": 620,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "9141748",
+        "visibility": 2,
+        "visible": true,
+        "width": 900,
+        "x": 553,
+        "y": 307
+      },
+      "focused_field": {
+        "text": "A long show preset label with episode S01E03 and distinguishable language Englis",
+        "width": 245,
+        "height": 32,
+        "x": 500,
+        "y": 388
+      }
+    },
+    {
+      "run": "native-v20-dark-2",
+      "theme": "dark",
+      "scale": 2,
+      "pages": [
+        {
+          "page": "Playback",
+          "response": "43397a1475ff46b99ff3eed4e06affc6.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "2e527b6",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "43397a1475ff46b99ff3eed4e06affc6.png"
+        },
+        {
+          "page": "Video",
+          "response": "5592f379fab34bae81e62a32c20bd6fe.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "2e527b6",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "5592f379fab34bae81e62a32c20bd6fe.png"
+        },
+        {
+          "page": "Audio",
+          "response": "1f77499172ab4666b3ce52b4cc4c6fe2.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "2e527b6",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "1f77499172ab4666b3ce52b4cc4c6fe2.png"
+        },
+        {
+          "page": "Subtitles",
+          "response": "a9987289947a47e2a09a0a922ff3c54b.json",
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "2e527b6",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 340,
+            "y": 178
+          },
+          "panel": {
+            "x": 540,
+            "y": 60,
+            "width": 400,
+            "height": 406
+          },
+          "body": {
+            "x": 540,
+            "y": 111,
+            "width": 400,
+            "height": 229
+          },
+          "screenshot": "a9987289947a47e2a09a0a922ff3c54b.png"
+        }
+      ],
+      "keyboard_response": "2bb144ccb99145b9a2c450d2fd442476.json",
+      "resized_response": "fb75914cb85f44fbb494d355d5a7ba56.json",
+      "resized_window": {
+        "active": true,
+        "dpr": 2,
+        "flags": "1",
+        "height": 620,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "2e527b6",
+        "visibility": 2,
+        "visible": true,
+        "width": 900,
+        "x": 340,
+        "y": 178
+      },
+      "focused_field": {
+        "text": "A long show preset label with episode S01E03 and distinguishable language Englis",
+        "width": 245,
+        "height": 32,
+        "x": 500,
+        "y": 388
+      }
+    }
+  ],
+  "rendered_timing_pixels": [
+    {
+      "label": "SRT 3.438 s",
+      "source": "S3-00007.png",
+      "sha256": "6886cfd65c52a72dbac6d07409ee1a3663d34fd2e2643ef6ca890252e7670c35",
+      "nonblack_bbox": [
+        372,
+        492,
+        588,
+        516
+      ]
+    },
+    {
+      "label": "SRT 5.287 s",
+      "source": "S3-00009.png",
+      "sha256": "593d4b6f0290234427f828f9bac766e901ec4214ce09b65e4d9de624110429e4",
+      "nonblack_bbox": null
+    },
+    {
+      "label": "ASS 3.445 s",
+      "source": "S3-00011.png",
+      "sha256": "5fb91178b0f1f8bf078eab791270a110c16fec22f684c702ada7eaae58d7788d",
+      "nonblack_bbox": [
+        415,
+        492,
+        545,
+        512
+      ]
+    },
+    {
+      "label": "ASS 5.184 s",
+      "source": "S3-00013.png",
+      "sha256": "a092ef2c6aabd26ad2b0674b41c534193123f781e95b28b6e31762d27e2c964d",
+      "nonblack_bbox": null
+    }
+  ],
+  "embedded_pgs": {
+    "source": "https://samples.ffmpeg.org/sub/PGS/supsample.mkv",
+    "run": "native-v7",
+    "paused_time_seconds": 2.294,
+    "selected_vs_none_changed_pixels": 8996,
+    "changed_bbox": [
+      168,
+      437,
+      555,
+      474
+    ],
+    "text_timeline_available": false,
+    "rechecked_original_pixels": true
+  },
+  "rendered_video_filters": [
+    {
+      "phase": "baseline",
+      "run": "native-v6",
+      "source": "S3-00001.png",
+      "sha256": "7b31dd4d162971e4e2dae6d6c31fe34ff3df956c1938b7464bfeed8b65d33386",
+      "dimensions": [
+        960,
+        540
+      ],
+      "corner_rgb": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "phase": "invert",
+      "run": "native-v6",
+      "source": "S3-00009.png",
+      "sha256": "96e7cb77e2ecaa6086c7eb2b755e1a047b49580f949c0fa7736c4351f38a032d",
+      "dimensions": [
+        960,
+        540
+      ],
+      "corner_rgb": [
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "phase": "crop",
+      "run": "native-v6",
+      "source": "S3-00011.png",
+      "sha256": "73699428252d88424bb976c28f09bd2c174d769af5b8fef816446d9e38b1005d",
+      "dimensions": [
+        860,
+        490
+      ],
+      "corner_rgb": [
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "phase": "defaults_after_fix",
+      "run": "native-v9-cancel",
+      "source": "S3-00013.png",
+      "sha256": "0fc39fbfe1f00fdc93177a5697a056b90c0503f27659da9d4ad4d709b23cf6ae",
+      "dimensions": [
+        960,
+        540
+      ],
+      "corner_rgb": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "rendered_subtitle_appearance": [
+    {
+      "source": "S3-00003.png",
+      "sha256": "078c9a4a4c5ae41e888108820b6850d705934da070355c39af4c587e2468edbf",
+      "nonblack_bbox": [
+        316,
+        492,
+        643,
+        518
+      ],
+      "red_pixels": 0,
+      "blue_pixels": 0
+    },
+    {
+      "source": "S3-00005.png",
+      "sha256": "067cb85cbbf3614174233582b1c3aa0e954c6bf128536b45c1647351fd3322d2",
+      "nonblack_bbox": [
+        203,
+        432,
+        758,
+        474
+      ],
+      "red_pixels": 6688,
+      "blue_pixels": 0
+    },
+    {
+      "source": "S3-00007.png",
+      "sha256": "55729374443d4a1eadb68ecb05f1b8c7ea715bae85ff4ad1ca07da8aae96bdc5",
+      "nonblack_bbox": [
+        162,
+        430,
+        796,
+        476
+      ],
+      "red_pixels": 4278,
+      "blue_pixels": 7444
+    }
+  ]
+}

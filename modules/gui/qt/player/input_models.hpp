@@ -29,6 +29,7 @@
 #include <vlc_player.h>
 #include <vlc_cxx_helpers.hpp>
 #include <QAbstractListModel>
+#include <QByteArray>
 #include <QList>
 
 /**
@@ -49,6 +50,8 @@ class TrackListModel : public QAbstractListModel
 
 public:
     TrackListModel(vlc_player_t* player, QObject* parent = nullptr);
+    static QByteArray associatedSourcePrefix(const QByteArray &uri);
+    void setAssociatedSourceLabel(const QString &uri, const QString &label);
 
     Qt::ItemFlags flags(const QModelIndex &) const  override;
 
@@ -74,6 +77,7 @@ public slots:
     void setMultiSelect(bool multiSelect);
 
 signals:
+    void selectionRequested();
     void countChanged();
     void multiSelectChanged(bool multiSelect);
 
@@ -94,6 +98,7 @@ private:
         bool m_selected = false;
     };
     QList<Data> m_data;
+    QHash<QByteArray, QString> m_sourceLabels;
     bool m_multiSelect = false; // this only work for subtitles
 };
 

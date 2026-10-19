@@ -15,7 +15,7 @@ import uuid
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('op', choices=['snapshot', 'click', 'move', 'drag', 'scroll', 'drop', 'key', 'widget_click', 'widget_key', 'resize', 'cancel', 'quit'])
+    parser.add_argument('op', choices=['snapshot', 'click', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'resize', 'cancel', 'quit'])
     parser.add_argument('--target')
     parser.add_argument('--name', help='Exact accessible name of an actionable Qt Quick item')
     parser.add_argument('--item-url', help='Exact URL of one rendered queue row')
@@ -36,8 +36,9 @@ def main():
     parser.add_argument('--menu-action', help='Exact menu action label, ignoring mnemonic ampersands')
     parser.add_argument('--widget-text', help='Exact native widget text, ignoring mnemonic ampersands')
     parser.add_argument('--url', action='append', default=[])
-    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY'])
+    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'busy', 'waveformBusy', 'subtitleLoaded', 'sleepMinutes', 'previewSource', 'previewStatus', 'waveformStatus', 'sleepStatus', 'status'])
     parser.add_argument('--await-value', type=json.loads)
+    parser.add_argument('--await-service', choices=['redesignMediaTools', 'redesignMediaAnalysis', 'redesignSubtitleSearch'])
     parser.add_argument('--await-target')
     parser.add_argument('--await-name')
     parser.add_argument('--await-node', type=int, help='Observation node from a fresh rendered snapshot')
@@ -119,7 +120,7 @@ def main():
         else:
             _, before = request('snapshot')
             fields = dict(revision=before['revision'], capture=args.capture)
-            if args.op in ('click', 'move', 'drag', 'scroll', 'drop'):
+            if args.op in ('click', 'move', 'drag', 'scroll', 'drop', 'focus'):
                 if args.target or args.name or args.item_url:
                     nodes = [n for n in before['tree'] if n['visible'] and n['enabled'] and
                              ((args.target and n['id'] == args.target) or
@@ -131,7 +132,7 @@ def main():
                 elif args.node is not None:
                     fields['node'] = args.node
                 else:
-                    parser.error('Pointer events require --target or --node from a fresh snapshot')
+                    parser.error('UI actions require --target or --node from a fresh snapshot')
                 if not 0 <= args.fraction_x <= 1 or not 0 <= args.fraction_y <= 1:
                     parser.error('Target fractions must be within [0,1]')
                 fields.update(fraction_x=args.fraction_x, fraction_y=args.fraction_y, button=args.button)
@@ -197,6 +198,8 @@ def main():
                     fields['await_property'] = args.await_property
                 if args.await_core:
                     pass
+                elif args.await_service:
+                    fields['await_service'] = args.await_service
                 elif args.await_node is not None:
                     fields['await_node'] = args.await_node
                 elif args.await_target or args.await_name:

@@ -346,7 +346,15 @@ static int EqzInit( filter_t *p_filter, int i_rate )
 
     /* Load the preset only if equalizer-bands is not set. */
     if ( val2.psz_string == NULL || *val2.psz_string == '\0' )
+    {
         PresetCallback( VLC_OBJECT( p_aout ), NULL, val1, val1, p_sys );
+        /* The preset callback publishes its bands on the audio output. Read
+         * those values before validating and initializing this filter. Keep
+         * the caller's preamp value in both the variable and DSP state. */
+        free( val2.psz_string );
+        var_Get( p_aout, "equalizer-bands", &val2 );
+        var_SetFloat( p_aout, "equalizer-preamp", val3.f_float );
+    }
     free( val1.psz_string );
     BandsCallback(  VLC_OBJECT( p_aout ), NULL, val2, val2, p_sys );
     PreampCallback( VLC_OBJECT( p_aout ), NULL, val3, val3, p_sys );
@@ -494,10 +502,11 @@ static int PresetCallback( vlc_object_t *p_aout, char const *psz_cmd,
     {
         char *psz;
 
-        lldiv_t d = lldiv( lroundf(preset->f_amp[i] * 10000000.f), 10000000 );
+        const long long gain = lroundf(preset->f_amp[i] * 10000000.f);
+        lldiv_t d = lldiv( llabs(gain), 10000000 );
 
-        if( asprintf( &psz, "%s %lld.%07llu", i ? bands : "",
-                      d.quot, d.rem ) == -1 )
+        if( asprintf( &psz, "%s %s%lld.%07lld", i ? bands : "",
+                      gain < 0 ? "-" : "", d.quot, d.rem ) == -1 )
             psz = NULL;
 
         free( bands );

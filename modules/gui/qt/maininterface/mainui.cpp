@@ -1,5 +1,8 @@
 #include "mainui.hpp"
 #include "player_diagnostics.hpp"
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <QNetworkProxy>
+#endif
 
 #include <cassert>
 
@@ -26,6 +29,9 @@
 #include "medialibrary/mlbookmarkmodel.hpp"
 
 #include "player/player_controller.hpp"
+#include "player/player_media_tools.hpp"
+#include "player/subtitle_search.hpp"
+#include "player/player_media_analysis.hpp"
 #include "player/player_controlbar_model.hpp"
 #include "player/control_list_model.hpp"
 #include "player/control_list_filter.hpp"
@@ -111,6 +117,11 @@ MainUI::MainUI(qt_intf_t *p_intf, MainCtx *mainCtx, QWindow* interfaceWindow,  Q
     if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR"))
     {
         QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
+        const int proxyPort = qEnvironmentVariableIntValue("VLC_PLAYER_DIAGNOSTICS_PROXY_PORT");
+        if (proxyPort > 0 && proxyPort <= 65535
+            && qEnvironmentVariable("VLC_PLAYER_DIAGNOSTICS_TOKEN").size() >= 32)
+            QNetworkProxy::setApplicationProxy(QNetworkProxy(QNetworkProxy::HttpProxy,
+                QStringLiteral("127.0.0.1"), quint16(proxyPort)));
     }
 #endif
 
@@ -157,6 +168,8 @@ MainUI::~MainUI()
 bool MainUI::setup(QQmlEngine* engine)
 {
     m_engineBound = engine;
+    if (m_playerMediaAnalysis)
+        engine->addImageProvider(QStringLiteral("redesignPreview"), new PlayerPreviewProvider(m_playerMediaAnalysis->previewImage()));
 #ifdef VLC_PLAYER_DIAGNOSTICS
     if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR"))
         engine->rootContext()->setContextProperty(QStringLiteral("vlcPlayerDiagnosticSession"), true);
@@ -323,12 +336,22 @@ void MainUI::registerQMLTypes()
         const int versionMinor = 0;
 
         // @uri VLC.Player
+        qmlRegisterType<PlayerAnalysisStrip>(uri, versionMajor, versionMinor, "PlayerAnalysisStrip");
         qmlRegisterUncreatableType<TrackListModel>(uri, versionMajor, versionMinor, "TrackListModel", "available tracks of a media (audio/video/sub)" );
         qmlRegisterUncreatableType<TitleListModel>(uri, versionMajor, versionMinor, "TitleListModel", "available titles of a media" );
         qmlRegisterUncreatableType<ChapterListModel>(uri, versionMajor, versionMinor, "ChapterListModel", "available chapters of a media" );
         qmlRegisterUncreatableType<ProgramListModel>(uri, versionMajor, versionMinor, "ProgramListModel", "available programs of a media" );
         assert(m_intf->p_mainPlayerController);
         qmlRegisterSingletonInstance<PlayerController>(uri, versionMajor, versionMinor, "Player", m_intf->p_mainPlayerController);
+        auto *mediaTools = m_intf->p_mainPlayerController->findChild<PlayerMediaTools *>(QStringLiteral("redesignMediaTools"), Qt::FindDirectChildrenOnly);
+        if (!mediaTools) { mediaTools = new PlayerMediaTools(m_intf, m_intf->p_mainPlayerController); mediaTools->setObjectName(QStringLiteral("redesignMediaTools")); }
+        qmlRegisterSingletonInstance<PlayerMediaTools>(uri, versionMajor, versionMinor, "MediaTools", mediaTools);
+        auto *search = mediaTools->findChild<SubtitleSearch *>(QStringLiteral("redesignSubtitleSearch"), Qt::FindDirectChildrenOnly);
+        if (!search) { search = new SubtitleSearch(m_intf->p_mainPlayerController, mediaTools); search->setObjectName(QStringLiteral("redesignSubtitleSearch")); }
+        qmlRegisterSingletonInstance<SubtitleSearch>(uri, versionMajor, versionMinor, "RemoteSubtitles", search);
+        m_playerMediaAnalysis = mediaTools->findChild<PlayerMediaAnalysis *>(QStringLiteral("redesignMediaAnalysis"), Qt::FindDirectChildrenOnly);
+        if (!m_playerMediaAnalysis) { m_playerMediaAnalysis = new PlayerMediaAnalysis(m_intf, m_intf->p_mainPlayerController, mediaTools); m_playerMediaAnalysis->setObjectName(QStringLiteral("redesignMediaAnalysis")); }
+        qmlRegisterSingletonInstance<PlayerMediaAnalysis>(uri, versionMajor, versionMinor, "MediaAnalysis", m_playerMediaAnalysis);
         qmlRegisterTypesAndRevisions<TimedText>(uri, versionMajor);
         qmlRegisterType<PlayerHighResolutionTimeUpdater>(uri, versionMajor, versionMinor, "HighResolutionTimeUpdater");
         qmlRegisterUncreatableMetaObject(VLCTickForeign::staticMetaObject, uri, versionMajor, versionMinor, "VLCTick", "Not Instantiable" );

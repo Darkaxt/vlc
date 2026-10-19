@@ -1,0 +1,5198 @@
+[
+  {
+    "run": "native-v7",
+    "response": "e1cf868a2ce64d64947e7ecf4dadf905.json",
+    "sha256": "b93ac48afbc602e22ba63b9f73594c995c6e9615dde701c9519822dd43fbc42b",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.0001742827205029555,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "e52b4c1f20fb745073fb6391c626f919/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.02179,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.de.srt",
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        },
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Matched",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt",
+          "title": "Show.S01E02.mkv"
+        },
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Manual%20third.en.srt",
+          "title": "Show.S01E03.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.3 MiB\nDecoded video: 1 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 1 blocks\nPlayed audio: 1 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Saved association removed. The currently selected subtitle is unchanged.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": true,
+      "waveformStatus": "Decoding the selected audio track for its waveform…"
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v7",
+    "response": "925eafb5d3f84cf4bee0559438c73cb8.json",
+    "sha256": "ebc408baa0940b62695cb7bc67aaaa88a047a2f68360f39e14eb8584808ebc12",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.0001742827205029555,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "e52b4c1f20fb745073fb6391c626f919/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.02179,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.3 MiB\nDecoded video: 1 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 1 blocks\nPlayed audio: 1 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v7",
+    "response": "98788b0da9e64caba2bc87862de803b1.json",
+    "sha256": "3f87ffae0ad774ddc2c65331357da7d98e5a499eeccd1945d3a27bc412c65552",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.01687550091584614,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 2,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "1c22a769ee5c73cb43194bb8359e7954/spu/0",
+          "language": "S01E01",
+          "name": "Track 2 - [S01E01]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 2.109795,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Other/Other.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt",
+          "title": "Show.S01E02.mkv"
+        },
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.de.srt",
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        },
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Manual%20third.en.srt",
+          "title": "Show.S01E03.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 1.0 MiB\nDecoded video: 72 frames\nDisplayed: 252 · Lost: 0\nDecoded audio: 150 blocks\nPlayed audio: 150 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "The saved media or subtitle changed/missing; select it again to confirm the association.",
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 100,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v7",
+    "response": "aaa4d8d1b2354fafb69bebe1ef451424.json",
+    "sha256": "96bf84411a487105f4a70dd42c47948148b57b042a7f9a65287348f92fc24b0a",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.03464434774957807,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 2,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 4.331274,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt",
+          "title": "Show.S01E02.mkv"
+        },
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.de.srt",
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        },
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Manual%20third.en.srt",
+          "title": "Show.S01E03.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 1.6 MiB\nDecoded video: 115 frames\nDisplayed: 11728 · Lost: 0\nDecoded audio: 189 blocks\nPlayed audio: 188 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "The saved media or subtitle changed/missing; select it again to confirm the association.",
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": true,
+      "waveformStatus": "Decoding the selected audio track for its waveform…"
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v7",
+    "response": "37f5fecf53c045ceaac385c24246149e.json",
+    "sha256": "fcf137da15bf75818dd3516cdbdc57cb3182abb927541c097a1d3c33c4f8c0d0",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.016249094152182432,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 2,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 2.031485,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/MatchingMoved/Show.S01E03.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt",
+          "title": "Show.S01E02.mkv"
+        },
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.de.srt",
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        },
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Manual%20third.en.srt",
+          "title": "Show.S01E03.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 1.0 MiB\nDecoded video: 72 frames\nDisplayed: 389 · Lost: 0\nDecoded audio: 150 blocks\nPlayed audio: 150 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "The saved media or subtitle changed/missing; select it again to confirm the association.",
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "No subtitle track selected.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 100,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v7",
+    "response": "0240eda69bae49e7b877294fca9d91cf.json",
+    "sha256": "be7577e3217b373e07f56b87ebf2f2f84ad1c271e5394ff781966f3053b7d8c9",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.016941441837771253,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 2,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "e52b4c1f20fb745073fb6391c626f919/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": true
+        },
+        {
+          "id": "0d3d74a80dede054df522730a33d6aa4/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 2.118039,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt",
+          "title": "Show.S01E02.mkv"
+        },
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.de.srt",
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        },
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Manual%20third.en.srt",
+          "title": "Show.S01E03.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 1.0 MiB\nDecoded video: 71 frames\nDisplayed: 721 · Lost: 0\nDecoded audio: 114 blocks\nPlayed audio: 113 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "The saved media or subtitle changed/missing; select it again to confirm the association.",
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v7",
+    "response": "9f3ae6b31a3a487ab46cf72a95b07956.json",
+    "sha256": "49abdf42ac796919c88f2b1bb1ce19dad89fa1ac6e426ced84850150e92ad173",
+    "build": "1af5cb84a1c77649aea1d2d837ff80feac9b3278c71d744523c2d0625bc638c2",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.0001742827205029555,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": true
+        },
+        {
+          "id": "e52b4c1f20fb745073fb6391c626f919/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 4 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 5 - [English]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 0.02179,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.en.srt",
+          "title": "Show.S01E02.mkv"
+        },
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.de.srt",
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        },
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E03.mkv",
+          "state": "Saved association",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Manual%20third.en.srt",
+          "title": "Show.S01E03.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.3 MiB\nDecoded video: 1 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 1 blocks\nPlayed audio: 1 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle associations saved.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Waveform of the decoded source audio; 2048 peak bins, no disk cache."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "waveform_summary": {
+      "bins": 2048,
+      "minimum": 0,
+      "maximum": 0.6076276302337646
+    },
+    "labels": []
+  },
+  {
+    "run": "native-v6",
+    "response": "3182590b4faa440488aefe9530004453.json",
+    "sha256": "48f669d3c71498ebae7f78a31bf1f1957de010b8d3e4ce9e026169b9a1b5a026",
+    "build": "ab94e371a1d667171275f08997f06c892a665d917adfa481e4da908b56e90788",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.057070975999999995,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 2019,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "5bebdca234403d2a9162142b9789fac6/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "5bebdca234403d2a9162142b9789fac6/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 7.1338729999999995,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Appearance/CPU.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Appearance/CPU.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Appearance/CPU.en.srt",
+          "title": "CPU.mkv"
+        }
+      ],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Subtitle associations saved.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "1 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 1,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16711680,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 255,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 40,
+      "sub-text-scale": 200,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Decoding seek preview…",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v6",
+    "response": "08db063f3795457784d0aedfaf8c0bc0.json",
+    "sha256": "af0e07f6e9177ae944c65a018c703507869271f113345efd8073fb9e62c597bd",
+    "build": "ab94e371a1d667171275f08997f06c892a665d917adfa481e4da908b56e90788",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [],
+      "length_seconds": null,
+      "position": -1,
+      "rate": 1.5,
+      "reverse_supported": false,
+      "seekable": false,
+      "state": 0,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [],
+      "time_seconds": null,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Other/Other.S01E01.mkv",
+      "video_tracks": []
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [
+            "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt"
+          ],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E01.en.srt",
+          "title": "Show.S01E01.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer expired; playback stopped.",
+      "statisticsText": "Read: 24.1 MiB\nDecoded video: 1816 frames\nDisplayed: 2377 · Lost: 0\nDecoded audio: 3524 blocks\nPlayed audio: 1670 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "No subtitle track selected.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "Unavailable",
+        "resolution": "No video track"
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 100,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.516,
+      "previewSource": "",
+      "previewStatus": "Seek previews are unavailable for nonseekable inputs or inputs without a known video timeline.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v8",
+    "response": "639324ef0e4e457a84819d9ee2ba7820.json",
+    "sha256": "ba4d9e486a07ddff1f0f8cc48fa54dd63d848b7936d400367aa5c84489709e79",
+    "build": "98598504bebec69b6180f2617b2f617f9cf106e266882ee169cd6efc53d1d522",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.0007145199606466114,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": true
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 0.089331,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.3 MiB\nDecoded video: 2 frames\nDisplayed: 12 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v8",
+    "response": "9da1075e3e3c466ea7746aa19d42936e.json",
+    "sha256": "b3a841e0860ce473feaace8a4e99b69916976528e4e26fafeb5de4d2b3f5d2b0",
+    "build": "98598504bebec69b6180f2617b2f617f9cf106e266882ee169cd6efc53d1d522",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.0007145199606466114,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": false
+        },
+        {
+          "id": "c3f19e7b9c048b7f7566a35f6242dd30/spu/0",
+          "language": "en",
+          "name": "Track 4 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.089331,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/runtime/portable/redesign-subtitles/6dbd3765-4831-40b4-82c8-90bb5eba7d3f/%5BSubSource%20612109%5D%20Sintel%202010%201080p%20DM%20x264-EbP%20English.en.srt",
+          "title": "Show.S01E02.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.3 MiB\nDecoded video: 2 frames\nDisplayed: 12 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "27 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 27,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.63,
+      "previewSource": "image://redesignPreview/frame/1445",
+      "previewStatus": "",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 2,
+      "status": "Downloaded subtitle loaded, selected and its association saved."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v8",
+    "response": "ac050c2920154308b16979a12cdfdbbc.json",
+    "sha256": "2be20eec8d6b5d8eca920f2bff9c3a43f42b49f4e778e150273407698afa5f64",
+    "build": "98598504bebec69b6180f2617b2f617f9cf106e266882ee169cd6efc53d1d522",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.0007145199606466114,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 750,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": false
+        },
+        {
+          "id": "c3f19e7b9c048b7f7566a35f6242dd30/spu/0",
+          "language": "en",
+          "name": "Track 4 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.089331,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Audit Show",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Matching/Show.S01E02.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/runtime/portable/redesign-subtitles/6dbd3765-4831-40b4-82c8-90bb5eba7d3f/%5BSubSource%20612109%5D%20Sintel%202010%201080p%20DM%20x264-EbP%20English.en.srt",
+          "title": "Show.S01E02.mkv"
+        }
+      ],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.3 MiB\nDecoded video: 2 frames\nDisplayed: 12 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "27 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 27,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 150,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.63,
+      "previewSource": "image://redesignPreview/frame/1445",
+      "previewStatus": "",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [
+        "Chernobyl.S01E01.INTERNAL.1080p.BluRay.X264-REWARD.en.srt [SRT]",
+        "Chernobyl.S01E02.INTERNAL.1080p.BluRay.X264-REWARD.en.srt [SRT]",
+        "Chernobyl.S01E03.INTERNAL.1080p.BluRay.X264-REWARD.en.srt [SRT]",
+        "Chernobyl.S01E04.INTERNAL.1080p.BluRay.X264-REWARD.en.srt [SRT]",
+        "Chernobyl.S01E05.INTERNAL.1080p.BluRay.X264-REWARD.en.srt [SRT]"
+      ],
+      "busy": false,
+      "configured": true,
+      "provider": 2,
+      "status": "Choose the exact file from this archive; season packs are not assigned automatically."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v9-cancel",
+    "response": "92c290d86c474ad9a493867052f52499.json",
+    "sha256": "7a8cab0ebd5d97de78ee95a4bb531af78de7129661b29037d635d0acbf3fb7c2",
+    "build": "98598504bebec69b6180f2617b2f617f9cf106e266882ee169cd6efc53d1d522",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.00024072,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "5bebdca234403d2a9162142b9789fac6/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "5bebdca234403d2a9162142b9789fac6/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 0.030091,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Appearance/CPU.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.1 MiB\nDecoded video: 1 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "1 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 1,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 100,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v10-input-change",
+    "response": "57b1682e51e84f03ade44507dcd43538.json",
+    "sha256": "a1d1908d8642b5dc8e87d7b771b6c2cd0422ff76421d7e3c2b703e05e93667ef",
+    "build": "98598504bebec69b6180f2617b2f617f9cf106e266882ee169cd6efc53d1d522",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.048349773238096,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 2,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "1c22a769ee5c73cb43194bb8359e7954/spu/0",
+          "language": "S01E01",
+          "name": "Track 2 - [S01E01]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 6.04474,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Other/Other.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [
+        "Audit Show"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 2.3 MiB\nDecoded video: 167 frames\nDisplayed: 150 · Lost: 0\nDecoded audio: 335 blocks\nPlayed audio: 335 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "",
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 100,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.8,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v13-controls",
+    "response": "9fc93878f97d4c24990a7ed909452afc.json",
+    "sha256": "18e7328be7099635d292a1341ead76456d471d9daa459e47400ee97f7975c2bc",
+    "build": "75d25d49ba2b31abc5533cdd895b84f2d051601d747d166fdd2955f966391eb6",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 3.200000000050385e-08,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 4e-06,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "-0.0000000 -0.0000000 -0.0000000 -5.5999999 -0.0000000 6.4000001 6.4000001 -0.0000000 -0.0000000 -0.0000000",
+      "equalizer-preamp": 8,
+      "equalizer-preset": "reggae",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": true,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.19,
+      "previewSource": "image://redesignPreview/frame/1",
+      "previewStatus": "",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v13-controls",
+    "response": "821de17e40924b53a992cfaf51fca29c.json",
+    "sha256": "3699ce38f3949f5fca326131aad88d34f65180fdee2a882b8bf8cd6d4b43a26c",
+    "build": "75d25d49ba2b31abc5533cdd895b84f2d051601d747d166fdd2955f966391eb6",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.20369816,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 25.462270999999998,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": true,
+      "equalizer-bands": "-0.0000000 -0.0000000 -0.0000000 -5.5999999 -0.0000000 6.4000001 6.4000001 -0.0000000 -0.0000000 -0.0000000",
+      "equalizer-preamp": 8,
+      "equalizer-preset": "reggae",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": true,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.19,
+      "previewSource": "image://redesignPreview/frame/1",
+      "previewStatus": "",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v13-controls",
+    "response": "87870acb2dde4896b9df131261e14b79.json",
+    "sha256": "f6946bb1d666cddcedf0655945723d9669bd3eaeb5c60402a8e4f4ae272d5f0e",
+    "build": "75d25d49ba2b31abc5533cdd895b84f2d051601d747d166fdd2955f966391eb6",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.20369816,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 25.462270999999998,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Section reset to VLC defaults.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 3,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.19,
+      "previewSource": "image://redesignPreview/frame/1",
+      "previewStatus": "",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v15-timing",
+    "response": "19e7ba5b931547878ef92f1de1597bba.json",
+    "sha256": "174b6880e67dcf3f2bd979e0aa919225a6eba1f3225158d3d6c451bd11814cf2",
+    "build": "56019aa51d5987f70cfe665ad29751cf9bbaff5faa39fd1e03142975b650a741",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.041472144,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 1000,
+      "subtitle_fps": 48,
+      "subtitle_tracks": [
+        {
+          "id": "883e2e73f7afefa57e5e0d8003be5749/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "dfc9e755843af1760f947f3a7c4c59cc/spu/0",
+          "language": "",
+          "name": "Track 2",
+          "selected": false
+        },
+        {
+          "id": "5ed9cdae2fbcf8302bfe18f319df4368/spu/0",
+          "language": "en",
+          "name": "Track 3 - [English]",
+          "selected": false
+        },
+        {
+          "id": "b0c63cc5be210942a17a2d264934fe17/spu/0",
+          "language": "",
+          "name": "Track 4",
+          "selected": true
+        }
+      ],
+      "time_seconds": 5.184019,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Timing audit",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/sample.vtt",
+          "title": "Effects.mkv"
+        }
+      ],
+      "presets": [
+        "Timing audit"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": false,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "2 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 2,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.005,
+      "previewSource": "image://redesignPreview/frame/6",
+      "previewStatus": "",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 2,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v16-restart",
+    "response": "2a02cf15ea254ff983d0e26ea0fc6fb1.json",
+    "sha256": "ab2c38df59ceceb58c5f3c0595996b723137a1ecf9e18f851a2e556164368fd2",
+    "build": "56019aa51d5987f70cfe665ad29751cf9bbaff5faa39fd1e03142975b650a741",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.000119672,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 1000,
+      "subtitle_fps": 48,
+      "subtitle_tracks": [
+        {
+          "id": "5ed9cdae2fbcf8302bfe18f319df4368/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.01496,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Timing audit",
+      "matches": [],
+      "presets": [
+        "Timing audit"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 0.5000080001280021,
+      "timelineStatus": "598 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 598,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v16-restart",
+    "response": "93c20f7ad2f344839d031835a62a3143.json",
+    "sha256": "3e5e3a0d5f20e979ff1d6e3c82ba15b6944fe1759239295fbf4ea57d569147c5",
+    "build": "56019aa51d5987f70cfe665ad29751cf9bbaff5faa39fd1e03142975b650a741",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.026058824,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 1000,
+      "subtitle_fps": 48,
+      "subtitle_tracks": [
+        {
+          "id": "5ed9cdae2fbcf8302bfe18f319df4368/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "dfc9e755843af1760f947f3a7c4c59cc/spu/0",
+          "language": "",
+          "name": "Track 2",
+          "selected": true
+        }
+      ],
+      "time_seconds": 3.257354,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "Timing audit",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/sample.ass",
+          "title": "Effects.mkv"
+        }
+      ],
+      "presets": [
+        "Timing audit"
+      ],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 0.5000080001280021,
+      "timelineStatus": "2 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 2,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v16-restart",
+    "response": "4d603ac68a9342359ffbf7e754cad761.json",
+    "sha256": "8d57f2ee24db44bd596b3547d15aff2b3c1bc14eebf159a34e10f6b680f80eae",
+    "build": "56019aa51d5987f70cfe665ad29751cf9bbaff5faa39fd1e03142975b650a741",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 0.026058824,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "5ed9cdae2fbcf8302bfe18f319df4368/spu/0",
+          "language": "en",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "dfc9e755843af1760f947f3a7c4c59cc/spu/0",
+          "language": "",
+          "name": "Track 2",
+          "selected": true
+        }
+      ],
+      "time_seconds": 3.257354,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/sample.ass",
+          "title": "Effects.mkv"
+        }
+      ],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "Section reset to VLC defaults.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "2 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 2,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Arial",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 100,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v16-restart",
+    "response": "967f100a8a2847ad82774b1b7c3e5796.json",
+    "sha256": "1aec0eb658795145c7d218bfee8b1be6381a3e31d3c229911ba7877d41f5d0b3",
+    "build": "56019aa51d5987f70cfe665ad29751cf9bbaff5faa39fd1e03142975b650a741",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/257",
+          "language": "",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": null,
+      "position": 0,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": false,
+      "state": 2,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [],
+      "time_seconds": 15.883467999999999,
+      "url": "http://127.0.0.1:35644/fixture.ts",
+      "video_tracks": [
+        {
+          "id": "video/256",
+          "language": "",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/sample.ass",
+          "title": "Effects.mkv"
+        }
+      ],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Waiting for playback statistics…",
+      "statisticsVisible": false,
+      "status": "",
+      "subtitleFPSSupported": false,
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "No subtitle track selected.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 180,
+        "resolution": "320 × 180",
+        "width": 320
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Seek previews are unavailable for nonseekable inputs or inputs without a known video timeline.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is unavailable for this input: a seekable local audio track with known duration is required."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v16-restart",
+    "response": "39d6b71b3acc4d7588485f07e26b44dc.json",
+    "sha256": "e0678356aaf14dd721c3720d76e3244d00ea788c452c44ad7f8eae273e162fd4",
+    "build": "56019aa51d5987f70cfe665ad29751cf9bbaff5faa39fd1e03142975b650a741",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/0",
+          "language": "",
+          "name": "Track 1",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125,
+      "position": 1.6e-08,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [],
+      "time_seconds": 3e-06,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Unsupported/tone.flac",
+      "video_tracks": []
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Effects/Effects.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/fixtures/sample.ass",
+          "title": "Effects.mkv"
+        }
+      ],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.0 MiB\nDecoded video: 0 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 1 blocks\nPlayed audio: 1 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "",
+      "subtitleFPSSupported": false,
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "No subtitle track selected.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "Unavailable",
+        "resolution": "No video track"
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Seek previews are unavailable for nonseekable inputs or inputs without a known video timeline.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v21-repeat-seek",
+    "response": "9b888000bb914eb781f7dcb279b915cd.json",
+    "sha256": "ca915e1ecc7cc9396c03dd1bd92bfca3c26c61c7f63fdd3ab6bc210923ac14e1",
+    "build": "f46b439503da6fc5069deb75d37b838c2caaa61c1a1b7122fe79ae6c1e2828cd",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.22463706897241262,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "ed7bde9a9a2e8b382fd67fdda58a9ee8/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "85ec6f16067505f109fdfb151380cb7c/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 28.084350999999998,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 6.6 MiB\nDecoded video: 36 frames\nDisplayed: 1029 · Lost: 0\nDecoded audio: 216 blocks\nPlayed audio: 214 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "",
+      "subtitleFPSSupported": false,
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.2,
+      "previewSource": "image://redesignPreview/frame/1",
+      "previewStatus": "",
+      "waveformBusy": true,
+      "waveformStatus": "Decoding the selected audio track for its waveform…"
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v21-repeat-seek",
+    "response": "07f2518939d44a38b4865404ce588a66.json",
+    "sha256": "d0fd6484b244217ecf6d3309f04b0a45fbe669f34e06e07fdeb4acbd0bc2237a",
+    "build": "f46b439503da6fc5069deb75d37b838c2caaa61c1a1b7122fe79ae6c1e2828cd",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.22463706897241262,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "ed7bde9a9a2e8b382fd67fdda58a9ee8/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "85ec6f16067505f109fdfb151380cb7c/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 28.084350999999998,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 6.6 MiB\nDecoded video: 36 frames\nDisplayed: 1029 · Lost: 0\nDecoded audio: 216 blocks\nPlayed audio: 214 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "",
+      "subtitleFPSSupported": false,
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.2,
+      "previewSource": "image://redesignPreview/frame/1",
+      "previewStatus": "Decoding seek preview…",
+      "waveformBusy": true,
+      "waveformStatus": "Decoding the selected audio track for its waveform…"
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v21-repeat-seek",
+    "response": "6494762ef5ce421798ef4c686ec0e64a.json",
+    "sha256": "3008bd4e6eb8baa316ea904f87cc411a1338d52aee90413c5688c913e8972ed8",
+    "build": "f46b439503da6fc5069deb75d37b838c2caaa61c1a1b7122fe79ae6c1e2828cd",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": true
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.19713754489245808,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 2,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": true
+        },
+        {
+          "id": "ed7bde9a9a2e8b382fd67fdda58a9ee8/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "85ec6f16067505f109fdfb151380cb7c/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        }
+      ],
+      "time_seconds": 24.646334,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 6.6 MiB\nDecoded video: 38 frames\nDisplayed: 1073 · Lost: 0\nDecoded audio: 227 blocks\nPlayed audio: 225 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "",
+      "subtitleFPSSupported": false,
+      "subtitleLoaded": false,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "SDR source",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": true
+    },
+    "cue_count": 0,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0.2,
+      "previewSource": "image://redesignPreview/frame/2",
+      "previewStatus": "",
+      "waveformBusy": true,
+      "waveformStatus": "Decoding the selected audio track for its waveform…"
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": []
+  },
+  {
+    "run": "native-v22-names",
+    "response": "4310f75545f5486d808edf0f671ce136.json",
+    "sha256": "06ede2f31eadfe8953e225148df5ee2ea490341b1450deb53dc13c319ab95654",
+    "build": "c830929203d215a02b2cc121937ff9ebfad5c46bca8da1e86172772170d158ba",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.00017063533326401164,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "ed7bde9a9a2e8b382fd67fdda58a9ee8/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "85ec6f16067505f109fdfb151380cb7c/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        },
+        {
+          "id": "5ed9cdae2fbcf8302bfe18f319df4368/spu/0",
+          "language": "en",
+          "name": "Track 4 - [English]",
+          "selected": false
+        },
+        {
+          "id": "cb963183d96fad16be76d4bb87becdd6/spu/0",
+          "language": "en",
+          "name": "Track 5 - [English]",
+          "selected": false
+        },
+        {
+          "id": "809b1989f9dab64a65baa7d0e59922d8/spu/0",
+          "language": "en",
+          "name": "Track 6 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.021334,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/profiles/s3-working-profile/redesign-subtitles/b5000fd7-823d-4af6-ad7b-8b37b5567bb4/%5BOpenSubtitles%2067399%5D%20Sintel%20(2010).en.srt",
+          "title": "Show.S01E01.mkv"
+        }
+      ],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.0 MiB\nDecoded video: 0 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "26 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "Transfer not specified",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 26,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": [
+      "Chernobyl.S01E03.INTERNAL.1080p.BluRay.X264-REWARD.en - Chernoby.en.srt [SubSource 3067660-0605e3ad] — Track 4 - [English]",
+      "Sintel.2010.Xvid-VODO - sintel_en.en.srt [OpenSubtitles 65509] — Track 5 - [English]",
+      "Sintel (2010).en.srt [OpenSubtitles 67399] — Track 6 - [English]"
+    ]
+  },
+  {
+    "run": "native-v23-names-restart",
+    "response": "cfc66abe644741b395225a10ee6e4026.json",
+    "sha256": "dffbb68fd2f688750d21e08255706e5bd0b5f8f1c0c987dd232ae8e3561dce74",
+    "build": "c830929203d215a02b2cc121937ff9ebfad5c46bca8da1e86172772170d158ba",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.00017063533326401164,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "ed7bde9a9a2e8b382fd67fdda58a9ee8/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "85ec6f16067505f109fdfb151380cb7c/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        },
+        {
+          "id": "809b1989f9dab64a65baa7d0e59922d8/spu/0",
+          "language": "en",
+          "name": "Track 4 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.021334,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.0 MiB\nDecoded video: 0 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "26 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "Transfer not specified",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 26,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": [
+      "Sintel (2010).en.srt [OpenSubtitles 67399] — Track 4 - [English]"
+    ]
+  },
+  {
+    "run": "native-v23-names-restart",
+    "response": "5fae2d071222492c844a321bc051e41d.json",
+    "sha256": "9e947faa50a4f5dd326596b8188efc4bc4bd7d95a210946a48571a6a59acad26",
+    "build": "c830929203d215a02b2cc121937ff9ebfad5c46bca8da1e86172772170d158ba",
+    "core": {
+      "audio_delay_ms": 0,
+      "audio_tracks": [
+        {
+          "id": "audio/2",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "audio/3",
+          "language": "deu",
+          "name": "Track 2 - [German]",
+          "selected": false
+        }
+      ],
+      "length_seconds": 125.021,
+      "position": 0.00017063533326401164,
+      "rate": 1,
+      "reverse_supported": false,
+      "seekable": true,
+      "state": 3,
+      "subtitle_delay_ms": 0,
+      "subtitle_fps": 0,
+      "subtitle_tracks": [
+        {
+          "id": "spu/4",
+          "language": "eng",
+          "name": "Track 1 - [English]",
+          "selected": false
+        },
+        {
+          "id": "ed7bde9a9a2e8b382fd67fdda58a9ee8/spu/0",
+          "language": "en",
+          "name": "Track 2 - [English]",
+          "selected": false
+        },
+        {
+          "id": "85ec6f16067505f109fdfb151380cb7c/spu/0",
+          "language": "de",
+          "name": "Track 3 - [German]",
+          "selected": false
+        },
+        {
+          "id": "809b1989f9dab64a65baa7d0e59922d8/spu/0",
+          "language": "en",
+          "name": "Track 4 - [English]",
+          "selected": false
+        },
+        {
+          "id": "5ed9cdae2fbcf8302bfe18f319df4368/spu/0",
+          "language": "en",
+          "name": "Track 5 - [English]",
+          "selected": true
+        }
+      ],
+      "time_seconds": 0.021334,
+      "url": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+      "video_tracks": [
+        {
+          "id": "video/1",
+          "language": "und",
+          "name": "Track 1",
+          "selected": true
+        }
+      ]
+    },
+    "tools": {
+      "activePreset": "",
+      "matches": [
+        {
+          "choices": [],
+          "media": "file:///E:/Temp/vlc-s3-20261018/fixtures/Show/Show.S01E01.mkv",
+          "state": "Chosen manually",
+          "subtitle": "file:///E:/Temp/vlc-s3-20261018/runtime/portable/redesign-subtitles/ea2b3265-0458-4b6e-902b-4120fc3f2325/%5BSubSource%203067660-0605e3ad%5D%20Chernobyl.S01E03.INTERNAL.1080p.BluRay.X264-REWARD.en%20-%20Chernoby.en.srt",
+          "title": "Show.S01E01.mkv"
+        }
+      ],
+      "presets": [],
+      "sleepMinutes": 0,
+      "sleepStatus": "Sleep timer off. It is not restored after restarting VLC.",
+      "statisticsText": "Read: 0.0 MiB\nDecoded video: 0 frames\nDisplayed: 0 · Lost: 0\nDecoded audio: 0 blocks\nPlayed audio: 0 · Lost: 0",
+      "statisticsVisible": true,
+      "status": "Subtitle track loaded and selected.",
+      "subtitleFPSSupported": true,
+      "subtitleLoaded": true,
+      "subtitleTimeScale": 1,
+      "timelineStatus": "598 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.",
+      "timelineVisible": true,
+      "videoInfo": {
+        "hdr": "Transfer not specified",
+        "height": 540,
+        "resolution": "960 × 540",
+        "width": 960
+      },
+      "waveformVisible": false
+    },
+    "cue_count": 598,
+    "options": {
+      "brightness": 1,
+      "colorthres-color": 16711680,
+      "colorthres-saturationthres": 20,
+      "colorthres-similaritythres": 15,
+      "compressor-attack": 25,
+      "compressor-knee": 5,
+      "compressor-makeup-gain": 7,
+      "compressor-ratio": 4,
+      "compressor-release": 100,
+      "compressor-rms-peak": 0.20000000298023224,
+      "compressor-threshold": -11,
+      "contrast": 1,
+      "crop-bottom": 0,
+      "crop-left": 0,
+      "crop-right": 0,
+      "crop-top": 0,
+      "equalizer-2pass": false,
+      "equalizer-bands": "",
+      "equalizer-preamp": 12,
+      "equalizer-preset": "flat",
+      "extract-component": 16711680,
+      "freetype-absolute-fontsize": 0,
+      "freetype-background-opacity": 0,
+      "freetype-color": 16777215,
+      "freetype-font": "Courier New",
+      "freetype-outline-color": 0,
+      "freetype-outline-thickness": 4,
+      "gamma": 1,
+      "gradfun-radius": 16,
+      "gradient-cartoon": true,
+      "gradient-mode": "gradient",
+      "gradient-type": 0,
+      "grain-variance": 2,
+      "hue": 0,
+      "pitch-shift": 0,
+      "posterize-level": 6,
+      "rotate-angle": 30,
+      "saturation": 1,
+      "sepia-intensity": 120,
+      "sharpen-sigma": 0.05000000074505806,
+      "spatializer-damp": 0.5,
+      "spatializer-dry": 0.5,
+      "spatializer-roomsize": 0.8500000238418579,
+      "spatializer-wet": 0.4000000059604645,
+      "spatializer-width": 1,
+      "stereowiden-crossfeed": 0.30000001192092896,
+      "stereowiden-delay": 20,
+      "stereowiden-dry-mix": 0.800000011920929,
+      "stereowiden-feedback": 0.30000001192092896,
+      "sub-margin": 0,
+      "sub-text-scale": 125,
+      "subsdelay-factor": 2,
+      "subsdelay-mode": 1,
+      "transform-type": "90"
+    },
+    "filters": {
+      "adjust": false,
+      "colorthres": false,
+      "compressor": false,
+      "equalizer": false,
+      "extract": false,
+      "gradfun": false,
+      "gradient": false,
+      "grain": false,
+      "invert": false,
+      "posterize": false,
+      "rotate": false,
+      "scaletempo_pitch": false,
+      "sepia": false,
+      "sharpen": false,
+      "spatializer": false,
+      "stereo_widen": false,
+      "subsdelay": false,
+      "transform": false
+    },
+    "analysis": {
+      "previewPosition": 0,
+      "previewSource": "",
+      "previewStatus": "Hover the seek bar for a preview of this input.",
+      "waveformBusy": false,
+      "waveformStatus": "Audio waveform is off."
+    },
+    "search": {
+      "archiveFiles": [],
+      "busy": false,
+      "configured": true,
+      "provider": 0,
+      "status": "Cancelled. No pending download will be associated."
+    },
+    "qml_errors": [],
+    "labels": [
+      "Sintel (2010).en.srt [OpenSubtitles 67399] — Track 4 - [English]",
+      "Chernobyl.S01E03.INTERNAL.1080p.BluRay.X264-REWARD.en - Chernoby.en.srt [SubSource 3067660-0605e3ad] — Track 5 - [English]"
+    ]
+  }
+]

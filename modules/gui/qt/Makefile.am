@@ -291,6 +291,9 @@ libqt_plugin_la_SOURCES = \
 	player/delay_estimator.cpp \
 	player/delay_estimator.hpp \
 	player/player_controller.cpp player/player_controller.hpp player/player_controller_p.hpp \
+	player/player_media_tools.cpp player/player_media_tools.hpp player/subtitle_data.hpp player/subtitle_archive.hpp \
+	player/subtitle_search.cpp player/subtitle_search.hpp \
+	player/player_media_analysis.cpp player/player_media_analysis.hpp \
 	player/player_controlbar_model.cpp player/player_controlbar_model.hpp \
 	player/control_list_model.cpp player/control_list_model.hpp \
 	player/control_list_filter.cpp \
@@ -493,6 +496,9 @@ nodist_libqt_plugin_la_SOURCES = \
 	player/delay_estimator.moc.cpp \
 	player/input_models.moc.cpp \
 	player/player_controller.moc.cpp \
+	player/player_media_tools.moc.cpp \
+	player/subtitle_search.moc.cpp \
+	player/player_media_analysis.moc.cpp \
 	player/player_controlbar_model.moc.cpp \
 	player/control_list_model.moc.cpp \
 	player/control_list_filter.moc.cpp \
@@ -799,6 +805,8 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/volume-level.svg \
 	pixmaps/redesign/sort.svg \
 	pixmaps/redesign/video.svg \
+	pixmaps/redesign/playback.svg \
+	pixmaps/redesign/chevron-down.svg \
 	pixmaps/redesign/choice-selected.svg \
 	pixmaps/redesign/choice-empty.svg \
 	pixmaps/redesign/remove.svg \
@@ -1208,6 +1216,12 @@ libqml_module_player_a_QML = \
 	player/qml/PlayerChromeState.qml \
 	player/qml/PlayerIconButton.qml \
 	player/qml/PlayerTracksPopup.qml \
+	player/qml/PlayerSettingRow.qml \
+	player/qml/PlayerSettingsChoice.qml \
+	player/qml/PlayerSettingsSwitch.qml \
+	player/qml/PlayerSettingsPopup.qml \
+	player/qml/PlayerSubtitleDialog.qml \
+	player/qml/PlayerSeekAnalysis.qml \
 	player/qml/PlayerQueueHeader.qml \
 	player/qml/RedesignControlBar.qml \
 	player/qml/RedesignTopBar.qml \

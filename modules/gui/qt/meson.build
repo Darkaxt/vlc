@@ -16,10 +16,14 @@ qt6_dep = dependency('qt6',
     version: '>=6.2',
     modules: [
         'Core', 'Gui', 'Widgets', 'Qml',
-        'Quick', 'QuickControls2'
+        'Quick', 'QuickControls2', 'Network'
         ],
     private_headers: true,
     required: get_option('qt'))
+
+if qt6_dep.found()
+    qt_extra_deps += dependency('libarchive', version: '>=3.1.0')
+endif
 
 # Qt module doesn't provide the framework path to moc executable, so we
 # need to help moc find them. It's needed for QtQml/ module registration.
@@ -121,6 +125,9 @@ moc_headers = files(
     'player/input_models.hpp',
     'player/delay_estimator.hpp',
     'player/player_controller.hpp',
+    'player/player_media_tools.hpp',
+    'player/subtitle_search.hpp',
+    'player/player_media_analysis.hpp',
     'player/player_controlbar_model.hpp',
     'player/control_list_model.hpp',
     'player/control_list_filter.hpp',
@@ -416,7 +423,15 @@ qt_plugin_sources = files(
     'player/delay_estimator.cpp',
     'player/input_models.hpp',
     'player/player_controller.cpp',
+    'player/player_media_tools.cpp',
+    'player/subtitle_search.cpp',
+    'player/player_media_analysis.cpp',
+    'player/subtitle_data.hpp',
+    'player/subtitle_archive.hpp',
     'player/player_controller.hpp',
+    'player/player_media_tools.hpp',
+    'player/subtitle_search.hpp',
+    'player/player_media_analysis.hpp',
     'player/player_controller_p.hpp',
     'player/player_controlbar_model.cpp',
     'player/player_controlbar_model.hpp',
@@ -744,6 +759,12 @@ qml_modules += {
        'player/qml/PlayerQueueHeader.qml',
        'player/qml/PlayerResume.qml',
        'player/qml/PlayerTracksPopup.qml',
+       'player/qml/PlayerSettingRow.qml',
+       'player/qml/PlayerSettingsChoice.qml',
+       'player/qml/PlayerSettingsSwitch.qml',
+       'player/qml/PlayerSettingsPopup.qml',
+       'player/qml/PlayerSubtitleDialog.qml',
+       'player/qml/PlayerSeekAnalysis.qml',
        'player/qml/RedesignControlBar.qml',
        'player/qml/RedesignTopBar.qml',
        'player/qml/PlayerControlLayout.qml',

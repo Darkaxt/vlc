@@ -196,6 +196,10 @@ vlc_module_begin ()
         change_safe()
 
     add_obsolete_integer( "freetype-fontsize" ) /* since 4.0.0 */
+    add_integer_with_range( "freetype-absolute-fontsize", 0, 0, 1024,
+                           N_("Subtitle font size in pixels"),
+                           N_("Use zero for the automatic relative font size.") )
+        change_safe()
     add_obsolete_integer( "freetype-rel-fontsize" ) /* since 4.0.0 */
 
     add_bool( "freetype-yuvp", false, YUVP_TEXT,
@@ -713,6 +717,20 @@ static void UpdateDefaultLiveStyles( filter_t *p_filter )
     text_style_t *p_style = p_sys->p_default_style;
 
     p_style->i_font_color = var_InheritInteger( p_filter, "freetype-color" );
+    p_style->i_outline_color = var_InheritInteger( p_filter, "freetype-outline-color" );
+    p_style->i_font_size = var_InheritInteger( p_filter, "freetype-absolute-fontsize" );
+#ifdef HAVE_GET_FONT_BY_FAMILY_NAME
+    char *font = var_InheritString( p_filter, "freetype-font" );
+    if( font && *font && (!p_style->psz_fontname || strcmp(font, p_style->psz_fontname)) )
+    {
+        free( p_style->psz_fontname );
+        p_style->psz_fontname = font;
+        font = NULL;
+        /* Reload the default face on this render, preserving the font cache. */
+        p_sys->p_faceid = NULL;
+    }
+    free( font );
+#endif
 
     p_style->i_background_alpha = var_InheritInteger( p_filter, "freetype-background-opacity" );
     p_style->i_background_color = var_InheritInteger( p_filter, "freetype-background-color" );
@@ -1040,6 +1058,8 @@ static subpicture_region_t *Render( filter_t *p_filter,
     p_sys->i_scale = ( b_grid ) ? 100 : var_InheritInteger( p_filter, "sub-text-scale");
 
     UpdateDefaultLiveStyles( p_filter );
+    if( !b_grid && p_sys->p_default_style->i_font_size > 0 )
+        p_sys->i_scale = 100; /* An explicit pixel size is independent of relative scaling. */
 
     int i_font_default_size = ConvertToLiveSize( p_filter, p_sys->p_default_style );
     if( !p_sys->p_faceid || i_font_default_size != p_sys->i_font_default_size )

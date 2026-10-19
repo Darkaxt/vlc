@@ -6,6 +6,8 @@
         <file alias="volume-cone.svg">pixmaps/redesign/volume-cone.svg</file>
         <file alias="volume-level.svg">pixmaps/redesign/volume-level.svg</file>
         <file alias="video.svg">pixmaps/redesign/video.svg</file>
+        <file alias="playback.svg">pixmaps/redesign/playback.svg</file>
+        <file alias="chevron-down.svg">pixmaps/redesign/chevron-down.svg</file>
         <file alias="choice-selected.svg">pixmaps/redesign/choice-selected.svg</file>
         <file alias="choice-empty.svg">pixmaps/redesign/choice-empty.svg</file>
         <file alias="sort.svg">pixmaps/redesign/sort.svg</file>

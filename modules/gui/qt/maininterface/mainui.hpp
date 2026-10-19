@@ -22,6 +22,7 @@
 
 class VLCVarChoiceModel;
 
+class PlayerMediaAnalysis;
 class MainUI : public QObject
 {
     Q_OBJECT
@@ -49,6 +50,7 @@ private:
     QQuickItem* m_rootItem = nullptr;
 
     QPointer<QQmlEngine> m_engineBound;
+    PlayerMediaAnalysis *m_playerMediaAnalysis = nullptr;
 };
 
 namespace vlc {

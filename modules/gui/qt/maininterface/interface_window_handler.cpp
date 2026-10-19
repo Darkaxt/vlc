@@ -527,6 +527,11 @@ bool InterfaceWindowHandler::applyKeyEvent(QKeyEvent * event) const
     //       inherit from QQuickControl we have to declare the 'visualFocus' property ourselves.
     if (item)
     {
+        // Open Qt Quick popups own keyboard navigation even after mouse focus.
+        // Otherwise player hotkeys consume the ComboBox's arrows and Enter.
+        for (auto ancestor = item; ancestor; ancestor = ancestor->parentItem())
+            if (ancestor->inherits("QQuickPopupItem"))
+                return false;
 
         QVariant visualFocus = QQmlProperty::read(item, "visualFocus", qmlContext(item));
         if (visualFocus.isValid())

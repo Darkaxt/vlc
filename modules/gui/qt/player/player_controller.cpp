@@ -1379,12 +1379,32 @@ void PlayerController::setTime(VLCTime new_time)
 void PlayerController::setPosition(double position)
 {
     Q_D(PlayerController);
-    if (qFuzzyCompare(d->m_position, position))
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    const auto recordSeek = [this, position](const char *status) {
+        auto requests = property("redesignSeekRequests").toList();
+        if (requests.size() >= 8) requests.removeFirst();
+        requests.append(QVariantMap{{QStringLiteral("position"), position},
+                                    {QStringLiteral("status"), QString::fromLatin1(status)}});
+        setProperty("redesignSeekRequests", requests);
+    };
+#endif
+    if (qFuzzyCompare(d->m_position, position)) {
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        recordSeek("unchanged");
+#endif
         return;
+    }
 
     vlc_player_locker lock{ d->m_player };
-    if( !d->isCurrentItemSynced() )
+    if( !d->isCurrentItemSynced() ) {
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        recordSeek("input_not_synced");
+#endif
         return;
+    }
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    recordSeek("submitted");
+#endif
     vlc_player_SetPosition( d->m_player, position );
 }
 
@@ -2224,14 +2244,42 @@ void PlayerController::refreshMediaMeta( input_item_t *p_item )
 
 bool PlayerController::associateSubtitleFile(const QString &uri)
 {
+    Q_D(PlayerController);
+    const QByteArray prefix = TrackListModel::associatedSourcePrefix(uri.toUtf8());
+    bool present = false;
+    {
+        vlc_player_locker lock{d->m_player};
+        if (!d->isCurrentItemSynced()) return false;
+        // VLC can already have autodetected this exact local source. Reuse its
+        // real track rather than loading it again under the same stable id.
+        for (size_t i = 0; i < vlc_player_GetTrackCount(d->m_player, SPU_ES); ++i) {
+            const auto *track = vlc_player_GetTrackAt(d->m_player, SPU_ES, i);
+            if (QByteArray(vlc_es_id_GetStrId(track->es_id)).startsWith(prefix)) {
+                if (!track->selected) vlc_player_SelectEsId(d->m_player, track->es_id, VLC_PLAYER_SELECT_EXCLUSIVE);
+                present = true;
+                break;
+            }
+        }
+    }
+    if (present) {
+        d->m_subtitleTracks.setAssociatedSourceLabel(uri, QUrl(uri).fileName());
+        return true;
+    }
     return AddAssociatedMedia(SPU_ES, uri, true, true, true) == VLC_SUCCESS;
 }
 
 int PlayerController::AddAssociatedMedia(es_format_category_e cat, const QString &uri, bool select, bool notify, bool check_ext)
 {
     Q_D(PlayerController);
-    vlc_player_locker lock{ d->m_player };
-    return vlc_player_AddAssociatedMedia( d->m_player, cat, qtu(uri), select, notify, check_ext );
+    int result;
+    {
+        vlc_player_locker lock{ d->m_player };
+        if (!d->isCurrentItemSynced()) return VLC_EGENERIC;
+        result = vlc_player_AddAssociatedMedia(d->m_player, cat, qtu(uri), select, notify, check_ext);
+    }
+    if (result == VLC_SUCCESS && cat == SPU_ES)
+        d->m_subtitleTracks.setAssociatedSourceLabel(uri, QUrl(uri).fileName());
+    return result;
 }
 
 #define QABSTRACTLIST_GETTER( type, fun, var ) \

@@ -60,6 +60,9 @@
 #ifdef _WIN32
     Q_IMPORT_PLUGIN(QModernWindowsStylePlugin)
     Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+    // VLC discards qmake's generated plugin-import unit. Register the native
+    // TLS backend explicitly, as with the other static Qt plugins above.
+    Q_IMPORT_PLUGIN(QSchannelBackend)
     // Q_IMPORT_PLUGIN(QWindowsDirect2DIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
     Q_IMPORT_PLUGIN(QMacStylePlugin)

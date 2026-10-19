@@ -235,6 +235,22 @@
       "sha256": "23ba9b569266b3de4e619da24ee18ff932730a19efb4d9bc7bd5561c97b49ef4"
     },
     {
+      "id": "999:4802",
+      "name": "name=playback, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "playback.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "dbc7cfaa9751cd7bf958c22e67996d9ef984a742c051f97963a87aab315b38d7"
+    },
+    {
+      "id": "71:868",
+      "name": "name=chevron, direction=down, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "chevron-down.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "a25f4f67af696a87e0389b7e9f27191ebf4da40ca1c3bae2b30eb250dbfacb59"
+    },
+    {
       "id": "494:2394",
       "name": "name=check, direction=default, state=active, value=default, EQ=default, two-tone=no",
       "filename": "choice-selected.svg",

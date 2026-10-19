@@ -15,11 +15,11 @@ T.Pane {
     property Item popupParent: parent
     property bool queueVisible: false
     readonly property bool compact: width < PlayerStyle.px(760)
-    readonly property bool menuOpen: subtitles.visible || audio.visible || playbackMenu.shown
+    readonly property bool menuOpen: subtitles.visible || audio.visible || settings.visible || subtitleMatching.visible || playbackMenu.shown
     readonly property real sliderY: (height - seek.height) / 2
     signal toggleQueue()
     signal forceUnlock()
-    onForceUnlock: { subtitles.close(); audio.close(); playbackMenu.close() }
+    onForceUnlock: { subtitles.close(); audio.close(); settings.close(); subtitleMatching.close(); playbackMenu.close() }
     implicitHeight: PlayerStyle.px(54)
     padding: 0
     hoverEnabled: true
@@ -32,6 +32,17 @@ T.Pane {
         color: PlayerStyle.chrome
     }
 
+    T.Pane {
+        parent: bar.popupParent
+        x: PlayerStyle.px(20); y: PlayerStyle.px(60)
+        width: Math.min(PlayerStyle.px(400), parent.width - PlayerStyle.px(40))
+        padding: PlayerStyle.px(16)
+        visible: MediaTools.statisticsVisible
+        z: 1
+        background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(8); opacity: 0.9 }
+        contentItem: Text { text: MediaTools.statisticsText; textFormat: Text.PlainText; color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); wrapMode: Text.Wrap }
+        Accessible.name: qsTr("Playback statistics")
+    }
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: PlayerStyle.px(bar.compact ? 12 : 20)
@@ -96,8 +107,15 @@ T.Pane {
                 Accessible.name: qsTr("Playback position")
                 Accessible.description: Player.time.formatHMS(0) + " / " + Player.length.formatHMS(0)
                 AccessibleCompat.id: "progressSlider"
-                Binding on value { when: !seek.pressed; value: Player.position }
+                Binding on value {
+                    when: !seek.pressed
+                    value: Player.position
+                    // Retain the current clock value when pressing. Restoring
+                    // the last edit suppresses moved() on a repeated seek.
+                    restoreMode: Binding.RestoreNone
+                }
                 onMoved: Player.position = value
+                PlayerSeekAnalysis { overlayParent: bar.popupParent }
                 background: Rectangle {
                     color: PlayerStyle.timeline
                     radius: PlayerStyle.px(6)
@@ -156,7 +174,11 @@ T.Pane {
                 Accessible.name: qsTr("Volume")
                 Accessible.description: qsTr("%1 percent").arg(Math.round(Player.volume * 100))
                 AccessibleCompat.id: "volumeSlider"
-                Binding on value { when: !volume.pressed; value: Player.volume }
+                Binding on value {
+                    when: !volume.pressed
+                    value: Player.volume
+                    restoreMode: Binding.RestoreNone
+                }
                 onMoved: { Player.volume = value; Player.muted = false }
                 handle: Item {}
                 background: Item {
@@ -198,7 +220,9 @@ T.Pane {
                 id: toolsButton
                 glyph: "tools"
                 description: qsTr("Playback, video tracks and tools")
-                onClicked: playbackMenu.popup(mapToGlobal(0, 0))
+                checked: settings.visible
+                AccessibleCompat.id: "toolsButton"
+                onClicked: { audio.close(); subtitles.close(); settings.showPage(0) }
             }
             PlayerIconButton {
                 id: subtitleButton
@@ -241,6 +265,7 @@ T.Pane {
         id: subtitles
         parent: bar.popupParent
         subtitles: true
+        onSettingsRequested: page => settings.showPage(page)
         x: parent.width - width - PlayerStyle.px(20)
         y: bar.y - height - PlayerStyle.px(20)
         onClosed: subtitleButton.forceActiveFocus(Qt.PopupFocusReason)
@@ -249,9 +274,25 @@ T.Pane {
         id: audio
         parent: bar.popupParent
         subtitles: false
+        onSettingsRequested: page => settings.showPage(page)
         x: parent.width - width - PlayerStyle.px(20)
         y: bar.y - height - PlayerStyle.px(20)
         onClosed: audioButton.forceActiveFocus(Qt.PopupFocusReason)
+    }
+    PlayerSettingsPopup {
+        id: settings
+        parent: bar.popupParent
+        x: Math.max(PlayerStyle.px(20), parent.width - width - PlayerStyle.px(20))
+        y: bar.y - height - PlayerStyle.px(20)
+        onMatchSubtitlesRequested: { subtitleMatching.online = false; subtitleMatching.open() }
+        onRemoteSubtitlesRequested: { subtitleMatching.online = true; subtitleMatching.open() }
+        onClosed: toolsButton.forceActiveFocus(Qt.PopupFocusReason)
+    }
+    PlayerSubtitleDialog {
+        id: subtitleMatching
+        parent: bar.popupParent
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
     }
     Menus.QmlGlobalMenu { id: playbackMenu; ctx: MainCtx }
 }

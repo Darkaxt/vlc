@@ -1,0 +1,243 @@
+{
+  "stage": "S3",
+  "status": "ACTIVE",
+  "product_acceptance_verified": true,
+  "delivery_remaining": [
+    "commit and authorized GitHub source synchronization"
+  ],
+  "scope_stop": "before S4",
+  "normal_runtime": {
+    "plugin_cache_exit": 0,
+    "pid": 126684,
+    "desktop": "VLC-S2-f74932c7255a4284a07a8ed816336e24",
+    "exit_code": 0,
+    "qml_runtime_errors": [],
+    "checks": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true
+    },
+    "qt_plugin_sha256": "af1d75c48a7b6d043cfc9ae20ad82f0b53ee056bfc9d2b808f2443659f6804fa",
+    "upnp_plugin_sha256": "9e5cf8013a2f5819b833f3a08f46ef238b45daf020b0c584a6e8970b00c834c5",
+    "debug_markers_absent": [
+      "VLC_PLAYER_DIAGNOSTICS_DIR",
+      "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+      "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+      "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+      "redesignSeekRequests",
+      "offscreen_session_is_capture_only",
+      "PlayerDiagnostics"
+    ],
+    "profile_isolation": "Existing empty portable directory beside executable",
+    "capture_scope": "Inactive desktop, no OS input or desktop switching",
+    "verified_utc": "2026-10-19T03:06:40.304782+00:00",
+    "passed": true
+  },
+  "implementation_source_parity": {
+    "passed": true,
+    "mismatches": [],
+    "verified_sources": {
+      "contrib/src/qt/rules.mak": "42d705a6f6c5870608a3bb3e880df1c2190af7018f4f927ce1be37238a9a6334",
+      "modules/audio_filter/equalizer.c": "efa9f0840ffd0451c592b83ebbdf5eeff0bed36e79d0b83a5d2ff015ba61e1ae",
+      "modules/gui/qt/Makefile.am": "66a542fb1a2d4186147f66fdf8d372327ee7d31edf3172589f4051b34e26a549",
+      "modules/gui/qt/assets.qrc": "c0bb3f838bcc58dc9944ffe543f6e2c7184ef8b5b1cb95b8da6d65450f49155f",
+      "modules/gui/qt/maininterface/interface_window_handler.cpp": "110847596251a0a75c73830ae3c5b0f64b973e88dd6f18374c3cc2f0ea4a90af",
+      "modules/gui/qt/maininterface/mainctx_win32.cpp": "51e4079e83c5e50578715715fd2ea2ff9decf76af6a98ece39fb259e9bcc6ce0",
+      "modules/gui/qt/maininterface/mainui.cpp": "1149cf78c4ce917f9f2b34dbe76266f91a647abcf7a8b74a84419fa9aa219ac0",
+      "modules/gui/qt/maininterface/mainui.hpp": "b2c61c0f986e4d2aba141ab0216002da4fdc4a5fbe7b66a426723411e0f54b72",
+      "modules/gui/qt/maininterface/player_diagnostics.hpp": "77184c1ba3e8482544d92a8e0f1e3c61e4ce1b4c7935d9ae392021783d7d2aee",
+      "modules/gui/qt/meson.build": "acfa18470497a278dd11933eeaccb5694f842b88a1f931b05dab59b28e988e60",
+      "modules/gui/qt/pixmaps/redesign/chevron-down.svg": "a25f4f67af696a87e0389b7e9f27191ebf4da40ca1c3bae2b30eb250dbfacb59",
+      "modules/gui/qt/pixmaps/redesign/manifest.json": "ca19648dc757cc3596f96ba46333e82c2dc06419d6ff809d99e81ba575549155",
+      "modules/gui/qt/pixmaps/redesign/playback.svg": "dbc7cfaa9751cd7bf958c22e67996d9ef984a742c051f97963a87aab315b38d7",
+      "modules/gui/qt/player/input_models.cpp": "e8f3b953a9bd6710bbb40776d889f49a290a11f4303800bdcf3074f1c8227303",
+      "modules/gui/qt/player/input_models.hpp": "a34e96bf92e0f15f7383b7fe5a18c59e43acef52c14d44251924ab06c1239e05",
+      "modules/gui/qt/player/player_controller.cpp": "cc44202f596cb7b217d42a4c4d6f769df5704878428fbfa5ca429ea5c0bf3bfe",
+      "modules/gui/qt/player/player_media_analysis.cpp": "a0ab3d256bc00c09ffcacd0fca56ecdac691a1e81c9dfc11c5a9491ce953a335",
+      "modules/gui/qt/player/player_media_analysis.hpp": "65a296c4237072d74d62644c37bbb73563c70e9bc0401b4bc82c76632f2975fe",
+      "modules/gui/qt/player/player_media_tools.cpp": "609b2c55a8f90fc1a0b3c3388918b53c91e018002faaa244db86f6693155741b",
+      "modules/gui/qt/player/player_media_tools.hpp": "fdb5b473887129b54209c50be76ea6d3ad78c707482ebbaa20dc7736798d0116",
+      "modules/gui/qt/player/qml/PlayerSeekAnalysis.qml": "389725848656a0451dc1ce28a9727daa4e49302559b8057cca40d91d4b6f52b3",
+      "modules/gui/qt/player/qml/PlayerSettingRow.qml": "2938e58f0f541c5863869e2cf68bf7b1fe0ff7afe4ef81403fd5967d34d9411e",
+      "modules/gui/qt/player/qml/PlayerSettingsChoice.qml": "456fc049dc56445af4a83d7ea431b4ef1165781fbd5a1a0e81e3467f53569abe",
+      "modules/gui/qt/player/qml/PlayerSettingsPopup.qml": "d8c5217d70399fcf3d52e86f96a70079e1059a8a26c1f09f45e4cbd697a54ace",
+      "modules/gui/qt/player/qml/PlayerSettingsSwitch.qml": "24fa37df3119e3450c6978c5255a4685eb7514cfb06217da0a1ea0fb4bf69040",
+      "modules/gui/qt/player/qml/PlayerSubtitleDialog.qml": "8c9f617ffa4a15a0fe8af1d81549c14ba5f6b20637f7c819be18911e1d61f4a9",
+      "modules/gui/qt/player/qml/PlayerTracksPopup.qml": "83dee539c7695a94eb6c750ba1d45565076e15a107b344b2e8311be39a2ba02c",
+      "modules/gui/qt/player/qml/RedesignControlBar.qml": "ab67532da77ccbe6ec09cfd421c0ea40b7ea9c1bf65cdc63436afee9fcc843b7",
+      "modules/gui/qt/player/subtitle_archive.hpp": "8466d4cdc649ed0ed783241c32b10317e2edd64c6a15648114cc80a0fd040bc6",
+      "modules/gui/qt/player/subtitle_data.hpp": "e76d6f2201c05bc7eadfb8a1a8bb740dccf93f47c39742f36f6e7508fbac8ce7",
+      "modules/gui/qt/player/subtitle_search.cpp": "9aa1a71f229415de916729e6d226618609253d1dfa054f4bee0c49e690c4b533",
+      "modules/gui/qt/player/subtitle_search.hpp": "6b7a6a8782230ffd8a67826ac9eb30b8051d0b95a6c2759ce37dc83690fad92d",
+      "modules/gui/qt/plugins.hpp": "8eafa10cf9b93d3389f39b422b729967a14477470e471db1ec2438c080b1772d",
+      "modules/gui/qt/qt6.pro": "9ab9d0461e958ba6ea12f3d2dfeb23d3835e9a36c3e4038d2c320655aac37a54",
+      "modules/text_renderer/freetype/freetype.c": "978ab4254e15c6b665de86e6e977a171adbe33155f5dc6725f71f0ebc5d90f9d",
+      "tools/design-source/player-assets.mjs": "66bcccd7d73a10d5e2dc4f03047a492811b04806b47443241aed13fae6f7877c",
+      "tools/windows-player/build-player.sh": "e2c0d39a7d0b4fa547260b970898bc46a29291be71ff50d1f372cf7ae0c48b87",
+      "tools/windows-player/inspect-player.py": "fd740488a58a41b47b316d5df1bf5446972a45021903da21f6ba642661ba2390",
+      "tools/windows-player/pending-connect-peer.py": "ffbf24126796120854a6e05ade80155263e105f2412d78a4d063690d76e56cb8",
+      "tools/windows-player/prepare-runtime-crt.sh": "a0be244f6126f2ab245d970336b5d064ecad687948ae82edd89e5fe6dfac5590",
+      "tools/windows-player/rebuild-qt-network.sh": "4beb676f67bfbcb6d1a2deac200affc3f702232770a7d75b47f3b484f151aeb3",
+      "tools/windows-player/rebuild-upnp.sh": "c1c9ed753a62bbfc055a5de79c3cd89fc2653a7541a95b030bf303d53ce91280",
+      "tools/windows-player/subtitle-data-check.cpp": "f58a4cf0f6345d158db2df68ca94287eba5094ce83fa7cd8b707d53649c9da58",
+      "tools/windows-player/subtitle-data-check.pro": "a19a7aed943a41446a0a9863e087bd50f3fce565b530f378ad183d7e5a3f7ff4",
+      "tools/windows-player/verify-player-runtime.py": "509003b73c47587dfbaf5991bdfbd03213aabb8a29f220ad74171f091a01a380"
+    },
+    "committed_source_sha256": {
+      "contrib/src/qt/rules.mak": "42d705a6f6c5870608a3bb3e880df1c2190af7018f4f927ce1be37238a9a6334",
+      "modules/audio_filter/equalizer.c": "efa9f0840ffd0451c592b83ebbdf5eeff0bed36e79d0b83a5d2ff015ba61e1ae",
+      "modules/gui/qt/Makefile.am": "66a542fb1a2d4186147f66fdf8d372327ee7d31edf3172589f4051b34e26a549",
+      "modules/gui/qt/assets.qrc": "c0bb3f838bcc58dc9944ffe543f6e2c7184ef8b5b1cb95b8da6d65450f49155f",
+      "modules/gui/qt/maininterface/interface_window_handler.cpp": "110847596251a0a75c73830ae3c5b0f64b973e88dd6f18374c3cc2f0ea4a90af",
+      "modules/gui/qt/maininterface/mainctx_win32.cpp": "51e4079e83c5e50578715715fd2ea2ff9decf76af6a98ece39fb259e9bcc6ce0",
+      "modules/gui/qt/maininterface/mainui.cpp": "1149cf78c4ce917f9f2b34dbe76266f91a647abcf7a8b74a84419fa9aa219ac0",
+      "modules/gui/qt/maininterface/mainui.hpp": "b2c61c0f986e4d2aba141ab0216002da4fdc4a5fbe7b66a426723411e0f54b72",
+      "modules/gui/qt/maininterface/player_diagnostics.hpp": "77184c1ba3e8482544d92a8e0f1e3c61e4ce1b4c7935d9ae392021783d7d2aee",
+      "modules/gui/qt/meson.build": "acfa18470497a278dd11933eeaccb5694f842b88a1f931b05dab59b28e988e60",
+      "modules/gui/qt/pixmaps/redesign/chevron-down.svg": "a25f4f67af696a87e0389b7e9f27191ebf4da40ca1c3bae2b30eb250dbfacb59",
+      "modules/gui/qt/pixmaps/redesign/manifest.json": "ca19648dc757cc3596f96ba46333e82c2dc06419d6ff809d99e81ba575549155",
+      "modules/gui/qt/pixmaps/redesign/playback.svg": "dbc7cfaa9751cd7bf958c22e67996d9ef984a742c051f97963a87aab315b38d7",
+      "modules/gui/qt/player/input_models.cpp": "e8f3b953a9bd6710bbb40776d889f49a290a11f4303800bdcf3074f1c8227303",
+      "modules/gui/qt/player/input_models.hpp": "a34e96bf92e0f15f7383b7fe5a18c59e43acef52c14d44251924ab06c1239e05",
+      "modules/gui/qt/player/player_controller.cpp": "cc44202f596cb7b217d42a4c4d6f769df5704878428fbfa5ca429ea5c0bf3bfe",
+      "modules/gui/qt/player/player_media_analysis.cpp": "a0ab3d256bc00c09ffcacd0fca56ecdac691a1e81c9dfc11c5a9491ce953a335",
+      "modules/gui/qt/player/player_media_analysis.hpp": "65a296c4237072d74d62644c37bbb73563c70e9bc0401b4bc82c76632f2975fe",
+      "modules/gui/qt/player/player_media_tools.cpp": "609b2c55a8f90fc1a0b3c3388918b53c91e018002faaa244db86f6693155741b",
+      "modules/gui/qt/player/player_media_tools.hpp": "fdb5b473887129b54209c50be76ea6d3ad78c707482ebbaa20dc7736798d0116",
+      "modules/gui/qt/player/qml/PlayerSeekAnalysis.qml": "389725848656a0451dc1ce28a9727daa4e49302559b8057cca40d91d4b6f52b3",
+      "modules/gui/qt/player/qml/PlayerSettingRow.qml": "2938e58f0f541c5863869e2cf68bf7b1fe0ff7afe4ef81403fd5967d34d9411e",
+      "modules/gui/qt/player/qml/PlayerSettingsChoice.qml": "456fc049dc56445af4a83d7ea431b4ef1165781fbd5a1a0e81e3467f53569abe",
+      "modules/gui/qt/player/qml/PlayerSettingsPopup.qml": "d8c5217d70399fcf3d52e86f96a70079e1059a8a26c1f09f45e4cbd697a54ace",
+      "modules/gui/qt/player/qml/PlayerSettingsSwitch.qml": "24fa37df3119e3450c6978c5255a4685eb7514cfb06217da0a1ea0fb4bf69040",
+      "modules/gui/qt/player/qml/PlayerSubtitleDialog.qml": "8c9f617ffa4a15a0fe8af1d81549c14ba5f6b20637f7c819be18911e1d61f4a9",
+      "modules/gui/qt/player/qml/PlayerTracksPopup.qml": "83dee539c7695a94eb6c750ba1d45565076e15a107b344b2e8311be39a2ba02c",
+      "modules/gui/qt/player/qml/RedesignControlBar.qml": "ab67532da77ccbe6ec09cfd421c0ea40b7ea9c1bf65cdc63436afee9fcc843b7",
+      "modules/gui/qt/player/subtitle_archive.hpp": "8466d4cdc649ed0ed783241c32b10317e2edd64c6a15648114cc80a0fd040bc6",
+      "modules/gui/qt/player/subtitle_data.hpp": "e76d6f2201c05bc7eadfb8a1a8bb740dccf93f47c39742f36f6e7508fbac8ce7",
+      "modules/gui/qt/player/subtitle_search.cpp": "9aa1a71f229415de916729e6d226618609253d1dfa054f4bee0c49e690c4b533",
+      "modules/gui/qt/player/subtitle_search.hpp": "6b7a6a8782230ffd8a67826ac9eb30b8051d0b95a6c2759ce37dc83690fad92d",
+      "modules/gui/qt/plugins.hpp": "8eafa10cf9b93d3389f39b422b729967a14477470e471db1ec2438c080b1772d",
+      "modules/gui/qt/qt6.pro": "9ab9d0461e958ba6ea12f3d2dfeb23d3835e9a36c3e4038d2c320655aac37a54",
+      "modules/text_renderer/freetype/freetype.c": "978ab4254e15c6b665de86e6e977a171adbe33155f5dc6725f71f0ebc5d90f9d",
+      "tools/design-source/player-assets.mjs": "66bcccd7d73a10d5e2dc4f03047a492811b04806b47443241aed13fae6f7877c",
+      "tools/windows-player/build-player.sh": "e2c0d39a7d0b4fa547260b970898bc46a29291be71ff50d1f372cf7ae0c48b87",
+      "tools/windows-player/inspect-player.py": "fd740488a58a41b47b316d5df1bf5446972a45021903da21f6ba642661ba2390",
+      "tools/windows-player/pending-connect-peer.py": "ffbf24126796120854a6e05ade80155263e105f2412d78a4d063690d76e56cb8",
+      "tools/windows-player/prepare-runtime-crt.sh": "a0be244f6126f2ab245d970336b5d064ecad687948ae82edd89e5fe6dfac5590",
+      "tools/windows-player/rebuild-qt-network.sh": "4beb676f67bfbcb6d1a2deac200affc3f702232770a7d75b47f3b484f151aeb3",
+      "tools/windows-player/rebuild-upnp.sh": "c1c9ed753a62bbfc055a5de79c3cd89fc2653a7541a95b030bf303d53ce91280",
+      "tools/windows-player/subtitle-data-check.cpp": "f58a4cf0f6345d158db2df68ca94287eba5094ce83fa7cd8b707d53649c9da58",
+      "tools/windows-player/subtitle-data-check.pro": "a19a7aed943a41446a0a9863e087bd50f3fce565b530f378ad183d7e5a3f7ff4",
+      "tools/windows-player/verify-player-runtime.py": "509003b73c47587dfbaf5991bdfbd03213aabb8a29f220ad74171f091a01a380"
+    },
+    "post_build_change": "CRLF-to-LF normalization only; every implementation/build/test source compared against the exact archived build input."
+  },
+  "installed_profile": {
+    "file_count": 5,
+    "unchanged": true
+  },
+  "secret_scan": {
+    "files": 68,
+    "matches": 0
+  },
+  "evidence": [
+    "s3/native-observations.json",
+    "s3/workflow-metrics.json",
+    "s3/scale-matrix.png",
+    "s3/subtitle-names.png",
+    "s3/subtitle-timing.png",
+    "s3/subtitle-appearance.png"
+  ],
+  "required_deferrals": [],
+  "refactoring_assessment": "Existing VLC owners, bounded analysis and explicit three-provider subtitle workflow satisfy S3. No additional architecture or remediation stage is required.",
+  "limitations": [
+    "Inactive-desktop native verification does not measure physical speakers or every hardware/driver combination.",
+    "Image subtitles retain VLC playback; a text cue timeline is unavailable. Standalone SUP is not advertised by the pinned core.",
+    "Native WebVTT timestamps do not support the FPS override; its control is disabled and its timeline remains unscaled.",
+    "Provider keys remain local to each running session; no credentials or downloaded subtitle payloads are published."
+  ],
+  "cleanup_reviews": [
+    {
+      "transaction": "9b32d58f2f97f14de58debdd3b6be417",
+      "root": "E:/Temp/vlc-s3-20261018",
+      "manifest_sha256": "6d2872bb89febcb0165b4a87834ceab3a24b5af13dde6163354a99ee89dc5da8",
+      "reviewed_members": 11055,
+      "logical_bytes": 14297297434,
+      "excluded": 0
+    },
+    {
+      "transaction": "87c5398ed57f434b64c0891f782ee8fe",
+      "root": "C:\\Users\\darka\\Documents\\Projects\\VLC-Redesign\\tools\\windows-player\\__pycache__",
+      "manifest_sha256": "5e08e9d18f32be050eea8b6907b0956020e9f3a60fc5089365074e9b59f9f7a7",
+      "reviewed_members": 2,
+      "logical_bytes": 20912,
+      "excluded": 0
+    },
+    {
+      "transaction": "c55f34ee4edb5ce5e62d809e6a4a09a2",
+      "root": "E:\\VLC-Redesign\\S3\\portable",
+      "manifest_sha256": "8c0d9a5c9277a88ee5b04636cdd6627d8e29f408ab82b5ba7dab88b1902afa39",
+      "reviewed_members": 3,
+      "logical_bytes": 597,
+      "excluded": 0
+    }
+  ],
+  "normal_review_runtime": "E:/VLC-Redesign/S3",
+  "required_acceptance": {
+    "R15": "satisfied and verified",
+    "R20": "satisfied and verified",
+    "R21": "satisfied and verified",
+    "R22": "satisfied and verified",
+    "R23": "satisfied and verified",
+    "R24": "satisfied and verified",
+    "R25": "satisfied and verified",
+    "R04/R52": "Product acceptance and cleanup verified; source synchronization remains pending."
+  },
+  "cleanup": {
+    "results": [
+      {
+        "transaction_id": "9b32d58f2f97f14de58debdd3b6be417",
+        "state": "applied",
+        "candidate_count": 11055,
+        "candidate_bytes": 14297297434,
+        "deleted_bytes": 14297297434,
+        "result_counts": {
+          "deleted": 11055
+        },
+        "excluded_count": 0,
+        "errors": []
+      },
+      {
+        "transaction_id": "87c5398ed57f434b64c0891f782ee8fe",
+        "state": "applied",
+        "candidate_count": 2,
+        "candidate_bytes": 20912,
+        "deleted_bytes": 20912,
+        "result_counts": {
+          "deleted": 2
+        },
+        "excluded_count": 0,
+        "errors": []
+      },
+      {
+        "transaction_id": "c55f34ee4edb5ce5e62d809e6a4a09a2",
+        "state": "applied",
+        "candidate_count": 3,
+        "candidate_bytes": 597,
+        "deleted_bytes": 597,
+        "result_counts": {
+          "deleted": 3
+        },
+        "excluded_count": 0,
+        "errors": []
+      }
+    ],
+    "task_root_absent": true,
+    "bytecode_root_absent": true,
+    "disposable_wsl_retired": "VLC-S3-20261018",
+    "review_portable_profile_empty": true
+  }
+}

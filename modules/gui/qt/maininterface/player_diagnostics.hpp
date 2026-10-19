@@ -44,6 +44,8 @@
 #include <utility>
 #include "util/accessible_compat_attached.hpp"
 #include "player/player_controller.hpp"
+#include "player/player_media_tools.hpp"
+#include "player/player_media_analysis.hpp"
 
 class PlayerDiagnostics final : public QObject
 {
@@ -65,6 +67,7 @@ private:
     QFileSystemWatcher m_watcher;
     QElapsedTimer m_clock;
     QJsonArray m_errors;
+    QJsonArray m_pointerTrace;
     QList<QPointer<QQuickItem>> m_items;
     QList<QPointer<QWidget>> m_widgets;
     quint64 m_revision = 0;
@@ -122,7 +125,7 @@ private:
         if (m_items.size() >= 8000) return;
         const int index = m_items.size();
         m_items.append(item);
-        const QRectF rect = item->mapRectToScene(item->boundingRect());
+        const QRectF rect = item->mapRectToScene(QRectF(0, 0, item->width(), item->height()));
         QJsonObject node{{QStringLiteral("node"), index}, {QStringLiteral("parent"), parent},
             {QStringLiteral("id"), stableId(item)},
             {QStringLiteral("type"), QString::fromLatin1(item->metaObject()->className())},
@@ -131,7 +134,9 @@ private:
             {QStringLiteral("visible"), item->isVisible()}, {QStringLiteral("enabled"), item->isEnabled()},
             {QStringLiteral("opacity"), item->opacity()}, {QStringLiteral("z"), item->z()},
             {QStringLiteral("focused"), item->hasActiveFocus()}};
-        for (const char *property : {"index", "text", "checked", "selected", "isCurrent", "url", "value", "from", "to", "pressed", "hovered", "font", "color", "source", "status", "contentY", "contentHeight"}) {
+        const bool secret = item->metaObject()->indexOfProperty("echoMode") >= 0 && item->property("echoMode").toInt() != 0;
+        for (const char *property : {"index", "text", "checked", "selected", "isCurrent", "url", "value", "from", "to", "pressed", "hovered", "font", "color", "source", "status", "contentY", "contentHeight", "moving", "count", "currentIndex", "currentText", "highlightedIndex", "live", "position"}) {
+            if (secret && (qstrcmp(property, "text") == 0 || qstrcmp(property, "value") == 0)) { node.insert(QString::fromLatin1(property), QStringLiteral("[redacted]")); continue; }
             const QVariant value = item->property(property);
             if (value.isValid()) node.insert(QString::fromLatin1(property), QJsonValue::fromVariant(value));
         }
@@ -164,6 +169,22 @@ private:
                                   std::pair{"length_seconds", vlc_player_GetLength(player)}})
             core.insert(QString::fromLatin1(entry.first), entry.second == VLC_TICK_INVALID
                 ? QJsonValue(QJsonValue::Null) : QJsonValue(double(entry.second) / CLOCK_FREQ));
+        core[QStringLiteral("rate")] = vlc_player_GetRate(player);
+        core[QStringLiteral("audio_delay_ms")] = double(vlc_player_GetCategoryDelay(player, AUDIO_ES)) / 1000.;
+        core[QStringLiteral("subtitle_delay_ms")] = double(vlc_player_GetCategoryDelay(player, SPU_ES)) / 1000.;
+        core[QStringLiteral("subtitle_fps")] = vlc_player_GetAssociatedSubsFPS(player);
+        core[QStringLiteral("reverse_supported")] = vlc_player_CanRewind(player);
+        for (const auto cat : {VIDEO_ES, AUDIO_ES, SPU_ES}) {
+            QJsonArray tracks;
+            for (size_t i = 0; i < vlc_player_GetTrackCount(player, cat); ++i) {
+                const auto *track = vlc_player_GetTrackAt(player, cat, i);
+                tracks.append(QJsonObject{{QStringLiteral("id"), QString::fromUtf8(vlc_es_id_GetStrId(track->es_id))},
+                    {QStringLiteral("name"), QString::fromUtf8(track->name ? track->name : "")},
+                    {QStringLiteral("language"), QString::fromUtf8(track->fmt.psz_language ? track->fmt.psz_language : "")},
+                    {QStringLiteral("selected"), track->selected}});
+            }
+            core[cat == VIDEO_ES ? QStringLiteral("video_tracks") : cat == AUDIO_ES ? QStringLiteral("audio_tracks") : QStringLiteral("subtitle_tracks")] = tracks;
+        }
         auto media = vlc_player_GetCurrentMedia(player);
         auto uri = media ? vlc::wrap_cptr(input_item_GetURI(media)) : vlc::wrap_cptr<char>(nullptr);
         core.insert(QStringLiteral("url"), uri ? QUrl(QString::fromUtf8(uri.get())).toString(QUrl::FullyEncoded) : QString());
@@ -203,6 +224,8 @@ private:
         visit(window ? window->contentItem() : m_root, -1, tree, images);
         QJsonObject result{{QStringLiteral("revision"), qint64(++m_revision)},
             {QStringLiteral("core"), coreSnapshot()},
+            {QStringLiteral("pointer_trace"), m_pointerTrace},
+            {QStringLiteral("seek_requests"), m_player ? QJsonArray::fromVariantList(m_player->property("redesignSeekRequests").toList()) : QJsonArray()},
             {QStringLiteral("video_backdrop"), QJsonValue::fromVariant(m_root->window()->property("playerVideoBackdropState"))},
             {QStringLiteral("pid"), QCoreApplication::applicationPid()},
             {QStringLiteral("qt"), QString::fromLatin1(qVersion())},
@@ -211,6 +234,36 @@ private:
             {QStringLiteral("tree"), tree}, {QStringLiteral("images"), images},
             {QStringLiteral("qml_errors"), m_errors}, {QStringLiteral("truncated"), m_items.size() >= 8000},
             {QStringLiteral("coverage"), QStringLiteral("Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation.")}};
+        if (m_player) {
+            QJsonObject services;
+            for (const auto &entry : {std::pair{"redesignMediaTools", QStringList{QStringLiteral("status"), QStringLiteral("matches"), QStringLiteral("cues"), QStringLiteral("timelineStatus"), QStringLiteral("subtitleLoaded"), QStringLiteral("subtitleTimeScale"), QStringLiteral("subtitleFPSSupported"), QStringLiteral("statisticsVisible"), QStringLiteral("statisticsText"), QStringLiteral("presets"), QStringLiteral("activePreset"), QStringLiteral("timelineVisible"), QStringLiteral("waveformVisible"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("videoInfo")}},
+                    std::pair{"redesignMediaAnalysis", QStringList{QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("waveform"), QStringLiteral("waveformStatus"), QStringLiteral("waveformBusy")}},
+                    std::pair{"redesignSubtitleSearch", QStringList{QStringLiteral("provider"), QStringLiteral("configured"), QStringLiteral("busy"), QStringLiteral("status"), QStringLiteral("results"), QStringLiteral("archiveFiles")}}}) {
+                if (const auto service = m_player->findChild<QObject *>(QString::fromLatin1(entry.first))) {
+                    QJsonObject values;
+                    for (const auto &property : entry.second) values[property] = QJsonValue::fromVariant(service->property(property.toUtf8().constData()));
+                    services[QString::fromLatin1(entry.first)] = values;
+                }
+            }
+            if (const auto tools = m_player->findChild<PlayerMediaTools *>(QStringLiteral("redesignMediaTools"))) {
+                QJsonObject options, filters;
+                for (const auto section : {"subtitle", "subtitleTiming", "equalizer", "compressor", "spatializer", "stereo_widen", "pitch", "essential", "crop", "colors", "geometry"})
+                    for (const auto &option : tools->options(QString::fromLatin1(section))) {
+                        const auto row = option.toMap(); const auto key = row.value(QStringLiteral("key")).toString();
+                        options[key] = QJsonValue::fromVariant(tools->value(key));
+                        const auto module = row.value(QStringLiteral("module")).toString();
+                        if (!module.isEmpty()) filters[module] = tools->filterEnabled(module);
+                    }
+                filters[QStringLiteral("invert")] = tools->filterEnabled(QStringLiteral("invert"));
+                services[QStringLiteral("track_languages")] = QJsonObject{
+                    {QStringLiteral("audio"), QJsonArray::fromVariantList(tools->trackLanguages(false))},
+                    {QStringLiteral("subtitles"), QJsonArray::fromVariantList(tools->trackLanguages(true))},
+                    {QStringLiteral("selected_audio"), tools->selectedLanguage(false)},
+                    {QStringLiteral("selected_subtitle"), tools->selectedLanguage(true)}};
+                services[QStringLiteral("options")] = options; services[QStringLiteral("filters")] = filters;
+            }
+            result.insert(QStringLiteral("media_tools"), services);
+        }
         if (window) {
             result.insert(QStringLiteral("window"), QJsonObject{{QStringLiteral("width"), window->width()},
                 {QStringLiteral("x"), window->x()}, {QStringLiteral("y"), window->y()},
@@ -227,6 +280,7 @@ private:
             QJsonArray texts;
             if (auto quick = qobject_cast<QQuickWindow *>(candidate))
                 for (auto item : quick->contentItem()->findChildren<QQuickItem *>()) {
+                    if (item->metaObject()->indexOfProperty("echoMode") >= 0 && item->property("echoMode").toInt() != 0) continue;
                     const auto text = item->property("text").toString();
                     if (item->isVisible() && !text.isEmpty() && texts.size() < 20) texts.append(text.left(512));
                 }
@@ -248,7 +302,9 @@ private:
                 {QStringLiteral("width"), widget->width()}, {QStringLiteral("height"), widget->height()},
                 {QStringLiteral("enabled"), widget->isEnabled()}, {QStringLiteral("focused"), widget->hasFocus()}};
             if (auto accessible = QAccessible::queryAccessibleInterface(widget)) row.insert(QStringLiteral("name"), accessible->text(QAccessible::Name));
-            if (widget->property("text").isValid()) row.insert(QStringLiteral("text"), widget->property("text").toString());
+            if (widget->property("text").isValid()) row.insert(QStringLiteral("text"),
+                widget->metaObject()->indexOfProperty("echoMode") >= 0 && widget->property("echoMode").toInt() != 0
+                    ? QStringLiteral("[redacted]") : widget->property("text").toString());
             if (auto menu = qobject_cast<QMenu *>(widget)) {
                 QJsonArray actions;
                 for (auto action : menu->actions()) {
@@ -275,24 +331,36 @@ private:
         return result;
     }
 
-    void mouse(QQuickWindow *window, QEvent::Type type, const QPointF &point, Qt::MouseButton button, Qt::MouseButtons buttons)
+    void tracePointer(const QPointer<QQuickItem> &item, QEvent::Type type, const QPointF &point)
+    {
+        if (!item) return;
+        if (m_pointerTrace.size() >= 16) m_pointerTrace.removeFirst();
+        m_pointerTrace.append(QJsonObject{{QStringLiteral("event_type"), int(type)},
+            {QStringLiteral("x"), point.x()}, {QStringLiteral("y"), point.y()},
+            {QStringLiteral("pressed"), item->property("pressed").toBool()},
+            {QStringLiteral("value"), QJsonValue::fromVariant(item->property("value"))}});
+    }
+
+    void mouse(QQuickWindow *window, QEvent::Type type, const QPointF &point, Qt::MouseButton button, Qt::MouseButtons buttons, QPointer<QQuickItem> traceItem = {})
     {
         // QPA constructs each QMouseEvent at delivery, after the preceding
         // event updated its device's persistent point/grabber state. Creating
         // a whole press/release sequence before posting loses that state.
 #ifdef QT_GUI_PRIVATE
-        QMetaObject::invokeMethod(window, [this, window, type, point, button, buttons] {
+        QMetaObject::invokeMethod(window, [this, window, type, point, button, buttons, traceItem] {
             if (!window->isActive())
                 QWindowSystemInterface::handleFocusWindowChanged<QWindowSystemInterface::SynchronousDelivery>(window, Qt::OtherFocusReason);
             QWindowSystemInterface::handleMouseEvent<QWindowSystemInterface::SynchronousDelivery>(
                 window, ulong(m_clock.elapsed()), QHighDpi::toNativeLocalPosition(point, window),
                 QHighDpi::toNativeGlobalPosition(window->mapToGlobal(point), window), buttons, button, type);
+            tracePointer(traceItem, type, point);
         }, Qt::QueuedConnection);
 #else
-        QMetaObject::invokeMethod(window, [this, window, type, point, button, buttons] {
+        QMetaObject::invokeMethod(window, [this, window, type, point, button, buttons, traceItem] {
             QMouseEvent event(type, point, point, window->mapToGlobal(point), button, buttons, Qt::NoModifier);
             event.setTimestamp(ulong(m_clock.elapsed()));
             QCoreApplication::sendEvent(window, &event);
+            tracePointer(traceItem, type, point);
         }, Qt::QueuedConnection);
 #endif
     }
@@ -365,13 +433,25 @@ private:
             if (!m_player || !properties.contains(awaitCore)) error = QStringLiteral("invalid_core_observation");
             else { observed = m_player; awaitProperty = properties.value(awaitCore); }
         }
+        else if (!command.value(QStringLiteral("await_service")).toString().isEmpty()) {
+            const QString name = command.value(QStringLiteral("await_service")).toString();
+            const QMap<QString, QStringList> allowed{
+                {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
+                {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("waveformStatus")}},
+                {QStringLiteral("redesignSubtitleSearch"), {QStringLiteral("busy"), QStringLiteral("status")}}};
+            if (m_player && allowed.value(name).contains(awaitProperty))
+                observed = m_player->findChild<QObject *>(name);
+            if (!observed) error = QStringLiteral("invalid_service_observation_rejected_before_dispatch");
+        }
         else if (!awaitProperty.isEmpty()) {
             const int index = command.value(QStringLiteral("await_node")).toInt(command.value(QStringLiteral("node")).toInt(-1));
             const QStringList allowed{QStringLiteral("selected"), QStringLiteral("description"), QStringLiteral("visible"),
-                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY")};
+                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving")};
             if (!allowed.contains(awaitProperty) || index < 0 || index >= m_items.size() || !m_items[index]
                 || m_items[index]->metaObject()->indexOfProperty(awaitProperty.toUtf8().constData()) < 0)
                 error = QStringLiteral("invalid_observation_rejected_before_dispatch");
+            else if (m_items[index]->metaObject()->indexOfProperty("echoMode") >= 0 && m_items[index]->property("echoMode").toInt() != 0)
+                error = QStringLiteral("secret_observation_rejected_before_dispatch");
             else observed = m_items[index];
         }
         if (!error.isEmpty()) {}
@@ -380,6 +460,19 @@ private:
             error = QStringLiteral("stale_revision_rejected_before_dispatch");
         else if (!window) error = QStringLiteral("window_not_created");
         else if (op == QStringLiteral("snapshot")) {}
+        else if (op == QStringLiteral("focus")) {
+            const int target = command.value(QStringLiteral("node")).toInt(-1);
+            if (target < 0 || target >= m_items.size() || !m_items[target]
+                || !m_items[target]->isVisible() || !m_items[target]->isEnabled())
+                error = QStringLiteral("target_unavailable_rejected_before_dispatch");
+            else {
+                const auto accessible = QAccessible::queryAccessibleInterface(m_items[target]);
+                const auto actions = accessible ? accessible->actionInterface() : nullptr;
+                if (!actions || !actions->actionNames().contains(QAccessibleActionInterface::setFocusAction()))
+                    error = QStringLiteral("focus_action_unavailable_rejected_before_dispatch");
+                else actions->doAction(QAccessibleActionInterface::setFocusAction());
+            }
+        }
         else if (op == QStringLiteral("resize")) {
             const int width = command.value(QStringLiteral("width")).toInt();
             const int height = command.value(QStringLiteral("height")).toInt();
@@ -397,7 +490,9 @@ private:
                 for (auto ancestor = item->parentItem(); ancestor; ancestor = ancestor->parentItem())
                     if (ancestor->clip()) available = available.intersected(ancestor->mapRectToScene(ancestor->boundingRect()));
                 if (!available.contains(point)) error = QStringLiteral("clipped_target_rejected_before_dispatch");
-                if (error.isEmpty()) mouse(window, QEvent::MouseMove, point, Qt::NoButton, Qt::NoButton);
+                m_pointerTrace = {};
+                const QPointer<QQuickItem> tracedItem = item;
+                if (error.isEmpty()) mouse(window, QEvent::MouseMove, point, Qt::NoButton, Qt::NoButton, tracedItem);
                 if (error.isEmpty() && op == QStringLiteral("scroll")) {
                     const int delta = command.value(QStringLiteral("delta")).toInt();
                     auto wheel = new QWheelEvent(point, window->mapToGlobal(point), QPoint(), QPoint(0, delta), Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
@@ -408,14 +503,14 @@ private:
                     QCoreApplication::postEvent(window, wheel);
                 } else if (error.isEmpty() && op != QStringLiteral("move")) {
                     const auto button = command.value(QStringLiteral("button")).toString() == QStringLiteral("right") ? Qt::RightButton : Qt::LeftButton;
-                    mouse(window, QEvent::MouseButtonPress, point, button, button);
+                    mouse(window, QEvent::MouseButtonPress, point, button, button, tracedItem);
                     if (op == QStringLiteral("drag")) {
                         const QPointF end(command.value(QStringLiteral("end_x")).toDouble(), command.value(QStringLiteral("end_y")).toDouble());
                         for (int step = 1; step <= 12; ++step)
-                            mouse(window, QEvent::MouseMove, point + (end - point) * step / 12, Qt::NoButton, Qt::LeftButton);
+                            mouse(window, QEvent::MouseMove, point + (end - point) * step / 12, Qt::NoButton, Qt::LeftButton, tracedItem);
                         point = end;
                     }
-                    mouse(window, QEvent::MouseButtonRelease, point, button, Qt::NoButton);
+                    mouse(window, QEvent::MouseButtonRelease, point, button, Qt::NoButton, tracedItem);
                 }
             }
         } else if (op == QStringLiteral("drop")) {

@@ -11,7 +11,78 @@ source/build/runtime roots. Both modes force the guarded translation units to
 rebuild and strip the repaired plugins into the isolated runtime. Stop its owned
 consumers first. This creates a local preview without installation/publication.
 
+S3 also rebuilds the pinned Qt SDK with `rebuild-qt-network.sh` for native
+Schannel HTTPS. Before rebuilding UPnP or configuring the player, run
+`prepare-runtime-crt.sh` to select the patched startup objects and CRT libraries
+into `/work/runtime-crt-only`. Use `-B/work/runtime-crt-only/` in CC/CXX and
+`-L/work/runtime-crt-only` in LDFLAGS, preserving the baseline's other flags.
+Reconfigure to regenerate libtool's cached startup-object paths. Do not put the
+full `/work/runtime-fixed/lib` install ahead of contrib libraries: its Windows
+`libupnp.a` import library shadows pupnp and does not implement `UpnpResolveURL`.
+`rebuild-upnp.sh` accepts `VLC_RUNTIME_LIB_DIR` for the selected CRT directory.
+
 ## Normal-runtime regression
+
+### S3 state and subtitle identity contract
+
+The Qt subtitle downloader links the existing contrib `libarchive` through
+pkg-config; Meson declares the same dependency. This supports standard ZIP and
+ZIP64. Qt's private ZIP reader rejected a valid small ZIP64 provider archive as
+an oversized 4 GiB member. Extraction remains memory-only, rejects duplicate
+member paths and CRC failures, and caps 256 entries, 8 MiB per subtitle and
+16 MiB total. Original member paths feed readable names and collision references.
+`subtitle-data-check.pro` exercises these contracts with synthetic ZIP64 data.
+For the pinned chroot's native cross-pkg-config, select its target
+`PKG_CONFIG_LIBDIR` and `PKG_CONFIG_PATH` and use `PKG_CONFIG_SYSROOT_DIR=/`;
+the complete target filesystem is already rooted at `/` inside that chroot.
+
+`redesign-media-tools.json` lives in VLC's selected configuration directory.
+Version 1 stores explicit local file associations, named folder presets and the
+timeline, waveform and statistics visibility flags. A profile without this file
+starts with no associations/presets and all three overlays disabled. Existing
+`vlcrc`, queue and history remain owned by VLC; no legacy settings are migrated
+or rewritten by the new store. Updates use `QSaveFile` and an 8 MiB limit. An
+unreadable, oversized, corrupt or unknown-version file is preserved and the store
+becomes read-only, with a visible status. Rejected mouse or keyboard edits leave
+toggle visuals and accessibility in their accepted state; the shared checkbox
+uses Qt's `nextCheckState` callback to keep the setting owner authoritative.
+Repair that file while VLC is closed;
+there is no automatic reset or destructive recovery.
+
+Associations use canonical local media URLs and both files' size, modification
+time and SHA-256 fingerprint (whole files up to 8 MiB, first/last 64 KiB for
+larger files). Changed or missing files require explicit selection again;
+moving files does not trigger identity guessing. The matching dialog can remove
+saved associations, including missing paths. It preserves ambiguous candidates
+for manual choice. At most 2048 associations and 64 folder presets are stored.
+
+New inputs inherit configured subtitle defaults, then the most specific saved
+folder preset, then explicit input-specific choices. Presets capture appearance,
+delay, subtitle timing and audio/subtitle language and track preferences. A valid
+per-file subtitle association selects that exact external source. A later manual
+track choice wins for the current input. Manual appearance/timing changes do not
+rewrite a preset or leak into the next show. Section reset restores VLC's option
+defaults and disables that section's filters; subtitle reset also clears delay,
+FPS override and duration adjustment. Presets and associations have separate
+explicit removal actions. The sleep timer is session-only and stops the playlist
+on expiry; cancellation or restarting VLC clears it.
+
+Provider keys and optional OpenSubtitles bearer tokens are session-only and are
+absent from this store. Downloaded text subtitles are intentional persistent
+files under VLC's user-data `redesign-subtitles` directory. Each download has an
+exclusive directory and a readable filename containing provider, public subtitle
+reference, original filename and available release, language and the detected actual format.
+The language uses VLC's supported `.en.srt`-style suffix with canonical ISO
+codes, so filenames also preserve real track-language detection. Generic archive
+members retain their parent context; truncated or nested member paths get a
+stable short member reference to distinguish collisions. Archive choices retain
+their original member paths. Track display labels retain VLC's original metadata
+and add the readable external filename using the core's exact source identity.
+For downloaded files the track list puts the title/episode before the provider
+reference, keeping the episode visible in the 400-pixel panel. The full label
+remains accessible and available through the existing tooltip.
+These names must remain distinguishable after restarting VLC; source inspection
+alone does not verify that acceptance criterion.
 
 `verify-player-runtime.py` checks a normal build on an owned inactive desktop.
 Pass an isolated E: runtime with an **empty** `portable` directory, a finite
@@ -57,7 +128,14 @@ desktop. The test process uses Qt file dialogs so the existing QWidget diagnosti
 tree can inspect their real controls; Windows shell-dialog routing is outside
 this audit.
 The launcher records `session.json` there with the exact `pid`, `executable` and
-`token`. `VLC_PLAYER_DIAGNOSTICS_BUILD` records the inspected plugin hash,
+`token`. A diagnostic-only `VLC_PLAYER_DIAGNOSTICS_PROXY_PORT` can select an explicitly
+owned loopback HTTP CONNECT test peer. It requires the diagnostic directory and
+authentication token. The peer can acknowledge CONNECT and hold the TLS handshake
+until the app cancels or changes input, without receiving decrypted credentials
+or forwarding the provider request. This verifies cancellation against socket
+closure rather than timing a live provider. It changes only this test process's
+Qt proxy, never system configuration. Normal builds contain no proxy override.
+`VLC_PLAYER_DIAGNOSTICS_BUILD` records the inspected plugin hash,
 separately verified by the launcher. Do not commit session tokens.
 
 ```powershell
@@ -85,6 +163,14 @@ boundary with virtual Qt focus, without requesting OS focus. This is a synthetic
 framework event test, not proof of OS keyboard routing. The client separately
 reports whether this exact VLC process owns the Windows foreground window before
 and after each request, without inspecting other applications' content.
+`focus` invokes the target's existing Qt accessibility SetFocus action. This
+lets the settings panel's own focus handler reveal an offscreen control, without
+Windows activation, pointer input, arbitrary evaluation or content-position setters.
+Snapshot bounds use each item's layout rectangle; TextInput.boundingRect() can
+cover only its text/cursor and does not describe its clickable control rectangle.
+The diagnostic build also records the last delivered pointer sequence and eight
+seek submissions, making UI dispatch and core acceptance independently inspectable.
+
 An action response reports dispatch and the observed tree; verify the expected
 effect separately. Dispatch does not establish playback or asset readiness.
 
@@ -92,7 +178,11 @@ effect separately. Dispatch does not establish playback or asset readiness.
 optimistic seek position. Available fields are state, position, time_seconds,
 length_seconds, URL and seekability. Position/time observations bind to the
 current media URL and fail if it changes or ends. Use `at_least` for advancing
-playback instead of waiting for an exact transient clock value. A second request
+playback instead of waiting for an exact transient clock value. VLC's raw
+clock getters can retain the previous clock while paused after a seek; the UI's
+seek notification can already show the requested time. Establish that request
+through its UI notification, then verify advancing native time and rendered pixels
+after resuming. Do not treat an optimistic UI position as decoded-frame proof. A second request
 while an observation is pending fails explicitly, except a read-only snapshot
 without capture. That snapshot labels its UI-dispatcher boundary and does not
 claim a new rendered frame. Use `cancel` to end an observation, and inspect its

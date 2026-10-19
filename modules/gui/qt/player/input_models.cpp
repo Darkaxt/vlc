@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 #include "input_models.hpp"
+#include "player/subtitle_data.hpp"
+#include <QCryptographicHash>
 
 #include "player/player_controller.hpp"
 
@@ -29,6 +31,16 @@ TrackListModel::TrackListModel(vlc_player_t *player, QObject *parent)
 {
 }
 
+QByteArray TrackListModel::associatedSourcePrefix(const QByteArray &uri)
+{
+    // Pinned input.c InputSourceNew / es_out.c stable associated-source IDs.
+    return QCryptographicHash::hash(uri, QCryptographicHash::Md5).toHex() + "/spu/";
+}
+void TrackListModel::setAssociatedSourceLabel(const QString &uri, const QString &label)
+{
+    m_sourceLabels[associatedSourcePrefix(uri.toUtf8())] = SubtitleData::trackSourceName(label);
+    if (!m_data.isEmpty()) emit dataChanged(index(0), index(m_data.size() - 1), {Qt::DisplayRole});
+}
 Qt::ItemFlags TrackListModel::flags(const QModelIndex &) const
 {
     return Qt::ItemIsUserCheckable;
@@ -44,8 +56,13 @@ QVariant TrackListModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     if (row >= m_data.size())
         return QVariant{};
-    if (role == Qt::DisplayRole)
+    if (role == Qt::DisplayRole) {
+        const QByteArray id = vlc_es_id_GetStrId(m_data[row].m_id.get());
+        for (auto it = m_sourceLabels.begin(); it != m_sourceLabels.end(); ++it)
+            if (id.startsWith(it.key())) return m_data[row].m_title.contains(it.value(), Qt::CaseInsensitive)
+                ? m_data[row].m_title : it.value() + QStringLiteral(" — ") + m_data[row].m_title;
         return m_data[row].m_title;
+    }
     else if (role == Qt::CheckStateRole)
         return QVariant::fromValue<bool>(m_data[row].m_selected);
     return QVariant{};
@@ -61,6 +78,7 @@ bool TrackListModel::setData(const QModelIndex &index, const QVariant &value, in
     if (!value.canConvert<bool>())
         return false;
     bool select = value.toBool();
+    emit selectionRequested();
     vlc_player_locker lock{ m_player };
 
     if (select)
@@ -143,6 +161,7 @@ void TrackListModel::updateTrackSelection(vlc_es_id_t *trackid, bool selected)
 
 void TrackListModel::clear()
 {
+    m_sourceLabels.clear();
     beginRemoveRows({}, 0, m_data.size() - 1);
     m_data.clear();
     endRemoveRows();

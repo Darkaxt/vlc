@@ -13,6 +13,7 @@ T.Popup {
     id: popup
     required property bool subtitles
     property int currentPage: subtitles ? 2 : 1
+    signal settingsRequested(int page)
     readonly property var tracks: currentPage === 0 ? Player.videoTracks : currentPage === 1 ? Player.audioTracks : Player.subtitleTracks
     width: Math.max(0, Math.min(PlayerStyle.px(400), parent.width - PlayerStyle.px(40)))
     height: Math.max(0, Math.min(PlayerStyle.px(524), parent.height - PlayerStyle.px(134)))
@@ -24,7 +25,7 @@ T.Popup {
 
     function addTrackFile() {
         popup.close()
-        if (currentPage === 2) DialogsProvider.loadSubtitlesFile()
+        if (currentPage === 2) MediaTools.browseSubtitle()
         else DialogsProvider.loadAudioFile()
     }
 
@@ -308,7 +309,7 @@ T.Popup {
                 font.family: PlayerStyle.fontFamily
                 font.pixelSize: PlayerStyle.px(14)
             }
-            onClicked: { popup.close(); DialogsProvider.prefsDialog() }
+            onClicked: { const page = popup.currentPage; popup.close(); popup.settingsRequested(page === 2 ? 3 : page === 1 ? 2 : 1) }
         }
     }
 }
