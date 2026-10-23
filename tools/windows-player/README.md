@@ -4,24 +4,80 @@ Build the pinned [Windows baseline](../windows-baseline/README.md) first, keepin
 its SDK/runtime backports and configured build directory. The S1 pristine-source
 gate applies before the redesign overlay, not afterwards. Apply the fork's
 maintained `modules/gui/qt` and `contrib/src/upnp` changes to that source tree,
-and copy this tool directory alongside it. Rebuild the pinned UPnP dependency
+and copy this tool directory alongside it. When applying an archive after the
+baseline, extract with `tar --touch -xf <overlay>` so changed headers are newer
+than the baseline-generated `.moc.cpp` files. Preserving an older archive mtime
+can leave Qt metadata stale even when configuration rebuilds the C++ objects.
+Rebuild the pinned UPnP dependency
 as described below. Then use `build-player.sh normal` or
 `build-player.sh diagnostics` inside the same toolchain; optional arguments set
 source/build/runtime roots. Both modes force the guarded translation units to
 rebuild and strip the repaired plugins into the isolated runtime. Stop its owned
 consumers first. This creates a local preview without installation/publication.
 
+The pinned Qt 6.8.3 source is available from the [official archive](https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz); verify it against `contrib/src/qt/SHA512SUMS`.
+
 S3 also rebuilds the pinned Qt SDK with `rebuild-qt-network.sh` for native
 Schannel HTTPS. Before rebuilding UPnP or configuring the player, run
 `prepare-runtime-crt.sh` to select the patched startup objects and CRT libraries
 into `/work/runtime-crt-only`. Use `-B/work/runtime-crt-only/` in CC/CXX and
 `-L/work/runtime-crt-only` in LDFLAGS, preserving the baseline's other flags.
-Reconfigure to regenerate libtool's cached startup-object paths. Do not put the
+Run `python3 tools/windows-player/configure-player.py` after the SDK repairs to regenerate libtool's cached startup-object paths and select the target libarchive/QtNetwork pkg-config files. The helper preserves existing configure and linker arguments. Do not put the
 full `/work/runtime-fixed/lib` install ahead of contrib libraries: its Windows
 `libupnp.a` import library shadows pupnp and does not implement `UpnpResolveURL`.
 `rebuild-upnp.sh` accepts `VLC_RUNTIME_LIB_DIR` for the selected CRT directory.
 
+## Library state and audit contract
+
+The existing interface settings own `redesign/library-v1`. Version 1 stores
+folder/playlist pins (native library identity, title and section) and the detail
+view flag. An absent key starts with empty pins and details off. Existing
+`MainCtx.gridView` remains the grid/list preference; details overrides only its
+presentation. No prior setting is migrated. Reset library layout clears these
+pins and details and preserves the existing grid/list preference.
+Cached shortcut labels longer than 1024 UTF-16 units retain their beginning and
+end with a middle ellipsis, without splitting surrogate pairs. The native media
+identity and actual playlist/folder name are preserved and resolved on opening.
+Writes obey the same size bound as reads; reaching it leaves the previous value
+intact with actionable feedback.
+
+Invalid, oversized, duplicate-pin or unknown-version data is preserved read-only,
+with a visible explanation. Repair or remove only this key while VLC is closed;
+there is no automatic destructive recovery. Media identities, watched state,
+playlists and recent history remain in VLC's native library. History-disabled
+profiles do not query or show the recent Home shelves.
+
+Home's frequently visited folders use native playback history and play counts,
+with last-played date breaking ties. Only present indexed local folders qualify.
+No separate browsing-history store is created. History-disabled profiles do not
+instantiate these models. Pins remain available in navigation (the compact
+library exposes them in Open media). Folder-address editing is available from
+that menu or Alt+D, leaving the default Figma breadcrumb layout intact.
+VLC's existing Ctrl+L queue shortcut is preserved. Address resolution walks native
+indexed roots/subfolders, including empty folders and all breadcrumb ancestors.
+The pinned root/subfolder APIs return all children; this model applies search,
+ordering and logical cache pagination explicitly.
+
+The new library uses Qt internal drag/drop for in-window queue insertion. Existing
+views retain their native external drag behavior. Diagnostic `press`, `move` and
+`release` actions retain the framework button state across rendered observations;
+they never inject OS input. Do not confuse a completed gesture dispatch with a
+verified queue insertion: inspect the resulting queue and unchanged current input.
+
+`verify-player-capture.py --library --snapshot <native.json> --capture <native.png>`
+checks the resolved native library, accessible navigation, 24-pixel header icons,
+Home card sizes/spacing and miniplayer window fit against Figma frames
+`6261:15078`, `848:1997` and `970:4028`. It checks Qt's captured chrome;
+separately composed video requires the owned-window capture procedure below.
+
 ## Normal-runtime regression
+
+For library-stage acceptance, pass `--with-media-library` to
+`verify-player-runtime.py`. It requires the native media-library plugin to start,
+in addition to actual video, natural EOF, input release, Qt shutdown, normal exit
+and absence of diagnostic transport in the delivered plugin. Use a fresh empty
+portable profile, keeping the fixture library profile separately until its
+persistence checks and evidence reconciliation finish.
 
 ### S3 state and subtitle identity contract
 
@@ -160,7 +216,9 @@ not equivalent and can leave a button pressed. They do not inject Windows input,
 activate the window, evaluate arbitrary code, or call playback setters directly.
 With Qt GUI private headers, keyboard events pass through Qt's pinned QPA test
 boundary with virtual Qt focus, without requesting OS focus. This is a synthetic
-framework event test, not proof of OS keyboard routing. The client separately
+framework event test, not proof of OS keyboard routing. A `key --target` checks
+that the named item is already visible, enabled and in the active focus chain;
+it does not redirect keyboard events or force focus. The client separately
 reports whether this exact VLC process owns the Windows foreground window before
 and after each request, without inspecting other applications' content.
 `focus` invokes the target's existing Qt accessibility SetFocus action. This
@@ -233,8 +291,10 @@ Input is queued through Qt so an open-file action can enter its real modal Qt
 dialog without blocking the diagnostic dispatcher. Targets clipped outside a
 scrolling ancestor are rejected before dispatch. The instrumented session alone
 sets `vlcPlayerDiagnosticSession`; the existing drag item then suppresses entry
-into Windows OLE drag. Do not claim a completed native queue drag from that test
-mode. Verify queue reordering through its real sort UI, and URL drops through Qt's
+into Windows OLE drag. That test mode does not verify desktop OLE routing.
+The redesigned library uses the same Qt internal queue-drop path in normal and
+diagnostic builds; verify it with held press/move/release and the resulting queue
+and current input. Verify queue reordering through its real sort UI, and URL drops through Qt's
 drop event handlers; desktop OLE routing remains outside this instrumented audit.
 Ordinary builds never set the context property and retain the original native
 drag path. Pointer `drag` remains useful for sliders. Wheel events inspect popup
@@ -305,7 +365,7 @@ as `/scratch/cache/pupnp-release-1.14.31.tar.gz`; the recipe checks VLC's
 
 The redesigned title bar, controls and resume banner carry the retained Figma
 50px background-blur property. The Windows compositor shares the actual video
-swapchain across three system-created, clipped DirectComposition visuals below
+swapchain across four system-created, clipped DirectComposition visuals below
 Qt's translucent fills. A forwarding content handle intercepts only the vout's
 existing `SetContent` boundary; every other visual method retains its original
 behavior. This avoids another decoder, video readback or desktop blur. Bounds,
@@ -315,8 +375,30 @@ Gaussian sigma uses half the Figma radius, matching the reported Figma Dev Mode
 CSS conversion; that mapping requires visual comparison and does not establish
 mathematical equivalence of the renderers.
 
+The fourth region covers the active frosted library popup, including its overlay
+item. Context menus and the network dialog share `LibraryGlass.qml`.
+The network source frame `6216:13614` uses 95% panel fill, 14px corners,
+50px background blur and an 8/15px shadow. Context-menu sources `2139:8935`
+and `2404:13340` use their 95% fill and 10px corners. The existing four-pass Qt blur handles library UI;
+the shared native video copy handles separately composed video beneath it.
+The Qt kernel is scaled by actual DPR to approximate the same Gaussian sigma;
+it does not create another decoder or capture the desktop.
+
 DirectComposition contracts: [visual content](https://learn.microsoft.com/en-us/windows/win32/api/dcomp/nf-dcomp-idcompositionvisual-setcontent),
 [Gaussian blur](https://learn.microsoft.com/en-us/windows/win32/api/dcomp/nn-dcomp-idcompositiongaussianblureffect).
 The unfiltered video must remain below the clipped copies. Initialize all four
 [rectangle clip bounds](https://learn.microsoft.com/en-us/windows/win32/api/dcomp/nf-dcomp-idcompositiondevice-createrectangleclip):
 their defaults are large positive/negative extents, not a zero-origin empty clip.
+
+Library drags snapshot the pressed row or current multi-selection before the
+ML payload resolves. Ordinary clicks commit selection on release, keeping the
+selection toolbar from moving the delegate during a held pointer gesture.
+
+Popup readiness requires the blur output and rounded texture to resolve, with no
+shader error. Qt 6.8.3 copies cached shader metadata without invoking the new
+manager’s preparation path, leaving its status at Uncompiled: see the
+[cache path](https://github.com/qt/qtdeclarative/blob/v6.8.3/src/quick/items/qquickshadereffect.cpp#L1157-L1161)
+and [manager default](https://github.com/qt/qtdeclarative/blob/v6.8.3/src/quick/scenegraph/qsgrhishadereffectnode_p.h#L112).
+Compiled status alone is therefore not a valid completion predicate. Native
+captures, source fill/corner geometry and error-free lifecycle transitions remain
+separate acceptance evidence.

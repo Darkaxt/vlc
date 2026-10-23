@@ -1,0 +1,32 @@
+{
+  "plugin_cache_exit": 0,
+  "pid": 84096,
+  "desktop": "VLC-S2-1d902f713705420f9860b14ed7a744a1",
+  "exit_code": 0,
+  "qml_runtime_errors": [],
+  "media_library_enabled": true,
+  "checks": {
+    "actual_picture": true,
+    "natural_eof": true,
+    "input_released": true,
+    "qt_event_loop_finished": true,
+    "no_plugin_load_errors": true,
+    "no_qml_runtime_errors": true,
+    "native_media_library_started": true
+  },
+  "qt_plugin_sha256": "cebecbea67a7190345b204667da687ec53648aa38b188debc64c8118624ad8fa",
+  "upnp_plugin_sha256": "dd0ac2db3260acefddbd74209881c55cebc5f9a1f6c6531888c7bc9fb911d603",
+  "debug_markers_absent": [
+    "VLC_PLAYER_DIAGNOSTICS_DIR",
+    "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+    "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+    "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+    "redesignSeekRequests",
+    "offscreen_session_is_capture_only",
+    "PlayerDiagnostics"
+  ],
+  "profile_isolation": "Existing empty portable directory beside executable",
+  "capture_scope": "Inactive desktop, no OS input or desktop switching",
+  "verified_utc": "2026-10-23T06:45:20.782778+00:00",
+  "passed": true
+}

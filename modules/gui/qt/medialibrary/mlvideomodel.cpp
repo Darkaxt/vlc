@@ -23,30 +23,15 @@ MLVideoModel::MLVideoModel(QObject* parent)
 {
 }
 
-// Interface
-
-void MLVideoModel::setItemPlayed(const QModelIndex & index, bool played)
+void MLVideoModel::setUnwatchedOnly(bool value)
 {
-    MLVideo * video = static_cast<MLVideo *>(item(index.row()));
-
-    if (video == nullptr)
-        return;
-
-    assert(m_mediaLib);
-
-    int64_t id = video->getId().id;
-
-    // ML thread
-    m_mediaLib->runOnMLThread(this, [id, played] (vlc_medialibrary_t * ml)
-    {
-        vlc_ml_media_set_played(ml, id, played);
-    });
-
-    // NOTE: We want the change to be visible right away.
-    video->setIsNew(played == false);
-
-    emit dataChanged(index, index, { VIDEO_IS_NEW });
+    if (m_unwatchedOnly == value) return;
+    m_unwatchedOnly = value;
+    emit unwatchedOnlyChanged();
+    resetCache();
 }
+
+// Interface
 
 QVariant MLVideoModel::itemRoleData(const MLItem *item, int role) const
 {
@@ -127,7 +112,8 @@ void MLVideoModel::onVlcMlEvent(const MLEvent &event)
         case VLC_ML_EVENT_MEDIA_UPDATED:
         {
             MLItemId itemId(event.modification.i_entity_id, VLC_ML_PARENT_UNKNOWN);
-            updateItemInCache(itemId);
+            if (m_unwatchedOnly) emit resetRequested();
+            else updateItemInCache(itemId);
 
             return;
         }
@@ -169,6 +155,11 @@ MLVideoModel::createMLLoader() const
 
 size_t MLVideoModel::Loader::count(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParams) const /* override */
 {
+    if (m_unwatchedOnly) {
+        size_t count = 0;
+        scanUnwatched(ml, queryParams, &count);
+        return count;
+    }
     int64_t id = m_parent.id;
 
     if (id <= 0)
@@ -180,6 +171,7 @@ size_t MLVideoModel::Loader::count(vlc_medialibrary_t* ml, const vlc_ml_query_pa
 std::vector<std::unique_ptr<MLItem>>
 MLVideoModel::Loader::load(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParams) const /* override */
 {
+    if (m_unwatchedOnly) return scanUnwatched(ml, queryParams, nullptr);
     ml_unique_ptr<vlc_ml_media_list_t> list;
 
     int64_t id = m_parent.id;
@@ -199,6 +191,39 @@ MLVideoModel::Loader::load(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* 
         result.emplace_back(std::make_unique<MLVideo>( &media));
     }
 
+    return result;
+}
+
+// Filter before applying the logical page offset. The pinned ML query API has
+// no unwatched predicate. Scan bounded native pages on its existing ML worker;
+// keep only the requested result page, preserving native search/sort order.
+std::vector<std::unique_ptr<MLItem>> MLVideoModel::Loader::scanUnwatched(
+    vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParams, size_t* count) const
+{
+    auto query = *queryParams;
+    query.i_nbResults = 256;
+    query.i_offset = 0;
+    size_t matches = 0;
+    std::vector<std::unique_ptr<MLItem>> result;
+    for (;;) {
+        ml_unique_ptr<vlc_ml_media_list_t> page(m_parent.id <= 0
+            ? vlc_ml_list_video_media(ml, &query)
+            : vlc_ml_list_video_of(ml, &query, m_parent.type, m_parent.id));
+        if (!page) break;
+        for (const auto& media : ml_range_iterate<vlc_ml_media_t>(page)) {
+            // Match MLVideo::isNew(), including an unfinished resume position.
+            if (media.i_playcount != 0 || media.f_progress > 0) continue;
+            const size_t logicalIndex = matches++;
+            if (!count && logicalIndex >= queryParams->i_offset) {
+                result.emplace_back(std::make_unique<MLVideo>(&media));
+                if (queryParams->i_nbResults && result.size() == queryParams->i_nbResults)
+                    return result;
+            }
+        }
+        if (page->i_nb_items < query.i_nbResults) break;
+        query.i_offset += query.i_nbResults;
+    }
+    if (count) *count = matches;
     return result;
 }
 

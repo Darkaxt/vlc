@@ -21,3 +21,11 @@ The cone volume control uses saved vectors `244:211` and `244:214` in
 `volume-cone.svg` and `volume-level.svg`, including the inner inset, gradient,
 dark overlay and clipping. It uses VLC's existing SVG plugin.
 Native appearance comparison remains separate from binary/path verification.
+
+S4 adds the archived Home (`70:828`) and Network (`70:833`) components and the
+library search/view/navigation masks. The offline screen renderer reduced a
+reflected matrix to a rotation, producing detached Home/Network fragments near
+the left edge. These screen renderings are unsuitable as an icon oracle. The
+production SVGs retain every signed affine matrix; the source/reflection
+regression checks bind these component IDs. Final native pixels still require
+visual verification against the design contract.

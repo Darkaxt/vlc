@@ -23,6 +23,14 @@ MLAudioModel::MLAudioModel(QObject *parent)
 {
 }
 
+void MLAudioModel::setHistoryOnly(bool value)
+{
+    if (m_historyOnly == value) return;
+    m_historyOnly = value;
+    emit historyOnlyChanged();
+    resetCache();
+}
+
 QVariant MLAudioModel::itemRoleData(const MLItem *item, const int role) const
 {
     const MLAudio* audio = static_cast<const MLAudio *>(item);
@@ -92,6 +100,9 @@ void MLAudioModel::onVlcMlEvent(const MLEvent &event)
 {
     switch (event.i_type)
     {
+        case VLC_ML_EVENT_HISTORY_CHANGED:
+            if (m_historyOnly) emit resetRequested();
+            return;
         case VLC_ML_EVENT_MEDIA_ADDED:
             if ( event.creation.media.i_subtype == VLC_ML_MEDIA_SUBTYPE_ALBUMTRACK )
                 emit resetRequested();
@@ -136,6 +147,7 @@ MLAudioModel::createMLLoader() const
 
 size_t MLAudioModel::Loader::count(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParams) const
 {
+    if (historyOnly) return vlc_ml_count_audio_history(ml, queryParams);
     if ( m_parent.id <= 0 )
         return vlc_ml_count_audio_media(ml, queryParams);
     return vlc_ml_count_media_of(ml, queryParams, m_parent.type, m_parent.id );
@@ -146,7 +158,9 @@ MLAudioModel::Loader::load(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* 
 {
     ml_unique_ptr<vlc_ml_media_list_t> media_list;
 
-    if ( m_parent.id <= 0 )
+    if (historyOnly)
+        media_list.reset(vlc_ml_list_audio_history(ml, queryParams));
+    else if ( m_parent.id <= 0 )
         media_list.reset( vlc_ml_list_audio_media(ml, queryParams) );
     else
         media_list.reset( vlc_ml_list_media_of(ml, queryParams, m_parent.type, m_parent.id ) );

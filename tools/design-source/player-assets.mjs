@@ -14,6 +14,14 @@ export const icons = [
   ['48:46', 'minimize'], ['48:51', 'maximize'], ['2230:9222', 'tools'],
   ['51:808', 'folder'], ['48:57', 'vlc'], ['247:418', 'more'],
   ['87:1041', 'sidebar'],
+  ['87:1026', 'home-active'], ['71:857', 'library-videos'], ['87:1015', 'library-videos-active'],
+  ['71:851', 'library-music'], ['87:1009', 'library-music-active'],
+  ['42:357', 'library-playlists'], ['858:5098', 'library-playlists-active'],
+  ['2154:9699', 'recent'], ['477:1202', 'network-active'],
+  ['6206:13629', 'albums'], ['858:5155', 'artists'], ['6191:13585', 'genres'],
+  ['70:828', 'home'], ['70:833', 'network'], ['999:4806', 'music'],
+  ['856:2147', 'search'], ['2107:6523', 'grid'], ['2107:6531', 'list'],
+  ['71:890', 'back'], ['71:887', 'forward'], ['330:267', 'expand-library'],
   ['463:564', 'sort'], ['463:560', 'remove'], ['463:550', 'add'],
   ['187:470', 'repeat'], ['187:474', 'shuffle'], ['463:417', 'move'],
   ['2127:7548', 'bookmarks'], ['2127:7531', 'chapters'], ['2127:7523', 'queue-tab'],
@@ -87,7 +95,10 @@ export function extractPlayerAssets(destination) {
         paths.push(`<path fill="white" fill-opacity="${opacity}" fill-rule="${geometryPath.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`);
       }
     }
-    const nested = (children.get(id(node.guid)) ?? []).map(render).join('');
+    // Figma saves the final boolean outline; its children are construction
+    // operands. Redrawing them fills subtraction holes such as Home's doorway.
+    const nested = node.type === 'BOOLEAN_OPERATION' && paths.length
+      ? '' : (children.get(id(node.guid)) ?? []).map(render).join('');
     if (!paths.length && !nested && node.type !== 'FRAME')
       throw new Error(`Selected icon has unsupported drawable: ${node.name} (${node.type})`);
     return `<g transform="${affine(node.transform)}" opacity="${node.opacity ?? 1}">${paths.join('')}${nested}</g>`;

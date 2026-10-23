@@ -1,0 +1,200 @@
+{
+  "held_drag": [
+    {
+      "op": "press",
+      "args": [
+        "--target",
+        "libraryItem_UNKNOWN - 2",
+        "--fraction-x",
+        ".2"
+      ],
+      "response": "0bed8dc297cd4a78b6cde8c6d1a331bf",
+      "state": 2,
+      "time_seconds": 73.071203,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "move",
+      "args": [
+        "--target",
+        "libraryItem_UNKNOWN - 2",
+        "--fraction-x",
+        ".7",
+        "--fraction-y",
+        ".8"
+      ],
+      "response": "4ebff97262544c73b82d58f58eb90905",
+      "state": 2,
+      "time_seconds": 73.659515,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "move",
+      "args": [
+        "--target",
+        "libraryItem_UNKNOWN - 2",
+        "--fraction-x",
+        ".9",
+        "--fraction-y",
+        ".9"
+      ],
+      "response": "b8a9436a0e5349b1a0c51533d2368e94",
+      "state": 2,
+      "time_seconds": 74.354271,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "snapshot",
+      "args": [
+        "--await-target",
+        "libraryDragPreview",
+        "--await-property",
+        "ready",
+        "--await-value",
+        "true"
+      ],
+      "response": "1af83fe98c3f4d60b8fbea8fb1a1517f",
+      "state": 2,
+      "time_seconds": 74.79700799999999,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "move",
+      "args": [
+        "--target",
+        "dropArea",
+        "--fraction-x",
+        ".5",
+        "--fraction-y",
+        ".8"
+      ],
+      "response": "0a6839a70ff6495f9b92f09ccc9a044a",
+      "state": 2,
+      "time_seconds": 75.138964,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "release",
+      "args": [
+        "--target",
+        "dropArea",
+        "--fraction-x",
+        ".5",
+        "--fraction-y",
+        ".8",
+        "--capture"
+      ],
+      "response": "f24d497fa5d24435ac0bc00d834ce72b",
+      "state": 2,
+      "time_seconds": 75.69225999999999,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "snapshot",
+      "args": [
+        "--await-core",
+        "time_seconds",
+        "--await-comparison",
+        "at_least",
+        "--await-value",
+        "73.238208"
+      ],
+      "response": "3c4bbb23396645fd81200502f2433f10",
+      "state": 2,
+      "time_seconds": 76.081383,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    },
+    {
+      "op": "click",
+      "args": [
+        "--name",
+        "Mini player play or pause"
+      ],
+      "response": "f13b62289ce84ff188a136b7ed7639d9",
+      "state": 3,
+      "time_seconds": 76.54334,
+      "input_url": "owned-fixtures:/Resume/Resume%20validation%20%E2%80%94%20%CE%9A%CE%B1%CE%BB%CE%B7%CE%BC%CE%AD%CF%81%CE%B1%20%E2%80%94%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E2%80%94%20long_title_long_title_long_title_long_title_long_title_long_title_long_title_long_title_.mp4",
+      "qml_errors": []
+    }
+  ],
+  "default": {
+    "own_key_remains_absent_after_normal_exit": true,
+    "existing_list_preference_preserved": true,
+    "no_read_only_error": true,
+    "native_capture": "native-v11-200/ae133b1445e24da09b562b819fbb78a0.json"
+  },
+  "reset": {
+    "pins_cleared": true,
+    "details_cleared": true,
+    "existing_grid_preference_preserved": true,
+    "grid_preference_value": false,
+    "meaning": "Reset preserved the existing false/List preference; it did not restore the default true/Grid preference",
+    "native_response": "native-v10-150/18834f50fc044c4b9c5a62c8aa7192f2.json"
+  },
+  "long_native_playlist": {
+    "native_title_units": 1340,
+    "cached_label_units": 1024,
+    "native_identity_preserved": true,
+    "full_title_restored_from_native_model": true,
+    "fixture_unpinned_and_deleted": true,
+    "restart_response": "native-v14b/74a752abec7c45cbad93c75759ce241d"
+  },
+  "resume": {
+    "stored_position": 0.749809,
+    "initial_position": 0.007468,
+    "resumed_seconds": 90.01558,
+    "advancing_seconds": 90.139619,
+    "request_response": "native-v6/5e4094b01fac409c856aeba9860cda18",
+    "resume_response": "native-v6/50b1726bc1404d3fbf16538f5ca13ebd"
+  },
+  "coverage": "App-owned Qt framework events on an inactive desktop; no OS input or desktop switching; separate video pixels require composed capture.",
+  "settings_recovery_cases": [
+    {
+      "case": "malformed",
+      "raw_length": 7,
+      "visible_read_only_error": true,
+      "original_value_preserved": true,
+      "normal_exit": true,
+      "source_response": "settings-malformed/b5b7d9ee24dc4c75b2373d069e580b6f.json"
+    },
+    {
+      "case": "newer",
+      "raw_length": 44,
+      "visible_read_only_error": true,
+      "original_value_preserved": true,
+      "normal_exit": true,
+      "source_response": "settings-newer/9f36d88ac0494932af41d5e356a6c3c8.json"
+    },
+    {
+      "case": "oversized",
+      "raw_length": 65537,
+      "visible_read_only_error": true,
+      "original_value_preserved": true,
+      "normal_exit": true,
+      "source_response": "settings-oversized/80bbeba4b56641e88c026d7da0685d0d.json"
+    },
+    {
+      "case": "legacy-grid",
+      "raw_length": 41,
+      "visible_read_only_error": true,
+      "original_value_preserved": true,
+      "normal_exit": true,
+      "source_response": "settings-legacy-grid/62bc12ba6c4040c2a4a753964ef11ba7.json"
+    },
+    {
+      "case": "wrong-identity",
+      "raw_length": 121,
+      "visible_read_only_error": true,
+      "original_value_preserved": true,
+      "normal_exit": true,
+      "source_response": "settings-wrong-identity/7d1fa3f02972483e85da14de9801c4a8.json"
+    }
+  ]
+}

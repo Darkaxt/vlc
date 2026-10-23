@@ -106,12 +106,36 @@ void MLMediaModel::deleteFileFromSource(const QModelIndex &index)
                               });
 }
 
+void MLMediaModel::setItemPlayed(const QModelIndex & index, bool played)
+{
+    MLVideo * video = dynamic_cast<MLVideo *>(item(index.row()));
+
+    if (video == nullptr)
+        return;
+
+    assert(m_mediaLib);
+
+    int64_t id = video->getId().id;
+
+    // ML thread
+    m_mediaLib->runOnMLThread(this, [id, played] (vlc_medialibrary_t * ml)
+    {
+        vlc_ml_media_set_played(ml, id, played);
+    });
+
+    // NOTE: We want the change to be visible right away.
+    video->setIsNew(played == false);
+
+    emit dataChanged(index, index);
+}
+
 vlc_ml_sorting_criteria_t MLMediaModel::nameToCriteria(QByteArray name) const
 {
     return QHash<QByteArray, vlc_ml_sorting_criteria_t> {
         {QByteArrayLiteral("title"), VLC_ML_SORTING_ALPHA},
         {QByteArrayLiteral("duration"), VLC_ML_SORTING_DURATION},
         {QByteArrayLiteral("insertion"), VLC_ML_SORTING_INSERTIONDATE},
+        {QByteArrayLiteral("playcount"), VLC_ML_SORTING_PLAYCOUNT},
     }.value(name, VLC_ML_SORTING_DEFAULT);
 }
 

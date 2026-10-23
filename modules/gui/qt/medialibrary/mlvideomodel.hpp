@@ -28,6 +28,7 @@
 class MLVideoModel : public MLMediaModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool unwatchedOnly READ unwatchedOnly WRITE setUnwatchedOnly NOTIFY unwatchedOnlyChanged FINAL)
 
 public:
     enum Roles
@@ -48,9 +49,14 @@ public:
 
     virtual ~MLVideoModel() = default;
 
+    bool unwatchedOnly() const { return m_unwatchedOnly; }
+    void setUnwatchedOnly(bool value);
+
+signals:
+    void unwatchedOnlyChanged();
+
 public: // Interface
     // NOTE: This function is useful when we want to apply a change before the database event.
-    Q_INVOKABLE void setItemPlayed(const QModelIndex & index, bool played);
 
 protected:
     QHash<int, QByteArray> roleNames() const override;
@@ -69,13 +75,20 @@ private:
 
     vlc_ml_sorting_criteria_t nameToCriteria(QByteArray name) const override;
 
+    bool m_unwatchedOnly = false;
+
     struct Loader : public MLListCacheLoader::MLOp
     {
+        explicit Loader(const MLVideoModel& model)
+            : MLOp(model), m_unwatchedOnly(model.unwatchedOnly()) {}
         using MLListCacheLoader::MLOp::MLOp;
 
         size_t count(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParams) const override;
         std::vector<std::unique_ptr<MLItem>> load(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParams) const override;
         std::unique_ptr<MLItem> loadItemById(vlc_medialibrary_t* ml, MLItemId itemId) const override;
+    private:
+        std::vector<std::unique_ptr<MLItem>> scanUnwatched(vlc_medialibrary_t*, const vlc_ml_query_params_t*, size_t* count) const;
+        bool m_unwatchedOnly = false;
     };
 };
 

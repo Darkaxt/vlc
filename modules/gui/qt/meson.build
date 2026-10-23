@@ -753,6 +753,12 @@ qml_modules += {
        'player/qml/LyricsFlickable.qml',
        'player/qml/MiniPlayer.qml',
        'player/qml/PIPPlayer.qml',
+       'player/qml/PlayerLibraryNetworkDialog.qml',
+       'player/qml/LibraryGlass.qml',
+       'player/qml/PlayerLibraryHome.qml',
+       'player/qml/PlayerLibrary.qml',
+       'player/qml/PlayerLibraryDisplay.qml',
+       'player/qml/PlayerLibraryTextDialog.qml',
        'player/qml/Player.qml',
        'player/qml/PlayerChromeState.qml',
        'player/qml/PlayerIconButton.qml',
@@ -786,6 +792,7 @@ qml_modules += {
    ),
    'singletons' : files(
        'player/qml/PlayerStyle.qml',
+       'player/qml/LibraryState.qml',
        'player/qml/PlayerControlbarControls.qml',
    )
 }

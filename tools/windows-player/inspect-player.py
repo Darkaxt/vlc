@@ -15,7 +15,7 @@ import uuid
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('op', choices=['snapshot', 'click', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'resize', 'cancel', 'quit'])
+    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'resize', 'cancel', 'quit'])
     parser.add_argument('--target')
     parser.add_argument('--name', help='Exact accessible name of an actionable Qt Quick item')
     parser.add_argument('--item-url', help='Exact URL of one rendered queue row')
@@ -36,7 +36,7 @@ def main():
     parser.add_argument('--menu-action', help='Exact menu action label, ignoring mnemonic ampersands')
     parser.add_argument('--widget-text', help='Exact native widget text, ignoring mnemonic ampersands')
     parser.add_argument('--url', action='append', default=[])
-    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'busy', 'waveformBusy', 'subtitleLoaded', 'sleepMinutes', 'previewSource', 'previewStatus', 'waveformStatus', 'sleepStatus', 'status'])
+    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'ready', 'itemCount', 'indexing', 'busy', 'waveformBusy', 'subtitleLoaded', 'sleepMinutes', 'previewSource', 'previewStatus', 'waveformStatus', 'sleepStatus', 'status'])
     parser.add_argument('--await-value', type=json.loads)
     parser.add_argument('--await-service', choices=['redesignMediaTools', 'redesignMediaAnalysis', 'redesignSubtitleSearch'])
     parser.add_argument('--await-target')
@@ -120,7 +120,7 @@ def main():
         else:
             _, before = request('snapshot')
             fields = dict(revision=before['revision'], capture=args.capture)
-            if args.op in ('click', 'move', 'drag', 'scroll', 'drop', 'focus'):
+            if args.op in ('click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus'):
                 if args.target or args.name or args.item_url:
                     nodes = [n for n in before['tree'] if n['visible'] and n['enabled'] and
                              ((args.target and n['id'] == args.target) or
@@ -150,6 +150,10 @@ def main():
                 if args.key is None:
                     parser.error('Key requires --key with a Qt key code')
                 fields.update(key=args.key, modifiers=args.modifiers, text=args.text)
+                if args.op == 'key' and args.target:
+                    nodes = [n for n in before['tree'] if n['id'] == args.target and n['visible'] and n['enabled'] and n.get('focused')]
+                    if len(nodes) != 1:
+                        raise RuntimeError('Expected one visible focused Qt key target; matched ' + str(len(nodes)))
                 if args.op == 'widget_key':
                     if args.target:
                         nodes = [n for n in before['widgets'] if n['id'] == args.target and n['enabled']]
@@ -211,7 +215,7 @@ def main():
                 elif 'node' not in fields:
                     parser.error('This operation requires --await-target')
             output, result = request(args.op, **fields)
-        print(json.dumps({k: result[k] for k in ['status', 'revision', 'before_revision', 'player_ready', 'missing_required_items', 'images', 'qml_errors', 'window', 'core', 'capture_saved'] if k in result}, indent=2))
+        print(json.dumps({k: result[k] for k in ['status', 'revision', 'before_revision', 'player_ready', 'library_ready', 'library', 'missing_required_items', 'images', 'qml_errors', 'window', 'core', 'capture_saved'] if k in result}, indent=2))
         print('Response:', output)
         print('Owned VLC has OS foreground window:', json.dumps({'before': foreground_before, 'after': owns_foreground()}))
     finally:

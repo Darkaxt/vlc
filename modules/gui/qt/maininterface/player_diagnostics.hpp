@@ -68,6 +68,7 @@ private:
     QElapsedTimer m_clock;
     QJsonArray m_errors;
     QJsonArray m_pointerTrace;
+    Qt::MouseButtons m_pointerButtons = Qt::NoButton;
     QList<QPointer<QQuickItem>> m_items;
     QList<QPointer<QWidget>> m_widgets;
     quint64 m_revision = 0;
@@ -328,6 +329,23 @@ private:
         }
         result.insert(QStringLiteral("player_ready"), missing.isEmpty() && m_errors.isEmpty() && images.value(QStringLiteral("pending")).toInt() == 0 && images.value(QStringLiteral("failed")).toInt() == 0);
         result.insert(QStringLiteral("missing_required_items"), QJsonArray::fromStringList(missing));
+        bool libraryReady = false;
+        for (const auto item : m_items) {
+            if (!item || !item->isVisible() || item->width() <= 0 || item->height() <= 0) continue;
+            const auto id = stableId(item);
+            if (id != QStringLiteral("fullLibrary") && id != QStringLiteral("compactLibrary")) continue;
+            libraryReady = item->property("ready").toBool() && m_errors.isEmpty()
+                && images.value(QStringLiteral("pending")).toInt() == 0
+                && images.value(QStringLiteral("failed")).toInt() == 0;
+            result.insert(QStringLiteral("library"), QJsonObject{
+                {QStringLiteral("id"), id},
+                {QStringLiteral("indexed_model_count"), item->property("itemCount").toInt()},
+                {QStringLiteral("indexing"), item->property("indexing").toBool()},
+                {QStringLiteral("model_and_mounted_items_ready"), item->property("ready").toBool()},
+                {QStringLiteral("ready"), libraryReady}});
+            break;
+        }
+        result.insert(QStringLiteral("library_ready"), libraryReady);
         return result;
     }
 
@@ -446,7 +464,7 @@ private:
         else if (!awaitProperty.isEmpty()) {
             const int index = command.value(QStringLiteral("await_node")).toInt(command.value(QStringLiteral("node")).toInt(-1));
             const QStringList allowed{QStringLiteral("selected"), QStringLiteral("description"), QStringLiteral("visible"),
-                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving")};
+                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving"), QStringLiteral("ready"), QStringLiteral("itemCount"), QStringLiteral("indexing")};
             if (!allowed.contains(awaitProperty) || index < 0 || index >= m_items.size() || !m_items[index]
                 || m_items[index]->metaObject()->indexOfProperty(awaitProperty.toUtf8().constData()) < 0)
                 error = QStringLiteral("invalid_observation_rejected_before_dispatch");
@@ -478,7 +496,7 @@ private:
             const int height = command.value(QStringLiteral("height")).toInt();
             if (width < window->minimumWidth() || width > 3840 || height < window->minimumHeight() || height > 2160) error = QStringLiteral("size_outside_current_window_constraints");
             else window->resize(width, height);
-        } else if (op == QStringLiteral("click") || op == QStringLiteral("move") || op == QStringLiteral("drag") || op == QStringLiteral("scroll")) {
+        } else if (op == QStringLiteral("click") || op == QStringLiteral("press") || op == QStringLiteral("release") || op == QStringLiteral("move") || op == QStringLiteral("drag") || op == QStringLiteral("scroll")) {
             const int target = command.value(QStringLiteral("node")).toInt(-1);
             if (target < 0 || target >= m_items.size() || !m_items[target]
                 || !m_items[target]->isVisible() || !m_items[target]->isEnabled())
@@ -492,7 +510,9 @@ private:
                 if (!available.contains(point)) error = QStringLiteral("clipped_target_rejected_before_dispatch");
                 m_pointerTrace = {};
                 const QPointer<QQuickItem> tracedItem = item;
-                if (error.isEmpty()) mouse(window, QEvent::MouseMove, point, Qt::NoButton, Qt::NoButton, tracedItem);
+                if (m_pointerButtons != Qt::NoButton && op != QStringLiteral("move") && op != QStringLiteral("release")) error = QStringLiteral("gesture_already_pressed_rejected_before_dispatch");
+                if (op == QStringLiteral("release") && m_pointerButtons == Qt::NoButton) error = QStringLiteral("gesture_not_pressed_rejected_before_dispatch");
+                if (error.isEmpty()) mouse(window, QEvent::MouseMove, point, Qt::NoButton, m_pointerButtons, tracedItem);
                 if (error.isEmpty() && op == QStringLiteral("scroll")) {
                     const int delta = command.value(QStringLiteral("delta")).toInt();
                     auto wheel = new QWheelEvent(point, window->mapToGlobal(point), QPoint(), QPoint(0, delta), Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
@@ -503,6 +523,11 @@ private:
                     QCoreApplication::postEvent(window, wheel);
                 } else if (error.isEmpty() && op != QStringLiteral("move")) {
                     const auto button = command.value(QStringLiteral("button")).toString() == QStringLiteral("right") ? Qt::RightButton : Qt::LeftButton;
+                    if (op == QStringLiteral("release")) {
+                        const auto held = m_pointerButtons.testFlag(Qt::RightButton) ? Qt::RightButton : Qt::LeftButton;
+                        mouse(window, QEvent::MouseButtonRelease, point, held, Qt::NoButton, tracedItem);
+                        m_pointerButtons = Qt::NoButton;
+                    } else {
                     mouse(window, QEvent::MouseButtonPress, point, button, button, tracedItem);
                     if (op == QStringLiteral("drag")) {
                         const QPointF end(command.value(QStringLiteral("end_x")).toDouble(), command.value(QStringLiteral("end_y")).toDouble());
@@ -510,7 +535,9 @@ private:
                             mouse(window, QEvent::MouseMove, point + (end - point) * step / 12, Qt::NoButton, Qt::LeftButton, tracedItem);
                         point = end;
                     }
-                    mouse(window, QEvent::MouseButtonRelease, point, button, Qt::NoButton, tracedItem);
+                    if (op == QStringLiteral("press")) m_pointerButtons = button;
+                    else mouse(window, QEvent::MouseButtonRelease, point, button, Qt::NoButton, tracedItem);
+                    }
                 }
             }
         } else if (op == QStringLiteral("drop")) {

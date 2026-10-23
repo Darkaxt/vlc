@@ -5,6 +5,7 @@
 #include <dcomp.h>
 #include <wrl.h>
 #include <QQuickItem>
+#include <QQuickWindow>
 #include <QPointer>
 #include <QMutex>
 #include <QVariantList>
@@ -14,7 +15,8 @@
 namespace vlc {
 
 // The vout's existing SetContent call supplies the same decoded swapchain to
-// three clipped video copies. Only system-created visuals enter the DComp tree;
+// four clipped video copies (player chrome and the active library glass popup). Only
+// system-created visuals enter the DComp tree;
 // this forwarding interface is exclusively the vout window's content handle.
 // No second decoder, screen capture, desktop backdrop or CPU readback is used.
 class PlayerVideoBackdrop final : public IDCompositionVisual
@@ -31,7 +33,7 @@ class PlayerVideoBackdrop final : public IDCompositionVisual
     };
     ComPtr<IDCompositionDevice> m_device;
     ComPtr<IDCompositionVisual> m_source, m_root;
-    std::array<Region, 3> m_regions;
+    std::array<Region, 4> m_regions;
     QMutex m_lock;
     QPointF m_videoPosition;
     bool m_content = false, m_enabled = false;
@@ -122,7 +124,15 @@ public:
     // these background rectangles and supplies their real transformed geometry.
     QVariantMap synchronize(QQuickItem *root, qreal dpr)
     {
-        const auto items = root->findChildren<QQuickItem *>(QStringLiteral("playerVideoBackdrop"));
+        const auto window = root->window();
+        const auto scope = window ? window->contentItem() : root;
+        auto items = scope->findChildren<QQuickItem *>(QStringLiteral("playerVideoBackdrop"));
+        // Hidden popup backgrounds must not consume a slot ahead of an active
+        // one. The player has at most three chrome regions plus one glass popup.
+        items.removeIf([window](QQuickItem* item) {
+            return item->window() != window || !item->isVisible() || item->opacity() <= 0
+                || item->width() <= 0 || item->height() <= 0;
+        });
         QMutexLocker lock(&m_lock);
 #ifdef VLC_PLAYER_DIAGNOSTICS
         QVariantList regions;
@@ -133,8 +143,7 @@ public:
             auto item = i < size_t(items.size()) ? items[qsizetype(i)] : nullptr;
             QRectF rect;
             float radius = 0, sigma = 0;
-            const bool visible = m_enabled && m_content && item && item->isVisible()
-                                 && item->opacity() > 0 && item->width() > 0 && item->height() > 0;
+            const bool visible = m_enabled && m_content && item;
             if (visible) {
                 const auto logical = item->mapRectToScene(item->boundingRect());
                 rect = QRectF(logical.topLeft() * dpr, logical.size() * dpr);

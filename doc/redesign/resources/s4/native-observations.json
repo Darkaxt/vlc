@@ -1,0 +1,1844 @@
+[
+  {
+    "label": "home-night-100",
+    "source_response": "af0d3ced2fc840b4aaf7928b3cb6ea8b",
+    "source_sha256": "f6894e742c3242afea099540258a38714a8dd61a815e8b80f31209409795fd25",
+    "build": "0b748d9d80ba8973ee96738c4172731335b491fdc48e42aa6c3dc014d309c62e",
+    "window": {
+      "active": true,
+      "dpr": 1,
+      "flags": "1",
+      "height": 1080,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "1cb0ef6",
+      "visibility": 2,
+      "visible": true,
+      "width": 1920,
+      "x": 980,
+      "y": 566
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 4,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "core": {
+      "state": 0,
+      "time_seconds": null,
+      "position": -1
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 47,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "controls": [
+      {
+        "id": "libraryDisplay",
+        "type": "PlayerLibraryDisplay_QMLTYPE_180",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "playerTopBar",
+        "type": "RedesignTopBar_QMLTYPE_79",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 40,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryQueueButton",
+        "type": "PlayerIconButton_QMLTYPE_20",
+        "x": 88,
+        "y": 4,
+        "width": 30,
+        "height": 32,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "fullLibrary",
+        "type": "PlayerLibrary_QMLTYPE_150",
+        "x": 0,
+        "y": 40,
+        "width": 1920,
+        "height": 1040,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryNav_home",
+        "type": "QQuickButton_QML_167",
+        "x": 8,
+        "y": 53,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_videos",
+        "type": "QQuickButton_QML_167",
+        "x": 8,
+        "y": 99,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_music",
+        "type": "QQuickButton_QML_167",
+        "x": 8,
+        "y": 145,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_network",
+        "type": "QQuickButton_QML_167",
+        "x": 8,
+        "y": 191,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_playlists",
+        "type": "QQuickButton_QML_167",
+        "x": 8,
+        "y": 237,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_recent",
+        "type": "QQuickButton_QML_167",
+        "x": 8,
+        "y": 283,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddItem",
+        "type": "Action",
+        "x": 8,
+        "y": 329,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBack",
+        "type": "LibraryIcon",
+        "x": 237,
+        "y": 65,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFullSearch",
+        "type": "QQuickTextField",
+        "x": 1539,
+        "y": 60,
+        "width": 325,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHome",
+        "type": "PlayerLibraryHome_QMLTYPE_160",
+        "x": 237,
+        "y": 148,
+        "width": 1663,
+        "height": 920,
+        "focused": false,
+        "visible": true,
+        "contentY": 0
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 1",
+        "type": "QQuickButton_QML_163",
+        "x": 237,
+        "y": 192,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 8",
+        "type": "QQuickButton_QML_163",
+        "x": 573,
+        "y": 192,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 9",
+        "type": "QQuickButton_QML_163",
+        "x": 909,
+        "y": 192,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 4",
+        "type": "QQuickButton_QML_163",
+        "x": 237,
+        "y": 530,
+        "width": 200,
+        "height": 268,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 7",
+        "type": "QQuickButton_QML_165",
+        "x": 237,
+        "y": 919,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 5",
+        "type": "QQuickButton_QML_165",
+        "x": 457,
+        "y": 919,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 4",
+        "type": "QQuickButton_QML_165",
+        "x": 677,
+        "y": 919,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      }
+    ],
+    "capture": "home-night-100.png",
+    "capture_sha256": "4be08b2ca8e315d0136915cc2889adfca9407d1b544b193394dc481ff8777112",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "empty-folder-day-100",
+    "source_response": "3e4800abefc94904be29c3f1badea96e",
+    "source_sha256": "deda71b261586d5563780dd7475acdebdef0728110e82e914d979d8fbf83e45d",
+    "build": "e0114d254ca5e683b2ba5b06b53f49f2b638104d27f38e1287898559e04e0cac",
+    "window": {
+      "active": true,
+      "dpr": 1,
+      "flags": "1",
+      "height": 1080,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "a31d50",
+      "visibility": 2,
+      "visible": true,
+      "width": 1920,
+      "x": 980,
+      "y": 566
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 0,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "core": {
+      "state": 0,
+      "time_seconds": null,
+      "position": -1
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 30,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "controls": [
+      {
+        "id": "libraryDisplay",
+        "type": "PlayerLibraryDisplay_QMLTYPE_180",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "focused": true,
+        "visible": true
+      },
+      {
+        "id": "playerTopBar",
+        "type": "RedesignTopBar_QMLTYPE_177",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 40,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryQueueButton",
+        "type": "PlayerIconButton_QMLTYPE_76",
+        "x": 88,
+        "y": 4,
+        "width": 30,
+        "height": 32,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "fullLibrary",
+        "type": "PlayerLibrary_QMLTYPE_74",
+        "x": 0,
+        "y": 40,
+        "width": 1920,
+        "height": 1040,
+        "focused": true,
+        "visible": true
+      },
+      {
+        "id": "libraryNav_home",
+        "type": "QQuickButton_QML_112",
+        "x": 8,
+        "y": 53,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_videos",
+        "type": "QQuickButton_QML_112",
+        "x": 8,
+        "y": 99,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_music",
+        "type": "QQuickButton_QML_112",
+        "x": 8,
+        "y": 145,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_network",
+        "type": "QQuickButton_QML_112",
+        "x": 8,
+        "y": 191,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_playlists",
+        "type": "QQuickButton_QML_112",
+        "x": 8,
+        "y": 237,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_recent",
+        "type": "QQuickButton_QML_112",
+        "x": 8,
+        "y": 283,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddItem",
+        "type": "Action",
+        "x": 8,
+        "y": 329,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBack",
+        "type": "LibraryIcon",
+        "x": 237,
+        "y": 65,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFullSearch",
+        "type": "QQuickTextField",
+        "x": 1539,
+        "y": 60,
+        "width": 325,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryItems",
+        "type": "QQuickGridView_QML_117",
+        "x": 237,
+        "y": 131,
+        "width": 1683,
+        "height": 904,
+        "focused": false,
+        "visible": true,
+        "contentY": 0
+      }
+    ],
+    "capture": "empty-folder-day-100.png",
+    "capture_sha256": "5460008445a263687fc5d2ea6793be91ad873e0fc14a3757cc3e8bb0ebe4570f",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "home-night-150",
+    "source_response": "b64d77d4d80e476eafd1a0ba5937aa08",
+    "source_sha256": "3d5635807a15e3151cabcaf3a83c77731b2f36419d914c47079e1844a6a7af34",
+    "build": "82adf0ec3e34fbc39e2e09ba80bda76e9c4cc3897350498f51bbd0e07467048c",
+    "window": {
+      "active": true,
+      "dpr": 1.5,
+      "flags": "1",
+      "height": 720,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "39a127e",
+      "visibility": 2,
+      "visible": true,
+      "width": 1280,
+      "x": 553,
+      "y": 307
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 4,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "core": {
+      "state": 0,
+      "time_seconds": null,
+      "position": -1
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 57,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "controls": [
+      {
+        "id": "libraryDisplay",
+        "type": "PlayerLibraryDisplay_QMLTYPE_184",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "focused": true,
+        "visible": true
+      },
+      {
+        "id": "playerTopBar",
+        "type": "RedesignTopBar_QMLTYPE_136",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 40,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryQueueButton",
+        "type": "PlayerIconButton_QMLTYPE_24",
+        "x": 88,
+        "y": 4,
+        "width": 30,
+        "height": 32,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "fullLibrary",
+        "type": "PlayerLibrary_QMLTYPE_25",
+        "x": 0,
+        "y": 40,
+        "width": 1280,
+        "height": 680,
+        "focused": true,
+        "visible": true
+      },
+      {
+        "id": "libraryNav_home",
+        "type": "QQuickButton_QML_63",
+        "x": 8,
+        "y": 53,
+        "width": 200,
+        "height": 46,
+        "focused": true,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_videos",
+        "type": "QQuickButton_QML_63",
+        "x": 8,
+        "y": 99,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_music",
+        "type": "QQuickButton_QML_63",
+        "x": 8,
+        "y": 145,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_network",
+        "type": "QQuickButton_QML_63",
+        "x": 8,
+        "y": 191,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_playlists",
+        "type": "QQuickButton_QML_63",
+        "x": 8,
+        "y": 237,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_recent",
+        "type": "QQuickButton_QML_63",
+        "x": 8,
+        "y": 283,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddItem",
+        "type": "Action",
+        "x": 8,
+        "y": 329,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBack",
+        "type": "LibraryIcon",
+        "x": 237,
+        "y": 65,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFullSearch",
+        "type": "QQuickTextField",
+        "x": 942,
+        "y": 60,
+        "width": 281.6,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHome",
+        "type": "PlayerLibraryHome_QMLTYPE_54",
+        "x": 237,
+        "y": 148,
+        "width": 1023,
+        "height": 560,
+        "focused": false,
+        "visible": true,
+        "contentY": 0
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 1",
+        "type": "QQuickButton_QML_57",
+        "x": 237,
+        "y": 193,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 8",
+        "type": "QQuickButton_QML_57",
+        "x": 573,
+        "y": 193,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 9",
+        "type": "QQuickButton_QML_57",
+        "x": 909,
+        "y": 193,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 4",
+        "type": "QQuickButton_QML_57",
+        "x": 237,
+        "y": 532,
+        "width": 200,
+        "height": 268,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 7",
+        "type": "QQuickButton_QML_59",
+        "x": 237,
+        "y": 922,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 5",
+        "type": "QQuickButton_QML_59",
+        "x": 457,
+        "y": 922,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 4",
+        "type": "QQuickButton_QML_59",
+        "x": 677,
+        "y": 922,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      }
+    ],
+    "capture": "home-night-150.png",
+    "capture_sha256": "35caa17ccec0b20f4cb5a18d9d5f61d719d56f67f34ac52d91f00d124c78e7a4",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "home-day-200",
+    "source_response": "ae133b1445e24da09b562b819fbb78a0",
+    "source_sha256": "8c63a8d461c00af6a5128b7729143f76d3103f6937fb77356ce4ab285d133ac1",
+    "build": "5b17a04d0bacfb3e2a15bc1c7c09c098e2afdd35051810e7a085872875cf885f",
+    "window": {
+      "active": true,
+      "dpr": 2,
+      "flags": "1",
+      "height": 540,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "5af12cc",
+      "visibility": 2,
+      "visible": true,
+      "width": 960,
+      "x": 340,
+      "y": 178
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 4,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "core": {
+      "state": 0,
+      "time_seconds": null,
+      "position": -1
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 47,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "controls": [
+      {
+        "id": "libraryDisplay",
+        "type": "PlayerLibraryDisplay_QMLTYPE_188",
+        "x": 0,
+        "y": 0,
+        "width": 960,
+        "height": 540,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "playerTopBar",
+        "type": "RedesignTopBar_QMLTYPE_20",
+        "x": 0,
+        "y": 0,
+        "width": 960,
+        "height": 40,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryQueueButton",
+        "type": "PlayerIconButton_QMLTYPE_21",
+        "x": 88,
+        "y": 4,
+        "width": 30,
+        "height": 32,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "fullLibrary",
+        "type": "PlayerLibrary_QMLTYPE_27",
+        "x": 0,
+        "y": 40,
+        "width": 960,
+        "height": 500,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryNav_home",
+        "type": "QQuickButton_QML_86",
+        "x": 8,
+        "y": 53,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_videos",
+        "type": "QQuickButton_QML_86",
+        "x": 8,
+        "y": 99,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_music",
+        "type": "QQuickButton_QML_86",
+        "x": 8,
+        "y": 145,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_network",
+        "type": "QQuickButton_QML_86",
+        "x": 8,
+        "y": 191,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_playlists",
+        "type": "QQuickButton_QML_86",
+        "x": 8,
+        "y": 237,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_recent",
+        "type": "QQuickButton_QML_86",
+        "x": 8,
+        "y": 283,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddItem",
+        "type": "Action",
+        "x": 8,
+        "y": 329,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBack",
+        "type": "LibraryIcon",
+        "x": 237,
+        "y": 65,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFullSearch",
+        "type": "QQuickTextField",
+        "x": 692,
+        "y": 60,
+        "width": 211.2,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHome",
+        "type": "PlayerLibraryHome_QMLTYPE_78",
+        "x": 237,
+        "y": 148,
+        "width": 703,
+        "height": 380,
+        "focused": false,
+        "visible": true,
+        "contentY": 0
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 1",
+        "type": "QQuickButton_QML_81",
+        "x": 237,
+        "y": 193,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 8",
+        "type": "QQuickButton_QML_81",
+        "x": 573,
+        "y": 193,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 9",
+        "type": "QQuickButton_QML_81",
+        "x": 909,
+        "y": 193,
+        "width": 316,
+        "height": 217,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryHomeItem_UNKNOWN - 4",
+        "type": "QQuickButton_QML_81",
+        "x": 237,
+        "y": 532,
+        "width": 200,
+        "height": 268,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 7",
+        "type": "QQuickButton_QML_83",
+        "x": 237,
+        "y": 922,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 5",
+        "type": "QQuickButton_QML_83",
+        "x": 457,
+        "y": 922,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFrequentFolder_VLC_ML_PARENT_FOLDER - 4",
+        "type": "QQuickButton_QML_83",
+        "x": 677,
+        "y": 922,
+        "width": 200,
+        "height": 239,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      }
+    ],
+    "capture": "home-day-200.png",
+    "capture_sha256": "ae0279865c4085149cb8051ec888d543ea8ffe80e8f1ea9c2a4385e921815833",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "audio-folder-entry",
+    "source_response": "3b4f7b6b52cc428ba1133147ed43a66f",
+    "source_sha256": "9be9bfefed407a3e7b61f70e92d809b529418f1306fbcec032cd76bc008ce4f7",
+    "build": "2e620272a106e310b053f75b92219ae9e27e18a314b8f4af159799e38bafb322",
+    "window": {
+      "active": true,
+      "dpr": 1,
+      "flags": "1",
+      "height": 1080,
+      "minimum_height": 360,
+      "minimum_width": 472,
+      "native_id_hex": "3bf127e",
+      "visibility": 2,
+      "visible": true,
+      "width": 1920,
+      "x": 980,
+      "y": 566
+    },
+    "library": {
+      "id": "compactLibrary",
+      "indexed_model_count": 3,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "core": {
+      "state": 3,
+      "time_seconds": 0.150941,
+      "position": 0.012578333333333334
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 49,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "controls": [
+      {
+        "id": "playerTopBar",
+        "type": "RedesignTopBar_QMLTYPE_20",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 40,
+        "focused": true,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBrowser",
+        "type": "QQuickLoader",
+        "x": 0,
+        "y": 40,
+        "width": 427,
+        "height": 986,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "compactLibrary",
+        "type": "PlayerLibrary_QMLTYPE_103",
+        "x": 0,
+        "y": 40,
+        "width": 427,
+        "height": 986,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryNav_home",
+        "type": "QQuickButton_QML_146",
+        "x": 0,
+        "y": 41,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_videos",
+        "type": "QQuickButton_QML_146",
+        "x": 0,
+        "y": 87,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_music",
+        "type": "QQuickButton_QML_146",
+        "x": 0,
+        "y": 133,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_network",
+        "type": "QQuickButton_QML_146",
+        "x": 0,
+        "y": 179,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_playlists",
+        "type": "QQuickButton_QML_146",
+        "x": 0,
+        "y": 225,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_recent",
+        "type": "QQuickButton_QML_146",
+        "x": 0,
+        "y": 271,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddItem",
+        "type": "Action",
+        "x": 0,
+        "y": 317,
+        "width": 50,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBack",
+        "type": "LibraryIcon",
+        "x": 70,
+        "y": 60,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "librarySort",
+        "type": "LibraryIcon",
+        "x": 319,
+        "y": 104,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryViewMode",
+        "type": "LibraryIcon",
+        "x": 351,
+        "y": 104,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryItems",
+        "type": "QQuickGridView_QML_153",
+        "x": 70,
+        "y": 161,
+        "width": 337,
+        "height": 853,
+        "focused": false,
+        "visible": true,
+        "contentY": 0
+      },
+      {
+        "id": "libraryItem_UNKNOWN - 4",
+        "type": "QQuickItem_QML_154",
+        "x": 70,
+        "y": 161,
+        "width": 337,
+        "height": 42,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryItem_UNKNOWN - 5",
+        "type": "QQuickItem_QML_154",
+        "x": 70,
+        "y": 203,
+        "width": 337,
+        "height": 42,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryItem_UNKNOWN - 6",
+        "type": "QQuickItem_QML_154",
+        "x": 70,
+        "y": 245,
+        "width": 337,
+        "height": 42,
+        "focused": false,
+        "visible": true
+      }
+    ],
+    "capture": "audio-folder-entry.png",
+    "capture_sha256": "e2103c77484d0b5ff48553b449bf37df00e033bdca03b914e7c28ed5983ba6eb",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "drag-while-playing",
+    "source_response": "0b6e034cb6714dc6b98bd92d9e6b860a",
+    "source_sha256": "26929d6737e962e66cedda5dc02942b6084739e4276a67f129fe69eb352ddf22",
+    "build": "2e620272a106e310b053f75b92219ae9e27e18a314b8f4af159799e38bafb322",
+    "window": {
+      "active": true,
+      "dpr": 1,
+      "flags": "1",
+      "height": 1080,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "961c4a",
+      "visibility": 2,
+      "visible": true,
+      "width": 1920,
+      "x": 980,
+      "y": 566
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 2,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "core": {
+      "state": 3,
+      "time_seconds": 76.54334,
+      "position": 0.6378611583333333
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 46,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "controls": [
+      {
+        "id": "libraryDisplay",
+        "type": "PlayerLibraryDisplay_QMLTYPE_286",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "focused": true,
+        "visible": true
+      },
+      {
+        "id": "playerTopBar",
+        "type": "RedesignTopBar_QMLTYPE_211",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 40,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryQueueButton",
+        "type": "PlayerIconButton_QMLTYPE_66",
+        "x": 88,
+        "y": 4,
+        "width": 30,
+        "height": 32,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "fullLibrary",
+        "type": "PlayerLibrary_QMLTYPE_264",
+        "x": 0,
+        "y": 40,
+        "width": 1520,
+        "height": 1040,
+        "focused": true,
+        "visible": true
+      },
+      {
+        "id": "libraryNav_home",
+        "type": "QQuickButton_QML_268",
+        "x": 8,
+        "y": 53,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_videos",
+        "type": "QQuickButton_QML_268",
+        "x": 8,
+        "y": 99,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_music",
+        "type": "QQuickButton_QML_268",
+        "x": 8,
+        "y": 145,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_network",
+        "type": "QQuickButton_QML_268",
+        "x": 8,
+        "y": 191,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_playlists",
+        "type": "QQuickButton_QML_268",
+        "x": 8,
+        "y": 237,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryNav_recent",
+        "type": "QQuickButton_QML_268",
+        "x": 8,
+        "y": 283,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddItem",
+        "type": "Action",
+        "x": 8,
+        "y": 329,
+        "width": 200,
+        "height": 46,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryBack",
+        "type": "LibraryIcon",
+        "x": 237,
+        "y": 65,
+        "width": 24,
+        "height": 24,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryFullSearch",
+        "type": "QQuickTextField",
+        "x": 1139,
+        "y": 60,
+        "width": 325,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryEnqueue",
+        "type": "Action",
+        "x": 237,
+        "y": 127,
+        "width": 73,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryAddToPlaylist",
+        "type": "Action",
+        "x": 318,
+        "y": 127,
+        "width": 110,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryItems",
+        "type": "QQuickGridView_QML_275",
+        "x": 237,
+        "y": 181,
+        "width": 1263,
+        "height": 837,
+        "focused": false,
+        "visible": true,
+        "contentY": 0
+      },
+      {
+        "id": "libraryItem_VLC_ML_PARENT_PLAYLIST - 1",
+        "type": "QQuickItem_QML_276",
+        "x": 658,
+        "y": 181,
+        "width": 421,
+        "height": 42,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryItem_VLC_ML_PARENT_PLAYLIST - 3",
+        "type": "QQuickItem_QML_276",
+        "x": 237,
+        "y": 181,
+        "width": 421,
+        "height": 42,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryNewPlaylist",
+        "type": "Action",
+        "x": 237,
+        "y": 1034,
+        "width": 96,
+        "height": 34,
+        "focused": false,
+        "visible": true,
+        "font": "Inter Variable Text,-1,14,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "mini",
+        "type": "QQuickRectangle_QML_287",
+        "x": 8,
+        "y": 732.625,
+        "width": 390,
+        "height": 339.375,
+        "focused": false,
+        "visible": true
+      },
+      {
+        "id": "libraryMiniSeek",
+        "type": "QQuickSlider_QML_289",
+        "x": 16,
+        "y": 959,
+        "width": 374,
+        "height": 16,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      },
+      {
+        "id": "libraryReturnToPlayer",
+        "type": "PlayerIconButton_QMLTYPE_66",
+        "x": 356,
+        "y": 1028,
+        "width": 30,
+        "height": 32,
+        "focused": false,
+        "visible": true,
+        "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+      }
+    ],
+    "capture": "drag-while-playing.png",
+    "capture_sha256": "d517d77719e6c4de59a1aceb346d645bddea057e3064e86453be05f005fb70af",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "network-night-100",
+    "source_response": "080e12f335504142960abf67cbda5a72",
+    "source_sha256": "20016c1bf6cf1baf97773bd447d37bab31f82786b920c28718d5f5a1f02f1986",
+    "build": "c3e681b4d30629edb6d7a6a4a0cff951897c8f0f2b13981ec41782065abc5d5c",
+    "window": {
+      "active": true,
+      "dpr": 1,
+      "flags": "1",
+      "height": 1080,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "ad0bca",
+      "visibility": 2,
+      "visible": true,
+      "width": 1920,
+      "x": 980,
+      "y": 566
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 1,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 38,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "video_backdrop": {
+      "enabled": true,
+      "hresult": 0,
+      "regions": [
+        {
+          "corner_radius_px": 0,
+          "rect_px": {
+            "height": 40,
+            "width": 1920,
+            "x": 0,
+            "y": 0
+          },
+          "sigma_px": 25,
+          "visible": true
+        },
+        {
+          "corner_radius_px": 14,
+          "rect_px": {
+            "height": 631,
+            "width": 1048,
+            "x": 436,
+            "y": 224.5
+          },
+          "sigma_px": 25,
+          "visible": true
+        },
+        {
+          "corner_radius_px": 0,
+          "rect_px": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "sigma_px": 0,
+          "visible": false
+        },
+        {
+          "corner_radius_px": 0,
+          "rect_px": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "sigma_px": 0,
+          "visible": false
+        }
+      ],
+      "video_content": true
+    },
+    "capture": "network-night-100.png",
+    "capture_sha256": "e0c55a6a566ec02e1fb8fae851b4ee6a222010d60f730bbb8b830bfae7a50ae4",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "context-night-100",
+    "source_response": "a2eeb38d49f649c19bbc6e155be60d9d",
+    "source_sha256": "a9c8b4daca78739138e4cee6015dc1eb14d8eaf50a40f976c927a37442613663",
+    "build": "c3e681b4d30629edb6d7a6a4a0cff951897c8f0f2b13981ec41782065abc5d5c",
+    "window": {
+      "active": true,
+      "dpr": 1,
+      "flags": "1",
+      "height": 1080,
+      "minimum_height": 360,
+      "minimum_width": 320,
+      "native_id_hex": "ad0bca",
+      "visibility": 2,
+      "visible": true,
+      "width": 1920,
+      "x": 980,
+      "y": 566
+    },
+    "library": {
+      "id": "fullLibrary",
+      "indexed_model_count": 3,
+      "indexing": false,
+      "model_and_mounted_items_ready": true,
+      "ready": true
+    },
+    "images": {
+      "failed": 0,
+      "pending": 0,
+      "resolved": 39,
+      "unresolved": 0
+    },
+    "qml_errors": [],
+    "video_backdrop": {
+      "enabled": true,
+      "hresult": 0,
+      "regions": [
+        {
+          "corner_radius_px": 0,
+          "rect_px": {
+            "height": 40,
+            "width": 1920,
+            "x": 0,
+            "y": 0
+          },
+          "sigma_px": 25,
+          "visible": true
+        },
+        {
+          "corner_radius_px": 10,
+          "rect_px": {
+            "height": 122,
+            "width": 265,
+            "x": 860.625,
+            "y": 152
+          },
+          "sigma_px": 25,
+          "visible": true
+        },
+        {
+          "corner_radius_px": 0,
+          "rect_px": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "sigma_px": 0,
+          "visible": false
+        },
+        {
+          "corner_radius_px": 0,
+          "rect_px": {
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "sigma_px": 0,
+          "visible": false
+        }
+      ],
+      "video_content": true
+    },
+    "capture": "context-night-100.png",
+    "capture_sha256": "913db4175ba68193605a6d6f54b7a7746ff1f56803af861405af7de3be02a2cb",
+    "coverage": "Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation."
+  },
+  {
+    "label": "composed-player-night",
+    "source_response": "531443f79fc84ba08cd948e79a0014bf",
+    "source_sha256": "f259511a0e11c5538bb383dbc95ac77ad65d1fc83c278a1a4c6f23d9c656d5d0",
+    "build": "c3e681b4d30629edb6d7a6a4a0cff951897c8f0f2b13981ec41782065abc5d5c",
+    "verification": {
+      "status": "passed",
+      "window": {
+        "active": true,
+        "dpr": 1,
+        "flags": "200001",
+        "height": 1080,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "2520f34",
+        "visibility": 2,
+        "visible": true,
+        "width": 1920,
+        "x": 2815,
+        "y": 0
+      },
+      "media_title": "Resume validation \u2014 \u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u2014 \u65e5\u672c\u8a9e \u2014 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7"
+    },
+    "capture": "composed-player-night.png",
+    "capture_sha256": "cf09436b0e77c3835fd52a4452879c9af297985acb743580a94a64e697ee943c",
+    "coverage": "Exact owned HWND Windows Graphics Capture; offscreen/no OS foreground/no cursor capture; native composed video pixels included"
+  },
+  {
+    "label": "composed-player-day",
+    "source_response": "3c89580b41e34c7fbd1d8b2db52b9e7b",
+    "source_sha256": "8afae416b296373c053da77fcb95c60b5fa16cc5c611da4aa72f4e92d717cffb",
+    "build": "c3e681b4d30629edb6d7a6a4a0cff951897c8f0f2b13981ec41782065abc5d5c",
+    "verification": {
+      "status": "passed",
+      "window": {
+        "active": true,
+        "dpr": 1,
+        "flags": "200001",
+        "height": 1080,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "2530f34",
+        "visibility": 2,
+        "visible": true,
+        "width": 1920,
+        "x": 2815,
+        "y": 0
+      },
+      "media_title": "Resume validation \u2014 \u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u2014 \u65e5\u672c\u8a9e \u2014 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7 Long library title with meaningful metadata \u00b7",
+      "pattern_edges": {
+        "chrome_red": [
+          210,
+          209,
+          208,
+          208,
+          207,
+          206,
+          205,
+          204,
+          203,
+          202,
+          201,
+          200,
+          199,
+          198,
+          197,
+          196,
+          195,
+          194,
+          193,
+          192,
+          191,
+          190,
+          189,
+          188,
+          187,
+          186,
+          185,
+          184,
+          184,
+          183,
+          182,
+          181,
+          180,
+          179,
+          178,
+          177,
+          176,
+          176,
+          175,
+          174,
+          173
+        ],
+        "video_red": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          222,
+          153,
+          102,
+          33,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "chrome_levels": 38,
+        "video_levels": 6
+      }
+    },
+    "capture": "composed-player-day.png",
+    "capture_sha256": "f582288e135fea61382ae68a0d38a40359a84cf04e2780cf02763033301b782a",
+    "coverage": "Exact owned HWND Windows Graphics Capture; offscreen/no OS foreground/no cursor capture; native composed video pixels included"
+  }
+]

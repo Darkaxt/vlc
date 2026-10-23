@@ -33,6 +33,9 @@
 #include <vlc_cxx_helpers.hpp>
 #include <vlc_vout.h>
 #include <vlc_preparser.h>
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <vlc_media_library.h>
+#endif
 
 #include <QFile>
 #include <QFileInfo>
@@ -1968,7 +1971,32 @@ void PlayerController::restorePlaybackPos()
 {
     Q_D(PlayerController);
     vlc_player_locker lock{ d->m_player };
-    if (!d->isCurrentItemSynced())
+    const bool synced = d->isCurrentItemSynced();
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    QVariantMap request{{QStringLiteral("kind"), QStringLiteral("resume")},
+                        {QStringLiteral("status"), synced ? QStringLiteral("submitted") : QStringLiteral("input_not_synced")},
+                        {QStringLiteral("core_position_before"), vlc_player_GetPosition(d->m_player)}};
+    const auto item = vlc_player_GetCurrentMedia(d->m_player);
+    const auto ml = vlc_ml_instance_get(d->p_intf);
+    if (item && ml) {
+        auto media = vlc_ml_get_media_by_mrl(ml,item->psz_uri);
+        if (media) {
+            request.insert(QStringLiteral("stored_position"),media->f_progress);
+            vlc_ml_playback_states_all states{};
+            if (vlc_ml_media_get_all_playback_pref(ml,media->i_id,&states) == VLC_SUCCESS) {
+                request.insert(QStringLiteral("stored_title"),states.current_title);
+                request.insert(QStringLiteral("stored_rate"),states.rate);
+            }
+            vlc_ml_playback_states_all_release(&states);
+            vlc_ml_media_release(media);
+        }
+    }
+    auto requests = property("redesignSeekRequests").toList();
+    if (requests.size() >= 8) requests.removeFirst();
+    requests.append(request);
+    setProperty("redesignSeekRequests",requests);
+#endif
+    if (!synced)
         return;
     vlc_player_RestorePlaybackPos( d->m_player );
 }

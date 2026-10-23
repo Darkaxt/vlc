@@ -70,7 +70,12 @@ FocusScope {
 
     // Events
 
-    Component.onCompleted: MainCtx.preferHotkeys = true
+    Binding {
+        target: MainCtx
+        property: "preferHotkeys"
+        value: !libraryBrowser.activeFocus
+        restoreMode: Binding.RestoreNone
+    }
     Component.onDestruction: MainCtx.preferHotkeys = false
 
     Keys.priority: Keys.AfterItem
@@ -116,6 +121,8 @@ FocusScope {
     }
 
     property bool _keyboardNavigation: false
+    property bool libraryVisible: false
+    property url libraryFolder: ""
     readonly property bool _surfaceHovered: playerSpecializationLoader.item?.pointerHovered ?? pointer.hovered
     readonly property point _surfacePointer: playerSpecializationLoader.item?.pointerPosition ?? pointer.point.position
 
@@ -133,11 +140,12 @@ FocusScope {
         bottomHovered: controlBar.hovered || (rootPlayer._surfaceHovered && rootPlayer._surfacePointer.y >= rootPlayer.height - controlBar.height)
         topFocused: rootPlayer._keyboardNavigation && rootPlayer._focusWithin(topBar)
         bottomFocused: rootPlayer._keyboardNavigation && !rootPlayer._focusWithin(topBar)
-        topMenuOpen: topBar.menuOpen || (MainCtx.playerMenuOpen && !controlBar.menuOpen)
-        bottomMenuOpen: controlBar.menuOpen || playlistVisibility.isPlaylistVisible
+        topMenuOpen: rootPlayer.libraryVisible || topBar.menuOpen || (MainCtx.playerMenuOpen && !controlBar.menuOpen)
+        bottomMenuOpen: rootPlayer.libraryVisible || controlBar.menuOpen || playlistVisibility.isPlaylistVisible
                         || Player.canRestorePlayback || (MainCtx.playerMenuOpen && !topBar.menuOpen)
         onHiddenChanged: {
             if (hidden) {
+                rootPlayer.libraryVisible = false
                 topBar.forceUnlock()
                 controlBar.forceUnlock()
                 MainCtx.closePlayerMenus()
@@ -195,7 +203,7 @@ FocusScope {
         objectName: "playerSpecializationLoader"
 
         anchors {
-            left: parent.left
+            left: libraryBrowser.active ? libraryBrowser.right : parent.left
             right: parent.right
             top: (MainCtx.hasEmbededVideo && rootPlayer._controlsUnderVideo) ? topBar.bottom : parent.top
             bottom: (MainCtx.hasEmbededVideo && rootPlayer._controlsUnderVideo) ? controlBar.top : parent.bottom
@@ -959,6 +967,13 @@ FocusScope {
         showCSD: MainCtx.clientSideDecoration && !chrome.fullscreen
         visible: chrome.topVisible
         onHideChromeRequested: chrome.hidden = true
+        onBrowseFolderRequested: {
+            if (!MainCtx.mediaLibraryAvailable) { MainCtx.playerView = false; return }
+            rootPlayer.libraryFolder = MainCtx.folderMRL(Player.url)
+            if (rootPlayer.libraryVisible && libraryBrowser.item) libraryBrowser.item.openAddress(rootPlayer.libraryFolder.toString())
+            else rootPlayer.libraryVisible = true
+        }
+        onBrowseRequested: { rootPlayer.libraryFolder = ""; if (!MainCtx.mediaLibraryAvailable) MainCtx.playerView = false; else { rootPlayer.libraryVisible = !rootPlayer.libraryVisible; if (rootPlayer.libraryVisible) libraryBrowser.forceActiveFocus(); else topBar.forceActiveFocus() } }
         onBackRequested: {
             if (MainCtx.hasEmbededVideo && !MainCtx.canShowVideoPIP)
                 MainPlaylistController.stop()
@@ -966,6 +981,21 @@ FocusScope {
         }
         Navigation.parentItem: rootPlayer
         Navigation.downItem: controlBar
+    }
+
+    Loader {
+        id: libraryBrowser
+        active: rootPlayer.libraryVisible
+        anchors.top: topBar.bottom; anchors.bottom: controlBar.top; anchors.left: parent.left
+        width: active ? Math.min(PlayerStyle.px(427),rootPlayer.width-PlayerStyle.px(180)) : 0
+        z: 2
+        source: active ? "qrc:///qt/qml/VLC/Player/PlayerLibrary.qml" : ""
+        onLoaded: { item.compact = true; if (rootPlayer.libraryFolder.toString()) item.openAddress(rootPlayer.libraryFolder.toString()) }
+        Connections {
+            target: libraryBrowser.item
+            function onCloseRequested() { rootPlayer.libraryVisible = false; topBar.forceActiveFocus() }
+            function onExpandRequested() { rootPlayer.libraryVisible = false; MainCtx.playerView = false }
+        }
     }
 
     PlayerResume {

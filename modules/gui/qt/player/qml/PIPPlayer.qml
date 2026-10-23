@@ -36,6 +36,7 @@ T.Control {
     property real dragXMax: 0
     property real dragYMin: undefined
     property real dragYMax: undefined
+    property Item dragTarget: root
 
     property int textStyle: Text.Outline
 
@@ -83,7 +84,7 @@ T.Control {
         DragHandler {
             id: dragHandler
 
-            target: root
+            target: root.dragTarget
 
             cursorShape: Qt.DragMoveCursor
 

@@ -1,0 +1,38 @@
+[
+  {
+    "path": "doc/redesign/resources/s4-verification.json",
+    "before_sha256": "a0674acfaad8fb67985a57cfe837f99a2d02ab83d057337b69be177839460315",
+    "after_sha256": "10fcc3fa71befe3d0db598b94a4be9c1885a3e29d92423990e64404fc94b6477",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "doc/redesign/resources/s4/native-observations.json",
+    "before_sha256": "39deaac86f2a23fc44d95df738029905150b2575fb7380126267fbc67859fb87",
+    "after_sha256": "77c62710930b6d30525000d74fc3733df1ff2a7ef0b193f045fbc8d5191c4f54",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "doc/redesign/resources/s4/normal-runtime.json",
+    "before_sha256": "c2e92e0ae2c8ac193b3536d2869fd4f3d3170b14f500da7225b12e286de1abfd",
+    "after_sha256": "5a306573683fe0c8ed5acf15507368446f3a1fff9a881d471742ca708c0d9969",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "doc/redesign/resources/s4/workflow-metrics.json",
+    "before_sha256": "0447f0c37bbe64f0d18db9dbb288ca357bab5d0f20dcb02c3363e6f9b907d842",
+    "after_sha256": "38c40912c8c227f58cefceb7fe370bb7d10915559e31ed54f620c9686be5497a",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PlayerLibraryHome.qml",
+    "before_sha256": "0378d125e09871260997e6fc6dd8d349cf19a98e2c6e08e394956c322324936f",
+    "after_sha256": "1c6cc36b8ec33b37b6b3f373d48825cca0092954bba497bd1da78edb05d1ae42",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "tools/windows-player/configure-player.py",
+    "before_sha256": "45205114eb96850e3f0328e8579b74d88f12bdc1a878e31cfabd59bbd4b7e8f4",
+    "after_sha256": "f818a60c51ebf0ce0b6ab2946604d1c52da13a3dfc2fdda79c1a6e6cd4273423",
+    "only_crlf_to_lf": true
+  }
+]

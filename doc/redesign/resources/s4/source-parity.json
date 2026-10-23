@@ -1,0 +1,311 @@
+[
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/albums.svg",
+    "sha256": "2557fb47e22d534d710b4748d5959859cc564e9b78d64ce3bfd3df37a32d5c25",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/artists.svg",
+    "sha256": "eaa6e02d9ec58a0143e9274bced2b8083b476e5286d080f6d327128dbe03742e",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/back.svg",
+    "sha256": "29f5f5f84068b94cb44d456f81fe569acedf5249a65e282e17d78a2daaee7216",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/expand-library.svg",
+    "sha256": "bf8f813ca67c67b3dddf34dcd7790f5b3ce2856dfc4e90b7e7df71ff95bc7268",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/forward.svg",
+    "sha256": "efd80513e4b414c3682892fef0941cd772b652186a1febe206ca70b93e4be3a8",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/genres.svg",
+    "sha256": "22159b1aac6f26442c416e3b5545ef2d644f9ec6848ff95475360a1be5911e62",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/grid.svg",
+    "sha256": "ad2908f950d39b13714704da438f2c9208f8d503d718feaf1c3ce2e6759c2fef",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/home-active.svg",
+    "sha256": "80c599aa2c39bdd18333eefb1f4a6748099135999ed56b52c326eb28348ab2e9",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/home.svg",
+    "sha256": "2e40f52d8793cbfe74c268fb3e7c3356093f7b080bf8d97e72880476801c44f9",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/library-music-active.svg",
+    "sha256": "82d86c5d3b6f5fc204f4309ad20b226d281aade2394c50bd01ab2ca8b76d668a",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/library-music.svg",
+    "sha256": "06b0e02d7b93a916ed11412740fc149e6b05ccaad911c217207e31bf96099a63",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/library-playlists-active.svg",
+    "sha256": "6d63e75f479544a656f6542ae5f040d732a658f415d78ae03023d488ede69bc9",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/library-playlists.svg",
+    "sha256": "6c3859a3668c3007d3de0d04b0c61ecdc339e7c8706834e93c3e5a23c0125ea2",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/library-videos-active.svg",
+    "sha256": "4446be0640f2f9ea0a795455f414746509bfac53228d67066c604903bc739d11",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/library-videos.svg",
+    "sha256": "1c10b2cc2f9c49f12c83510bdac31fc29e69c41eea05a85d3d15a7233f1e8e24",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/list.svg",
+    "sha256": "dc62f328ed403d7dd0ac650ff19a98c7e9e198619c357a424ddb8b2c1e16503d",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/music.svg",
+    "sha256": "32155834ac61277007c4752b87ee15d4cd453a42312c3b171592e09d915e67ce",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/network-active.svg",
+    "sha256": "600a64ab51fa4e9070b0efbab42b256e18efd9ca99c89e2ab83718c099462bfd",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/network.svg",
+    "sha256": "5a3b24a7d8bde9b9689715085b228bc6aa54fda38fe56170ac8addc2449f761f",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/recent.svg",
+    "sha256": "613f48cb6efa5835dc7088aad15e14bee792d8c7e5dff8badd4337e8167ec61a",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/search.svg",
+    "sha256": "d257088c34f5412a5bc76726a38204f6310be17db907c52fd3cc9ab2625fe898",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/LibraryGlass.qml",
+    "sha256": "caf949d24d1563fd09a40f81cac9455d7b86255d496285171707b6de0c949564",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/LibraryState.qml",
+    "sha256": "d69d8ce8388bba3b96c756990513881de5eb829d54f5cd1b2ccb0edd6b20ce4f",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PlayerLibrary.qml",
+    "sha256": "e400befec2ac05ccb8bd120dfa5deb5988a297d28ddcbcd9ce290b1bb755d10a",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PlayerLibraryDisplay.qml",
+    "sha256": "0d5342b47017cd2440b8dc388debc4f10537e29d6eae2347340b8fa4e7bf9e9b",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PlayerLibraryHome.qml",
+    "sha256": "1c6cc36b8ec33b37b6b3f373d48825cca0092954bba497bd1da78edb05d1ae42",
+    "match": true,
+    "native_build_sha256": "0378d125e09871260997e6fc6dd8d349cf19a98e2c6e08e394956c322324936f",
+    "comparison": "Exact after CRLF-to-LF normalization; no content change"
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PlayerLibraryNetworkDialog.qml",
+    "sha256": "c3f631f49b2c2201dec8b07b719c99335041dfeabba86686f3bf5ec8b97c8775",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PlayerLibraryTextDialog.qml",
+    "sha256": "fab34b51d40fd47dc60cd3beaeae6695bfd7413f8e7719788ba5b33d527e619e",
+    "match": true
+  },
+  {
+    "path": "tools/windows-player/configure-player.py",
+    "sha256": "f818a60c51ebf0ce0b6ab2946604d1c52da13a3dfc2fdda79c1a6e6cd4273423",
+    "match": true,
+    "native_build_sha256": "45205114eb96850e3f0328e8579b74d88f12bdc1a878e31cfabd59bbd4b7e8f4",
+    "comparison": "Exact after CRLF-to-LF normalization; no content change"
+  },
+  {
+    "path": "modules/gui/qt/Makefile.am",
+    "sha256": "bc9eb2104924dae50911c5204e45f43627e0e7a291dd08fbee3c5113cdc8dcd5",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/assets.qrc",
+    "sha256": "f3d54f19a738e7a73b42008d28f0cfae3a62f98e08491bd06014fbeb61e15927",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/maininterface/mainctx.hpp",
+    "sha256": "e91fcf3b2b6436895c912f1e4dd76df4e4e102d8c64f8072b92e93aea85d6d18",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/maininterface/player_diagnostics.hpp",
+    "sha256": "c970c8c587c340bd9b05d08a76f1ac739b8e7a63c26f1645f0223d94957b6cec",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/maininterface/player_video_backdrop.hpp",
+    "sha256": "ddd55114f0ba62dd1a4028793f931ac8b1bb0c8c04c7afaf04c69300a0fdd73d",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/maininterface/qml/MainInterface.qml",
+    "sha256": "13d0d03c9c77d0ae9d260efdebc6735e73b54ecab41031eeb683bca43e70a4fb",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlaudiomodel.cpp",
+    "sha256": "c773c98bb5fc0428123508f1d566e1dd4d3422ff045f7fd62967bd906f8bed0a",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlaudiomodel.hpp",
+    "sha256": "87639832a1fa2694d7306b1d661634123a67dc281e869319e3081c5969bf3e0c",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlfolder.cpp",
+    "sha256": "2eb32840d48b4e4282bc608be16fe78a902669c18ba938f6811b624f529dc334",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlmediamodel.cpp",
+    "sha256": "38fe565b372372b986ad6b4094c48a9a82aaf1fd5243f49d93da895cfc4fe45a",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlmediamodel.hpp",
+    "sha256": "06c1b09431a899e3e7b589118806f4f51802ccab0deb1a0a44e20c2d44c02e50",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlplaylistlistmodel.cpp",
+    "sha256": "ef1496f266e04f3e8271ae053fca1a589372783146a36b1628b12f76ff6d2177",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlplaylistlistmodel.hpp",
+    "sha256": "cbd2c2d723604d3392dd9fa5917864cbea84ac70228c51796bdd27b7551cbed8",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlvideofoldersmodel.cpp",
+    "sha256": "2026edca3b88db749a3d7e252f97fc6d11c752e6cf0e2097b41d2c397040f9c5",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlvideofoldersmodel.hpp",
+    "sha256": "11af4fee29cd85b718d5feab314fb6291ca062a0272c651c2be97214f12ec459",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlvideomodel.cpp",
+    "sha256": "8566a1bb8b64ba924ecdb26d7e820385535a1a7cc0bf0f1f47d2781542f31b24",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/medialibrary/mlvideomodel.hpp",
+    "sha256": "7dd85c03303a1c5630f8e5e16e18a93e0eb75f01d1b7b37fc0cbedfba1ace12d",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/meson.build",
+    "sha256": "1d60e275092c04a7c40a3add60fd8683d498522954cf39620bb48b1345a97617",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/README.md",
+    "sha256": "127a56a64c844873c444b3ecbfeb0a683d4803f6e7e8580d061899de6a5c3dba",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/pixmaps/redesign/manifest.json",
+    "sha256": "268e11cdfb7936c842b84a96673b8fb63ffbc13590cdda85267b04becee00b93",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/player_controller.cpp",
+    "sha256": "dfe3f44a9a6b915090fadd14bf9bf973c6356445f98f302140fef2bb23332393",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/PIPPlayer.qml",
+    "sha256": "a2e5a7470f98e6207d078733669cda8058c1ccd9b2087537d4f4f19ce0147d32",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/Player.qml",
+    "sha256": "2895544f58a47e51a86c391b76de715c28f07f4d812c00d4c681e7402d613416",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/player/qml/RedesignTopBar.qml",
+    "sha256": "c73f66f6a845b4571d6c383478fd66b1d52e1d256a2b719159fae0ec092bcecf",
+    "match": true
+  },
+  {
+    "path": "modules/gui/qt/widgets/qml/DragItem.qml",
+    "sha256": "5a56d149fc4d91ff471f7c810f7b854562a64d3affcf838d5d3eddc39fb5602a",
+    "match": true
+  },
+  {
+    "path": "tools/design-source/README.md",
+    "sha256": "9f5235887fca022995aeab95b87fd804b94d9b1ec7c4bd0c8fadcf14e7bd912f",
+    "match": true
+  },
+  {
+    "path": "tools/design-source/player-assets.mjs",
+    "sha256": "e86966d62327dabd9e0ef6001dd29ef28b61e9d5a99c828b631e2896c43aad7f",
+    "match": true
+  },
+  {
+    "path": "tools/design-source/player-assets.test.mjs",
+    "sha256": "1cb7d5829f3f0605246d42d4cca4d7f817425cf2f31af2311a274f2ab85afd8c",
+    "match": true
+  },
+  {
+    "path": "tools/windows-player/README.md",
+    "sha256": "558e7b2ce4661e98f103b1eb03f150d2da4139bea632eb0ad700d4978950e043",
+    "match": true
+  },
+  {
+    "path": "tools/windows-player/inspect-player.py",
+    "sha256": "0c13b41c7e9b099e77ab386d1849d9fb91121efa9450127eb3d7a2a054f03d22",
+    "match": true
+  },
+  {
+    "path": "tools/windows-player/verify-player-capture.py",
+    "sha256": "1ecc712a5080613b802a764ba92c0148d4e3cc046958f2bc095249c75cf087db",
+    "match": true
+  },
+  {
+    "path": "tools/windows-player/verify-player-runtime.py",
+    "sha256": "00e37c37fea08622acda4c9c48f78c2c4c456ab0df5275aba42e949cb62ddacf",
+    "match": true
+  }
+]

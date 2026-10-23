@@ -108,7 +108,7 @@ void appendMediaIntoPlaylist(vlc_medialibrary_t* ml, int64_t playlistId, const s
     [this, initialItems](quint64, const Ctx& ctx) {
         endTransaction(); // this is intentionally called here and not after `append()`
 
-        if (ctx.createdPlaylistId.id)
+        if (ctx.createdPlaylistId.id && !initialItems.empty())
         {
             append(ctx.createdPlaylistId, initialItems);
         }
@@ -277,6 +277,13 @@ QHash<int, QByteArray> MLPlaylistListModel::roleNames() const /* override */
         { PLAYLIST_NB_VIDEO,  QByteArrayLiteral("nb_video")   },
         { PLAYLIST_NB_UNKNOWN,QByteArrayLiteral("nb_unknown") }
     };
+}
+
+vlc_ml_sorting_criteria_t MLPlaylistListModel::nameToCriteria(QByteArray name) const
+{
+    if (name == QByteArrayLiteral("name")) return VLC_ML_SORTING_ALPHA;
+    if (name == QByteArrayLiteral("duration")) return VLC_ML_SORTING_DURATION;
+    return VLC_ML_SORTING_DEFAULT;
 }
 
 QVariant MLPlaylistListModel::itemRoleData(const MLItem *item, int role) const /* override */

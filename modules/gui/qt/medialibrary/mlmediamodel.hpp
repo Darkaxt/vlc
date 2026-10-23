@@ -54,6 +54,7 @@ public:
     explicit MLMediaModel(QObject *par = nullptr);
     virtual ~MLMediaModel() = default;
 
+    Q_INVOKABLE void setItemPlayed(const QModelIndex &index, bool played);
     Q_INVOKABLE void setMediaIsFavorite(const QModelIndex &index, bool isFavorite);
     Q_INVOKABLE QUrl getParentURL(const QModelIndex &index);
     Q_INVOKABLE QUrl getParentURL(const MLMedia *media) const;

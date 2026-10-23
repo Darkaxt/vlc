@@ -21,6 +21,7 @@ Dependencies are pinned with integrity hashes: [kiwi-schema](https://github.com/
 The S2 player uses a bounded extractor for its saved outlined icon components:
 
 ```powershell
+$env:VLC_DESIGN_TEST_OUTPUT='E:/Temp/<task>/icon-checks'
 node --test ./player-assets.test.mjs
 node ./player-assets.mjs E:/Temp/<task>/player-icons
 ```
@@ -29,7 +30,7 @@ The explicit output directory receives SVG masks and a source-node/hash manifest
 The production copies live in `modules/gui/qt/pixmaps/redesign`. Full nested affine
 matrices preserve reflected geometry, and rectangle primitives use current source
 dimensions and stroke alignment. This avoids the screen renderer's observed
-reflection and stale primitive-cache errors on the selected icons. Native Qt tints
+reflection and stale primitive-cache errors on the selected icons. Cached boolean results are emitted once, without repainting their construction operands. Native Qt tints
 the masks. This remains a selected-component extractor, not a complete Figma
 renderer; the original Figma design governs visual verification. Keep generated
 comparison output in task-owned scratch and retain the design attribution.

@@ -1,0 +1,104 @@
+{
+  "stage": "S4",
+  "status": "ACTIVE",
+  "product_acceptance_verified": true,
+  "delivery_remaining": [
+    "Reviewed main temporary cleanup",
+    "Verified source commit and remote synchronization"
+  ],
+  "scope_stop": "before S5",
+  "normal_runtime": {
+    "plugin_cache_exit": 0,
+    "pid": 84096,
+    "desktop": "VLC-S2-1d902f713705420f9860b14ed7a744a1",
+    "exit_code": 0,
+    "qml_runtime_errors": [],
+    "media_library_enabled": true,
+    "checks": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true,
+      "native_media_library_started": true
+    },
+    "qt_plugin_sha256": "cebecbea67a7190345b204667da687ec53648aa38b188debc64c8118624ad8fa",
+    "upnp_plugin_sha256": "dd0ac2db3260acefddbd74209881c55cebc5f9a1f6c6531888c7bc9fb911d603",
+    "debug_markers_absent": [
+      "VLC_PLAYER_DIAGNOSTICS_DIR",
+      "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+      "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+      "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+      "redesignSeekRequests",
+      "offscreen_session_is_capture_only",
+      "PlayerDiagnostics"
+    ],
+    "profile_isolation": "Existing empty portable directory beside executable",
+    "capture_scope": "Inactive desktop, no OS input or desktop switching",
+    "verified_utc": "2026-10-23T06:45:20.782778+00:00",
+    "passed": true
+  },
+  "review_runtime": "E:/VLC-Redesign/S4",
+  "source_base": "2db530dc8f2b9a759b0256f23e3bf23af61c3779",
+  "pinned_upstream": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "pinned_windows_image": "registry.videolan.org/vlc-debian-win64-posix@sha256:8e83e800036f8f4a6da1031a6b80c2b5bad8337259c072ffa22398baaeaad880",
+  "qt": "6.8.3",
+  "figma_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "figma_source_frames": [
+    "6261:15078",
+    "848:1997",
+    "970:4028",
+    "856:2215",
+    "6216:13614",
+    "2139:8935",
+    "2404:13340"
+  ],
+  "source_parity_verified": true,
+  "installed_profile": {
+    "unchanged": true,
+    "files": 5,
+    "path_identity": "Normalized relative separators; byte hashes and sizes identical"
+  },
+  "requirements": {
+    "R30": "Verified actual library/title/sidebar/compact/full/miniplayer/queue, held internal drag with input identity and advancing native clock, miniplayer movement/resize.",
+    "R31": "Verified real indexed Unicode/# roots/empty folders/breadcrumbs/address/search/three views/sorting/watched/unwatched; actual music metadata categories; audio-current-folder entry.",
+    "R32": "Verified stored playlist management and queue independence, pins/restart, native recent/resume/frequent folders, privacy-disabled views and cleared history shelves.",
+    "R33": "Verified visible/reachable open-action inventory and real HTTP M3U expansion/decoded playback. Existing advanced actions retained; conversion/stream configuration organization belongs to S5.",
+    "R04": "Verified versioned own pins/details store, existing Grid/List owner, default/reset/restart, five read-only recovery cases and unchanged installed profile.",
+    "R52": "Verified native Figma source geometry/themes/scaling/resize/long text/focus/icons, final popup resource lifetime/fill/corners, composed video/blur/sharp picture, existing media-tools pages and normal actual delivered runtime."
+  },
+  "evidence": {
+    "native": "s4/native-observations.json",
+    "workflows": "s4/workflow-metrics.json",
+    "normal_runtime": "s4/normal-runtime.json",
+    "source_parity": "s4/source-parity.json"
+  },
+  "blockers": [
+    "Required source delivery and main temporary cleanup not yet completed"
+  ],
+  "tracked_deferrals": [],
+  "coverage_limits": [
+    "App-owned Qt events; no desktop OLE claim.",
+    "Qt-only library captures exclude the separate video surface; separately composed captures include main-player video.",
+    "No physical disc/capture device verification, global clipboard read, third-party channel-list bundle or intermediate application release."
+  ],
+  "refactoring_assessment": "Existing VLC controllers/ML models own playback and library identity. The versioned store owns only pins/details; existing Grid/List preference remains authoritative. Shared popup glass serves two current uses with visible-lifetime ownership. No material required consolidation or additional stage identified.",
+  "cleanup": {
+    "main_transaction": "9be92acd7bbe74e138e0666a6e919364",
+    "normal_profile_transaction": "56af18723805dfc73d1b38d39cd243be",
+    "normal_profile_applied": true,
+    "normal_profile_fresh_empty": true,
+    "debugger_transactions_applied": [
+      "ae534ace91986e0dd81c8659381acc47",
+      "5dfc5dc1f78fe9422b5d85372d35eb54"
+    ],
+    "debugger_new_files_removed": 9,
+    "debugger_new_empty_directories_removed": 11,
+    "debugger_logical_bytes_removed": 7008256,
+    "http_server_exit": 0,
+    "disposable_wsl_unregistered": true,
+    "Ubuntu_and_docker_desktop_preserved": true
+  },
+  "source_transport_normalization": "Windows/build inputs matched exactly before formatting; final source is identical after CRLF-to-LF normalization only. Native raw build hashes are retained alongside current source hashes."
+}

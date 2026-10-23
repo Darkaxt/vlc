@@ -8,6 +8,7 @@ parser.add_argument('--runtime',type=Path,required=True)
 parser.add_argument('--fixture',type=Path,required=True)
 parser.add_argument('--scratch',type=Path,required=True)
 parser.add_argument('--evidence',type=Path,required=True)
+parser.add_argument('--with-media-library',action='store_true',help='Exercise normal native media-library startup as well as playback')
 options=parser.parse_args()
 s=options.scratch.resolve();r=options.runtime.resolve();e=options.evidence.resolve()
 repo=Path(__file__).resolve().parents[2]
@@ -39,13 +40,13 @@ records['plugin_cache_exit']=p.returncode
 cache_log=(e/'plugin-cache.stderr').read_text(encoding='utf8',errors='replace')
 assert 'cannot load plug-in' not in cache_log,cache_log
 print('Packaged plugin inventory exits normally',flush=True)
-args=[str(r/'vlc.exe'),'--intf=qt','--no-one-instance','--no-media-library','--restore-playback-pos=0','--no-save-recentplay','--no-qt-privacy-ask','--no-qt-updates-notif','--no-metadata-network-access','--no-qt-video-autoresize','--no-video-title-show','--no-volume-save','--mmdevice-volume=0.0','--play-and-exit','--file-logging','--log-verbose=2','--logfile='+str(e/'native-ui.log'),str(options.fixture.resolve())]
+args=[str(r/'vlc.exe'),'--intf=qt','--no-one-instance',*([] if options.with_media_library else ['--no-media-library']),'--restore-playback-pos=0','--no-save-recentplay','--no-qt-privacy-ask','--no-qt-updates-notif','--no-metadata-network-access','--no-qt-video-autoresize','--no-video-title-show','--no-volume-save','--mmdevice-volume=0.0','--play-and-exit','--file-logging','--log-verbose=2','--logfile='+str(e/'native-ui.log'),str(options.fixture.resolve())]
 with (e/'native-ui.stdout').open('wb') as out,(e/'native-ui.stderr').open('wb') as err:
  p=IsolatedProcess(args,cwd=r,env=env,stdout=out,stderr=err)
  records['pid']=p.pid;records['desktop']=p.desktop_name;records['exit_code']=p.wait()
 # Preserve the exact native result even when acceptance below fails.
 log=(e/'native-ui.log').read_text(encoding='utf8',errors='replace');stderr=(e/'native-ui.stderr').read_text(encoding='utf8',errors='replace')
-qml_failure_pattern=r'(TypeError:|ReferenceError:|is not installed|is not a type|is not available in|Type [^\n]+ unavailable|failed to load component|Binding loop detected|Cannot assign to non-existent property|Unable to assign \[undefined\] to)'
+qml_failure_pattern=r'(TypeError:|ReferenceError:|is not installed|is not a type|is not available in|Type [^\n]+ unavailable|failed to load component|Binding loop detected|source item.s window:|Cannot assign to non-existent property|Unable to assign \[undefined\] to)'
 requirements={
  'actual_picture': 'Received first picture' in log,
  'natural_eof': 'EOF reached' in log,
@@ -54,8 +55,11 @@ requirements={
  'no_plugin_load_errors':not any(x in log for x in ['cannot load module','could not load module','cannot load plug-in']),
  'no_qml_runtime_errors':not re.search(qml_failure_pattern,log+'\n'+stderr)
 }
+if options.with_media_library:
+ requirements['native_media_library_started']='using medialibrary module "medialibrary"' in log
 warnings=[line for line in (log+'\n'+stderr).splitlines() if re.search(qml_failure_pattern,line)]
 records['qml_runtime_errors']=warnings
+records['media_library_enabled']=options.with_media_library
 records.update(checks=requirements,qt_plugin_sha256=hashlib.sha256(blob).hexdigest(),upnp_plugin_sha256=hashlib.sha256((r/'plugins/services_discovery/libupnp_plugin.dll').read_bytes()).hexdigest(),debug_markers_absent=markers,profile_isolation='Existing empty portable directory beside executable',capture_scope='Inactive desktop, no OS input or desktop switching',verified_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
 records['passed']=records['exit_code']==0 and all(requirements.values())
 (e/'result.json').write_text(json.dumps(records,indent=2)+'\n',encoding='utf8')

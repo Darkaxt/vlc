@@ -45,6 +45,10 @@ Item {
     //        in order to pick the right method.
     property bool indexesFlat: false
 
+    // In-window library-to-queue gestures use Qt internal drag/drop. Other
+    // existing views retain their native external drag behavior.
+    property bool nativeDragEnabled: true
+
     property string defaultCover: VLCStyle.noArtAlbumCover
 
     property string defaultText: qsTr("Unknown")
@@ -138,9 +142,9 @@ Item {
 
     parent: T.Overlay.overlay
 
-    visible: false
+    visible: !nativeDragEnabled && Drag.active
 
-    Drag.dragType: Drag.None
+    Drag.dragType: nativeDragEnabled ? Drag.None : Drag.Internal
 
     Drag.hotSpot.x: - VLCStyle.dragDelta + margins
 
@@ -156,7 +160,7 @@ Item {
     enabled: false
 
     // Offscreen render:
-    layer.enabled: true
+    layer.enabled: nativeDragEnabled
     layer.effect: Item { }
 
     function _setData(data) {
@@ -369,7 +373,7 @@ Item {
                         guard: (requestId, data) => requestId === dragItem._currentRequest,
                         action: (requestId, data) => {
                             dragItem._setData(data)
-                            _pendingNativeDragStart = true
+                            _pendingNativeDragStart = nativeDragEnabled
                         },
                         target: fsmRequestInputItem
                     },

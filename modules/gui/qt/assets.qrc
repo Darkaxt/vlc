@@ -3,6 +3,29 @@
         <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
     </qresource>
     <qresource prefix="/redesign/icons">
+        <file alias="albums.svg">pixmaps/redesign/albums.svg</file>
+        <file alias="artists.svg">pixmaps/redesign/artists.svg</file>
+        <file alias="genres.svg">pixmaps/redesign/genres.svg</file>
+        <file alias="home-active.svg">pixmaps/redesign/home-active.svg</file>
+        <file alias="library-videos.svg">pixmaps/redesign/library-videos.svg</file>
+        <file alias="library-videos-active.svg">pixmaps/redesign/library-videos-active.svg</file>
+        <file alias="library-music.svg">pixmaps/redesign/library-music.svg</file>
+        <file alias="library-music-active.svg">pixmaps/redesign/library-music-active.svg</file>
+        <file alias="library-playlists.svg">pixmaps/redesign/library-playlists.svg</file>
+        <file alias="library-playlists-active.svg">pixmaps/redesign/library-playlists-active.svg</file>
+        <file alias="recent.svg">pixmaps/redesign/recent.svg</file>
+        <file alias="network-active.svg">pixmaps/redesign/network-active.svg</file>
+
+        <file alias="home.svg">pixmaps/redesign/home.svg</file>
+        <file alias="network.svg">pixmaps/redesign/network.svg</file>
+        <file alias="music.svg">pixmaps/redesign/music.svg</file>
+        <file alias="search.svg">pixmaps/redesign/search.svg</file>
+        <file alias="grid.svg">pixmaps/redesign/grid.svg</file>
+        <file alias="list.svg">pixmaps/redesign/list.svg</file>
+        <file alias="back.svg">pixmaps/redesign/back.svg</file>
+        <file alias="forward.svg">pixmaps/redesign/forward.svg</file>
+        <file alias="expand-library.svg">pixmaps/redesign/expand-library.svg</file>
+
         <file alias="volume-cone.svg">pixmaps/redesign/volume-cone.svg</file>
         <file alias="volume-level.svg">pixmaps/redesign/volume-level.svg</file>
         <file alias="video.svg">pixmaps/redesign/video.svg</file>

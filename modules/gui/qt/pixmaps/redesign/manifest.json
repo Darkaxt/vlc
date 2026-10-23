@@ -155,6 +155,174 @@
       "sha256": "db00cb4dfda51b01563fbfc9195385534760e71ccd24cc6e57db13cd1362d79a"
     },
     {
+      "id": "87:1026",
+      "name": "name=home, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "home-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "80c599aa2c39bdd18333eefb1f4a6748099135999ed56b52c326eb28348ab2e9"
+    },
+    {
+      "id": "71:857",
+      "name": "name=videos, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "library-videos.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "1c10b2cc2f9c49f12c83510bdac31fc29e69c41eea05a85d3d15a7233f1e8e24"
+    },
+    {
+      "id": "87:1015",
+      "name": "name=videos, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "library-videos-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "4446be0640f2f9ea0a795455f414746509bfac53228d67066c604903bc739d11"
+    },
+    {
+      "id": "71:851",
+      "name": "name=songs, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "library-music.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "06b0e02d7b93a916ed11412740fc149e6b05ccaad911c217207e31bf96099a63"
+    },
+    {
+      "id": "87:1009",
+      "name": "name=songs, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "library-music-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "82d86c5d3b6f5fc204f4309ad20b226d281aade2394c50bd01ab2ca8b76d668a"
+    },
+    {
+      "id": "42:357",
+      "name": "name=playlist, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "library-playlists.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "6c3859a3668c3007d3de0d04b0c61ecdc339e7c8706834e93c3e5a23c0125ea2"
+    },
+    {
+      "id": "858:5098",
+      "name": "name=playlist, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "library-playlists-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "6d63e75f479544a656f6542ae5f040d732a658f415d78ae03023d488ede69bc9"
+    },
+    {
+      "id": "2154:9699",
+      "name": "name=recent, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "recent.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "613f48cb6efa5835dc7088aad15e14bee792d8c7e5dff8badd4337e8167ec61a"
+    },
+    {
+      "id": "477:1202",
+      "name": "name=streaming, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "network-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "600a64ab51fa4e9070b0efbab42b256e18efd9ca99c89e2ab83718c099462bfd"
+    },
+    {
+      "id": "6206:13629",
+      "name": "name=album, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "albums.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "2557fb47e22d534d710b4748d5959859cc564e9b78d64ce3bfd3df37a32d5c25"
+    },
+    {
+      "id": "858:5155",
+      "name": "name=artist, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "artists.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "eaa6e02d9ec58a0143e9274bced2b8083b476e5286d080f6d327128dbe03742e"
+    },
+    {
+      "id": "6191:13585",
+      "name": "name=genre, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "genres.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "22159b1aac6f26442c416e3b5545ef2d644f9ec6848ff95475360a1be5911e62"
+    },
+    {
+      "id": "70:828",
+      "name": "name=home, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "home.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "2e40f52d8793cbfe74c268fb3e7c3356093f7b080bf8d97e72880476801c44f9"
+    },
+    {
+      "id": "70:833",
+      "name": "name=streaming, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "network.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "5a3b24a7d8bde9b9689715085b228bc6aa54fda38fe56170ac8addc2449f761f"
+    },
+    {
+      "id": "999:4806",
+      "name": "name=music, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "music.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "32155834ac61277007c4752b87ee15d4cd453a42312c3b171592e09d915e67ce"
+    },
+    {
+      "id": "856:2147",
+      "name": "name=search, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "search.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "d257088c34f5412a5bc76726a38204f6310be17db907c52fd3cc9ab2625fe898"
+    },
+    {
+      "id": "2107:6523",
+      "name": "name=grid, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "grid.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "ad2908f950d39b13714704da438f2c9208f8d503d718feaf1c3ce2e6759c2fef"
+    },
+    {
+      "id": "2107:6531",
+      "name": "name=list, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "list.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "dc62f328ed403d7dd0ac650ff19a98c7e9e198619c357a424ddb8b2c1e16503d"
+    },
+    {
+      "id": "71:890",
+      "name": "name=arrow, direction=left, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "back.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "29f5f5f84068b94cb44d456f81fe569acedf5249a65e282e17d78a2daaee7216"
+    },
+    {
+      "id": "71:887",
+      "name": "name=arrow, direction=right, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "forward.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "efd80513e4b414c3682892fef0941cd772b652186a1febe206ca70b93e4be3a8"
+    },
+    {
+      "id": "330:267",
+      "name": "name=open, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "expand-library.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "bf8f813ca67c67b3dddf34dcd7790f5b3ce2856dfc4e90b7e7df71ff95bc7268"
+    },
+    {
       "id": "463:564",
       "name": "name=sort, direction=default, state=default, value=default, EQ=default, two-tone=no",
       "filename": "sort.svg",

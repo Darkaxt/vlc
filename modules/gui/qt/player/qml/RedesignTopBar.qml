@@ -13,8 +13,12 @@ T.Pane {
     id: header
     property string title
     property bool showCSD: false
+    property bool libraryContext: false
     readonly property bool menuOpen: mainMenu.shown
     signal backRequested()
+    signal browseRequested()
+    signal browseFolderRequested()
+    signal queueRequested()
     signal hideChromeRequested()
     signal forceUnlock()
     onForceUnlock: mainMenu.close()
@@ -48,7 +52,21 @@ T.Pane {
             implicitHeight: PlayerStyle.px(28)
             onClicked: header.backRequested()
         }
+        PlayerIconButton {
+            visible: header.libraryContext
+            glyph: "more"
+            description: qsTr("Main menu")
+            onClicked: mainMenu.popup(mapToGlobal(0,height))
+        }
+        PlayerIconButton {
+            visible: header.libraryContext
+            glyph: "queue"
+            description: qsTr("Show playback queue")
+            AccessibleCompat.id: "libraryQueueButton"
+            onClicked: header.queueRequested()
+        }
         RowLayout {
+            visible: !header.libraryContext
             spacing: 0
             PlayerIconButton {
                 glyph: "more"
@@ -63,9 +81,10 @@ T.Pane {
             PlayerIconButton {
                 glyph: "sidebar"
                 description: qsTr("Media browser")
+                AccessibleCompat.id: "mediaBrowserButton"
                 implicitWidth: PlayerStyle.px(28)
                 implicitHeight: PlayerStyle.px(28)
-                onClicked: header.backRequested()
+                onClicked: header.browseRequested()
             }
             Item {
                 implicitWidth: PlayerStyle.px(24)
@@ -82,20 +101,30 @@ T.Pane {
                 spacing: PlayerStyle.px(4)
                 PlayerIconButton {
                     glyph: "folder"
-                    description: qsTr("Open media file")
+                    description: qsTr("Browse current media folder")
                     implicitWidth: PlayerStyle.px(28)
                     implicitHeight: PlayerStyle.px(28)
                     AccessibleCompat.id: "openFileButton"
-                    onClicked: DialogsProvider.simpleOpenDialog()
+                    onClicked: header.browseFolderRequested()
                 }
-                Text {
-                    text: Player.sourceLocationName
+                T.Button {
+                    id: sourceTitle
+                    implicitWidth: Math.min(PlayerStyle.px(110),contentItem.implicitWidth)
+                    implicitHeight: PlayerStyle.px(28)
+                    padding: 0
                     Layout.maximumWidth: PlayerStyle.px(110)
-                    visible: header.width >= PlayerStyle.px(760)
+                    visible: !header.libraryContext && header.width >= PlayerStyle.px(760)
+                    activeFocusOnTab: true
+                    onClicked: header.browseFolderRequested()
+                    Accessible.name: qsTr("Browse current media folder")
+                    background: Item {}
+                    contentItem: Text {
+                    text: Player.sourceLocationName
                     elide: Text.ElideRight
                     color: PlayerStyle.foreground
                     font.family: PlayerStyle.fontFamily
                     font.pixelSize: PlayerStyle.px(14)
+                    }
                 }
             }
         }

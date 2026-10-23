@@ -31,6 +31,9 @@
 #include <QQuickItem>
 #include <QTimer>
 #include <QSet>
+#include <QUrl>
+#include <QStringList>
+#include <QVariantList>
 
 Q_MOC_INCLUDE( "dialogs/toolbar/controlbar_profile_model.hpp" )
 Q_MOC_INCLUDE( "util/csdbuttonmodel.hpp" )
@@ -109,6 +112,7 @@ class MainCtx : public QObject
     Q_PROPERTY(VLCVarChoiceModel* extraInterfaces READ getExtraInterfaces CONSTANT FINAL)
     Q_PROPERTY(double intfScaleFactor READ getIntfScaleFactor NOTIFY intfScaleFactorChanged FINAL)
     Q_PROPERTY(bool mediaLibraryAvailable READ hasMediaLibrary CONSTANT FINAL)
+    Q_PROPERTY(bool historyEnabled READ historyEnabled CONSTANT FINAL)
     Q_PROPERTY(MediaLib* mediaLibrary READ getMediaLibrary CONSTANT FINAL)
     Q_PROPERTY(bool gridView READ hasGridView WRITE setGridView NOTIFY gridViewChanged FINAL)
     Q_PROPERTY(bool hasGridListMode MEMBER m_hasGridListMode NOTIFY hasGridListModeChanged FINAL)
@@ -392,6 +396,8 @@ public:
 
     QWindow *intfMainWindow() const;
 
+    bool historyEnabled() const { return var_InheritBool(p_intf, "save-recentplay"); }
+
     Q_INVOKABLE QVariant settingValue(const QString &key, const QVariant &defaultValue) const;
     Q_INVOKABLE void setSettingValue(const QString &key, const QVariant &value);
 
@@ -415,6 +421,19 @@ public:
     Q_INVOKABLE QUrl folderMRL(const QUrl &fileMRL) const;
 
     Q_INVOKABLE QString displayMRL(const QUrl &mrl) const;
+    Q_INVOKABLE static QVariantList networkUrls(const QString& text) {
+        QVariantList result;
+        for (const auto& line : text.split(QLatin1Char('\n'), Qt::SkipEmptyParts)) {
+            if (line.trimmed().isEmpty()) continue;
+            const QUrl url(line.trimmed(), QUrl::StrictMode);
+            if (!url.isValid() || url.isRelative() || url.isLocalFile()) return {};
+            result.append(url);
+        }
+        return result;
+    }
+    Q_INVOKABLE static QUrl directoryUrl(const QString& address) {
+        return QUrl::fromUserInput(address, QString(), QUrl::AssumeLocalFile);
+    }
 
     double artistAlbumsWidth() const;
     void setArtistAlbumsWidth(double newArtistAlbumsWidth);

@@ -801,6 +801,27 @@ EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
 	pixmaps/redesign/manifest.json pixmaps/redesign/README.md
 
 libqt_plugin_la_RES = \
+	pixmaps/redesign/albums.svg \
+	pixmaps/redesign/artists.svg \
+	pixmaps/redesign/genres.svg \
+	pixmaps/redesign/home-active.svg \
+	pixmaps/redesign/library-videos.svg \
+	pixmaps/redesign/library-videos-active.svg \
+	pixmaps/redesign/library-music.svg \
+	pixmaps/redesign/library-music-active.svg \
+	pixmaps/redesign/library-playlists.svg \
+	pixmaps/redesign/library-playlists-active.svg \
+	pixmaps/redesign/recent.svg \
+	pixmaps/redesign/network-active.svg \
+	pixmaps/redesign/home.svg \
+	pixmaps/redesign/network.svg \
+	pixmaps/redesign/music.svg \
+	pixmaps/redesign/search.svg \
+	pixmaps/redesign/grid.svg \
+	pixmaps/redesign/list.svg \
+	pixmaps/redesign/back.svg \
+	pixmaps/redesign/forward.svg \
+	pixmaps/redesign/expand-library.svg \
 	pixmaps/redesign/volume-cone.svg \
 	pixmaps/redesign/volume-level.svg \
 	pixmaps/redesign/sort.svg \
@@ -1231,6 +1252,12 @@ libqml_module_player_a_QML = \
 	player/qml/LyricsFlickable.qml \
 	player/qml/MiniPlayer.qml \
 	player/qml/PIPPlayer.qml \
+	player/qml/PlayerLibraryNetworkDialog.qml \
+	player/qml/LibraryGlass.qml \
+	player/qml/PlayerLibraryHome.qml \
+	player/qml/PlayerLibrary.qml \
+	player/qml/PlayerLibraryDisplay.qml \
+	player/qml/PlayerLibraryTextDialog.qml \
 	player/qml/Player.qml \
 	player/qml/PlayerControlLayout.qml \
 	player/qml/PlayerPlaylistVisibilityFSM.qml \
@@ -1251,6 +1278,7 @@ libqml_module_player_a_QML = \
 
 libqml_module_player_a_Singleton_QML = \
 	player/qml/PlayerStyle.qml \
+	player/qml/LibraryState.qml \
 	player/qml/PlayerControlbarControls.qml
 libqml_module_player_a_SOURCES = $(QML_MODULE_player_SRC)
 nodist_libqml_module_player_a_SOURCES = player/qmlassets.cpp $(QML_MODULE_player_NODIST_EXTRA)

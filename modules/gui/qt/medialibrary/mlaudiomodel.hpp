@@ -28,6 +28,7 @@
 class MLAudioModel : public MLMediaModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool historyOnly READ historyOnly WRITE setHistoryOnly NOTIFY historyOnlyChanged FINAL)
 
 public:
     enum Roles
@@ -49,6 +50,11 @@ public:
 
     virtual ~MLAudioModel() = default;
 
+    bool historyOnly() const { return m_historyOnly; }
+    void setHistoryOnly(bool);
+signals:
+    void historyOnlyChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 
@@ -60,9 +66,12 @@ private:
     vlc_ml_sorting_criteria_t nameToCriteria(QByteArray name) const override;
     void onVlcMlEvent( const MLEvent &event ) override;
 
+    bool m_historyOnly = false;
+
     struct Loader : public MLListCacheLoader::MLOp
     {
-        using MLListCacheLoader::MLOp::MLOp;
+        explicit Loader(const MLAudioModel& model) : MLOp(model), historyOnly(model.historyOnly()) {}
+        const bool historyOnly;
         size_t count(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParam) const override;
         std::vector<std::unique_ptr<MLItem>> load(vlc_medialibrary_t* ml, const vlc_ml_query_params_t* queryParam) const override;
         std::unique_ptr<MLItem> loadItemById(vlc_medialibrary_t* ml, MLItemId itemId) const override;
