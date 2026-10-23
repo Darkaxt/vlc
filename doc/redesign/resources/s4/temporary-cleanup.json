@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "transaction_id": "9be92acd7bbe74e138e0666a6e919364",
+  "state": "applied",
+  "result_counts": {
+    "deleted": 5987
+  },
+  "deleted_bytes": 10000747691,
+  "excluded_count": 0,
+  "errors": [],
+  "manifest_sha256": "6fa5cd1709bd667e0cf5cf747441985e17f3c1cd80050228cd4fe751c4fed681",
+  "ticket_state": "applied",
+  "exact_root_absent": true,
+  "bytes_meaning": "Logical bytes deleted by helper; excludes the disposable WSL disk removed by its native unregister operation; not physical free-space measurement"
+}

@@ -1,11 +1,8 @@
 {
   "stage": "S4",
-  "status": "ACTIVE",
+  "status": "COMPLETE",
   "product_acceptance_verified": true,
-  "delivery_remaining": [
-    "Reviewed main temporary cleanup",
-    "Verified source commit and remote synchronization"
-  ],
+  "delivery_remaining": [],
   "scope_stop": "before S5",
   "normal_runtime": {
     "plugin_cache_exit": 0,
@@ -74,9 +71,7 @@
     "normal_runtime": "s4/normal-runtime.json",
     "source_parity": "s4/source-parity.json"
   },
-  "blockers": [
-    "Required source delivery and main temporary cleanup not yet completed"
-  ],
+  "blockers": [],
   "tracked_deferrals": [],
   "coverage_limits": [
     "App-owned Qt events; no desktop OLE claim.",
@@ -98,7 +93,18 @@
     "debugger_logical_bytes_removed": 7008256,
     "http_server_exit": 0,
     "disposable_wsl_unregistered": true,
-    "Ubuntu_and_docker_desktop_preserved": true
+    "Ubuntu_and_docker_desktop_preserved": true,
+    "main_applied": true,
+    "main_deleted_members": 5987,
+    "main_logical_bytes": 10000747691,
+    "main_root_absent": true,
+    "errors": [],
+    "exclusions": []
   },
-  "source_transport_normalization": "Windows/build inputs matched exactly before formatting; final source is identical after CRLF-to-LF normalization only. Native raw build hashes are retained alongside current source hashes."
+  "source_transport_normalization": "Windows/build inputs matched exactly before formatting; final source is identical after CRLF-to-LF normalization only. Native raw build hashes are retained alongside current source hashes.",
+  "source_delivery": {
+    "implementation_commit": "091137df2081df5e3cf2a8886463e8400a9050a3",
+    "origin_master_independently_matched": true,
+    "closure_documentation": "Final closure documentation is synchronized separately; no application release or installation."
+  }
 }
