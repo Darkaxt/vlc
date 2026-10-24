@@ -1,0 +1,72 @@
+{
+  "stage": "S5",
+  "status": "ACTIVE",
+  "product_acceptance_verified": true,
+  "delivery_remaining": [
+    "review profile cleanup",
+    "disposable build retirement and reviewed cleanup",
+    "commit/source synchronization"
+  ],
+  "scope_stop": "before S6",
+  "normal_runtime": {
+    "plugin_cache_exit": 0,
+    "pid": 53544,
+    "desktop": "VLC-S2-f081028a30ae4ab8b6dfc7e7db45cbed",
+    "exit_code": 0,
+    "qml_runtime_errors": [],
+    "media_library_enabled": true,
+    "checks": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true,
+      "native_media_library_started": true
+    },
+    "qt_plugin_sha256": "8ea649fe4f7cb209be3ce2d14549043e71c31eaf41e05e03cb79aa6ec0102d7f",
+    "upnp_plugin_sha256": "81c53b960166dbd951901aa67cad51d63b28662b59113c9cee397bc45c8a6fdd",
+    "debug_markers_absent": [
+      "VLC_PLAYER_DIAGNOSTICS_DIR",
+      "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+      "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+      "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+      "redesignSeekRequests",
+      "offscreen_session_is_capture_only",
+      "PlayerDiagnostics"
+    ],
+    "profile_isolation": "Existing empty portable directory beside executable",
+    "capture_scope": "Inactive desktop, no OS input or desktop switching",
+    "verified_utc": "2026-10-24T01:06:00.239647+00:00",
+    "passed": true
+  },
+  "review_runtime": "E:/VLC-Redesign/S5",
+  "source_base": "8c76559066e230a64303447fd34f18b9e919cc99",
+  "pinned_upstream": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "pinned_windows_image": "registry.videolan.org/vlc-debian-win64-posix@sha256:8e83e800036f8f4a6da1031a6b80c2b5bad8337259c072ffa22398baaeaad880",
+  "qt": "6.8.3",
+  "figma_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "source_parity_verified": true,
+  "preservation": {
+    "existing_profile_unchanged": true,
+    "checked_files": 5,
+    "windows_language_key_unchanged": true,
+    "language_key_exists": false,
+    "language_override_exists": false,
+    "prior_review_packages_preserved": true
+  },
+  "requirements": {
+    "R03/R14/R33": "Complete native option/action reachability, real resume/privacy, distinct native Convert/Stream; actual 90-second H264/MP3 MP4 finalizes/probes/reopens/plays.",
+    "R40": "Native bookmark/chapter add/seek/edit/remove/restart, Unicode/media isolation/unavailable states and selection/draft preservation across real database reset.",
+    "R41": "Real shortcut reserved/conflict/assignment/remapping/restart/action feedback and input focus; shortcut-only Reset staging/Cancel/Save/default restart.",
+    "R42/R43": "Thirteen source categories, all native option metadata/help/defaults/ranges, lazy module search, typed settings Save/restart/legacy/reset/rollback/retry, supported VLSub and distinct add-on manager.",
+    "R04/R52": "Native state owners and profile preservation; recovery choices; scoped lifecycle/save/PCR regressions; actual Qt source geometry/pixels at representative day/night 100/150/200 percent, narrow/keyboard/long text; normal packaged runtime."
+  },
+  "blockers": [],
+  "tracked_deferrals": [],
+  "limits": [
+    "Actual native QWidget captures omit separate video and do not prove desktop backdrop blur pixels. Fully offscreen WGC grey frame rejected.",
+    "No physical disc/capture device, every network/codec/device combination, or system-wide hotkey delivery claim. Existing native capabilities remain reachable.",
+    "S6/S7 remain not started; this is a local review runtime, with no intermediate release or installation."
+  ]
+}

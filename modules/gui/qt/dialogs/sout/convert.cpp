@@ -24,6 +24,8 @@
 # include "config.h"
 #endif
 
+#include "widgets/native/redesign_style.hpp"
+
 #include "dialogs/sout/sout.hpp"
 #include "dialogs/sout/convert.hpp"
 #include "dialogs/sout/sout_widgets.hpp"
@@ -45,6 +47,7 @@ ConvertDialog::ConvertDialog( QWindow *parent, qt_intf_t *_p_intf,
               : QVLCDialog( parent, _p_intf ),
                 singleFileSelected( inputMRLs.length() == 1 )
 {
+    applyRedesignDialogStyle(this,p_intf);
     setWindowTitle( qtr( "Convert" ) );
     setWindowRole( "vlc-convert" );
 

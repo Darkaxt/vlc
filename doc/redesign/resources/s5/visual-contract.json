@@ -1,0 +1,388 @@
+{
+  "figma_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "source_frames": [
+    "3046:9282",
+    "3180:17398",
+    "6536:14482",
+    "6575:17137",
+    "2437:14832",
+    "6320:13784",
+    "6321:14045"
+  ],
+  "source_geometry": {
+    "preferences": [
+      1048,
+      865
+    ],
+    "header_height": 50,
+    "nav_width": 200,
+    "content_left": 240,
+    "field_height": 34,
+    "switch": [
+      68,
+      32
+    ],
+    "corner_radius": 14,
+    "field_font_family": "Inter Variable Text",
+    "field_font_pixels": 14
+  },
+  "captures": {
+    "native-v15": [
+      {
+        "category": 0,
+        "heading": "Global Settings",
+        "captures": [
+          {
+            "file": "16e840e9300a4b21b2297b9f04c695ec-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 1,
+        "heading": "Interface Settings",
+        "captures": [
+          {
+            "file": "52f9379cbf1e4b29bb2aa68e4affac4c-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 2,
+        "heading": "Privacy Settings",
+        "captures": [
+          {
+            "file": "8d78c1dc1a7b4c37abb734e98cc8b0d2-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 3,
+        "heading": "Mouse, Keyboard & Remote Controls",
+        "captures": [
+          {
+            "file": "ffdcc67fecb7419b910f441763512437-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 4,
+        "heading": "Playback Defaults",
+        "captures": [
+          {
+            "file": "a81d1c944b1c4b19a8c92640054a3930-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 5,
+        "heading": "Video Defaults",
+        "captures": [
+          {
+            "file": "04d4818717a04e7f897994bad62d9fa9-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 6,
+        "heading": "Audio Defaults",
+        "captures": [
+          {
+            "file": "919e4381fce04303b9beef565f82d8d2-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 7,
+        "heading": "Subtitle Defaults",
+        "captures": [
+          {
+            "file": "5270fa2d3fdc455d8781226ff3d5c261-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 8,
+        "heading": "Playlists, Folders & Files",
+        "captures": [
+          {
+            "file": "4be8db61d91749b6bf9c6a336597ab35-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 9,
+        "heading": "Network Connections & Security",
+        "captures": [
+          {
+            "file": "ea6dd4ddfdfe4ea9a6bdbd69774408c2-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 10,
+        "heading": "Performance Settings",
+        "captures": [
+          {
+            "file": "46191bf42af5494b8d75011ba8e27f1d-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 11,
+        "heading": "Recording, Casting & Streaming Out",
+        "captures": [
+          {
+            "file": "20eb22ae1ea341aca3153875409b8b9f-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 12,
+        "heading": "Add-ons & Scripts",
+        "captures": [
+          {
+            "file": "ca82ebc7dcbf49aa8a73d88b2afe32e2-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1,
+        "size": [
+          1048,
+          865
+        ]
+      }
+    ],
+    "native-v18": [
+      {
+        "category": 0,
+        "heading": "Global Settings",
+        "captures": [
+          {
+            "file": "8b94f0d06d1b45b0bbf59990cd842a52-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.5,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 6,
+        "heading": "Audio Defaults",
+        "captures": [
+          {
+            "file": "ccff0eed04e04fd3a2ca17a15eaed226-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.5,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 12,
+        "heading": "Add-ons & Scripts",
+        "captures": [
+          {
+            "file": "b6b1db4918e54251bdf45f4d1f8712f1-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.5,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "category": 3,
+        "heading": "Mouse, Keyboard & Remote Controls",
+        "captures": [
+          {
+            "file": "9e79c98d9d4744a0a57da1e33ab949ed-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.5,
+        "size": [
+          1048,
+          865
+        ]
+      },
+      {
+        "screen": "Shortcuts",
+        "captures": [
+          {
+            "file": "8d785d7c683440c294ebbc86dd513806-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.5
+      }
+    ],
+    "native-v19": [
+      {
+        "screen": "General",
+        "size": [
+          1048,
+          865
+        ],
+        "dpr": 1.99999999995,
+        "captures": [
+          {
+            "file": "8955963055f945f9adbdfdf65f62e8a5-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ]
+      },
+      {
+        "screen": "Narrow file editor",
+        "size": [
+          620,
+          420
+        ],
+        "editor": {
+          "checked": null,
+          "dpr": 1.99999999995,
+          "enabled": true,
+          "focused": false,
+          "font_family": "Inter Variable Text",
+          "font_pixel_size": 14,
+          "font_point_size": -1,
+          "height": 34,
+          "id": "editor-snapshot-path",
+          "name": "",
+          "node": 56,
+          "parent": 55,
+          "type": "QWidget",
+          "visible_region_empty": false,
+          "width": 258,
+          "x": 90,
+          "y": 34
+        },
+        "captures": [
+          {
+            "file": "7a4ac59d7e2c4cac9523e91096e80f4e-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.99999999995
+      },
+      {
+        "screen": "Narrow General",
+        "captures": [
+          {
+            "file": "a8d7aa1442e149dfa7be50fe34be4e5f-widget-0.png",
+            "saved": true,
+            "widget": 0
+          }
+        ],
+        "dpr": 1.99999999995
+      }
+    ]
+  },
+  "inspection": {
+    "all_13_actual_headings": true,
+    "source_chevrons_and_original_paths": true,
+    "native_profile_editor_font_and_palette": true,
+    "narrow_file_group_and_save_cancel_visible": true,
+    "keyboard_focus_and_long_unicode": true,
+    "window_capture_scope": "Native QWidget pixels; Windows offscreen WGC grey frame rejected. Separate video/platform backdrop pixels are not included."
+  }
+}

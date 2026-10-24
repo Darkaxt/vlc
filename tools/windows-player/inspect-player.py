@@ -15,7 +15,7 @@ import uuid
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'resize', 'cancel', 'quit'])
+    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'resize', 'cancel', 'quit'])
     parser.add_argument('--target')
     parser.add_argument('--name', help='Exact accessible name of an actionable Qt Quick item')
     parser.add_argument('--item-url', help='Exact URL of one rendered queue row')
@@ -35,6 +35,7 @@ def main():
     parser.add_argument('--action', type=int)
     parser.add_argument('--menu-action', help='Exact menu action label, ignoring mnemonic ampersands')
     parser.add_argument('--widget-text', help='Exact native widget text, ignoring mnemonic ampersands')
+    parser.add_argument('--widget-name', help='Exact accessible name of one native widget')
     parser.add_argument('--url', action='append', default=[])
     parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'ready', 'itemCount', 'indexing', 'busy', 'waveformBusy', 'subtitleLoaded', 'sleepMinutes', 'previewSource', 'previewStatus', 'waveformStatus', 'sleepStatus', 'status'])
     parser.add_argument('--await-value', type=json.loads)
@@ -176,6 +177,11 @@ def main():
                     if len(matches) != 1:
                         raise RuntimeError('Expected one enabled native widget; matched ' + str(len(matches)))
                     fields['node'] = matches[0]['node']
+                elif args.widget_name:
+                    matches = [n for n in before['widgets'] if n['enabled'] and n.get('name', '') == args.widget_name]
+                    if len(matches) != 1:
+                        raise RuntimeError('Expected one named native widget; matched ' + str(len(matches)))
+                    fields['node'] = matches[0]['node']
                 elif args.target:
                     nodes = [n for n in before['widgets'] if n['id'] == args.target and n['enabled']]
                     if len(nodes) != 1:
@@ -186,10 +192,15 @@ def main():
                 else:
                     parser.error('Widget click requires --target or --node')
                 fields.setdefault('action', args.action if args.action is not None else -1)
-            elif args.op == 'resize':
+            elif args.op in ('resize', 'widget_resize'):
                 if args.width is None or args.height is None:
                     parser.error('Resize requires --width and --height')
                 fields.update(width=args.width, height=args.height)
+                if args.op == 'widget_resize':
+                    nodes = [n for n in before['widgets'] if n['id'] == args.target and n['enabled']]
+                    if len(nodes) != 1:
+                        raise RuntimeError('Expected one native widget window target; matched ' + str(len(nodes)))
+                    fields['node'] = nodes[0]['node']
             if args.await_property or args.await_core:
                 if args.await_value is None:
                     parser.error('--await-property requires a JSON --await-value')

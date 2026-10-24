@@ -39,6 +39,7 @@
 #include <QCloseEvent>
 #include <QKeyEvent>
 #include "widgets/native/customwidgets.hpp"
+#include "widgets/native/redesign_style.hpp"
 
 #include <algorithm>
 
@@ -154,6 +155,7 @@ ExtensionDialog::ExtensionDialog( qt_intf_t *_p_intf,
     assert( p_dialog );
 
     msg_Dbg( p_intf, "Creating a new dialog: '%s'", p_dialog->psz_title );
+    applyRedesignDialogStyle(this, p_intf);
     this->setWindowFlags( Qt::WindowMinMaxButtonsHint
                         | Qt::WindowCloseButtonHint );
     this->setWindowTitle( qfu( p_dialog->psz_title ) );

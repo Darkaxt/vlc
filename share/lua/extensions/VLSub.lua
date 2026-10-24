@@ -629,7 +629,9 @@ function set_default_option(select_id)
   if openSub.option[opt] then
     table.sort(cfg, function(a, b)
       if a[1] == openSub.option[opt] then
-        return true
+        -- table.sort also compares an entry with itself. Keep the selected
+        -- option first without claiming that equal selected entries are less.
+        return b[1] ~= openSub.option[opt]
       elseif b[1] == openSub.option[opt] then
         return false
       else

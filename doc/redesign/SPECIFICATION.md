@@ -18,6 +18,8 @@ On 18 October 2026 the user authorized proceeding to S3 Tracks effects and media
 
 On 22 October 2026 the user authorized the next stage, S4 Library and media entry, and resumed it on 23 October. Authorization is already granted for R30-R33's library/open portion and relevant R04/R52 preservation, persistence and Figma fidelity, integrated verification, cleanup, commit and existing GitHub source synchronization. S4 is COMPLETE; no implementation stage is ACTIVE; S5-S7 remain NOT STARTED. Work stops after S4 for review. All new temporary/build/testing output uses `E:/Temp/vlc-s4-20261023`, registered before creation. Native verification uses app-owned diagnostics on an inactive desktop, without desktop input or activation. This supersedes the earlier S3 stop boundary. The user's updated standing release instructions govern final delivery after the whole authorized implementation; S4 does not publish an intermediate application release or install over the user's VLC.
 
+On 23 October 2026 the user authorized continuing to S5 Preferences bookmarks and shortcuts. S5 is ACTIVE, covering R03 capability reconciliation, R14 menu/resume completion, R33 conversion/streaming organization, R40-R43 and relevant R04/R52 behavior. This includes Figma-derived implementation, actual native workflow/visual/persistence verification, cleanup, commit and existing GitHub source synchronization. Stop after verified S5; S6-S7 and proposed S8 remain NOT STARTED. Do not publish an intermediate application release or install over existing VLC. All temporary/build/testing output uses the registered exact root `E:/Temp/vlc-s5-20261023` (cleanup transaction `6949e668fd74a0fc25d39ead599fb1cf`). Native audits use app-owned events on an inactive desktop without OS input or activation.
+
 On 18 October 2026 the user selected OpenSubtitles.com for R21 and then explicitly added SubDL and SubSource support to the project. S3 implements these three concrete providers behind an explicit provider selection, using each documented API/terms and separate local credentials. Verify a real authorized search/download/association path for each supported provider; preserve visible authentication, quota/network/error and cancellation states. The user authorized obtaining an OpenSubtitles application key using the existing account; no payment or new provider account is authorized. Credentials and session data must not enter source control, diagnostics or published evidence.
 
 ### S3 subtitle provider contract
@@ -148,6 +150,55 @@ Video reference: 14:52-18:53. Inspect `Settings - global`, `Settings - audio`, `
 | R42 | Reorganize preferences into General, Interface, Privacy, Controls, Playback, Video, Audio, Subtitles and OSD, Library, Network, Performance, Recording/Streaming, and Extensions. Basic and advanced options live within their relevant category. Explain options with visible help affordances and descriptive choices rather than unexplained numbers. Maintain a mapping to real upstream option keys, defaults, ranges, persistence and restart requirements; every inventoried option remains accessible. | S5 |
 | R43 | Distinguish installable extensions/add-ons from internal modules/plugins. Preserve extension and module capability while placing internal technical settings in the appropriate advanced area. Verify an existing supported extension and advanced module settings remain reachable. | S5 |
 
+### S5 state and native option contract
+
+Preferences keep VLC's native option keys, types, defaults, choice lists and
+ranges. The category/search presentation introduces no replacement settings
+database. Unvisited controls leave their native values unchanged; Cancel does
+not apply staged edits. Save uses the native config-file writer. A failed Save
+or Reset restores the previous in-memory option values and reports the error.
+Windows interface language retains the existing `HKCU/Software/VideoLAN/VLC/Lang`
+owner and restart requirement; merely opening or saving other options must not
+create or rewrite that override. Theme retains the existing interface-settings
+owner. The existing `qt-accent-color` is rendered immediately after Save,
+preserving `default`, `system` and valid custom colors; an invalid saved color
+remains preserved and displays the Figma default until explicitly changed.
+
+New native options are `qt-key-add-bookmark` (local `Ctrl+Shift+b` by default),
+`qt-shortcut-feedback` (true), `qt-shortcut-feedback-key` (true), and
+`qt-shortcut-feedback-duration` (1500 ms, range 500–5000). Missing options use
+those native defaults without a migration. Existing core mappings win if a
+legacy profile conflicts with the new bookmark default. Shortcut remapping
+uses the native editor/file and takes effect after restarting VLC; conflicts
+are presented explicitly, and fixed application-menu shortcuts cannot be
+silently replaced. Feedback switches and duration apply after Save. Native
+video OSD remains controlled separately by the existing `osd` option.
+Explicit native command-line overrides retain precedence for the running
+session, including the actual shortcut map used for action feedback.
+
+Bookmarks retain native media-library identities, timestamps and storage. An
+explicit Add may register a previously unknown external-media identity without
+adding playback history. Embedded chapters remain read from the actual input.
+No bookmark schema or parallel store is introduced. Full confirmed preference
+reset restores native option/interface defaults while retaining media-library
+records, bookmarks and subtitle files. Reset shortcuts stages only shortcut
+defaults and still requires Save. Verify ordinary restart, cancellation,
+read-only-save recovery, full reset, shortcut-only reset and an existing profile
+without changing the installed VLC profile.
+The General page maps the source confirmation/error control to `interact`,
+updates to `qt-updates-notif`, file logging to `file-logging`/`logfile`/
+`log-verbose`, and the developer-message switch to `qt-verbose`. That switch is
+labelled "Developer messages" so its native Qt-only logging scope remains
+clear; it does not enable the test transport in a normal build. Minor warnings
+(`qt-error-dialogs`), log format and playback statistics remain in General's
+advanced module sections. The native file writer must report replacement
+failures and retain the original Windows destination; the Preferences dialog
+uses that result for rollback and retry.
+An unanswered native playlist-recovery prompt retains its recovery file and
+setting when VLC exits; only an explicit decision consumes that pending state.
+Shortcut capture and recovery prompts use owner-bound, nonblocking completion
+so closing their owner cannot resume work against deleted widgets or models.
+
 ## Customization onboarding and presentation quality
 
 Video reference: 18:58-20:43.
@@ -226,3 +277,36 @@ operable seek target. Elide or wrap real long/localized names without covering
 neighboring controls. Verify actual Qt output in light/dark, at 100/150/200 percent
 scaling, a reference-aspect window and smaller resized windows. Compare source
 appearance and measured geometry; the offline screen rendering is not the oracle.
+
+
+### Measured S5 visual contract
+
+The retained Figma frames govern Preferences (`3046:9282`, Audio `3180:17398`,
+Controls `6536:14482`, Extensions `6575:17137`), shortcuts (`2437:14832`) and
+positions (`6320:13784`, `6321:14045`). Preferences use a 1048 × 865 logical
+window, 50-high header, 200-wide navigation with 8-pixel outer inset and content
+beginning at x=240. Inter Regular 14 applies to labels/fields, with 16-pixel
+headings and Medium section headings. Native value editors are 34 high,
+switches 68 × 32 and advanced expanders 38 high. Source night foreground is
+`#8f8f8f`, fields `#191919`, selected navigation `#222222`, heading `#969696`
+and section heading `#c6c6c6`; source day colors follow the retained palette.
+Rounded root corners are 14 pixels with 95-percent source tint. Supported native
+window backdrop effects use VLC's existing window-effects provider; the system
+kernel is platform-owned and is not claimed mathematically identical to Figma's
+50-pixel blur. Opaque appearance is retained where that provider is unavailable
+or the existing backdrop preference is disabled.
+
+Native combos and spin arrows use the original `71:868` outline, preserving its
+path/matrix with explicit day/night tint and upward rotation variants. Shortcut
+rows are 47 high, key cells 33, groups 64 and header 69/79; the source 391/359/270
+column proportions scale with the usable window. Bookmark/chapter tabs retain
+the source 50-high queue header, 64-high count/actions area, 32-high rows at
+44-pixel pitch and 20-pixel list insets.
+
+Clamp windows to available space. Below 900 logical pixels, stack value editors
+beneath labels while keeping file/Browse controls together; scroll the actual
+category and keep Save/Cancel reachable. Preserve long Unicode text in native
+storage and accessible labels while eliding list rows. Native Qt captures and
+measured geometry at representative 100/150/200-percent scales govern this
+stage's comparison. Fully offscreen Windows capture produced a uniform grey
+surface and was rejected, so no desktop-composed blur-pixel equivalence is claimed.

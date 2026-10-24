@@ -262,10 +262,13 @@ vlc_pcr_sync_SignalFrameOutput(vlc_pcr_sync_t *pcr_sync, unsigned int id, const 
     pcr_event_t *pcr_event = (es->last_pcr_event == NULL)
                                  ? pcr_event_FirstEntry(&pcr_sync->pcr_events)
                                  : es->last_pcr_event;
+    // A demuxer may register another track after earlier PCR snapshots were
+    // queued. That track did not participate in those snapshots: leave their
+    // acknowledgements to their original tracks and start at its first one.
+    while (pcr_event != NULL && id >= pcr_event->es_last_dts_entries.size)
+        pcr_event = pcr_event_NextEntry(&pcr_sync->pcr_events, pcr_event);
     if (pcr_event == NULL)
         goto no_pcr;
-
-    assert(id < pcr_event->es_last_dts_entries.size);
 
     const vlc_tick_t pcr = pcr_event->pcr;
 

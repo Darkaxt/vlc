@@ -44,6 +44,10 @@ class MLBookmarkModel : public QAbstractListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool available READ available NOTIFY availabilityChanged FINAL)
+    Q_PROPERTY(QString error READ error NOTIFY errorChanged FINAL)
+    Q_PROPERTY(int count READ rowCount NOTIFY countChanged FINAL)
+
     Q_PROPERTY(PlayerController * player READ playerController WRITE setPlayer FINAL)
 
     Q_PROPERTY(MediaLib * ml READ ml WRITE setMl FINAL)
@@ -56,7 +60,8 @@ public:
         NameRole = Qt::UserRole,
         TimeRole = Qt::UserRole + 1,
         PositionRole = Qt::UserRole + 2,
-        DescriptionRole = Qt::UserRole + 3
+        DescriptionRole = Qt::UserRole + 3,
+        TimestampRole = Qt::UserRole + 4
     };
     QHash<int, QByteArray> roleNames() const override;
 
@@ -78,11 +83,20 @@ public:
     MediaLib* ml() const;
     void setMl(MediaLib* ml);
 
-    void add();
+    bool available() const;
+    QString error() const { return m_error; }
+    Q_INVOKABLE void add();
+    Q_INVOKABLE void removeRow(int row);
+    Q_INVOKABLE void renameRow(int row, const QString &name);
+    Q_INVOKABLE int rowForTimestamp(qint64 timestamp) const;
     void remove( const QModelIndexList& indexes );
     void clear();
     Q_INVOKABLE void select( const QModelIndex& index );
 
+signals:
+    void availabilityChanged();
+    void errorChanged();
+    void countChanged();
 private:
     static void onCurrentMediaChanged( vlc_player_t* player, input_item_t* media,
                                        void* data );
@@ -116,6 +130,8 @@ private:
 
     mutable vlc::threads::mutex m_mutex;
     uint64_t m_revision = 0;
+    uint64_t m_resolvedRevision = UINT64_MAX;
+    QString m_error;
     // current item & media id can be accessed by any thread and therefore
     // must be accessed with m_mutex held
     InputItemPtr m_currentItem;

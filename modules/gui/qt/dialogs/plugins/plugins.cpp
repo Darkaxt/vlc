@@ -25,6 +25,8 @@
 # include "config.h"
 #endif
 
+#include "widgets/native/redesign_style.hpp"
+
 #include "plugins.hpp"
 
 #include "widgets/native/searchlineedit.hpp"
@@ -78,7 +80,8 @@ static QPixmap *loadPixmapFromData( char *, int size );
 
 PluginDialog::PluginDialog( qt_intf_t *_p_intf ) : QVLCFrame( _p_intf )
 {
-    setWindowTitle( qtr( "Plugins and extensions" ) );
+    applyRedesignDialogStyle(this,p_intf);
+    setWindowTitle( qtr( "Add-ons and Extensions" ) );
     setWindowRole( "vlc-plugins" );
 
     QVBoxLayout *layout = new QVBoxLayout( this );
@@ -88,7 +91,7 @@ PluginDialog::PluginDialog( qt_intf_t *_p_intf ) : QVLCFrame( _p_intf )
     tabs->addTab( extensionTab = new ExtensionTab( p_intf ),
                   qtr( "Active Extensions" ) );
     tabs->addTab( pluginTab = new PluginTab( p_intf ),
-                  qtr( "Plugins" ) );
+                  qtr( "Internal Modules (advanced)" ) );
     layout->addWidget( tabs );
 
     QDialogButtonBox *box = new QDialogButtonBox;
@@ -116,6 +119,7 @@ PluginTab::PluginTab( qt_intf_t *p_intf_ )
 
     /* Main Tree for modules */
     treePlugins = new QTreeWidget;
+    treePlugins->setObjectName("internalModulesList");
     layout->addWidget( treePlugins, 0, 0, 1, -1 );
 
     /* Users cannot move the columns around but we need to sort */
@@ -227,6 +231,8 @@ ExtensionTab::ExtensionTab( qt_intf_t *p_intf_ )
 
     // ListView
     extList = new QListView( this );
+    extList->setObjectName("installedExtensionsList");
+    extList->setAccessibleName(qtr("Installed extensions"));
     connect( extList, &QListView::activated, this, &ExtensionTab::moreInformation );
     layout->addWidget( extList );
 
@@ -440,6 +446,8 @@ AddonsTab::AddonsTab( qt_intf_t *p_intf_ ) : QVLCFrame( p_intf_ )
 
     // ListView
     addonsView = new QListView( this );
+    addonsView->setObjectName("installableAddonsList");
+    addonsView->setAccessibleName(qtr("Installable add-ons"));
     addonsView->setModel(m_model.get());
 
     connect( addonsView, &QListView::activated, this, &AddonsTab::moreInformation );
@@ -1120,6 +1128,7 @@ ExtensionInfoDialog::ExtensionInfoDialog( const QModelIndex &index,
                                           QWindow *parent )
        : QVLCDialog( parent, p_intf )
 {
+    applyRedesignDialogStyle(this, p_intf);
     // Let's be a modal dialog
     setWindowModality( Qt::WindowModal );
 
@@ -1203,6 +1212,7 @@ AddonInfoDialog::AddonInfoDialog( const QModelIndex &index,
                                   qt_intf_t *p_intf, QWindow *parent )
        : QVLCDialog( parent, p_intf )
 {
+    applyRedesignDialogStyle(this, p_intf);
     // Let's be a modal dialog
     setWindowModality( Qt::WindowModal );
 

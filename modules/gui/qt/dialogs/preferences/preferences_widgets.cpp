@@ -47,6 +47,11 @@
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QTreeWidget>
+#include <QHeaderView>
+#include <QResizeEvent>
+#include <QStyledItemDelegate>
+#include <QPainter>
+#include <QSvgRenderer>
 #include <QTreeWidgetItemIterator>
 #include <QDialogButtonBox>
 #include <QKeyEvent>
@@ -65,6 +70,7 @@
 #include <QClipboard>
 #include <QFont>
 #include <QToolButton>
+#include <algorithm>
 
 #define MINWIDTH_BOX 90
 #define LAST_COLUMN 10
@@ -1286,31 +1292,172 @@ void FloatRangeConfigControl::finish()
 /**********************************************************************
  * Key selector widget
  **********************************************************************/
+namespace
+{
+QPixmap shortcutIcon(const QString &path, const QColor &color, qreal dpr)
+{
+    QPixmap pixmap(QSize(24, 24) * dpr);
+    pixmap.setDevicePixelRatio(dpr);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    QSvgRenderer svg(path);
+    svg.render(&painter, QRectF(0, 0, 24, 24));
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.fillRect(QRectF(0, 0, 24, 24), color);
+    return pixmap;
+}
+int shortcutKeyWidth(int viewportWidth) { return qRound(viewportWidth * 270. / 1024.); }
+class ShortcutDelegate final : public QStyledItemDelegate
+{
+public:
+    explicit ShortcutDelegate(QTreeWidget *view) : QStyledItemDelegate(view), view(view),
+        dark(view->window()->property("figmaDark").toBool()),
+        edit(shortcutIcon(":/redesign/icons/edit.svg", QColor(dark ? "#4a4a4a" : "#969696"), view->devicePixelRatioF())) {}
+    QSize sizeHint(const QStyleOptionViewItem &, const QModelIndex &index) const override
+    {
+        const int group = index.data(Qt::UserRole).toInt();
+        return QSize(0, group == 1 ? 69 : group == 2 ? 79 : 47);
+    }
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->fillRect(option.rect, QColor(dark ? "#1b1b1b" : "#d5d5d5"));
+        const QColor foreground(dark ? "#c2c2c2" : "#2e2e2e");
+        const QColor accent = view->window()->palette().color(QPalette::Highlight);
+        QFont font = option.font;
+        const int group = index.data(Qt::UserRole).toInt();
+        if (group)
+        {
+            if (group == 2)
+            {
+                painter->setPen(QColor(dark ? "#202020" : "#c5c5c5"));
+                painter->drawLine(option.rect.left() + 12, option.rect.top() + 11,
+                                   option.rect.right() - 12, option.rect.top() + 11);
+            }
+            font.setPixelSize(16); font.setWeight(QFont::Normal); painter->setFont(font);
+            painter->setPen(QColor(dark ? "#969696" : "#676767"));
+            painter->drawText(option.rect.adjusted(12, group == 1 ? 21 : 31, -12, 0),
+                              Qt::AlignLeft | Qt::AlignTop, index.data().toString());
+        }
+        else
+        {
+            font.setPixelSize(14); painter->setFont(font); painter->setPen(foreground);
+            if (index.column() == 0)
+            {
+                const QRect text = option.rect.adjusted(12, 4, -12, 0);
+                painter->drawText(QRect(text.x(), text.y(), text.width(), 25), Qt::AlignVCenter,
+                                   option.fontMetrics.elidedText(index.data().toString(), Qt::ElideRight, text.width()));
+                if (option.state & QStyle::State_HasFocus)
+                {
+                    painter->setPen(QPen(accent, 1)); painter->setBrush(Qt::NoBrush);
+                    painter->drawRoundedRect(QRectF(option.rect).adjusted(1, 1, -1, -14), 4, 4);
+                }
+            }
+            else
+            {
+                const QRectF box(option.rect.x(), option.rect.y(),
+                                 qMin(shortcutKeyWidth(view->viewport()->width()), option.rect.width()), 33);
+                painter->setPen(Qt::NoPen); painter->setBrush(QColor(dark ? "#050505" : "#f3f3f3"));
+                painter->drawRoundedRect(box, 6, 6);
+                const bool editable = index.column() != 2 ||
+                    static_cast<KeyTableItem *>(view->topLevelItem(index.row()))->global.config_name;
+                if (editable)
+                    painter->drawPixmap(QPointF(box.right() - 29, box.y() + 4.5), edit);
+                QString key = index.data().toString();
+                if (key.size() == 1) key = key.toUpper();
+                painter->setPen(foreground);
+                painter->drawText(box.adjusted(8, 0, -8, 0), Qt::AlignCenter,
+                                   option.fontMetrics.elidedText(key, Qt::ElideRight, qMax(0, int(box.width()) - 56)));
+                if (editable && (option.state & QStyle::State_HasFocus))
+                {
+                    painter->setPen(QPen(accent, 2)); painter->setBrush(Qt::NoBrush);
+                    painter->drawRoundedRect(box.adjusted(1, 1, -1, -1), 6, 6);
+                }
+            }
+        }
+        painter->restore();
+    }
+private:
+    QTreeWidget *view;
+    bool dark;
+    QPixmap edit;
+};
+class ShortcutHeader final : public QHeaderView
+{
+public:
+    explicit ShortcutHeader(QTreeWidget *view) : QHeaderView(Qt::Horizontal, view), view(view)
+    { setFixedHeight(64); setStretchLastSection(true); }
+protected:
+    void paintSection(QPainter *painter, const QRect &rect, int index) const override
+    {
+        const bool dark = view->window()->property("figmaDark").toBool();
+        painter->save(); painter->fillRect(rect, QColor(dark ? "#1b1b1b" : "#d5d5d5"));
+        QFont font = view->font(); font.setPixelSize(14); painter->setFont(font);
+        painter->setPen(QColor(dark ? "#676767" : "#6b6b6b"));
+        QRect text = rect.adjusted(12, 0, -12, 0);
+        if (index) text = QRect(rect.x(), rect.y(), shortcutKeyWidth(view->viewport()->width()), rect.height());
+        painter->drawText(text, (index ? Qt::AlignHCenter : Qt::AlignLeft) | Qt::AlignVCenter,
+                          model()->headerData(index, Qt::Horizontal).toString());
+        painter->setPen(QColor(dark ? "#202020" : "#c5c5c5"));
+        painter->drawLine(rect.bottomLeft(), rect.bottomRight()); painter->restore();
+    }
+private:
+    QTreeWidget *view;
+};
+class RedesignShortcutTable final : public QTreeWidget
+{
+public:
+    explicit RedesignShortcutTable(QWidget *parent) : QTreeWidget(parent)
+    {
+        setItemDelegate(new ShortcutDelegate(this)); setHeader(new ShortcutHeader(this));
+        setIndentation(0); setRootIsDecorated(false);
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
+protected:
+    bool viewportEvent(QEvent *event) override
+    {
+        const bool result = QTreeWidget::viewportEvent(event);
+        if (event->type() == QEvent::Resize)
+        {
+            const int width = viewport()->width();
+            setColumnWidth(0, qRound(width * 391. / 1024.));
+            setColumnWidth(1, qRound(width * 359. / 1024.));
+        }
+        return result;
+    }
+};
+} // namespace
+
 KeySelectorControl::KeySelectorControl( QWidget *p ) : ConfigControl( nullptr )
 {
     label = new QLabel( qtr( "Action hotkey mappings." ), p );
 
     label->setWordWrap( true );
     searchLabel = new QLabel( qtr( "Search" ), p );
-    actionSearch = new SearchLineEdit();
+    actionSearch = p->property("redesignShortcutEditor").toBool() ? new QLineEdit(p) : new SearchLineEdit(p);
 
     searchOptionLabel = new QLabel( qtr("in") );
     searchOption = new QComboBox();
-    searchOption->addItem( qtr("Any field"), ANY_COL );
+    searchOption->addItem( qtr("All Fields"), ANY_COL );
     searchOption->addItem( qtr("Actions"), ACTION_COL );
     searchOption->addItem( qtr("Hotkeys"), HOTKEY_COL );
     searchOption->addItem( qtr("Global Hotkeys"), GLOBAL_HOTKEY_COL );
 
-    table = new QTreeWidget( p );
+    table = p->property("redesignShortcutEditor").toBool() ? new RedesignShortcutTable(p) : new QTreeWidget(p);
     table->setColumnCount( ANY_COL );
     table->headerItem()->setText( ACTION_COL, qtr( "Action" ) );
     table->headerItem()->setText( HOTKEY_COL, qtr( "Hotkey" ) );
     table->headerItem()->setToolTip( HOTKEY_COL, qtr( "Application level hotkey" ) );
     table->headerItem()->setText( GLOBAL_HOTKEY_COL, qtr( "Global" ) );
     table->headerItem()->setToolTip( GLOBAL_HOTKEY_COL, qtr( "Desktop level hotkey" ) );
-    table->setAlternatingRowColors( true );
+    table->setAlternatingRowColors(!p->property("redesignShortcutEditor").toBool());
     table->setSelectionBehavior( QAbstractItemView::SelectItems );
-    table->setStyleSheet( "QTreeView::item { padding: 5px 0; }" );
+    if (p->property("redesignShortcutEditor").toBool())
+        table->setStyleSheet(QString("QTreeView{background:%1;border:0;}QTreeView::item{padding:0;border:0;}")
+                            .arg(p->window()->property("figmaDark").toBool() ? "#1b1b1b" : "#d5d5d5"));
+    else
+        table->setStyleSheet("QTreeView::item { padding:5px 0; }");
 
     table->installEventFilter( this );
 
@@ -1318,17 +1465,26 @@ KeySelectorControl::KeySelectorControl( QWidget *p ) : ConfigControl( nullptr )
     QWidget *parent, *rootWidget = p;
     while( (parent = rootWidget->parentWidget()) != NULL )
         rootWidget = parent;
+    existingkeys.unite(QSet<QString>{"Ctrl+O","Ctrl+Shift+O","Ctrl+F","Ctrl+D","Ctrl+N","Ctrl+C","Ctrl+V","Ctrl+Y","Ctrl+R","Ctrl+S","Ctrl+Q","Ctrl+E","Ctrl+I","Ctrl+J","Ctrl+Shift+W","Ctrl+M","Ctrl+P","Ctrl+L","Ctrl+H","Ctrl+T","Ctrl+B","Ctrl+Shift+H","Alt+D"});
     buildAppHotkeysList( rootWidget );
 
     finish();
 
-    connect( actionSearch, &SearchLineEdit::textChanged, this, &KeySelectorControl::filter );
+    connect( actionSearch, &QLineEdit::textChanged, this, &KeySelectorControl::filter );
     connect( searchOption, QOverload<int>::of(&QComboBox::activated),
              this, &KeySelectorControl::filter );
 }
 
 void KeySelectorControl::insertInto( QGridLayout *l, int line )
 {
+    if(auto *parent=qobject_cast<QWidget *>(l->parent());parent && parent->property("redesignShortcutEditor").toBool()){
+        label->hide();searchLabel->hide();searchOptionLabel->hide();
+        actionSearch->setFixedHeight(34);
+        actionSearch->addAction(QIcon(shortcutIcon(":/redesign/icons/search.svg", parent->window()->palette().text().color(), parent->devicePixelRatioF())), QLineEdit::LeadingPosition);
+        searchOption->setFixedSize(200,34);
+        auto *header=new QHBoxLayout;header->setSpacing(10);header->addWidget(actionSearch,1);header->addWidget(searchOption);
+        l->addLayout(header,line,0);l->addWidget(table,line+1,0);l->setRowStretch(line+1,1);return;
+    }
     QGridLayout *gLayout = new QGridLayout();
     gLayout->addWidget( label, 0, 0, 1, 4 );
     gLayout->addWidget( searchLabel, 1, 0, 1, 1 );
@@ -1346,7 +1502,7 @@ void KeySelectorControl::buildAppHotkeysList( QWidget *rootWidget )
     {
         const QList<QKeySequence> shortcuts = action->shortcuts();
         foreach( const QKeySequence &keySequence, shortcuts )
-            existingkeys << keySequence.toString();
+            existingkeys << keySequence.toString(QKeySequence::PortableText);
     }
 }
 
@@ -1399,6 +1555,7 @@ void KeySelectorControl::finish()
     {
         for (QTreeWidgetItemIterator iter(table); *iter; ++iter)
         {
+            if ((*iter)->type()!=QTreeWidgetItem::UserType) continue;
             KeyTableItem *item = static_cast<KeyTableItem *>( *iter );
 
             if( strcmp( item->normal.config_name, global_keys[i]->psz_name + 7 ) == 0 )
@@ -1413,11 +1570,63 @@ void KeySelectorControl::finish()
 
     module_config_free (p_config);
 
-    table->resizeColumnToContents( ACTION_COL );
-    table->resizeColumnToContents( HOTKEY_COL );
+    // The redesign's direct bookmark command is Qt-owned, with the same
+    // conflict editor and persistence path as VLC's existing core shortcuts.
+    if (auto *config = config_FindConfig("qt-key-add-bookmark")) {
+        auto *item = new KeyTableItem;
+        item->normal.config_name = config->psz_name;
+        item->normal.default_keys = qfu(config->orig.psz);
+        item->global.config_name = nullptr;
+        item->global.default_keys = QString();
+        item->set_keys(config->value.psz,HOTKEY_COL);
+        item->set_keys(QString(),GLOBAL_HOTKEY_COL);
+        item->setText(ACTION_COL,qfut(config->psz_text));
+        item->setToolTip(GLOBAL_HOTKEY_COL,qtr("This interface action has no desktop-global binding."));
+        table->addTopLevelItem(item);
+    }
+    if(table->parentWidget()->property("redesignShortcutEditor").toBool()) {
+        const char *names[]={N_("Basic"),N_("Playback"),N_("Audio"),N_("Video"),N_("Subtitles"),N_("Bookmarks"),N_("Other")};
+        QList<KeyTableItem *> groups[7];
+        while(table->topLevelItemCount()) {
+            auto *item=static_cast<KeyTableItem *>(table->takeTopLevelItem(0));const QString key=qfu(item->normal.config_name);int group=6;
+            if(key=="key-toggle-fullscreen"||key=="key-leave-fullscreen"||key=="key-position"||key=="key-intf-show")group=0;
+            else if(key.contains("bookmark"))group=5;
+            else if(key.contains("audio")||key.contains("volume")||key.contains("mute"))group=2;
+            else if(key.contains("subtitle")||key.contains("subdelay")||key.contains("subpos")||key.contains("subsync")||key.contains("submargin"))group=4;
+            else if(key.contains("video")||key.contains("crop")||key.contains("aspect")||key.contains("zoom")||key.contains("snapshot")||key.contains("deinterlace"))group=3;
+            else if(key.contains("program")||key.contains("play")||key.contains("pause")||key.contains("stop")||key.contains("next")||key.contains("prev")||key.contains("jump")||key.contains("rate")||key.contains("faster")||key.contains("slower")||key.contains("loop")||key.contains("random")||key.contains("frame")||key.contains("record"))group=1;
+            groups[group].append(item);
+        }
+        const QStringList playbackOrder = {"key-play-pause", "key-stop", "key-next", "key-prev", "key-program-sid-next"};
+        std::stable_sort(groups[1].begin(), groups[1].end(), [&playbackOrder](KeyTableItem *a, KeyTableItem *b) {
+            const int aa = playbackOrder.indexOf(qfu(a->normal.config_name));
+            const int bb = playbackOrder.indexOf(qfu(b->normal.config_name));
+            return (aa < 0 ? playbackOrder.size() : aa) < (bb < 0 ? playbackOrder.size() : bb);
+        });
+        for(int i=0;i<7;++i)if(!groups[i].isEmpty()){
+            auto *header=new QTreeWidgetItem(table,{qtr(names[i])});header->setData(0,Qt::UserRole,i==0?1:2);header->setFlags(Qt::NoItemFlags);header->setFirstColumnSpanned(true);QFont font=header->font(0);font.setPixelSize(16);font.setWeight(QFont::DemiBold);header->setFont(0,font);header->setSizeHint(0,QSize(0,38));
+            for(auto *item:groups[i])table->addTopLevelItem(item);
+        }
+    }
+    table->setObjectName("keyboardShortcutsTable");
+    actionSearch->setObjectName("keyboardShortcutsSearch");
+    if (table->parentWidget()->property("redesignShortcutEditor").toBool())
+        actionSearch->setPlaceholderText(qtr("Search Keyboard Shortcuts…"));
+    actionSearch->setAccessibleName(qtr("Search keyboard shortcuts"));
+    table->headerItem()->setText(GLOBAL_HOTKEY_COL,qtr("Global Hotkey"));
 
-    table->setUniformRowHeights( true );
+    if (!table->parentWidget()->property("redesignShortcutEditor").toBool())
+    {
+        table->resizeColumnToContents(ACTION_COL);
+        table->resizeColumnToContents(HOTKEY_COL);
+    }
 
+    table->setUniformRowHeights(!table->parentWidget()->property("redesignShortcutEditor").toBool());
+
+    if (table->parentWidget()->property("redesignShortcutEditor").toBool())
+        connect(table, &QTreeWidget::itemClicked, this, [this](QTreeWidgetItem *item, int column) {
+            if (column != ACTION_COL) selectKey(item, column);
+        });
     connect( table, &QTreeWidget::itemActivated,
              this, QOverload<QTreeWidgetItem *, int>::of(&KeySelectorControl::selectKey) );
 }
@@ -1441,6 +1650,7 @@ void KeySelectorControl::filter()
     for (QTreeWidgetItemIterator iter(table); *iter; ++iter)
     {
         QTreeWidgetItem *item = *iter;
+        if(item->type()!=QTreeWidgetItem::UserType){item->setHidden(!qs_search.isEmpty());continue;}
         bool found = false;
         for( int idx = i_column; idx < (i_column + i_column_count); idx++ )
         {
@@ -1456,14 +1666,18 @@ void KeySelectorControl::filter()
 
 void KeySelectorControl::selectKey( QTreeWidgetItem *item, int column )
 {
+    if (!item || item->type()!=QTreeWidgetItem::UserType) return;
     selectKey( static_cast<KeyTableItem *>( item ), (enum ColumnIndex) column );
 }
 
 void KeySelectorControl::selectKey( KeyTableItem *item, enum ColumnIndex column )
 {
     /* This happens when triggered by ClickEater */
-    if( item == NULL )
-        item = static_cast<KeyTableItem *>( table->currentItem() );
+    if( item == NULL ) {
+        auto *current = table->currentItem();
+        if(!current || current->type()!=QTreeWidgetItem::UserType) return;
+        item=static_cast<KeyTableItem *>(current);
+    }
 
     /* This can happen when nothing is selected on the treeView
        and the shortcutValue is clicked */
@@ -1472,33 +1686,34 @@ void KeySelectorControl::selectKey( KeyTableItem *item, enum ColumnIndex column 
     /* If clicked on the first column, assuming user wants the normal hotkey */
     if( column == ACTION_COL ) column = HOTKEY_COL;
 
+    if (column == GLOBAL_HOTKEY_COL && !item->global.config_name) return;
+
     /* Launch a small dialog to ask for a new key */
     KeyInputDialog *d = new KeyInputDialog( table, item, column );
     d->setExistingkeysSet( &existingkeys );
-    d->exec();
-
-    if( d->result() == QDialog::Accepted )
-    {
-        /* In case of conflict, reset other keys*/
-        if( d->conflicts )
-            reassign_key( item, d->vlckey, column );
-        else
-            item->set_keys( d->vlckey, column );
-    }
-    else if( d->result() == 2 )
-        unset( item, column );
-
-    delete d;
+    d->setAttribute(Qt::WA_DeleteOnClose);
+    connect(d, &QDialog::finished, this, [this, d, item, column](int result) {
+        if (result == QDialog::Accepted)
+        {
+            if (d->conflicts) reassign_key(item, d->vlckey, column);
+            else item->set_keys(d->vlckey, column);
+        }
+        else if (result == 2) unset(item, column);
+    });
+    // The owner may close while a child is open. No nested loop may resume
+    // against a deleted table/control after that ownership transition.
+    d->open();
 }
 
 void KeySelectorControl::doApply()
 {
     for (QTreeWidgetItemIterator iter(table); *iter; ++iter)
     {
+        if ((*iter)->type()!=QTreeWidgetItem::UserType) continue;
         KeyTableItem *item = static_cast<KeyTableItem *>( *iter );
 
         config_PutPsz( item->normal.config_name, qtu( item->normal.keys ) );
-        config_PutPsz( item->global.config_name, qtu( item->global.keys ) );
+        if (item->global.config_name) config_PutPsz( item->global.config_name, qtu( item->global.keys ) );
     }
 }
 
@@ -1539,7 +1754,9 @@ bool KeySelectorControl::eventFilter( QObject *obj, QEvent *e )
 #ifndef QT_NO_CONTEXTMENU
 void KeySelectorControl::tableContextMenuEvent( QWidget *widget, QContextMenuEvent *event )
 {
-    KeyTableItem *item = static_cast<KeyTableItem *>( this->table->currentItem() );
+    auto *current=this->table->currentItem();
+    if(!current || current->type()!=QTreeWidgetItem::UserType)return;
+    KeyTableItem *item = static_cast<KeyTableItem *>(current);
     if( !item || item->isHidden() )
         return;
     /* Avoid menu from right-click on empty space after last item */
@@ -1623,6 +1840,8 @@ void KeySelectorControl::tableContextMenuEvent( QWidget *widget, QContextMenuEve
 
 void KeySelectorControl::unset( QTreeWidgetItem *item, int column )
 {
+    if (!item || item->type() != QTreeWidgetItem::UserType)
+        return;
     unset( static_cast<KeyTableItem*>( item ), (enum ColumnIndex) column );
 }
 
@@ -1644,10 +1863,11 @@ void KeySelectorControl::reset( KeyTableItem *item,
     if( conflict != nullptr )
     {
         KeyConflictDialog *dialog = new KeyConflictDialog( this->table, conflict, column );
-        dialog->exec();
-        if( dialog->result() == QDialog::Accepted )
-            reassign_key( item, item_default, column );
-        delete dialog;
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        connect(dialog, &QDialog::finished, this, [this, item, item_default, column](int result) {
+            if (result == QDialog::Accepted) reassign_key(item, item_default, column);
+        });
+        dialog->open();
     }
     else
         item->set_keys( item_default, column );
@@ -1657,6 +1877,7 @@ void KeySelectorControl::reset_all( enum KeySelectorControl::ColumnIndex column 
 {
     for (QTreeWidgetItemIterator iter(table); *iter; ++iter)
     {
+        if ((*iter)->type()!=QTreeWidgetItem::UserType) continue;
         KeyTableItem *item = static_cast<KeyTableItem *>( *iter );
         if( column != GLOBAL_HOTKEY_COL )
             item->set_keys( item->get_default_keys( HOTKEY_COL ), HOTKEY_COL );
@@ -1670,6 +1891,7 @@ void KeySelectorControl::reassign_key( KeyTableItem *item, const QString &key,
 {
     for (QTreeWidgetItemIterator iter(table); *iter; ++iter)
     {
+        if ((*iter)->type()!=QTreeWidgetItem::UserType) continue;
         KeyTableItem *iter_item = static_cast<KeyTableItem *>( *iter );
         if( iter_item != item )
             iter_item->remove_key( key, column );
@@ -1692,6 +1914,7 @@ KeyTableItem * KeySelectorControl::find_conflict( QTreeWidget *table, QString ke
         return nullptr;
     for (QTreeWidgetItemIterator iter(table); *iter; ++iter)
     {
+        if ((*iter)->type()!=QTreeWidgetItem::UserType) continue;
         KeyTableItem *item = static_cast<KeyTableItem *>( *iter );
 
         if( item == ignore_item )
@@ -1777,6 +2000,7 @@ KeyInputDialog::KeyInputDialog( QTreeWidget *table_,
     setWindowTitle( global ? qtr( "Global Hotkey change" )
                            : qtr( "Hotkey change" ) );
     setWindowRole( "vlc-key-input" );
+    setObjectName("keyInputDialog");
 
     QVBoxLayout *vLayout = new QVBoxLayout( this );
     selected = new QLabel( qtr( "Press the new key or combination for <b>%1</b>" )
@@ -1784,6 +2008,7 @@ KeyInputDialog::KeyInputDialog( QTreeWidget *table_,
     vLayout->addWidget( selected , Qt::AlignCenter );
 
     warning = new QLabel;
+    warning->setObjectName("keyConflictWarning");
     warning->hide();
     vLayout->insertWidget( 1, warning );
 
@@ -1791,14 +2016,19 @@ KeyInputDialog::KeyInputDialog( QTreeWidget *table_,
     ok = new QPushButton( qtr("Assign") );
     QPushButton *cancel = new QPushButton( qtr("Cancel") );
     unset = new QPushButton( qtr("Unset") );
+    ok->setObjectName("assignShortcut");cancel->setObjectName("cancelShortcut");unset->setObjectName("unsetShortcut");
+    selected->setObjectName("shortcutCapture");
     buttonBox->addButton( ok, QDialogButtonBox::AcceptRole );
     buttonBox->addButton( unset, QDialogButtonBox::ActionRole );
     buttonBox->addButton( cancel, QDialogButtonBox::RejectRole );
     ok->setDefault( true );
 
-    ok->setFocusPolicy(Qt::NoFocus);
-    unset->setFocusPolicy(Qt::NoFocus);
-    cancel->setFocusPolicy(Qt::NoFocus);
+    selected->setFocusPolicy(Qt::StrongFocus);
+    selected->setAccessibleName(qtr("Press a new shortcut, or use Tab to reach Assign, Unset and Cancel."));
+    ok->setFocusPolicy(Qt::StrongFocus);
+    unset->setFocusPolicy(Qt::StrongFocus);
+    cancel->setFocusPolicy(Qt::StrongFocus);
+    selected->setFocus();
 
     vLayout->addWidget( buttonBox );
     ok->hide();
@@ -1822,6 +2052,11 @@ void KeyInputDialog::checkForConflicts( const QString &sequence )
         return;
     }
 
+    if (existingkeys && !sequence.isEmpty() && existingkeys->contains(sequence)) {
+        warning->setText(qtr("%1 is reserved by an existing interface command. Choose another shortcut.").arg(sequence.toHtmlEscaped()));
+        warning->show(); ok->show(); ok->setEnabled(false); unset->hide(); return;
+    }
+    ok->setEnabled(true);
     KeyTableItem *conflict = KeySelectorControl::find_conflict( table, vlckey, keyItem, column );
     if( conflict != nullptr )
     {
@@ -1849,11 +2084,32 @@ void KeyInputDialog::checkForConflicts( const QString &sequence )
 
         conflicts = true;
     }
-    else accept();
+    else
+    {
+        warning->hide();
+        ok->show();
+        unset->show();
+    }
+}
+
+bool KeyInputDialog::event(QEvent *event)
+{
+    if (event->type() == QEvent::ShortcutOverride && focusWidget() == selected)
+    {
+        // Capture before the application shortcut dispatcher. In particular,
+        // Ctrl+P must be reported as reserved instead of closing the owner.
+        event->accept();
+        return true;
+    }
+    return QDialog::event(event);
 }
 
 void KeyInputDialog::keyPressEvent( QKeyEvent *e )
 {
+    if (focusWidget() && focusWidget()!=selected) {
+        QDialog::keyPressEvent(e);
+        return;
+    }
     if( e->key() == Qt::Key_Tab ||
         e->key() == Qt::Key_Shift ||
         e->key() == Qt::Key_Control ||
@@ -1866,7 +2122,7 @@ void KeyInputDialog::keyPressEvent( QKeyEvent *e )
     vlckey = VLCKeyToString( i_vlck, false );
     vlckey_tr = VLCKeyToString( i_vlck, true );
     selected->setText( qtr( "Key or combination: <b>%1</b>" ).arg( vlckey_tr ) );
-    checkForConflicts( sequence.toString() );
+    checkForConflicts( sequence.toString(QKeySequence::PortableText) );
 }
 
 void KeyInputDialog::wheelEvent( QWheelEvent *e )

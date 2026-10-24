@@ -1,0 +1,61 @@
+Qt 6.8.3 MinGW: own the regex JIT cache in QThreadStorage.
+
+The S5 integrated native exit regression reaches PcreJitStackFree from
+winpthreads after GCC emutls has freed the unique_ptr storage. This is the
+same ordering issue as animation timers. Keep the deleter and lazy JIT stack;
+let Qt destroy its owner before native TLS teardown. Other targets retain the
+original owner. No JIT feature, destructor or thread cleanup is disabled.
+
+--- a/src/corelib/text/qregularexpression.cpp
++++ b/src/corelib/text/qregularexpression.cpp
+@@ -4,6 +4,9 @@
+ // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+ 
+ #include "qregularexpression.h"
++#if defined(Q_OS_WIN) && defined(__MINGW32__)
++#include <QtCore/qthreadstorage.h>
++#endif
+ 
+ #include <QtCore/qcoreapplication.h>
+ #include <QtCore/qhashfunctions.h>
+@@ -956,7 +959,18 @@
+             pcre2_jit_stack_free_16(stack);
+     }
+ };
++#if defined(Q_OS_WIN) && defined(__MINGW32__)
++static auto &threadJitStack()
++{
++    // As for animation timers, destroy the owner inside QThread::finish,
++    // before MinGW's emulated TLS storage is released.
++    static QThreadStorage<std::unique_ptr<pcre2_jit_stack_16, PcreJitStackFree>> storage;
++    return storage.localData();
++}
++#else
+ Q_CONSTINIT static thread_local std::unique_ptr<pcre2_jit_stack_16, PcreJitStackFree> jitStacks;
++static auto &threadJitStack() { return jitStacks; }
++#endif
+ }
+ 
+ /*!
+@@ -964,7 +978,7 @@
+ */
+ static pcre2_jit_stack_16 *qtPcreCallback(void *)
+ {
+-    return jitStacks.get();
++    return threadJitStack().get();
+ }
+ 
+ /*!
+@@ -1060,10 +1074,10 @@
+     int result = pcre2_match_16(code, subject, length,
+                                 startOffset, options, matchData, matchContext);
+ 
+-    if (result == PCRE2_ERROR_JIT_STACKLIMIT && !jitStacks) {
++    if (result == PCRE2_ERROR_JIT_STACKLIMIT && !threadJitStack()) {
+         // The default JIT stack size in PCRE is 32K,
+         // we allocate from 32K up to 512K.
+-        jitStacks.reset(pcre2_jit_stack_create_16(32 * 1024, 512 * 1024, NULL));
++        threadJitStack().reset(pcre2_jit_stack_create_16(32 * 1024, 512 * 1024, NULL));
+ 
+         result = pcre2_match_16(code, subject, length,
+                                 startOffset, options, matchData, matchContext);

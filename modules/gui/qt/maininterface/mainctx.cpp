@@ -34,6 +34,10 @@
 #include "mainctx.hpp"
 #include "mainctx_submodels.hpp"
 #include "medialibrary/mlhelper.hpp"
+#include "medialibrary/mlbookmarkmodel.hpp"
+#include <vlc_actions.h>
+#include <vlc_modules.h>
+#include <vlc_plugin.h>
 
 #include "compositor.hpp"
 #include "util/renderer_manager.hpp"
@@ -60,6 +64,7 @@
 #include "dialogs/help/help.hpp"
 
 #include <QKeyEvent>
+#include <QPalette>
 
 #include <QUrl>
 #include <QDate>
@@ -90,6 +95,17 @@
 #define VLC_REFERENCE_SCALE_FACTOR 96.
 
 using  namespace vlc::playlist;
+
+static int HotkeyFeedbackCB(vlc_object_t *, const char *, vlc_value_t,
+                            vlc_value_t value, void *opaque)
+{
+    auto *ctx=static_cast<MainCtx *>(opaque);
+    QMetaObject::invokeMethod(ctx, [ctx,key=int(value.i_int)]() {
+        // Runs on the Qt owner; no OS input, synchronous core work or timer.
+        ctx->dispatchShortcutFeedback(key);
+    }, Qt::QueuedConnection);
+    return VLC_SUCCESS;
+}
 
 // #define DEBUG_INTF
 
@@ -162,6 +178,7 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
 
     settings = getSettings();
     m_colorScheme = new ColorSchemeModel(this);
+    connect(qGuiApp,&QGuiApplication::paletteChanged,this,&MainCtx::redesignAccentChanged);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     connect(m_colorScheme, &ColorSchemeModel::currentChanged, qGuiApp, [colorScheme = m_colorScheme]() {
@@ -307,6 +324,9 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
     m_threadRunner = new ThreadRunner();
 
     m_initialEffectiveMainInterfaceMode = getEffectiveMainInterfaceMode();
+    getBookmarks();
+    initializeHotkeyFeedback();
+    var_AddCallback(libvlc,"key-pressed",HotkeyFeedbackCB,this);
 }
 
 void MainCtx::trackPlayerMenu(QMenu *menu)
@@ -339,6 +359,7 @@ MainCtx::~MainCtx()
 {
     /* Save states */
 
+    var_DelCallback(vlc_object_instance(p_intf),"key-pressed",HotkeyFeedbackCB,this);
     m_threadRunner->destroy();
 
     if ( !p_intf->preferencesResetPending)
@@ -387,6 +408,7 @@ MainCtx::~MainCtx()
     var_DelCallback( libvlc, "intf-toggle-fscontrol", IntfShowCB, p_intf );
     var_DelCallback( libvlc, "intf-popupmenu", PopupMenuCB, p_intf );
 
+    delete m_bookmarks;
     if (m_medialib)
         delete m_medialib;
 
@@ -539,6 +561,7 @@ void MainCtx::loadFromSettingsImpl(const bool callSignals)
 void MainCtx::reloadPrefs()
 {
     loadPrefs(true);
+    emit redesignAccentChanged();
 }
 
 void MainCtx::onInputChanged( bool hasInput )
@@ -572,12 +595,80 @@ void MainCtx::sendHotkey(Qt::Key key , Qt::KeyboardModifiers modifiers)
 {
     QKeyEvent event(QEvent::KeyPress, key, modifiers );
     int vlckey = qtEventToVLCKey(&event);
-    var_SetInteger(vlc_object_instance(p_intf), "key-pressed", vlckey);
+    sendVLCHotkey(vlckey);
 }
 
 void MainCtx::sendVLCHotkey(int vlcHotkey)
 {
     var_SetInteger(vlc_object_instance(p_intf), "key-pressed", vlcHotkey);
+}
+
+QColor MainCtx::getRedesignAccent() const
+{
+    char *raw=var_InheritString(p_intf,"qt-accent-color");const QString value=qfu(raw).trimmed();free(raw);
+    if(value==QStringLiteral("system")) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
+        return QGuiApplication::palette().color(QPalette::Accent);
+#else
+        return QGuiApplication::palette().color(QPalette::Highlight);
+#endif
+    }
+    if(value.isEmpty() || value==QStringLiteral("default"))return QColor(QStringLiteral("#d37918"));
+    const QColor color(value);return color.isValid()?color:QColor(QStringLiteral("#d37918"));
+}
+
+MLBookmarkModel *MainCtx::getBookmarks()
+{
+    if (!m_medialib) return nullptr;
+    if (!m_bookmarks) {
+        m_bookmarks = new MLBookmarkModel(this);
+        m_bookmarks->setPlayer(p_intf->p_mainPlayerController);
+        m_bookmarks->setMl(m_medialib);
+    }
+    return m_bookmarks;
+}
+void MainCtx::addBookmark()
+{
+    if (auto *model = getBookmarks()) model->add();
+}
+void MainCtx::initializeHotkeyFeedback()
+{
+    // Bind feedback to this session's actual startup mappings. Core hotkeys also
+    // take effect on restart; editing configuration cannot mislabel an old map.
+    unsigned n=0;auto *config=module_config_get(module_get_main(),&n);
+    for(unsigned i=0;i<n;++i){const auto &option=config[i];
+        if(option.i_type!=CONFIG_ITEM_KEY || !option.psz_name || strncmp(option.psz_name,"global-",7)==0)continue;
+        char *keys=var_InheritString(p_intf,option.psz_name);
+        for(const auto &key:qfu(keys).split('	',Qt::SkipEmptyParts))
+            m_shortcutActions.insert(vlc_str2keycode(qtu(key)),qfut(option.psz_text));
+        free(keys);
+    }
+    module_config_free(config);
+    char *add=var_InheritString(p_intf,"qt-key-add-bookmark");
+    for(const auto &key:qfu(add).split('	',Qt::SkipEmptyParts)) {
+        const int code=vlc_str2keycode(qtu(key));
+        // Preserve conflicting prior core bindings rather than shadowing them.
+        if(!m_shortcutActions.contains(code))m_bookmarkKeys.insert(code);
+    }
+    free(add);
+}
+void MainCtx::dispatchShortcutFeedback(int key)
+{
+    if(m_bookmarkKeys.contains(key)) {
+        auto *model=getBookmarks();
+        if(model && model->available() && p_intf->p_mainPlayerController->isSeekable()) {
+            model->add();
+            if(var_InheritBool(p_intf,"qt-shortcut-feedback"))
+                emit hotkeyFeedback(qtr("Add bookmark"),var_InheritBool(p_intf,"qt-shortcut-feedback-key")?VLCKeyToString(key,true):QString(),var_InheritInteger(p_intf,"qt-shortcut-feedback-duration"));
+        }
+        return;
+    }
+    feedbackForHotkey(key);
+}
+void MainCtx::feedbackForHotkey(int key)
+{
+    if(var_InheritBool(p_intf,"qt-shortcut-feedback")&&m_shortcutActions.contains(key))
+        emit hotkeyFeedback(m_shortcutActions.value(key),var_InheritBool(p_intf,"qt-shortcut-feedback-key")?VLCKeyToString(key,true):QString(),var_InheritInteger(p_intf,"qt-shortcut-feedback-duration"));
 }
 
 void MainCtx::updateIntfScaleFactor()

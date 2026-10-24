@@ -52,6 +52,7 @@
 #include "medialibrary/medialib.hpp"
 #include "medialibrary/mlrecentmediamodel.hpp"
 #include "medialibrary/mlbookmarkmodel.hpp"
+#include "widgets/native/redesign_style.hpp"
 
 
 #include <QMenu>
@@ -65,6 +66,7 @@ using namespace vlc::playlist;
 VLCMenu::VLCMenu(qt_intf_t *p_intf) : QMenu()
 {
     assert(p_intf);
+    applyRedesignDialogStyle(this,p_intf);
     if (isWindow())
         QVLCDialog::setWindowTransientParent(this, nullptr, p_intf);
     if (p_intf->p_mi)
@@ -279,6 +281,9 @@ void VLCMenuBar::ToolsMenu( qt_intf_t *p_intf, QMenu *menu )
     if( !p_intf->b_isDialogProvider )
         addDPStaticEntry( menu, qtr( "Customi&ze Interface..." ),
             ":/menu/preferences.svg", &DialogsProvider::showToolbarEditorDialog);
+
+    addDPStaticEntry(menu, qtr("Keyboard Shortcuts…"), ":/menu/preferences.svg",
+                     &DialogsProvider::shortcutsDialog);
 
     addDPStaticEntry( menu, qtr( "&Preferences" ),
         ":/menu/preferences.svg", &DialogsProvider::prefsDialog, "Ctrl+P", QAction::PreferencesRole );
@@ -756,6 +761,28 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
 {
     /* */
     QMenu* menu = new VLCMenu(p_intf);
+    if (!p_intf->b_isDialogProvider && p_intf->p_mi) {
+        // Figma 6065:13616: immediate media actions, media submenus, then
+        // broader settings. Native builders retain the complete action set.
+        PopupMenuPlaylistEntries(menu,p_intf);
+        auto *hide=menu->addAction(qtr("Hide UI\tCtrl+Shift+H"));
+        connect(hide,&QAction::triggered,p_intf->p_mi,&MainCtx::hidePlayerChromeRequested);
+        menu->addSeparator();
+        auto *playback=menu->addMenu(qtr("Playback"));NavigMenu(p_intf,playback);
+        auto *video=menu->addMenu(qtr("Video"));VideoMenu(p_intf,video);
+        auto *audio=menu->addMenu(qtr("Audio"));AudioMenu(p_intf,audio);
+        auto *subtitles=menu->addMenu(qtr("Subtitle"));SubtitleMenu(p_intf,subtitles,true);
+        auto *more=menu->addMenu(qtr("More Settings"));
+        auto *tools=more->addMenu(qtr("Tools"));ToolsMenu(p_intf,tools);
+        auto *view=more->addMenu(qtr("Interface"));ViewMenu(p_intf,view);
+        menu->addSeparator();
+        auto *queue=menu->addAction(qtr("Queue\tCtrl+L"));queue->setCheckable(true);
+        queue->setChecked(p_intf->p_mi->getPlayqueuePanel()->isVisible());
+        connect(queue,&QAction::triggered,p_intf->p_mi->getPlayqueuePanel(),&SidePanelCtx::setVisible);
+        PopupMenuStaticEntries(menu);
+        if(show)menu->popup(QCursor::pos());
+        return menu;
+    }
     input_item_t* p_input = THEMIM->getInput();
     QAction *action;
     bool b_isFullscreen = false;

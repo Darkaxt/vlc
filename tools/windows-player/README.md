@@ -2,9 +2,9 @@
 
 Build the pinned [Windows baseline](../windows-baseline/README.md) first, keeping
 its SDK/runtime backports and configured build directory. The S1 pristine-source
-gate applies before the redesign overlay, not afterwards. Apply the fork's
-maintained `modules/gui/qt` and `contrib/src/upnp` changes to that source tree,
-and copy this tool directory alongside it. When applying an archive after the
+gate applies before the redesign overlay, not afterwards. Apply the fork's maintained overlay to that source tree, including the changed
+`modules`, `src`, `share/lua/extensions` and contrib rules/patches, and copy this
+tool directory alongside it. When applying an archive after the
 baseline, extract with `tar --touch -xf <overlay>` so changed headers are newer
 than the baseline-generated `.moc.cpp` files. Preserving an older archive mtime
 can leave Qt metadata stale even when configuration rebuilds the C++ objects.
@@ -26,6 +26,64 @@ Run `python3 tools/windows-player/configure-player.py` after the SDK repairs to 
 full `/work/runtime-fixed/lib` install ahead of contrib libraries: its Windows
 `libupnp.a` import library shadows pupnp and does not implement `UpnpResolveURL`.
 `rebuild-upnp.sh` accepts `VLC_RUNTIME_LIB_DIR` for the selected CRT directory.
+
+S5 also runs `rebuild-qt-timers.sh` against that existing target Qt build before
+linking VLC. The maintained contrib patches make MinGW animation timers and the
+regular-expression JIT cache owned by `QThreadStorage`, whose destruction runs
+before native TLS storage release.
+It preserves other platforms, timer behavior and ordinary thread completion.
+`build-qt-timer-check.sh` builds the focused native regression with the same
+static SDK/CRT. Its free wrapper only observes the exact emutls allocation
+identity; it does not poison memory or change allocator order. Unpatched Qt
+fails with code 23 before a dangling destructor runs; patched Qt must destroy
+both real timers and the JIT stack and exit normally. Integrated app exits still require separate
+verification. See [Qt's lifetime contract](https://doc.qt.io/qt-6.8/qthreadstorage.html).
+
+## S5 preference and bookmark contract
+
+Preferences retain VLC's existing configuration keys and ConfigControl editors,
+metadata, backend defaults/ranges and persistence in `vlcrc`. The native module
+inventory assigns every public option to one of the thirteen reference
+categories; the existing key editor owns core and global mappings. Unselected
+advanced module editors are instantiated only when opened; existing editors
+retain unsaved edits while navigating. Save applies the visited editors; Cancel
+and the close button discard staged values. Search covers keys, descriptions,
+module and category and opens the actual corresponding editor, including its
+advanced module. Visible help includes the native default, bounded range, key,
+module and restart semantics. Existing `qt-initial-prefs-view` values 0/1/2 now
+select categories / expanded advanced options / all-settings search results.
+
+The existing Windows interface-language registry and `MainWindow/color-scheme-index`
+remain their owners. Language and theme changes are staged until Save. The
+reference accent palette stages the existing `qt-accent-color`; its help reveals
+the native custom/system/default value editor. The native accent option now drives the current QML controls and native dialogs, preserving Figma orange for `default`, the system highlight for `system`, and valid custom colors. Invalid stored colors remain untouched and display the source default. S6 retains layout profiles and onboarding, including their theme/accent workflows.
+
+The new native options are `qt-key-add-bookmark` (default `Ctrl+Shift+b`, applied
+on restart), `qt-shortcut-feedback` (true), `qt-shortcut-feedback-key` (true) and
+`qt-shortcut-feedback-duration` (1500 ms, range 500-5000). The latter three affect
+Qt action feedback immediately; native video OSD remains controlled by `osd`.
+Feedback is an intentional user-configurable timed display, not synchronization.
+An existing conflicting core binding keeps priority; shortcut changes require
+restart and the native conflict editor requires an explicit reassignment. Native
+menu/interface commands are reserved and cannot be silently shadowed. Existing
+configuration defaults, bindings and unrelated keys are not migrated.
+
+Bookmarks use native media-library identities and bookmark rows, with no new
+settings file. Opening the sidebar does not create history or library entries.
+An explicit Add registers a missing external-media identity through VLC before
+saving its actual engine time. History-disabled profiles may keep explicitly
+requested bookmarks without adding playback history. Bookmarks and embedded
+chapters are separate lists; chapters retain native input metadata and selection.
+Queued work is bound to the media revision, so changing inputs cannot apply a
+position to another media. Save failure has visible feedback. The native media
+library remains responsible for database recovery; no destructive fallback or
+second bookmark database is introduced.
+
+Native preferences reset retains upstream configuration/interface-settings reset
+semantics after confirmation, including the Windows language override. Media,
+bookmarks and separate subtitle association/download files are preserved. Tests
+must isolate configuration and avoid changing the installed Windows language
+registry; a normal Cancel never writes it.
 
 ## Library state and audit contract
 
@@ -161,6 +219,17 @@ handler do not reliably carry that owner guard. No delay or null-object fallback
 is needed.
 
 ## Instrumented interactive audit
+
+Native-widget snapshots now include their measured position, font, DPR, checked
+state and visible-region status. Preferences expose only their public option-key
+inventory; passwords remain redacted. The categories, results and shortcut table
+also expose currently rendered model rows, not invisible rows presented as UI.
+Native widget clicks and keys use the same QPA dispatch boundary as Quick, with
+real focus/shortcut handling. Clipped click targets and unfocused key targets are
+rejected before dispatch. `widget_resize` resizes a visible owned native dialog
+through its actual QWidget layout, for the S5 responsive checks. All of these
+hooks remain diagnostic-only and use the same authenticated, revision-bound
+session; they do not inject Windows input or activate the user's desktop.
 
 `maininterface/player_diagnostics.hpp` is compiled out unless
 `VLC_PLAYER_DIAGNOSTICS` is explicitly defined. The Autotools test build enables
@@ -310,7 +379,10 @@ Windows Graphics Capture rejects windows on an inactive desktop. For this one
 rendering check, the diagnostic build accepts
 `VLC_PLAYER_DIAGNOSTICS_OFFSCREEN=1`: before showing its window, it disables
 native focus/activation and places the window beyond the union of screen bounds.
-That session permits only snapshot, resize, cancel and quit. Interactive and
+That session permits only snapshot, resize, cancel, quit and the existing Ctrl+P
+action for a composed Preferences capture. The diagnostic Preferences window is
+also placed beyond every screen, with native activation and focus disabled.
+Interactive and
 fullscreen checks continue on an inactive desktop with ordinary window behavior.
 Verify the actual native window bounds and foreground ownership before capture.
 Normal builds contain neither this mode nor the diagnostic command transport.

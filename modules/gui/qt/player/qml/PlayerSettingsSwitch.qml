@@ -29,14 +29,14 @@ T.CheckBox {
             y: PlayerStyle.px(3)
             width: PlayerStyle.px(33); height: PlayerStyle.px(26)
             radius: PlayerStyle.px(3)
-            color: toggleSwitch.value ? "#371f06" : PlayerStyle.dark ? "#191919" : "#c5c5c5"
+            color: toggleSwitch.value ? PlayerStyle.accentWell : PlayerStyle.dark ? "#191919" : "#c5c5c5"
         }
         Rectangle {
             x: PlayerStyle.px(toggleSwitch.value ? 39 : 3)
             y: PlayerStyle.px(3)
             width: PlayerStyle.px(26); height: width
             radius: PlayerStyle.px(3)
-            color: toggleSwitch.value ? "#ab6314" : PlayerStyle.dark ? "#404040" : "#969696"
+            color: toggleSwitch.value ? PlayerStyle.accentKnob : PlayerStyle.dark ? "#404040" : "#969696"
         }
         Text {
             x: PlayerStyle.px(toggleSwitch.value ? 10 : 36)

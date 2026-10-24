@@ -763,6 +763,7 @@ qml_modules += {
        'player/qml/PlayerChromeState.qml',
        'player/qml/PlayerIconButton.qml',
        'player/qml/PlayerQueueHeader.qml',
+       'player/qml/PlayerPositions.qml',
        'player/qml/PlayerResume.qml',
        'player/qml/PlayerTracksPopup.qml',
        'player/qml/PlayerSettingRow.qml',

@@ -3,6 +3,70 @@
   "extraction": "Saved outlined paths with nested affine matrices; white masks and original volume gradient.",
   "icons": [
     {
+      "id": "2437:14888",
+      "name": "name=edit, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "edit.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "39ebdbed9d47717efaf9b0af024fb898915cb4c06a179eddf40cdc1d25979aad"
+    },
+    {
+      "id": "2139:8985",
+      "name": "name=info, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-info.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "9b983d471654daa40505c9846ff675f2754d39160fdff58cd5968b48709a6584"
+    },
+    {
+      "id": "1803:2957",
+      "name": "name=preferences, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-general.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "31f16f8fa4f20890475eec4188db635c800f8a16efa76008168fccf6e2c59886"
+    },
+    {
+      "id": "999:4960",
+      "name": "name=interface, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-interface.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "a67ec4fc497b3d153dffab1036d9ae3fb07fb75a5c9b5124cf79659a9f3d785b"
+    },
+    {
+      "id": "3046:10386",
+      "name": "name=privacy, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-privacy.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "956ff8cdd7c451b3027a6f36821279aab193b49fcf8d5a24586d1b09ea439ec0"
+    },
+    {
+      "id": "1089:4450",
+      "name": "name=hotkeys, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-controls.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "268f05fad927f40dcbcb1032e10402feb5907c78cf0a5b2c02d8170d4563a49d"
+    },
+    {
+      "id": "2115:7482",
+      "name": "name=record, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-recording.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "7c606dee526b1ac52dc834d4280bdc10b4f4fce28533e0ed11697af77a311701"
+    },
+    {
+      "id": "2516:9369",
+      "name": "name=plugins, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "settings-extensions.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "7b226c722b761074602b5890394b45cfda00bacfc94b3d93ac2317c3bf7cf91e"
+    },
+    {
       "id": "45:18",
       "name": "name=previous, direction=default, state=default, value=default, EQ=default, two-tone=no",
       "filename": "previous.svg",
@@ -451,6 +515,36 @@
       ],
       "filename": "volume-level.svg",
       "sha256": "90816c47740dde25e60db42abcccf0ee5c9055c52c99b1ed4e019a5993330562"
+    }
+  ],
+  "nativeArrows": [
+    {
+      "id": "71:868",
+      "filename": "native-chevron-down-dark.svg",
+      "color": "#8f8f8f",
+      "rotation": 0,
+      "sha256": "6c3e1ffc4bb29e149d067bf7bc14b20e87b4e08a52d2f1fcaf560b25deb95272"
+    },
+    {
+      "id": "71:868",
+      "filename": "native-chevron-up-dark.svg",
+      "color": "#8f8f8f",
+      "rotation": 180,
+      "sha256": "246f81d41be6029693816b4136949e88f703beb900b33b0d6133a5dd9b8d7754"
+    },
+    {
+      "id": "71:868",
+      "filename": "native-chevron-down-light.svg",
+      "color": "#2e2e2e",
+      "rotation": 0,
+      "sha256": "a67cd731873e800b40cadaefff06e31441516fcd17b188f20e156d699365b7c5"
+    },
+    {
+      "id": "71:868",
+      "filename": "native-chevron-up-light.svg",
+      "color": "#2e2e2e",
+      "rotation": 180,
+      "sha256": "614e1e9b24d88925028fe5a0cbfdba5fba2f2a61d41d64a407c06ccade208d6e"
     }
   ]
 }

@@ -31,6 +31,7 @@
 #include <QQuickItem>
 #include <QTimer>
 #include <QSet>
+#include <QHash>
 #include <QUrl>
 #include <QStringList>
 #include <QVariantList>
@@ -41,6 +42,7 @@ Q_MOC_INCLUDE( "playlist/playlist_controller.hpp" )
 Q_MOC_INCLUDE( "maininterface/mainctx_submodels.hpp" )
 Q_MOC_INCLUDE( "maininterface/videosurface.hpp" )
 Q_MOC_INCLUDE( "medialibrary/medialib.hpp" )
+Q_MOC_INCLUDE( "medialibrary/mlbookmarkmodel.hpp" )
 Q_MOC_INCLUDE( "player/player_controller.hpp" )
 Q_MOC_INCLUDE( "util/color_scheme_model.hpp" )
 #ifdef UPDATE_CHECK
@@ -69,6 +71,7 @@ class SearchCtx;
 class SortCtx;
 class VLCSystray;
 class MediaLib;
+class MLBookmarkModel;
 class ColorSchemeModel;
 class VLCVarChoiceModel;
 class SidePanelCtx;
@@ -113,10 +116,12 @@ class MainCtx : public QObject
     Q_PROPERTY(double intfScaleFactor READ getIntfScaleFactor NOTIFY intfScaleFactorChanged FINAL)
     Q_PROPERTY(bool mediaLibraryAvailable READ hasMediaLibrary CONSTANT FINAL)
     Q_PROPERTY(bool historyEnabled READ historyEnabled CONSTANT FINAL)
+    Q_PROPERTY(MLBookmarkModel* bookmarks READ getBookmarks CONSTANT FINAL)
     Q_PROPERTY(MediaLib* mediaLibrary READ getMediaLibrary CONSTANT FINAL)
     Q_PROPERTY(bool gridView READ hasGridView WRITE setGridView NOTIFY gridViewChanged FINAL)
     Q_PROPERTY(bool hasGridListMode MEMBER m_hasGridListMode NOTIFY hasGridListModeChanged FINAL)
     Q_PROPERTY(Grouping grouping READ grouping WRITE setGrouping NOTIFY groupingChanged FINAL)
+    Q_PROPERTY(QColor redesignAccent READ getRedesignAccent NOTIFY redesignAccentChanged FINAL)
     Q_PROPERTY(ColorSchemeModel* colorScheme READ getColorScheme CONSTANT FINAL)
     Q_PROPERTY(bool hasVLM READ hasVLM CONSTANT FINAL)
     Q_PROPERTY(bool clientSideDecoration READ useClientSideDecoration NOTIFY useClientSideDecorationChanged FINAL)
@@ -239,6 +244,10 @@ public:
     inline int CSDBorderSize() const { return 10; }
     inline double getMinIntfUserScaleFactor() const { return MIN_INTF_USER_SCALE_FACTOR; }
     inline double getMaxIntfUserScaleFactor() const { return MAX_INTF_USER_SCALE_FACTOR; }
+    QColor getRedesignAccent() const;
+    MLBookmarkModel *getBookmarks();
+    Q_INVOKABLE void addBookmark();
+    void dispatchShortcutFeedback(int key);
     inline bool hasMediaLibrary() const { return b_hasMedialibrary; }
     inline MediaLib* getMediaLibrary() const { return m_medialib; }
     inline bool hasGridView() const { return m_gridView; }
@@ -474,6 +483,11 @@ protected:
     bool                 m_gridView = false;
     bool                 m_hasGridListMode = false;
     Grouping             m_grouping = GROUPING_NONE;
+    MLBookmarkModel *m_bookmarks = nullptr;
+    void initializeHotkeyFeedback();
+    void feedbackForHotkey(int vlcKey);
+    QHash<int, QString> m_shortcutActions;
+    QSet<int> m_bookmarkKeys;
     ColorSchemeModel*    m_colorScheme = nullptr;
     bool                 m_windowTitlebar = true;
     // NOTE: Ideally this should be a QVLCBool.
@@ -624,6 +638,9 @@ signals:
 
     void preferHotkeysChanged();
 
+    void redesignAccentChanged();
+    void hidePlayerChromeRequested();
+    void hotkeyFeedback(const QString &action, const QString &shortcut, int duration);
     void useGlobalShortcutsChanged( bool );
 
     void maxVolumeChanged();

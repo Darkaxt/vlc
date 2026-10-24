@@ -39,6 +39,7 @@ T.Pane {
 
     property bool useAcrylic: true
     property bool redesigned: false
+    property int positionTab: 0
 
     readonly property real minimumWidth: contentItem.Layout.minimumWidth +
                                          leftPadding +
@@ -127,6 +128,8 @@ T.Pane {
         PlayerQueueHeader {
             visible: root.redesigned
             Layout.fillWidth: true
+            activeTab: root.positionTab
+            onTabSelected: tab => root.positionTab = tab
             queueModel: root.model
             hasSelection: root.selectionModel?.hasSelection ?? false
             onRemoveSelection: {
@@ -351,8 +354,16 @@ T.Pane {
             }
         }
 
+        PlayerPositions {
+            visible: root.redesigned && root.positionTab !== 0
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            chapters: root.positionTab === 2
+        }
+
         Widgets.ListViewExt {
             id: listView
+            visible: !root.redesigned || root.positionTab === 0
 
             Layout.leftMargin: root.redesigned ? PlayerStyle.px(20) : 0
             Layout.rightMargin: Layout.leftMargin

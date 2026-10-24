@@ -5,7 +5,12 @@
 #define VLC_PLAYER_DIAGNOSTICS_HPP
 #ifdef VLC_PLAYER_DIAGNOSTICS
 #include <QAccessible>
+#include <QAbstractItemView>
 #include <QApplication>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QStyleOptionButton>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
@@ -41,6 +46,7 @@
 #include <QScreen>
 #include <memory>
 #include <cmath>
+#include <cstdlib>
 #include <utility>
 #include "util/accessible_compat_attached.hpp"
 #include "player/player_controller.hpp"
@@ -77,6 +83,12 @@ private:
     PlayerDiagnostics(QQuickItem *root, QQmlEngine *engine, PlayerController *player, const QString &directory, const QString &token)
         : QObject(root), m_root(root), m_player(player), m_directory(directory), m_token(token)
     {
+#ifdef _WIN32
+        // Fatal native regressions belong in this owned test's stderr. A CRT
+        // message box on an inactive desktop otherwise hides the failure and
+        // prevents the existing process-exit observation from completing.
+        _set_error_mode(_OUT_TO_STDERR);
+#endif
         m_clock.start();
         connect(engine, &QQmlEngine::warnings, this, [this](const QList<QQmlError> &errors) {
             for (const auto &error : errors)
@@ -294,8 +306,10 @@ private:
         result.insert(QStringLiteral("windows"), windows);
         m_widgets.clear();
         QJsonArray widgets;
-        const auto visitWidget = [this, &widgets](auto &&self, QWidget *widget, int parent) -> void {
-            if (!widget->isVisible() || m_widgets.size() >= 2000) return;
+        QSet<QWidget *> visitedWidgets;
+        const auto visitWidget = [this, &widgets, &visitedWidgets](auto &&self, QWidget *widget, int parent) -> void {
+            if (!widget->isVisible() || visitedWidgets.contains(widget) || m_widgets.size() >= 2000) return;
+            visitedWidgets.insert(widget);
             const int index = m_widgets.size();
             m_widgets.append(widget);
             QJsonObject row{{QStringLiteral("node"), index}, {QStringLiteral("parent"), parent},
@@ -306,6 +320,34 @@ private:
             if (widget->property("text").isValid()) row.insert(QStringLiteral("text"),
                 widget->metaObject()->indexOfProperty("echoMode") >= 0 && widget->property("echoMode").toInt() != 0
                     ? QStringLiteral("[redacted]") : widget->property("text").toString());
+            row.insert(QStringLiteral("font_family"),widget->font().family());
+            row.insert(QStringLiteral("font_pixel_size"),widget->font().pixelSize());
+            row.insert(QStringLiteral("font_point_size"),widget->font().pointSizeF());
+            row.insert(QStringLiteral("dpr"),widget->devicePixelRatioF());
+            row.insert(QStringLiteral("x"),widget->x());row.insert(QStringLiteral("y"),widget->y());
+            row.insert(QStringLiteral("checked"),QJsonValue::fromVariant(widget->property("checked")));
+            if (auto *combo = qobject_cast<QComboBox *>(widget)) {
+                row.insert(QStringLiteral("current_text"), combo->currentText());
+                row.insert(QStringLiteral("current_index"), combo->currentIndex());
+                row.insert(QStringLiteral("item_count"), combo->count());
+            }
+            row.insert(QStringLiteral("visible_region_empty"),widget->visibleRegion().isEmpty());
+            if (widget->isWindow() && widget->windowHandle())
+                row.insert(QStringLiteral("native_id"), QString::number(quintptr(widget->windowHandle()->winId()), 16));
+            if(widget->objectName()==QStringLiteral("redesignPreferences")) {
+                row.insert(QStringLiteral("option_keys"),QJsonArray::fromStringList(widget->property("optionKeys").toStringList()));
+                row.insert(QStringLiteral("option_count"),widget->property("optionCount").toInt());
+            }
+            if (auto view=qobject_cast<QAbstractItemView *>(widget);view &&
+                (widget->objectName()==QStringLiteral("preferencesCategories") || widget->objectName()==QStringLiteral("preferencesResults") || widget->objectName()==QStringLiteral("keyboardShortcutsTable") || widget->objectName()==QStringLiteral("installedExtensionsList") || widget->objectName()==QStringLiteral("installableAddonsList") || widget->objectName()==QStringLiteral("internalModulesList"))) {
+                QJsonArray items;auto *model=view->model();
+                row.insert(QStringLiteral("model_count"),model->rowCount());
+                for(int r=0;r<model->rowCount()&&items.size()<100;++r){const auto index=model->index(r,0);const QRect bounds=view->visualRect(index);if(bounds.isEmpty()||!bounds.intersects(view->viewport()->rect()))continue;
+                    QJsonArray columns;for(int c=0;c<model->columnCount();++c)columns.append(model->index(r,c).data(Qt::DisplayRole).toString());
+                    items.append(QJsonObject{{QStringLiteral("row"),r},{QStringLiteral("columns"),columns},{QStringLiteral("x"),bounds.x()},{QStringLiteral("y"),bounds.y()},{QStringLiteral("width"),bounds.width()},{QStringLiteral("height"),bounds.height()},{QStringLiteral("selected"),view->selectionModel()->isSelected(index)}});
+                }
+                row.insert(QStringLiteral("rendered_rows"),items);
+            }
             if (auto menu = qobject_cast<QMenu *>(widget)) {
                 QJsonArray actions;
                 for (auto action : menu->actions()) {
@@ -359,7 +401,7 @@ private:
             {QStringLiteral("value"), QJsonValue::fromVariant(item->property("value"))}});
     }
 
-    void mouse(QQuickWindow *window, QEvent::Type type, const QPointF &point, Qt::MouseButton button, Qt::MouseButtons buttons, QPointer<QQuickItem> traceItem = {})
+    void mouse(QWindow *window, QEvent::Type type, const QPointF &point, Qt::MouseButton button, Qt::MouseButtons buttons, QPointer<QQuickItem> traceItem = {})
     {
         // QPA constructs each QMouseEvent at delivery, after the preceding
         // event updated its device's persistent point/grabber state. Creating
@@ -402,8 +444,12 @@ private:
             || name != QStringLiteral("request-%1.json").arg(id)
             || command.value(QStringLiteral("token")).toString() != m_token) return;
         const QString op = command.value(QStringLiteral("op")).toString();
+        const bool openPreferencesForCapture = op == QStringLiteral("key") &&
+            command.value(QStringLiteral("key")).toInt() == Qt::Key_P &&
+            command.value(QStringLiteral("modifiers")).toInt() == Qt::ControlModifier;
         if (qEnvironmentVariableIntValue("VLC_PLAYER_DIAGNOSTICS_OFFSCREEN") == 1
             && op != QStringLiteral("snapshot") && op != QStringLiteral("resize")
+            && op != QStringLiteral("widget_resize") && !openPreferencesForCapture
             && op != QStringLiteral("cancel") && op != QStringLiteral("quit")) {
             respond(id, {{QStringLiteral("id"), id}, {QStringLiteral("status"), QStringLiteral("failed")},
                 {QStringLiteral("error"), QStringLiteral("offscreen_session_is_capture_only")}});
@@ -561,28 +607,61 @@ private:
                     error = QStringLiteral("drop_not_accepted_by_ui");
                 }
             }
-        } else if (op == QStringLiteral("widget_click") || op == QStringLiteral("widget_key")) {
+        } else if (op == QStringLiteral("widget_click") || op == QStringLiteral("widget_key") || op == QStringLiteral("widget_resize")) {
             const int index = command.value(QStringLiteral("node")).toInt(-1);
             if (index < 0 || index >= m_widgets.size() || !m_widgets[index] || !m_widgets[index]->isEnabled()) error = QStringLiteral("invalid_widget_target");
             else {
                 auto widget = m_widgets[index].data();
-                if (op == QStringLiteral("widget_click")) {
+                if (op == QStringLiteral("widget_resize")) {
+                    const int width=command.value(QStringLiteral("width")).toInt();
+                    const int height=command.value(QStringLiteral("height")).toInt();
+                    if(!widget->isWindow() || width<widget->minimumWidth() || height<widget->minimumHeight() || width>3840 || height>2160)error=QStringLiteral("size_outside_current_widget_constraints");
+                    else widget->resize(width,height);
+                } else if (op == QStringLiteral("widget_click")) {
                     QPointF point = widget->rect().center();
+                    if (qobject_cast<QCheckBox *>(widget) || qobject_cast<QRadioButton *>(widget)) {
+                        QStyleOptionButton option;
+                        option.initFrom(widget);
+                        point = widget->style()->subElementRect(qobject_cast<QCheckBox *>(widget)
+                            ? QStyle::SE_CheckBoxIndicator : QStyle::SE_RadioButtonIndicator,
+                            &option, widget).center();
+                    }
                     const int action = command.value(QStringLiteral("action")).toInt(-1);
                     if (action >= 0) {
                         auto menu = qobject_cast<QMenu *>(widget);
                         if (!menu || action >= menu->actions().size() || !menu->actions()[action]->isEnabled()) error = QStringLiteral("invalid_menu_action");
                         else point = menu->actionGeometry(menu->actions()[action]).center();
                     }
-                    if (error.isEmpty()) {
-                        QCoreApplication::postEvent(widget, new QMouseEvent(QEvent::MouseButtonPress, point, widget->mapToGlobal(point.toPoint()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier));
-                        QCoreApplication::postEvent(widget, new QMouseEvent(QEvent::MouseButtonRelease, point, widget->mapToGlobal(point.toPoint()), Qt::LeftButton, Qt::NoButton, Qt::NoModifier));
+                    if(error.isEmpty() && !widget->visibleRegion().contains(point.toPoint()))error=QStringLiteral("widget_target_clipped_rejected_before_dispatch");
+                    if(error.isEmpty()) {
+                        auto *native=widget->window()->windowHandle();
+                        if(!native)error=QStringLiteral("native_widget_window_unavailable");
+                        else {
+                            const QPointF local=widget->mapTo(widget->window(),point.toPoint());
+                            mouse(native,QEvent::MouseButtonPress,local,Qt::LeftButton,Qt::LeftButton);
+                            mouse(native,QEvent::MouseButtonRelease,local,Qt::LeftButton,Qt::NoButton);
+                        }
                     }
                 } else {
-                    const int key = command.value(QStringLiteral("key")).toInt();
-                    const auto modifiers = Qt::KeyboardModifiers(command.value(QStringLiteral("modifiers")).toInt());
-                    QCoreApplication::postEvent(widget, new QKeyEvent(QEvent::KeyPress, key, modifiers, command.value(QStringLiteral("text")).toString()));
-                    QCoreApplication::postEvent(widget, new QKeyEvent(QEvent::KeyRelease, key, modifiers));
+                    auto *native=widget->window()->windowHandle();
+                    QWidget *focus=widget->window()->focusWidget();
+                    if(!native)error=QStringLiteral("native_widget_window_unavailable");
+                    else if(!widget->isWindow() && !widget->hasFocus() && !(focus && widget->isAncestorOf(focus)))error=QStringLiteral("widget_key_target_not_focused_rejected_before_dispatch");
+                    else {
+                        const int key=command.value(QStringLiteral("key")).toInt();
+                        const auto modifiers=Qt::KeyboardModifiers(command.value(QStringLiteral("modifiers")).toInt());
+                        const QString text=command.value(QStringLiteral("text")).toString();
+#ifdef QT_GUI_PRIVATE
+                        QMetaObject::invokeMethod(native,[native,key,modifiers,text] {
+                            QWindowSystemInterface::handleFocusWindowChanged<QWindowSystemInterface::SynchronousDelivery>(native,Qt::OtherFocusReason);
+                            QWindowSystemInterface::handleKeyEvent<QWindowSystemInterface::SynchronousDelivery>(native,QEvent::KeyPress,key,modifiers,text);
+                            QWindowSystemInterface::handleKeyEvent<QWindowSystemInterface::SynchronousDelivery>(native,QEvent::KeyRelease,key,modifiers);
+                        },Qt::QueuedConnection);
+#else
+                        QCoreApplication::postEvent(native,new QKeyEvent(QEvent::KeyPress,key,modifiers,text));
+                        QCoreApplication::postEvent(native,new QKeyEvent(QEvent::KeyRelease,key,modifiers));
+#endif
+                    }
                 }
             }
         } else if (op == QStringLiteral("key")) {

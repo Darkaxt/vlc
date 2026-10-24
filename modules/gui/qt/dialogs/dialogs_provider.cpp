@@ -302,6 +302,12 @@ void DialogsProvider::prefsDialog()
     }
 }
 
+void DialogsProvider::shortcutsDialog()
+{
+    if (!m_prefsDialog) prefsDialog();
+    if (m_prefsDialog) m_prefsDialog->showShortcuts();
+}
+
 void DialogsProvider::firstRunDialog()
 {
     ensureDialog(m_firstRunDialog);
@@ -540,6 +546,12 @@ void DialogsProvider::podcastConfigureDialog()
 
 void DialogsProvider::pluginDialog()
 {
+    ensureDialog(m_pluginDialog);
+    // A manager opened from window-modal Preferences belongs above that
+    // dialog. Parenting it to the main window leaves its input modal-blocked.
+    auto *modal = QApplication::activeModalWidget();
+    QVLCDialog::setWindowTransientParent(m_pluginDialog.get(),
+                                        modal ? modal->windowHandle() : nullptr, p_intf);
     toggleDialogVisible(m_pluginDialog);
 }
 

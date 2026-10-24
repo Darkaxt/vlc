@@ -322,6 +322,48 @@ static void test_LateTrack(vlc_pcr_sync_t *sync)
     vlc_pcr_sync_DelESID(sync, video);
 }
 
+static void test_TrackAddedAfterPCR(vlc_pcr_sync_t *sync)
+{
+    unsigned video, audio;
+    assert(vlc_pcr_sync_NewESID(sync, &video) == VLC_SUCCESS);
+    const vlc_frame_t first_video = {.i_dts = 1};
+    vlc_pcr_sync_SignalFrame(sync, video, &first_video);
+    assert(vlc_pcr_sync_SignalPCR(sync, 10) == VLC_SUCCESS);
+
+    // Demuxers can discover the audio track after the first video/PCR. It
+    // cannot acknowledge a PCR snapshot from before that track existed.
+    assert(vlc_pcr_sync_NewESID(sync, &audio) == VLC_SUCCESS);
+    const vlc_frame_t first_audio = {.i_dts = 11};
+    vlc_pcr_sync_SignalFrame(sync, audio, &first_audio);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, audio, &first_audio) == VLC_TICK_INVALID);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, video, &first_video) == 10);
+
+    const vlc_frame_t next_video = {.i_dts = 21}, next_audio = {.i_dts = 22};
+    vlc_pcr_sync_SignalFrame(sync, video, &next_video);
+    vlc_pcr_sync_SignalFrame(sync, audio, &next_audio);
+    assert(vlc_pcr_sync_SignalPCR(sync, 30) == VLC_SUCCESS);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, audio, &next_audio) == VLC_TICK_INVALID);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, video, &next_video) == 30);
+}
+
+static void test_FastTrackRevisitsPendingPCR(vlc_pcr_sync_t *sync)
+{
+    unsigned video, audio;
+    assert(vlc_pcr_sync_NewESID(sync, &video) == VLC_SUCCESS);
+    assert(vlc_pcr_sync_NewESID(sync, &audio) == VLC_SUCCESS);
+    const vlc_frame_t first = {.i_dts = 1}, second = {.i_dts = 2}, third = {.i_dts = 3};
+    vlc_pcr_sync_SignalFrame(sync, video, &first);
+    vlc_pcr_sync_SignalFrame(sync, audio, &first);
+    assert(vlc_pcr_sync_SignalPCR(sync, 10) == VLC_SUCCESS);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, audio, &first) == VLC_TICK_INVALID);
+    vlc_pcr_sync_SignalFrame(sync, audio, &second);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, audio, &second) == VLC_TICK_INVALID);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, video, &first) == 10);
+    // Audio must not retain the old entry after video releases it.
+    vlc_pcr_sync_SignalFrame(sync, audio, &third);
+    assert(vlc_pcr_sync_SignalFrameOutput(sync, audio, &third) == VLC_TICK_INVALID);
+}
+
 static void test_PCRHelper(void (*test)(vlc_pcr_sync_t *,
                                         transcode_track_pcr_helper_t *))
 {
@@ -497,6 +539,11 @@ static void test_PCRHelperIOMismatch(vlc_pcr_sync_t *sync,
 
 int main(void)
 {
+#ifdef _WIN32
+    // Native unattended regressions must report assertions to stderr rather
+    // than opening a CRT message box on the test's inactive desktop.
+    _set_error_mode(_OUT_TO_STDERR);
+#endif
     test_Run(test_Simple);
     test_Run(test_MultipleTracks);
     test_Run(test_MultipleTracksButOnlyOneSends);
@@ -509,6 +556,8 @@ int main(void)
     test_Run(test_OneTrackWithDelay);
     test_Run(test_SubsequentPCR);
     test_Run(test_LateTrack);
+    test_Run(test_TrackAddedAfterPCR);
+    test_Run(test_FastTrackRevisitsPendingPCR);
     test_PCRHelper(test_PCRHelperSimple);
     test_PCRHelper(test_PCRHelperMultipleTracks);
     test_PCRHelper(test_PCRHelperSplitFrameOutput);

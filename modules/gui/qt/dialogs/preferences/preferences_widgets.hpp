@@ -421,6 +421,7 @@ class KeySelectorControl : public ConfigControl
 
 public:
     KeySelectorControl( QWidget * );
+    void resetToDefaults() { reset_all(ANY_COL); }
     void insertInto( QGridLayout*, int row = 0 ) override;
     void doApply() override;
     void storeValue() override {}
@@ -454,7 +455,7 @@ private:
     void finish();
     QLabel *label;
     QLabel *searchLabel;
-    SearchLineEdit *actionSearch;
+    QLineEdit *actionSearch;
     QComboBox *searchOption;
     QLabel *searchOptionLabel;
     QTreeWidget *table;
@@ -476,7 +477,7 @@ struct KeyItemAttr
 class KeyTableItem : public QTreeWidgetItem
 {
 public:
-    KeyTableItem() {}
+    KeyTableItem() : QTreeWidgetItem(QTreeWidgetItem::UserType) {}
     const QString &get_keys( enum KeySelectorControl::ColumnIndex );
     QString get_default_keys( enum KeySelectorControl::ColumnIndex );
     void set_keys( QString, enum KeySelectorControl::ColumnIndex );
@@ -509,6 +510,7 @@ private:
     WheelToVLCConverter* wheelConverter;
 
     void checkForConflicts( const QString &sequence );
+    bool event(QEvent *) override;
     void keyPressEvent( QKeyEvent *);
     void wheelEvent( QWheelEvent *);
     const QSet<QString> *existingkeys;

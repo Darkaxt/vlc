@@ -7,6 +7,10 @@ import { fileURLToPath } from 'node:url';
 import { decode, expandSelection, resolveStyleReferences, hash, id } from './export.mjs';
 
 export const icons = [
+  ['2437:14888', 'edit'],
+  ['2139:8985', 'settings-info'], ['1803:2957', 'settings-general'], ['999:4960', 'settings-interface'],
+  ['3046:10386', 'settings-privacy'], ['1089:4450', 'settings-controls'],
+  ['2115:7482', 'settings-recording'], ['2516:9369', 'settings-extensions'],
   ['45:18', 'previous'], ['45:12', 'next'], ['44:419', 'play'],
   ['44:427', 'pause'], ['42:398', 'subtitles'], ['44:407', 'audio'],
   ['217:191', 'queue'], ['182:179', 'volume'], ['182:198', 'muted'],
@@ -135,7 +139,20 @@ export function extractPlayerAssets(destination) {
     fs.writeFileSync(path.join(destination, filename), svg);
     return { ids: ['244:211', '244:214'], filename, sha256: hash(svg) };
   });
-  const manifest = { source_sha256: hash(bytes), extraction: 'Saved outlined paths with nested affine matrices; white masks and original volume gradient.', icons: exported, controls };
+  // Native style sheets need a colored SVG rather than a runtime white mask.
+  // Keep the saved chevron outline/matrices; only tint and orientation differ.
+  const chevron = fs.readFileSync(path.join(destination, 'chevron-down.svg'), 'utf8');
+  const nativeArrows = [];
+  for (const [theme, color] of [['dark', '#8f8f8f'], ['light', '#2e2e2e']]) {
+    for (const [direction, rotation] of [['down', 0], ['up', 180]]) {
+      let svg = chevron.replaceAll('fill="white"', `fill="${color}"`);
+      if (rotation) svg = svg.replace('>', `><g transform="rotate(${rotation} 12 12)">`).replace('</svg>', '</g></svg>');
+      const filename = `native-chevron-${direction}-${theme}.svg`;
+      fs.writeFileSync(path.join(destination, filename), svg);
+      nativeArrows.push({ id: '71:868', filename, color, rotation, sha256: hash(svg) });
+    }
+  }
+  const manifest = { source_sha256: hash(bytes), extraction: 'Saved outlined paths with nested affine matrices; white masks and original volume gradient.', icons: exported, controls, nativeArrows };
   fs.writeFileSync(path.join(destination, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   return manifest;
 }

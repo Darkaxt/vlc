@@ -147,6 +147,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/preferences/expert_view.hpp \
 	dialogs/preferences/preferences.cpp \
 	dialogs/preferences/preferences.hpp \
+	dialogs/preferences/preferences_languages.hpp \
 	dialogs/preferences/preferences_widgets.cpp \
 	dialogs/preferences/preferences_widgets.hpp \
 	dialogs/preferences/simple_preferences.cpp \
@@ -384,6 +385,7 @@ libqt_plugin_la_SOURCES = \
 	widgets/native/mlfolderseditor.hpp \
 	widgets/native/qvlcframe.cpp \
 	widgets/native/qvlcframe.hpp \
+	widgets/native/redesign_style.hpp \
 	widgets/native/searchlineedit.cpp widgets/native/searchlineedit.hpp \
 	widgets/native/viewblockingrectangle.cpp widgets/native/viewblockingrectangle.hpp \
 	widgets/native/doubleclickignoringitem.hpp
@@ -801,6 +803,14 @@ EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
 	pixmaps/redesign/manifest.json pixmaps/redesign/README.md
 
 libqt_plugin_la_RES = \
+	pixmaps/redesign/edit.svg \
+	pixmaps/redesign/settings-info.svg \
+	pixmaps/redesign/settings-general.svg \
+	pixmaps/redesign/settings-interface.svg \
+	pixmaps/redesign/settings-privacy.svg \
+	pixmaps/redesign/settings-controls.svg \
+	pixmaps/redesign/settings-recording.svg \
+	pixmaps/redesign/settings-extensions.svg \
 	pixmaps/redesign/albums.svg \
 	pixmaps/redesign/artists.svg \
 	pixmaps/redesign/genres.svg \
@@ -828,6 +838,10 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/video.svg \
 	pixmaps/redesign/playback.svg \
 	pixmaps/redesign/chevron-down.svg \
+	pixmaps/redesign/native-chevron-down-dark.svg \
+	pixmaps/redesign/native-chevron-up-dark.svg \
+	pixmaps/redesign/native-chevron-down-light.svg \
+	pixmaps/redesign/native-chevron-up-light.svg \
 	pixmaps/redesign/choice-selected.svg \
 	pixmaps/redesign/choice-empty.svg \
 	pixmaps/redesign/remove.svg \
@@ -1244,6 +1258,7 @@ libqml_module_player_a_QML = \
 	player/qml/PlayerSubtitleDialog.qml \
 	player/qml/PlayerSeekAnalysis.qml \
 	player/qml/PlayerQueueHeader.qml \
+	player/qml/PlayerPositions.qml \
 	player/qml/RedesignControlBar.qml \
 	player/qml/RedesignTopBar.qml \
 	player/qml/PlayerResume.qml \

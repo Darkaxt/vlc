@@ -53,21 +53,27 @@ VLCProfileSelector::VLCProfileSelector( QWidget *_parent ): QWidget( _parent )
     layout->addWidget( prLabel );
 
     profileBox = new QComboBox( this );
+    profileBox->setObjectName("outputProfile");
+    profileBox->setAccessibleName(qtr("Output profile"));
     layout->addWidget( profileBox );
 
     QToolButton *editButton = new QToolButton( this );
     editButton->setIcon( QIcon( ":/menu/preferences.svg" ) );
     editButton->setToolTip( qtr( "Edit selected profile" ) );
+    editButton->setObjectName("editOutputProfile");
+    editButton->setAccessibleName(editButton->toolTip());
     layout->addWidget( editButton );
 
     QToolButton *deleteButton = new QToolButton( this );
     deleteButton->setIcon( QIcon( ":/menu/clear.svg" ) );
     deleteButton->setToolTip( qtr( "Delete selected profile" ) );
+    deleteButton->setAccessibleName(deleteButton->toolTip());
     layout->addWidget( deleteButton );
 
     QToolButton *newButton = new QToolButton( this );
     newButton->setIcon( QIcon( ":/menu/profile_new.svg" ) );
     newButton->setToolTip( qtr( "Create a new profile" ) );
+    newButton->setAccessibleName(newButton->toolTip());
     layout->addWidget(newButton);
 
     BUTTONACT( newButton, &VLCProfileSelector::newProfile );
@@ -122,9 +128,10 @@ inline void VLCProfileSelector::fillProfilesCombo()
     }
     settings.endArray();
 
-    profileBox->setCurrentIndex(
-        profileBox->findText(
-            settings.value( "codecs-profiles-selected" ).toString() ));
+    // The native default chain below already uses the first profile. Show that
+    // same selection when no saved profile matches, rather than a blank choice.
+    profileBox->setCurrentIndex(qMax(0, profileBox->findText(
+            settings.value( "codecs-profiles-selected" ).toString())));
 
 }
 
@@ -145,6 +152,10 @@ void VLCProfileSelector::editProfilePrivate( const QString& qs, const QString& v
     QWidget* windowWidget = window();
     QWindow* parentWindow = windowWidget ? windowWidget->windowHandle() : nullptr;
     VLCProfileEditor *editor = new VLCProfileEditor( qs, value,  parentWindow );
+    // A QWindow transient parent does not propagate QWidget styling.
+    editor->setFont(windowWidget->font());
+    editor->setPalette(windowWidget->palette());
+    editor->setStyleSheet(windowWidget->styleSheet());
 
     /* Show it */
     if( QDialog::Accepted == editor->exec() )

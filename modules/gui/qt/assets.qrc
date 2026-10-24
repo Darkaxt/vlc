@@ -3,6 +3,16 @@
         <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
     </qresource>
     <qresource prefix="/redesign/icons">
+        <file alias="edit.svg">pixmaps/redesign/edit.svg</file>
+        <file alias="settings-info.svg">pixmaps/redesign/settings-info.svg</file>
+
+        <file alias="settings-general.svg">pixmaps/redesign/settings-general.svg</file>
+        <file alias="settings-interface.svg">pixmaps/redesign/settings-interface.svg</file>
+        <file alias="settings-privacy.svg">pixmaps/redesign/settings-privacy.svg</file>
+        <file alias="settings-controls.svg">pixmaps/redesign/settings-controls.svg</file>
+        <file alias="settings-recording.svg">pixmaps/redesign/settings-recording.svg</file>
+        <file alias="settings-extensions.svg">pixmaps/redesign/settings-extensions.svg</file>
+
         <file alias="albums.svg">pixmaps/redesign/albums.svg</file>
         <file alias="artists.svg">pixmaps/redesign/artists.svg</file>
         <file alias="genres.svg">pixmaps/redesign/genres.svg</file>
@@ -31,6 +41,10 @@
         <file alias="video.svg">pixmaps/redesign/video.svg</file>
         <file alias="playback.svg">pixmaps/redesign/playback.svg</file>
         <file alias="chevron-down.svg">pixmaps/redesign/chevron-down.svg</file>
+        <file alias="native-chevron-down-dark.svg">pixmaps/redesign/native-chevron-down-dark.svg</file>
+        <file alias="native-chevron-up-dark.svg">pixmaps/redesign/native-chevron-up-dark.svg</file>
+        <file alias="native-chevron-down-light.svg">pixmaps/redesign/native-chevron-down-light.svg</file>
+        <file alias="native-chevron-up-light.svg">pixmaps/redesign/native-chevron-up-light.svg</file>
         <file alias="choice-selected.svg">pixmaps/redesign/choice-selected.svg</file>
         <file alias="choice-empty.svg">pixmaps/redesign/choice-empty.svg</file>
         <file alias="sort.svg">pixmaps/redesign/sort.svg</file>

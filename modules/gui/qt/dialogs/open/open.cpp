@@ -24,6 +24,8 @@
 # include "config.h"
 #endif
 
+#include "widgets/native/redesign_style.hpp"
+
 #include "dialogs/open/open.hpp"
 #include "dialogs/dialogs_provider.hpp"
 #include "util/qt_dirs.hpp"
@@ -44,6 +46,7 @@ OpenDialog::OpenDialog(qt_intf_t *_p_intf, QWindow* parent )
     :  QVLCDialog( parent, _p_intf )
 {
     /* Basic Creation of the Window */
+    applyRedesignDialogStyle(this,p_intf);
     ui.setupUi( this );
     setWindowTitle( qtr( "Open Media" ) );
     setWindowRole( "vlc-open-media" );
@@ -169,6 +172,8 @@ void OpenDialog::setActionFlag(OpenDialog::ActionFlag flag)
 /* Finish the dialog and decide if you open another one after */
 void OpenDialog::setMenuAction()
 {
+    setWindowTitle(qtr(i_action_flag == OPEN_AND_SAVE ? "Convert media — Select source" :
+                       i_action_flag == OPEN_AND_STREAM ? "Stream media — Select source" : "Open Media"));
     if( i_action_flag == SELECT )
     {
         playButton->hide();

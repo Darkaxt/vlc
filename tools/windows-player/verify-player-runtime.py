@@ -30,7 +30,11 @@ print('Normal plugin contains no diagnostic transport, authentication or offscre
 env=dict(os.environ)
 for k in list(env):
  if k.startswith('VLC_PLAYER_DIAGNOSTICS'):del env[k]
-env.update(TEMP=str(s/'tmp'),TMP=str(s/'tmp'),VLC_PLUGIN_PATH=str(r/'plugins'),VLC_DATA_PATH=str(r),VLC_USERDATA_PATH=str(r/'portable'),QML_DISK_CACHE_PATH=str(s/'cache/qml-normal'),QT_DISABLE_SHADER_DISK_CACHE='1',QSG_RHI_DISABLE_SHADER_DISK_CACHE='1',QT_FORCE_STDERR_LOGGING='1',QSG_INFO='1',QT_SCREEN_SCALE_FACTORS='1;1;1;1;1;1;1;1',QT_SCALE_FACTOR='1')
+env.update(TEMP=str(s/'tmp'),TMP=str(s/'tmp'),VLC_DATA_PATH=str(r),VLC_USERDATA_PATH=str(r/'portable'),QML_DISK_CACHE_PATH=str(s/'cache/qml-normal'),QT_DISABLE_SHADER_DISK_CACHE='1',QSG_RHI_DISABLE_SHADER_DISK_CACHE='1',QT_FORCE_STDERR_LOGGING='1',QSG_INFO='1',QT_SCREEN_SCALE_FACTORS='1;1;1;1;1;1;1;1',QT_SCALE_FACTOR='1')
+# VLC already scans the plugins directory beside this exact executable.
+# VLC_PLUGIN_PATH adds another scan, rather than replacing that directory;
+# repeating it creates duplicate module/configuration owners in the audit.
+env.pop('VLC_PLUGIN_PATH',None)
 env.pop('QML_DISABLE_DISK_CACHE',None)
 records={}
 with (e/'plugin-cache.stdout').open('wb') as out,(e/'plugin-cache.stderr').open('wb') as err:

@@ -510,7 +510,7 @@ FocusScope {
                         onVlcWheelKey: (key) => MainCtx.sendVLCHotkey(key)
                     }
 
-                    // ── Two-panel lyrics layout ────────────────────────
+                    // â”€â”€ Two-panel lyrics layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                     Item {
                         id: leftSideParent
 
@@ -996,6 +996,43 @@ FocusScope {
             function onCloseRequested() { rootPlayer.libraryVisible = false; topBar.forceActiveFocus() }
             function onExpandRequested() { rootPlayer.libraryVisible = false; MainCtx.playerView = false }
         }
+    }
+
+    Rectangle {
+        id: shortcutFeedback
+        objectName: "shortcutFeedback"
+        property string actionText: ""
+        property string keyText: ""
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: topBar.bottom
+        anchors.topMargin: PlayerStyle.px(24)
+        width: Math.min(parent.width - PlayerStyle.px(40), feedbackText.implicitWidth + PlayerStyle.px(40))
+        height: feedbackText.implicitHeight + PlayerStyle.px(24)
+        radius: PlayerStyle.px(10); color: PlayerStyle.panel
+        visible: feedbackTimer.running
+        z: 8
+        Text {
+            id: feedbackText
+            anchors.centerIn: parent
+            width: Math.min(implicitWidth,parent.width - PlayerStyle.px(40))
+            text: shortcutFeedback.actionText + (shortcutFeedback.keyText ? "  [" + shortcutFeedback.keyText + "]" : "")
+            textFormat: Text.PlainText; wrapMode: Text.WordWrap
+            color: PlayerStyle.foreground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(16)
+            Accessible.name: text; AccessibleCompat.id: "shortcutFeedbackText"
+        }
+        Timer { id: feedbackTimer; repeat: false }
+        Connections {
+            target: MainCtx
+            function onHotkeyFeedback(action,shortcut,duration) {
+                shortcutFeedback.actionText=action; shortcutFeedback.keyText=shortcut
+                feedbackTimer.interval=duration; feedbackTimer.restart()
+            }
+        }
+    }
+
+    Connections {
+        target: MainCtx
+        function onHidePlayerChromeRequested() { chrome.hidden = true }
     }
 
     PlayerResume {

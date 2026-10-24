@@ -14,9 +14,11 @@ import VLC.Util
 Item {
     id: header
     required property var queueModel
+    property int activeTab: 0
+    signal tabSelected(int tab)
     property bool hasSelection: false
     signal removeSelection()
-    implicitHeight: PlayerStyle.px(120)
+    implicitHeight: PlayerStyle.px(activeTab === 0 ? 120 : 50)
 
     Rectangle {
         width: parent.width
@@ -51,16 +53,17 @@ Item {
                 activeFocusOnTab: true
                 hoverEnabled: true
                 Accessible.name: modelData
-                Accessible.description: index === 0 ? qsTr("Current playback queue") : qsTr("Open existing bookmarks and chapters menu")
+                Accessible.description: modelData
+                AccessibleCompat.id: "queueTab" + index
                 Accessible.onPressAction: clicked()
-                onClicked: if (index !== 0) bookmarksMenu.popup(mapToGlobal(0, height))
+                onClicked: header.tabSelected(index)
                 background: Item {
                     Rectangle {
                         x: PlayerStyle.px(8)
                         width: parent.width - PlayerStyle.px(16)
                         anchors.bottom: parent.bottom
                         height: PlayerStyle.px(2)
-                        color: tab.index === 0 ? PlayerStyle.accent : "transparent"
+                        color: tab.index === header.activeTab ? PlayerStyle.accent : "transparent"
                     }
                     Rectangle {
                         anchors.fill: parent
@@ -74,7 +77,7 @@ Item {
                     Item { Layout.fillWidth: true }
                     IconImage {
                         source: "qrc:/redesign/icons/" + ["queue-tab", "bookmarks", "chapters"][tab.index] + ".svg"
-                        color: tab.index === 0 ? PlayerStyle.foreground : PlayerStyle.sectionForeground
+                        color: tab.index === header.activeTab ? PlayerStyle.foreground : PlayerStyle.sectionForeground
                         sourceSize: Qt.size(PlayerStyle.px(20), PlayerStyle.px(20))
                         Layout.preferredWidth: PlayerStyle.px(20)
                         Layout.preferredHeight: PlayerStyle.px(20)
@@ -85,7 +88,7 @@ Item {
                         text: tab.modelData
                         font.family: PlayerStyle.fontFamily
                         font.pixelSize: PlayerStyle.px(12)
-                        color: tab.index === 0 ? PlayerStyle.foreground : PlayerStyle.sectionForeground
+                        color: tab.index === header.activeTab ? PlayerStyle.foreground : PlayerStyle.sectionForeground
                         elide: Text.ElideRight
                     }
                     Item { Layout.fillWidth: true }
@@ -94,6 +97,7 @@ Item {
         }
     }
     RowLayout {
+        visible: header.activeTab === 0
         x: PlayerStyle.px(28)
         y: PlayerStyle.px(71)
         width: parent.width - x - PlayerStyle.px(20)
@@ -168,5 +172,4 @@ Item {
             onClicked: DialogsProvider.simpleOpenDialog(false)
         }
     }
-    QmlBookmarkMenu { id: bookmarksMenu; ctx: MainCtx; player: Player }
 }

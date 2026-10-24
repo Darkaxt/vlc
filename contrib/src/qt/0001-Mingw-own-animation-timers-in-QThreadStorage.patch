@@ -1,0 +1,70 @@
+Qt 6.8.3 MinGW: destroy animation timers in their owning QThread.
+
+The native S5 shutdown regression reaches the timer's unique_ptr destructor
+from winpthreads after GCC emutls has freed that unique_ptr's storage. Use Qt's
+existing QThreadStorage owner on MinGW, whose cleanup runs in QThread::finish
+before native TLS cleanup. Other platforms retain the original implementation.
+No destructor is skipped, and no timer delay or pthread ordering is changed.
+
+References:
+https://doc.qt.io/qt-6.8/qthreadstorage.html
+https://sourceforge.net/p/mingw-w64/bugs/727/
+
+--- a/src/corelib/animation/qabstractanimation.cpp
++++ b/src/corelib/animation/qabstractanimation.cpp
+@@ -115,6 +115,9 @@
+ #include <QtCore/qmath.h>
+ #include <QtCore/qcoreevent.h>
+ #include <QtCore/qpointer.h>
++#if defined(Q_OS_WIN) && defined(__MINGW32__)
++#include <QtCore/qthreadstorage.h>
++#endif
+ #include <QtCore/qscopedvaluerollback.h>
+ 
+ #define DEFAULT_TIMER_INTERVAL 16
+@@ -194,6 +197,14 @@
+ QUnifiedTimer *QUnifiedTimer::instance(bool create)
+ {
+     QUnifiedTimer *inst;
++#if defined(Q_OS_WIN) && defined(__MINGW32__)
++    // MinGW's emutls cleanup can precede C++ thread_local destructors. Let
++    // QThread own timer destruction before its native thread storage is freed.
++    static QThreadStorage<QUnifiedTimer *> unifiedTimer;
++    if (create && !unifiedTimer.hasLocalData())
++        unifiedTimer.setLocalData(new QUnifiedTimer);
++    inst = unifiedTimer.hasLocalData() ? unifiedTimer.localData() : nullptr;
++#else
+     static thread_local std::unique_ptr<QUnifiedTimer> unifiedTimer;
+     if (create && !unifiedTimer) {
+         inst = new QUnifiedTimer;
+@@ -201,6 +212,7 @@
+     } else {
+         inst = unifiedTimer.get();
+     }
++#endif
+     return inst;
+ }
+ 
+@@ -527,6 +539,14 @@
+ {
+     QAnimationTimer *inst;
+ #if QT_CONFIG(thread)
++#if defined(Q_OS_WIN) && defined(__MINGW32__)
++    // MinGW's emutls cleanup can precede C++ thread_local destructors. Let
++    // QThread own timer destruction before its native thread storage is freed.
++    static QThreadStorage<QAnimationTimer *> animationTimer;
++    if (create && !animationTimer.hasLocalData())
++        animationTimer.setLocalData(new QAnimationTimer);
++    inst = animationTimer.hasLocalData() ? animationTimer.localData() : nullptr;
++#else
+     static thread_local std::unique_ptr<QAnimationTimer> animationTimer;
+     if (create && !animationTimer) {
+         inst = new QAnimationTimer;
+@@ -534,6 +554,7 @@
+     } else {
+         inst = animationTimer.get();
+     }
++#endif
+ #else
+     Q_UNUSED(create);
+     static QAnimationTimer animationTimer;

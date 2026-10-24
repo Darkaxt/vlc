@@ -28,12 +28,14 @@
 #include <QTemporaryFile>
 #include <QAbstractItemModel>
 #include <QLockFile>
+#include <QUrl>
 
 #include <cstdio>
 
 #include "qt.hpp"
 
-#include "dialogs/dialogs_provider.hpp"
+#include "widgets/native/qvlcframe.hpp"
+#include "widgets/native/redesign_style.hpp"
 
 class ModelRecoveryAgent
 {
@@ -43,15 +45,18 @@ class ModelRecoveryAgent
     QTimer m_timer;
     bool m_conditionDismissInitialDirtiness = false;
     std::unique_ptr<QLockFile> m_lockFile;
+    std::unique_ptr<QMessageBox> m_recoveryQuestion;
+    bool m_recoveryPending = false;
 
 public:
     // NOTE: settings and model must outlive the instance of this class.
     template<class T>
-    ModelRecoveryAgent(class QSettings *settings, const QString& modelIdentifier, T* model)
+    ModelRecoveryAgent(class QSettings *settings, const QString& modelIdentifier, T* model, qt_intf_t *intf)
         : m_settings(settings), m_key(modelIdentifier + QStringLiteral("/RecoveryFilePath"))
     {
         assert(settings);
         assert(model);
+        QString recoveryPrompt;
         settings->sync();
         if (settings->contains(m_key))
         {
@@ -69,16 +74,9 @@ public:
                 const QFileInfo fileInfo(m_recoveryFileName);
                 if (fileInfo.size() > 0)
                 {
-                    if (DialogsProvider::getInstance()->messageDialog(qtr("Do you want to restore the %1 model from %2?").arg(modelIdentifier.toLower(),
-                                                                                                                              fileInfo.lastModified().toString()),
-                                                                      qtr("The application closed abruptly."),
-                                                                      (QMessageBox::Yes | QMessageBox::No),
-                                                                      QMessageBox::Yes,
-                                                                      QMessageBox::Question) == QMessageBox::Yes)
-                    {
-                        model->append(m_recoveryFileName);
-                        m_conditionDismissInitialDirtiness = true;
-                    }
+                    recoveryPrompt = qtr("Do you want to restore the %1 model from %2?")
+                        .arg(modelIdentifier.toLower(), fileInfo.lastModified().toString());
+                    m_recoveryPending = true;
                 }
             }
         }
@@ -106,6 +104,8 @@ public:
         m_timer.setSingleShot(true);
 
         QObject::connect(&m_timer, &QTimer::timeout, model, [this, model]() {
+            // Do not overwrite a crashed queue before its owner decides.
+            if (m_recoveryPending) return;
             if (m_conditionDismissInitialDirtiness)
             {
                 m_conditionDismissInitialDirtiness = false;
@@ -149,10 +149,43 @@ public:
         QObject::connect(model, &T::itemsMoved, &m_timer, QOverload<>::of(&QTimer::start));
         QObject::connect(model, &T::itemsRemoved, &m_timer, QOverload<>::of(&QTimer::start));
         QObject::connect(model, &T::itemsUpdated, &m_timer, QOverload<>::of(&QTimer::start));
+        if (m_recoveryPending)
+        {
+            m_recoveryQuestion = std::make_unique<QMessageBox>(QMessageBox::Question,
+                qtr("The application closed abruptly."), recoveryPrompt,
+                QMessageBox::Yes | QMessageBox::No);
+            m_recoveryQuestion->setObjectName(QStringLiteral("modelRecoveryQuestion"));
+            m_recoveryQuestion->setDefaultButton(QMessageBox::Yes);
+            applyRedesignDialogStyle(m_recoveryQuestion.get(), intf);
+            QVLCDialog::setWindowTransientParent(m_recoveryQuestion.get(), nullptr, intf);
+            QObject::connect(m_recoveryQuestion.get(), &QDialog::finished, &m_timer,
+                [this, guardedModel = QPointer<T>(model)](int result) {
+                    if (!guardedModel || (result != QMessageBox::Yes && result != QMessageBox::No))
+                        return;
+                    m_recoveryPending = false;
+                    if (result == QMessageBox::Yes)
+                    {
+                        m_conditionDismissInitialDirtiness = true;
+                        guardedModel->append(QVariant::fromValue(QUrl::fromLocalFile(m_recoveryFileName)));
+                    }
+                });
+            // Construct the agent completely before returning to the event
+            // loop. A modal exec() here can resume after its model is gone.
+            m_recoveryQuestion->setModal(true);
+            m_recoveryQuestion->show();
+        }
+
     }
 
     ~ModelRecoveryAgent()
     {
+        if (m_recoveryQuestion)
+        {
+            QObject::disconnect(m_recoveryQuestion.get(), nullptr, &m_timer, nullptr);
+            m_recoveryQuestion.reset();
+        }
+        // Closing VLC without answering is not consent to discard recovery.
+        if (m_recoveryPending) return;
         if (!m_recoveryFileName.isEmpty())
         {
             QFile::remove(m_recoveryFileName);

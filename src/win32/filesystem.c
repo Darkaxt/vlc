@@ -497,15 +497,43 @@ int vlc_rename (const char *oldpath, const char *newpath)
     if (wold == NULL || wnew == NULL)
         goto out;
 
-    if (_wrename (wold, wnew) && (errno == EACCES || errno == EEXIST))
-    {   /* Windows does not allow atomic file replacement */
-        if (_wremove (wnew))
+    // Replace in one filesystem operation. Deleting the destination first can
+    // lose the original if the subsequent rename fails (notably config saves).
+    if (!MoveFileExW(wold, wnew, MOVEFILE_REPLACE_EXISTING))
+    {
+        switch (GetLastError())
         {
-            errno = EACCES; /* restore errno */
-            goto out;
+            case ERROR_FILE_NOT_FOUND:
+            case ERROR_PATH_NOT_FOUND:
+            case ERROR_INVALID_NAME:
+                errno = ENOENT;
+                break;
+            case ERROR_ACCESS_DENIED:
+            case ERROR_SHARING_VIOLATION:
+            case ERROR_LOCK_VIOLATION:
+                errno = EACCES;
+                break;
+            case ERROR_NOT_SAME_DEVICE:
+                errno = EXDEV;
+                break;
+            case ERROR_ALREADY_EXISTS:
+            case ERROR_FILE_EXISTS:
+                errno = EEXIST;
+                break;
+            case ERROR_DIR_NOT_EMPTY:
+                errno = ENOTEMPTY;
+                break;
+            case ERROR_DISK_FULL:
+                errno = ENOSPC;
+                break;
+            case ERROR_INVALID_PARAMETER:
+                errno = EINVAL;
+                break;
+            default:
+                errno = EIO;
+                break;
         }
-        if (_wrename (wold, wnew))
-            goto out;
+        goto out;
     }
     ret = 0;
 out:

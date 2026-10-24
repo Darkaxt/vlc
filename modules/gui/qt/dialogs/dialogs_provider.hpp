@@ -216,6 +216,7 @@ public slots:
                                               const QMessageBox::StandardButton defaultButton = QMessageBox::NoButton,
                                               const QMessageBox::Icon icon = QMessageBox::NoIcon);
     void prefsDialog();
+    void shortcutsDialog();
     void firstRunDialog();
     void extendedDialog();
     void synchroDialog();

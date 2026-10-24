@@ -299,7 +299,7 @@ static void ShowDialog   ( intf_thread_t *, int, int, intf_dialog_args_t * );
 
 static const int initial_prefs_view_list[] = { 0, 1, 2 };
 static const char *const initial_prefs_view_list_texts[] =
-    { N_("Simple"), N_("Advanced"), N_("Expert") };
+    { N_("Categories"), N_("Categories with advanced options"), N_("All settings") };
 
 static const int i_notification_list[] =
     { NOTIFICATION_NEVER, NOTIFICATION_MINIMIZED, NOTIFICATION_ALWAYS };
@@ -476,6 +476,15 @@ vlc_module_begin ()
     add_bool( "qt-pip-mode", true, PIP_MODE_TEXT, PIP_MODE_LONGTEXT )
 
     add_float_with_range( "qt-safe-area", 0, 0, 100.0, SAFE_AREA_TEXT, SAFE_AREA_LONGTEXT )
+
+    add_string_inner(CONFIG_ITEM_KEY, "qt-key-add-bookmark", N_("Add bookmark at current position"),
+            N_("Save a bookmark in VLC's media library. Existing conflicting core mappings retain priority until explicitly reassigned in Keyboard Shortcuts."), "Ctrl+Shift+b")
+    add_bool("qt-shortcut-feedback", true, N_("Show feedback for shortcuts"),
+             N_("Show an on-screen action message when a mapped playback shortcut is pressed."))
+    add_bool("qt-shortcut-feedback-key", true, N_("Include the shortcut in feedback"),
+             N_("Include the actual pressed key combination in the action message."))
+    add_integer_with_range("qt-shortcut-feedback-duration", 1500, 500, 5000,
+             N_("Show shortcut feedback for (milliseconds)"), N_("Duration of the on-screen action message."))
 
     add_string( "qt-accent-color", "default", ACCENT_COLOR_TEXT, ACCENT_COLOR_LONGTEXT )
 
@@ -1292,7 +1301,7 @@ static void *Thread( void *obj )
     p_intf->p_mainPlaylistController = new vlc::playlist::PlaylistController(p_intf->p_playlist);
 
     std::optional playlistModelRecoveryAgent = std::unique_ptr<ModelRecoveryAgent>();
-    QMetaObject::invokeMethod(&app, [&playlistModelRecoveryAgent, settings = QPointer(p_intf->mainSettings), mpc = QPointer(p_intf->p_mainPlaylistController)]() {
+    QMetaObject::invokeMethod(&app, [&playlistModelRecoveryAgent, settings = QPointer(p_intf->mainSettings), mpc = QPointer(p_intf->p_mainPlaylistController), p_intf]() {
         if (Q_UNLIKELY(!playlistModelRecoveryAgent)) // std::optional is nullopt, reset() was already called
             return;
         if (Q_UNLIKELY(!settings || !mpc))
@@ -1300,7 +1309,7 @@ static void *Thread( void *obj )
         try {
             playlistModelRecoveryAgent = std::make_unique<ModelRecoveryAgent>(settings.get(),
                                                                               QStringLiteral("Playlist"),
-                                                                              mpc.get());
+                                                                              mpc.get(), p_intf);
         } catch (...){ }
     }, Qt::QueuedConnection);
 

@@ -99,6 +99,7 @@ private slots:
     void search( const QString& );
 
     friend class PluginDialog;
+    friend class PrefsDialog;
 };
 
 class ExtensionTab : public QVLCFrame
@@ -121,12 +122,14 @@ private:
     QPushButton *butMoreInfo;
 
     friend class PluginDialog;
+    friend class PrefsDialog;
 };
 
 class AddonsTab : public QVLCFrame
 {
     Q_OBJECT
     friend class PluginDialog;
+    friend class PrefsDialog;
 
 protected:
     void keyPressEvent( QKeyEvent *keyEvent ) override;

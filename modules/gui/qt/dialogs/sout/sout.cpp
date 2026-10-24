@@ -26,6 +26,8 @@
 # include "config.h"
 #endif
 
+#include "widgets/native/redesign_style.hpp"
+
 #include "dialogs/sout/sout.hpp"
 #include "util/qt_dirs.hpp"
 #include "dialogs/sout/sout_widgets.hpp"
@@ -51,6 +53,7 @@ SoutDialog::SoutDialog( QWindow *parent, qt_intf_t *_p_intf, const QString& inpu
     QVLCDialog::setWindowTransientParent(this, parent , p_intf);
 
     /* UI stuff */
+    applyRedesignDialogStyle(this,p_intf);
     ui.setupUi( this );
     ui.inputBox->setMRL( inputChain );
     ui.helpEdit->setPlainText( qtr("This wizard will allow you to stream or "

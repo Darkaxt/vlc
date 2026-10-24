@@ -482,13 +482,19 @@ int (config_SaveConfigFile) (libvlc_int_t *p_this)
     }
     fdatasync (fd); /* Flush from OS */
 #if defined (_WIN32) || defined (__OS2__)
-    /* Windows cannot (re)move open files nor overwrite existing ones */
+    /* Close before replacement on platforms that cannot move open files. */
     fclose (file);
+#if defined (__OS2__)
     vlc_unlink (permanent);
 #endif
+#endif
     /* Atomically replace the file... */
-    if (vlc_rename (temporary, permanent))
+    const int result = vlc_rename (temporary, permanent);
+    if (result != 0)
+    {
+        msg_Err (p_this, "cannot replace configuration file: %s", vlc_strerror_c(errno));
         vlc_unlink (temporary);
+    }
     /* (...then synchronize the directory, err, TODO...) */
     /* ...and finally close the file */
     vlc_mutex_unlock (&lock);
@@ -498,7 +504,7 @@ int (config_SaveConfigFile) (libvlc_int_t *p_this)
 
     free (temporary);
     free (permanent);
-    return 0;
+    return result;
 
 error:
     free (temporary);

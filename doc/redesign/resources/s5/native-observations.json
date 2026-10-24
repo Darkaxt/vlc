@@ -1,0 +1,449 @@
+{
+  "config-save-red.json": {
+    "sha256": "1bf6e95578af09959220adf48c8a202412a4caf8dfd16685ea40dde49209b387",
+    "observation": {
+      "exit_code": 1,
+      "checks": {
+        "locked_save_reports_failure": false,
+        "locked_save_preserves_original": true,
+        "missing_source_reports_failure": false,
+        "missing_source_preserves_destination": true,
+        "retry_succeeds": true,
+        "replacement_saves_value": true
+      }
+    }
+  },
+  "config-save-green.json": {
+    "sha256": "8427ba13795281b1977619496cd6f764a44abb31887f8cdd1e15f200a8858a6d",
+    "observation": {
+      "exit_code": 0,
+      "checks": {
+        "locked_save_reports_failure": true,
+        "locked_save_preserves_original": true,
+        "missing_source_reports_failure": true,
+        "missing_source_preserves_destination": true,
+        "retry_succeeds": true,
+        "replacement_saves_value": true
+      },
+      "core_sha256": "6382f2dde1028d29ea524b83ff2f3491783f17d227b04cc5448e7deec14f57fd"
+    }
+  },
+  "qt-timer-red.json": {
+    "sha256": "3d2ab9714ef692cb482276c3d284dcae8b697b03b5a98c176c963509902e44c4",
+    "observation": {
+      "exit_code": 23,
+      "stdout": "",
+      "stderr": "FAIL: emutls frees an animation-timer owner before its destructor\n",
+      "lifetime_boundary": "Unmodified Qt6.8.3; observed real emutls storage release before QObject destruction; no memory poisoning"
+    }
+  },
+  "qt-regex-red.json": {
+    "sha256": "1ca1fc8462a3ed97404db20942d508f832cc7a405620b5b9d6a4036ffaabbf06",
+    "observation": {
+      "exit_code": 23,
+      "stdout": "",
+      "stderr": "FAIL: emutls frees a regex JIT owner before its destructor\n",
+      "scope": "Timer-fixed Qt, unmodified regex JIT cache; exact allocation observer"
+    }
+  },
+  "qt-storage-green.json": {
+    "sha256": "5dc7bad4895de0467bc5ff9ca62a5c35eba0e9604fe5edf08d390059c9217dc8",
+    "observation": {
+      "exit_code": 0,
+      "stdout": "PASS: animation timers and regex JIT stack are destroyed before thread storage release\n",
+      "stderr": "",
+      "lifetime_boundary": "Real Qt6.8.3 timers and regex JIT cache; exact native emutls allocation observer unchanged"
+    }
+  },
+  "recovery-unanswered-exit.json": {
+    "sha256": "1acf1951de30751cbbf734d5e6aaa3287e5f7f70cfd47e1b2f87aefcf18c20ab",
+    "observation": {
+      "exit": {
+        "exit_code": 0,
+        "input_desktop_unchanged": true,
+        "plugin_sha256": "ec1da9a1eba737da31712abe0be77247ad3f0ae47a7d0d7b3afd8dee0bd1a8c2"
+      },
+      "file_exists": true,
+      "hash_unchanged": true,
+      "recovery_key_retained": true,
+      "sequential_run": true
+    }
+  },
+  "final-option-coverage.json": {
+    "sha256": "6885f1ca6e5a97f0234d3c253f736886f04dc9f9dcaffaadd76de3d9eb3930ed",
+    "observation": {
+      "backend": 1755,
+      "ui": 1755,
+      "missing": [],
+      "extra": [],
+      "qt_configuration_owners": 1,
+      "module_count": 601
+    }
+  },
+  "native-v9/save-failure-acceptance.json": {
+    "sha256": "b809f9f3c810d203933dcc0974a08edd2bdf8df77127b6b473213854545eea8e",
+    "observation": {
+      "original_value": "17",
+      "retry_value": 19,
+      "locked_file_preserved": true,
+      "visible_error": true,
+      "staged_edits_retained": true,
+      "cancel_rolls_back_memory": true,
+      "retry_after_unlock": true
+    }
+  },
+  "native-v10/reset-failure-acceptance.json": {
+    "sha256": "d8d4da0d65cae5a8399a57e1d0bc58ed0fc457e572de28b941bbbb6332af3e94",
+    "observation": {
+      "native_sharing_lock": true,
+      "reset_error_visible": true,
+      "original_bytes_retained": true,
+      "memory_restored": true,
+      "cancel_reopen_value": 19
+    }
+  },
+  "native-v10/full-reset-acceptance.json": {
+    "sha256": "0a8c5c033de54aeb125e8b8ce151d86438622af1e3d534ab59eb5dc427d04f2d",
+    "observation": {
+      "cancel": true,
+      "native_default_short_jump": 10,
+      "bookmarks_unchanged": true,
+      "bookmark_count": 3,
+      "input_p_space_suppresses_playback": true,
+      "restart_remaining": true
+    }
+  },
+  "native-v10/shortcut-reset-acceptance.json": {
+    "sha256": "b47d6972134aeb0e23f436d222955b6712b2259bd30a77e2739b78c3f963eede",
+    "observation": {
+      "confirmation_cancel": true,
+      "staged_until_save": true,
+      "cancel_retains_custom_mapping": true,
+      "save_defaults": true,
+      "unrelated_short_jump_19_retained": true,
+      "restart_remaining": true
+    }
+  },
+  "native-v10/transcode-acceptance.json": {
+    "sha256": "1d292ee34316b3c89c96d29c56cf1143c34f9323afeb1c206d6b5a1466ae5bed",
+    "observation": {
+      "native_stream_ui": true,
+      "source": "Second.mkv",
+      "natural_eof": true,
+      "writer_finalized_by": "ordinary media opening closes the intentionally kept stream chain",
+      "independent_probe": {
+        "input": "E:\\Temp\\vlc-s5-20261023\\fixtures\\native-v10-transcoded.mp4",
+        "format": {
+          "filename": "E:\\Temp\\vlc-s5-20261023\\fixtures\\native-v10-transcoded.mp4",
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": 90.076322,
+          "size": 7549855,
+          "bit_rate": 670529
+        },
+        "streams": [
+          {
+            "index": 0,
+            "codec_type": "video",
+            "codec_name": "h264",
+            "width": 480,
+            "height": 270,
+            "channels": null,
+            "sample_rate": null,
+            "duration": 89.996822,
+            "bit_rate": 538657
+          },
+          {
+            "index": 1,
+            "codec_type": "audio",
+            "codec_name": "mp3",
+            "width": null,
+            "height": null,
+            "channels": 2,
+            "sample_rate": 44100,
+            "duration": 89.976508,
+            "bit_rate": 127690
+          }
+        ]
+      },
+      "output_sha256": "5b0d8ea99ff738209ac979dfe95d58a1361f0b065dbc53dbbdb3b3a1d9d173e1",
+      "reopened_output_response": "429245f423204d45b416fbc2255dc7b2.json",
+      "reopened_output_core": {
+        "audio_delay_ms": 0,
+        "audio_tracks": [
+          {
+            "id": "audio/2",
+            "language": "",
+            "name": "Track 1",
+            "selected": true
+          }
+        ],
+        "length_seconds": 90.042666,
+        "position": 0.9619268381058376,
+        "rate": 1,
+        "reverse_supported": false,
+        "seekable": true,
+        "state": 2,
+        "subtitle_delay_ms": 0,
+        "subtitle_fps": 0,
+        "subtitle_tracks": [],
+        "time_seconds": 86.61446099999999,
+        "url": "file:///E%3A/Temp/vlc-s5-20261023/fixtures/native-v10-transcoded.mp4",
+        "video_tracks": [
+          {
+            "id": "video/1",
+            "language": "",
+            "name": "Track 1",
+            "selected": true
+          }
+        ]
+      },
+      "qml_errors": [],
+      "notes": [
+        "First probe preceded kept writer closure and correctly failed",
+        "Current-task native response proves output decoding and advancing playback; later natural EOF does not invalidate it",
+        "Canceled an incorrect expectation that subsequent ordinary inputs remain paused without replaying opening"
+      ]
+    }
+  },
+  "native-v11/legacy-preferences-acceptance.json": {
+    "sha256": "a5780c4c4377687af11b2ed413704a7b3d720f81e2ca14933dbb75fc3f2dff62",
+    "observation": {
+      "initial_view_2_all_settings": true,
+      "invalid_accent_preserved_after_save": true,
+      "existing_feedback_2500": true,
+      "visible_native_range_500_5000": true,
+      "existing_core_default_conflict_wins": true,
+      "conflicting_shortcut_does_not_add_bookmark": true,
+      "initial_view_1_saved_restart_remaining": true
+    }
+  },
+  "native-v11/bookmark-isolation-acceptance.json": {
+    "sha256": "132c012abd9f21a73f929f639db57ff1b8ffc92d2f9be747411d50580f6445c0",
+    "observation": {
+      "second_media_starts_empty": true,
+      "second_media_native_add_seek_remove": true,
+      "mp4_no_chapters_message": true,
+      "original_media_three_bookmarks_retained": true,
+      "renamed_unicode_survives_full_reset_and_restart": true,
+      "native_urls_preserved": true
+    }
+  },
+  "native-v12/resume-restart-acceptance.json": {
+    "sha256": "4103d19b72b1cdb9b7259c237a5bd0ab5866e2b6de9b4aa3952eea590dee557c",
+    "observation": {
+      "continue_button": true,
+      "actual_resumed_time_seconds": 46.604333999999994,
+      "initial_advanced_view": true,
+      "actual_dpr": 1.99999999995
+    }
+  },
+  "native-v12/nonseekable-bookmark-acceptance.json": {
+    "sha256": "9b4d455564cb09c41b882deb063fb93b08508c8be32ceb5f27b8331566ef255d",
+    "observation": {
+      "core": {
+        "audio_delay_ms": 0,
+        "audio_tracks": [
+          {
+            "id": "audio/257",
+            "language": "",
+            "name": "Track 1",
+            "selected": true
+          }
+        ],
+        "length_seconds": null,
+        "position": 0,
+        "rate": 1,
+        "reverse_supported": false,
+        "seekable": false,
+        "state": 2,
+        "subtitle_delay_ms": 0,
+        "subtitle_fps": 0,
+        "subtitle_tracks": [],
+        "time_seconds": 16.454607,
+        "url": "http://127.0.0.1:1291/Live.ts",
+        "video_tracks": [
+          {
+            "id": "video/256",
+            "language": "",
+            "name": "Track 1",
+            "selected": true
+          }
+        ]
+      },
+      "add_disabled": true,
+      "explanation_visible": true
+    }
+  },
+  "native-v12/context-menu-acceptance.json": {
+    "sha256": "8cd37215590b63d11e0d6489f5e9a6f6f90a413c6a1f5bacf821be54579f2a18",
+    "observation": {
+      "menus": [
+        [
+          "&Play",
+          "&Stop",
+          "Pre&vious",
+          "Ne&xt",
+          "Record",
+          "",
+          "Hide UI\tCtrl+Shift+H",
+          "",
+          "Playback",
+          "Video",
+          "Audio",
+          "Subtitle",
+          "More Settings",
+          "",
+          "Queue\tCtrl+L",
+          "Open Media",
+          "",
+          "Quit"
+        ]
+      ],
+      "source_order": true
+    }
+  },
+  "native-v13/privacy-and-reset-start.json": {
+    "sha256": "670a31a570ef6ffae246e7ea7d3cac8d03af3fbe492d4febdce75fa9547acd37",
+    "observation": {
+      "position_before": 0.5175278782844543,
+      "no_resume_prompt": true,
+      "default_space_after_restart": true,
+      "reset_jump_default_10": true,
+      "space_in_native_text_field_suppresses_playback": true,
+      "stored_position_after": 0.5175278782844543,
+      "stored_position_unchanged": true,
+      "exit_code": 0,
+      "debugger_av_marker_absent": true
+    }
+  },
+  "native-v13/native-values-save.json": {
+    "sha256": "8a2dbd27090cba1d05e6280e877ca93b8c2b5f9d1c9e58692c453c6cda1aa14f",
+    "observation": {
+      "audio-replay-gain-preamp": "3.500000",
+      "audio-language": "eng,jpn",
+      "snapshot-path": "E:/Temp/vlc-s5-20261023/fixtures/snapshots",
+      "qt-shortcut-feedback-key": "0",
+      "qt-shortcut-feedback-duration": "2300",
+      "subsdec-encoding": "UTF-8",
+      "freetype-font": "Consolas"
+    }
+  },
+  "native-v14/native-values-restart.json": {
+    "sha256": "123f8de9555a6e75e860028ab01fd96a5742a34c45576628fac8c07eb8101ea8",
+    "observation": {
+      "observed": {
+        "audio-replay-gain-preamp": "3.50",
+        "audio-language": "eng,jpn",
+        "snapshot-path": "E:/Temp/vlc-s5-20261023/fixtures/snapshots",
+        "qt-shortcut-feedback-duration": "2300",
+        "freetype-font": "Consolas"
+      },
+      "feedback_key_false": true,
+      "encoding_utf8": true,
+      "all_passed": true
+    }
+  },
+  "native-v14/full-reset-owner-readback.json": {
+    "sha256": "769ae509573ebd20314f798aad5a0e0cf62b56c466103c0335ea022526962631",
+    "observation": {
+      "qt_settings_file": "portable/vlc/vlc-qt-interface.ini",
+      "remaining_sections": {
+        "General": {
+          "geometry": "@ByteArray(\\x1\\xd9\\x42\\0\\x1\\0\\0\\0\\0\\x1a\\0L\\0G\\0 \\0U\\0L\\0T\\0R\\0\\x41\\0G\\0\\x45\\0\\x41\\0R\\0+?\\xf8\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\rT\\0\\0\\x5\\x9f\\0\\0\\x5~\\0\\0\\x1\\xe6\\0\\0\\x5~\\0\\0\\x1\\xe6\\0\\0\\a\\xd5\\0\\0\\x3\\x89\\0\\0)"
+        }
+      },
+      "exit_code": 0
+    }
+  },
+  "native-v15/bookmark-selection-regression.json": {
+    "sha256": "84f87ddcad11eb504c0c82d9c90a87efbbe472b9a4d26373450a4e5aa6a98d57",
+    "observation": {
+      "native_count_after_add": 5,
+      "selection": 3,
+      "draft": "Unsaved draft survives native refresh",
+      "core_paused": true,
+      "retained_rows": [
+        "Review — 日本語 — long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label long bookmark label, 00:20",
+        "Bookmark at 00:45, 00:45",
+        "Bookmark at 00:00, 00:00"
+      ],
+      "qml_errors": []
+    }
+  },
+  "native-v17/no-media-library.json": {
+    "sha256": "a105bd13178f83303ae5b8e6a86c518c5e3751144baeaa0bf12459b12c6c95b0",
+    "observation": {
+      "add_disabled": true,
+      "explanation_visible": true,
+      "embedded_chapters": 3,
+      "dpr": 1.5,
+      "qml_errors": []
+    }
+  },
+  "resolved_restart_expectations": {
+    "shortcut_reset": "native-v13/privacy-and-reset-start.json",
+    "legacy_initial_view_1": "native-v12/resume-restart-acceptance.json",
+    "native_values": "native-v14/native-values-restart.json"
+  },
+  "verification_scope": {
+    "native_v11_v12_shutdown": "Functional observations remain valid; those exits failed the then-unfixed MinGW Qt TLS lifetime defect. Native-v13 through v19 exit 0 after scoped Qt patches.",
+    "wgc_offscreen": "Uniform grey surface; rejected as composed evidence. Actual QWidget captures and native geometry inspected; desktop blur pixels are not claimed.",
+    "capture_input": "App-owned native Qt events, inactive desktop; offscreen session was capture-only and never activated",
+    "native_profile_editor": "Final Inter 14/font palette and original chevrons inspected in native-v15; edits cancelled"
+  },
+  "pcr-sync-final-green.json": {
+    "sha256": "3fd04442f473298ac6cbf5d0f557bdfa089ede502e36ece3448724ae13bf621c",
+    "observation": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "binary_sha256": "246dd17b299ae98cc3a31b9882a32867cd45a833c0a49893be2382351396a066",
+      "scope": "Native late-track and pending-PCR cursor regressions plus existing PCR suite; correct companion DLLs in dedicated test directory"
+    }
+  },
+  "registry-read-red.json": {
+    "sha256": "fbe009d064a132bc8779ac0f3c9a2b0e92e4f119d67cf10de97d7a748f4e2e14",
+    "observation": {
+      "before": {
+        "key_exists": false,
+        "language_exists": false
+      },
+      "after": {
+        "key_exists": true,
+        "language_exists": false
+      },
+      "empty_key_created_by_preferences_read": true,
+      "profile_files_unchanged": true,
+      "correction": "Guard native QSettings language reads and full reset with existing read-only QVLCRegistry value lookup"
+    }
+  },
+  "native-v20/registry-read-green.json": {
+    "sha256": "a5409d9d7b8bb3350c7fa3e3573b6caef38db1b081b7c7f9e014b6cf19997d99",
+    "observation": {
+      "absent_installer_key_preserved": {
+        "startup": true,
+        "opening_general": true,
+        "cancel": true,
+        "unchanged_save": true,
+        "full_reset": true
+      },
+      "native_language": "Auto",
+      "input_desktop_unchanged": true
+    }
+  },
+  "native-v20/exit.json": {
+    "exit_code": 0,
+    "input_desktop_unchanged": true,
+    "plugin_sha256": "44cb29ea83c28c13da426778c316a2c68ae2119881b4f686b06fac0506754e7b"
+  },
+  "wsl-retirement": {
+    "unregistered": "VLC-S5-20261023",
+    "verified_base_path": "E:\\Temp\\vlc-s5-20261023\\wsl",
+    "exit_code": 0,
+    "remaining_distributions": [
+      "Ubuntu",
+      "docker-desktop"
+    ],
+    "all_other_distributions_preserved": true
+  }
+}
