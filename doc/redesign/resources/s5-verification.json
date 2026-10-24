@@ -1,12 +1,8 @@
 {
   "stage": "S5",
-  "status": "ACTIVE",
+  "status": "COMPLETE",
   "product_acceptance_verified": true,
-  "delivery_remaining": [
-    "review profile cleanup",
-    "disposable build retirement and reviewed cleanup",
-    "commit/source synchronization"
-  ],
+  "delivery_remaining": [],
   "scope_stop": "before S6",
   "normal_runtime": {
     "plugin_cache_exit": 0,
@@ -68,5 +64,59 @@
     "Actual native QWidget captures omit separate video and do not prove desktop backdrop blur pixels. Fully offscreen WGC grey frame rejected.",
     "No physical disc/capture device, every network/codec/device combination, or system-wide hotkey delivery claim. Existing native capabilities remain reachable.",
     "S6/S7 remain not started; this is a local review runtime, with no intermediate release or installation."
-  ]
+  ],
+  "cleanup": {
+    "transactions": [
+      {
+        "transaction_id": "6949e668fd74a0fc25d39ead599fb1cf",
+        "state": "applied",
+        "candidate_count": 9929,
+        "deleted_bytes": 10464516141,
+        "result_counts": {
+          "deleted": 9929
+        },
+        "errors": [],
+        "excluded_count": 0
+      },
+      {
+        "transaction_id": "7800957e55a70c7a56d6157dbd7b2660",
+        "state": "applied",
+        "candidate_count": 10,
+        "deleted_bytes": 606795,
+        "result_counts": {
+          "deleted": 10
+        },
+        "errors": [],
+        "excluded_count": 0
+      },
+      {
+        "transaction_id": "f195b842230f561ffd70c61c719c91a3",
+        "state": "applied",
+        "candidate_count": 10,
+        "deleted_bytes": 606795,
+        "result_counts": {
+          "deleted": 10
+        },
+        "errors": [],
+        "excluded_count": 0
+      }
+    ],
+    "total_members": 9949,
+    "logical_bytes": 10465729731,
+    "exact_scratch_root_absent": true,
+    "portable_empty": true,
+    "physical_free_space_claim": false,
+    "wsl": {
+      "unregistered": "VLC-S5-20261023",
+      "verified_base_path": "E:\\Temp\\vlc-s5-20261023\\wsl",
+      "exit_code": 0,
+      "remaining_distributions": [
+        "Ubuntu",
+        "docker-desktop"
+      ],
+      "all_other_distributions_preserved": true
+    }
+  },
+  "implementation_commit": "8cb127eb16689a4905822abf57d4e418b764c33d",
+  "implementation_origin_verified": true
 }
