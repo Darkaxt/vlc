@@ -1,0 +1,22 @@
+{
+  "code_commit": "b0623fbacc69efe21e1374bc8632b2cbc01b52b0",
+  "repository": "https://github.com/Darkaxt/vlc",
+  "branch": "master",
+  "git_remote_head_verified": "b0623fbacc69efe21e1374bc8632b2cbc01b52b0",
+  "independent_GitHub_readback": [
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLayoutRules.js",
+      "git_blob_sha": "70ad41355fa019825bd5a5d121f97bc9cddd54c7",
+      "url": "https://github.com/Darkaxt/vlc/blob/b0623fbacc69efe21e1374bc8632b2cbc01b52b0/modules/gui/qt/player/qml/PlayerLayoutRules.js",
+      "matched": true
+    },
+    {
+      "path": "doc/redesign/resources/s6/normal-runtime.json",
+      "git_blob_sha": "b78e7b23462e6b34ac3501545ccfa4dc9b8101b4",
+      "url": "https://github.com/Darkaxt/vlc/blob/b0623fbacc69efe21e1374bc8632b2cbc01b52b0/doc/redesign/resources/s6/normal-runtime.json",
+      "matched": true
+    }
+  ],
+  "application_source_verified": true,
+  "scope": "S6 source synchronization and verified local normal review delivery; no intermediate application release or installation. The following closure commit changes documentation/evidence only."
+}

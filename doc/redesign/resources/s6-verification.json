@@ -1,11 +1,11 @@
 {
   "stage": "S6",
-  "status": "ACTIVE",
+  "status": "COMPLETE",
   "product_acceptance_verified": true,
   "scope_stop": "before S7",
-  "closure_remaining": [
-    "verified commit and GitHub source synchronization"
-  ],
+  "closure_remaining": [],
+  "source_synchronization": "s6/source-sync.json",
+  "cleanup": "s6/cleanup.json",
   "review_runtime": "D:\\VLC-Redesign\\S6",
   "normal_runtime": {
     "plugin_cache_exit": 0,
@@ -99,9 +99,7 @@
       "behavior": "Source Figma panel/text geometry, light/dark native UI at actual DPR 1/1.5/2, keyboard/scroll/narrow/long Unicode labels, same-window native palette lifecycle, resolved assets and all nine primary-label accent contrasts; normal delivered runtime."
     }
   },
-  "advancement_blockers": [
-    "source commit/synchronization"
-  ],
+  "advancement_blockers": [],
   "tracked_deferrals": [
     {
       "owner": "S7/R61",
