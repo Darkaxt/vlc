@@ -10,9 +10,9 @@ cd /work/runtime-source
 patch --fuzz=0 -p1 < /scratch/patches/mingw-v12-process-exit.patch
 cd /work/runtime-crt-build
 /work/runtime-source/mingw-w64-crt/configure --host=x86_64-w64-mingw32 --prefix=/work/runtime-fixed --with-sysroot=/usr/x86_64-w64-mingw32 --enable-lib64 --disable-lib32 --with-default-msvcrt=msvcrt
-make -j2
+make -j1
 make install
 cd /work/runtime-pthread-build
 /work/runtime-source/mingw-w64-libraries/winpthreads/configure --host=x86_64-w64-mingw32 --prefix=/work/runtime-fixed --disable-shared --enable-static
-make -j2
+make -j1
 make install

@@ -102,6 +102,12 @@ class SettingsSwitch : public QCheckBox
     {
         setFixedSize(68, 32);
     }
+    void setAppearance(bool isDark, const QColor &color)
+    {
+        dark=isDark;
+        accent=color;
+        update();
+    }
 
   protected:
     void paintEvent(QPaintEvent *) override
@@ -408,7 +414,7 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
     search->setClearButtonEnabled(true);
     search->installEventFilter(this);
     search->addAction(QIcon(sourceMask(":/redesign/icons/search.svg", palette().text().color(),
-                                       devicePixelRatioF())), QLineEdit::LeadingPosition);
+                                       devicePixelRatioF())), QLineEdit::LeadingPosition)->setObjectName("preferencesSearchIcon");
     search->setFixedWidth(200);
     layout->addWidget(search, 0, 0);
     heading = new QLabel(qtr(categoryTitles[0]), this);
@@ -476,6 +482,7 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
         item->setData(Qt::UserRole, i);
         QIcon icon;
         const QString path = ":/redesign/icons/" + QString::fromLatin1(icons[i]) + ".svg";
+        item->setData(Qt::UserRole+1,path);
         icon.addPixmap(
             sourceMask(path, property("figmaDark").toBool() ? QColor("#8f8f8f") : QColor("#2e2e2e"),
                        devicePixelRatioF()),
@@ -557,6 +564,10 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
     }
     const QSize available = screen()->availableGeometry().size() - QSize(40, 40);
     resize(QSize(1048, 865).boundedTo(available));
+    if(intf->p_mi){
+        connect(intf->p_mi,&MainCtx::redesignAccentChanged,this,&PrefsDialog::refreshAppearance);
+        connect(intf->p_mi->getColorScheme(),&ColorSchemeModel::currentChanged,this,&PrefsDialog::refreshAppearance);
+    }
 #ifdef VLC_PLAYER_DIAGNOSTICS
     if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR") &&
         qEnvironmentVariableIntValue("VLC_PLAYER_DIAGNOSTICS_OFFSCREEN") == 1)
@@ -583,6 +594,47 @@ PrefsDialog::~PrefsDialog()
     // while values are owned by VLC and are never overwritten in this dialog.
     for (auto *config : configs)
         module_config_free(config);
+}
+void PrefsDialog::refreshAppearance()
+{
+    // Repaint existing editors without rebuilding them or losing unsaved values.
+    const bool dark=property("figmaDark").toBool();
+    const QColor foreground=palette().text().color(), accent=palette().color(QPalette::Highlight);
+    setAutoFillBackground(false);
+    setStyleSheet(styleSheet()+"PrefsDialog#redesignPreferences { background:transparent; }");
+    categories->setStyleSheet(
+        "QListWidget#preferencesCategories{padding:5px 2px;}"
+        "QListWidget#preferencesCategories::item{padding:6px 10px;}"
+        +QString("QListWidget#preferencesCategories::item:selected{color:%1;}"
+                 "QListWidget#preferencesCategories::item:disabled{color:%2;}")
+             .arg(dark?"#eaeaea":"#2e2e2e",dark?"#6b6b6b":"#676767"));
+    for(int i=0;i<categories->count();++i){
+        auto *item=categories->item(i);
+        const auto path=item->data(Qt::UserRole+1).toString();
+        if(path.isEmpty())continue;
+        QIcon icon;
+        icon.addPixmap(sourceMask(path,foreground,devicePixelRatioF()),QIcon::Normal);
+        icon.addPixmap(sourceMask(path,accent,devicePixelRatioF()),QIcon::Selected);
+        item->setIcon(icon);
+    }
+    if(auto *icon=search->findChild<QAction *>("preferencesSearchIcon"))
+        icon->setIcon(QIcon(sourceMask(":/redesign/icons/search.svg",foreground,devicePixelRatioF())));
+    if(auto *close=findChild<QPushButton *>("preferencesClose"))
+        close->setIcon(QIcon(sourceMask(":/redesign/icons/close.svg",foreground,devicePixelRatioF())));
+    for(auto *check:findChildren<QCheckBox *>())
+        if(auto *toggle=dynamic_cast<SettingsSwitch *>(check))toggle->setAppearance(dark,accent);
+    for(auto *button:findChildren<QToolButton *>()){
+        if(!button->property("redesignAccentSwatch").toBool())continue;
+        button->setStyleSheet(QString("QToolButton{background:transparent;padding:0;border:0;}"
+            "QToolButton:checked{background:%1;}QToolButton:focus{border:1px solid %2;}")
+            .arg(accent.darker(400).name(),accent.name()));
+    }
+    for(auto *button:findChildren<QPushButton *>()){
+        if(!button->objectName().startsWith("preferencesTheme"))continue;
+        button->setStyleSheet(QString("QPushButton:checked{background:%1;color:%2;}")
+            .arg(accent.darker(400).name(),accent.name()));
+    }
+    update();
 }
 void PrefsDialog::showEvent(QShowEvent *event)
 {
@@ -757,6 +809,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o)
                                   "#7633a8", "#a4347f", "#808080"})
         {
             auto *button = new QToolButton(palette);
+            button->setProperty("redesignAccentSwatch",true);
             button->setFixedSize(32, 34);
             button->setCheckable(true);
             button->setAccessibleName(qtr("Accent color %1").arg(color));

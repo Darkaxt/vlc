@@ -87,5 +87,6 @@ class PrefsDialog : public QVLCDialog
     void reset();
     void resetPreferences();
     void updateResponsiveLayout();
+    void refreshAppearance();
 };
 #endif

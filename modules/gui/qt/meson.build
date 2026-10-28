@@ -748,6 +748,13 @@ qml_modules += {
    'target' : 'player',
    'outdir' : 'VLC/Player',
    'sources': files(
+       'player/qml/PlayerLayoutControl.qml',
+       'player/qml/PlayerLayoutStrip.qml',
+       'player/qml/PlayerLayoutDrag.qml',
+       'player/qml/PlayerLayoutEditor.qml',
+       'player/qml/PlayerSetupButton.qml',
+       'player/qml/PlayerOnboarding.qml',
+       'player/qml/PlayerProfiles.qml',
        'player/qml/ControlBar.qml',
        'player/qml/PlaybackSpeed.qml',
        'player/qml/LyricsFlickable.qml',
@@ -793,6 +800,7 @@ qml_modules += {
    ),
    'singletons' : files(
        'player/qml/PlayerStyle.qml',
+       'player/qml/PlayerCustomization.qml',
        'player/qml/LibraryState.qml',
        'player/qml/PlayerControlbarControls.qml',
    )

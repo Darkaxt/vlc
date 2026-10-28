@@ -1,0 +1,974 @@
+[
+  {
+    "phase": "gate-aclocal-forced",
+    "id": "40e04503dc1e4dfc8bb8b050ac0df97e",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 34435072,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "3105705",
+      "user_usec": "2809924",
+      "system_usec": "295781",
+      "nice_usec": "0",
+      "nr_periods": "53",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 5.361312771999565
+  },
+  {
+    "phase": "gate-aclocal-recovery",
+    "id": "f3b9e3a62c394645afc6b10c86e1291a",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 54456320,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "601240",
+      "user_usec": "445222",
+      "system_usec": "156018",
+      "nice_usec": "0",
+      "nr_periods": "18",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 1.8106909740004085
+  },
+  {
+    "phase": "gate-autotools",
+    "id": "6b2a8b98b47e4e219e6c1339be4fed87",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 155099136,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "859404",
+      "user_usec": "691430",
+      "system_usec": "167974",
+      "nice_usec": "0",
+      "nr_periods": "12",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 1.1662822580001375
+  },
+  {
+    "phase": "gate-autotools-regeneration",
+    "id": "f3beb5163f8d446cbc954fde5259d516",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 156180480,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "1878587",
+      "user_usec": "1639276",
+      "system_usec": "239310",
+      "nice_usec": "0",
+      "nr_periods": "22",
+      "nr_throttled": "1",
+      "throttled_usec": "925",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 2.2337185999999747
+  },
+  {
+    "phase": "gate-baseline",
+    "id": "5fd05a7106494b0bb1769a4d0121d56f",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 137,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3592929280,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "1760946942",
+      "user_usec": "1599061272",
+      "system_usec": "161885670",
+      "nice_usec": "0",
+      "nr_periods": "19209",
+      "nr_throttled": "2144",
+      "throttled_usec": "70267358",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 1939.2962578460001
+  },
+  {
+    "phase": "gate-baseline-repaired",
+    "id": "8df4179196a3460ebc3c048d7cc57def",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3758096384,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "672",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "3848420600",
+      "user_usec": "3358657999",
+      "system_usec": "489762600",
+      "nice_usec": "0",
+      "nr_periods": "39663",
+      "nr_throttled": "2675",
+      "throttled_usec": "22557773",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 3970.892876452
+  },
+  {
+    "phase": "gate-baseline-verified",
+    "id": "29fdaee7828847e99fee4c9ff62c2c74",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3510845440,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "26595274",
+      "user_usec": "17301847",
+      "system_usec": "9293427",
+      "nice_usec": "0",
+      "nr_periods": "351",
+      "nr_throttled": "132",
+      "throttled_usec": "3781089",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 35.067965863000154
+  },
+  {
+    "phase": "gate-bootstrap-recovery",
+    "id": "85298c685169415d861ac7bca67cf0b7",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 86413312,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "1424697",
+      "user_usec": "1051956",
+      "system_usec": "372740",
+      "nice_usec": "0",
+      "nr_periods": "15",
+      "nr_throttled": "3",
+      "throttled_usec": "13907",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 1.5667918449998979
+  },
+  {
+    "phase": "gate-forced-autotools",
+    "id": "1ad8ff27f83d4742838da05af55823ba",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 87777280,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "3479024",
+      "user_usec": "3026109",
+      "system_usec": "452914",
+      "nice_usec": "0",
+      "nr_periods": "37",
+      "nr_throttled": "6",
+      "throttled_usec": "76280",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 3.7022510570000122
+  },
+  {
+    "phase": "gate-inspect",
+    "id": "ddf5e2b17a49469797d5d92dc4c810d3",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 127,
+    "effective_vm_memory_bytes": 4107378688,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 1040384,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "36269",
+      "user_usec": "0",
+      "system_usec": "36269",
+      "nice_usec": "0",
+      "nr_periods": "5",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.47352781199999994
+  },
+  {
+    "phase": "gate-inspect-chroot",
+    "id": "bf26cb551e724b73b3f70d3456745c52",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107378688,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 19156992,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "31983",
+      "user_usec": "3997",
+      "system_usec": "27985",
+      "nice_usec": "0",
+      "nr_periods": "1",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.09628117800000169
+  },
+  {
+    "phase": "gate-m4-isolation",
+    "id": "79368b61e9de48c7a559d8ddbaca2c34",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 1,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 155430912,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "551426",
+      "user_usec": "336331",
+      "system_usec": "215095",
+      "nice_usec": "0",
+      "nr_periods": "8",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.836385877000339
+  },
+  {
+    "phase": "gate-normal",
+    "id": "d33bd878dfd14ce9931ec678b2aec87c",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107378688,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3676135424,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "53068901",
+      "user_usec": "42672964",
+      "system_usec": "10395937",
+      "nice_usec": "0",
+      "nr_periods": "720",
+      "nr_throttled": "23",
+      "throttled_usec": "274086",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 72.12112358
+  },
+  {
+    "phase": "gate-player",
+    "id": "8e43a8d064754841bae8b06237cf30e6",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 2,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3710324736,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "4284627064",
+      "user_usec": "3874209850",
+      "system_usec": "410417214",
+      "nice_usec": "0",
+      "nr_periods": "43183",
+      "nr_throttled": "478",
+      "throttled_usec": "7490164",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 4324.551322791
+  },
+  {
+    "phase": "gate-player-final",
+    "id": "5df50a60d1234a19a405abbbe00125c7",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3700305920,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "664273277",
+      "user_usec": "597454809",
+      "system_usec": "66818468",
+      "nice_usec": "0",
+      "nr_periods": "7432",
+      "nr_throttled": "70",
+      "throttled_usec": "514127",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 743.491544513
+  },
+  {
+    "phase": "gate-player-v10",
+    "id": "7c61fcef344c45048d66dce622d7b721",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3675787264,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "62600047",
+      "user_usec": "51513162",
+      "system_usec": "11086885",
+      "nice_usec": "0",
+      "nr_periods": "813",
+      "nr_throttled": "19",
+      "throttled_usec": "182986",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 81.245779868
+  },
+  {
+    "phase": "gate-player-v2",
+    "id": "b6e2b1cf863841149c8cad4ed85265c7",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3686494208,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "58730278",
+      "user_usec": "48486671",
+      "system_usec": "10243606",
+      "nice_usec": "0",
+      "nr_periods": "768",
+      "nr_throttled": "26",
+      "throttled_usec": "275491",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 76.77919060800001
+  },
+  {
+    "phase": "gate-player-v3",
+    "id": "c43db0b144a44cf8a009dbb0df7f7b01",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3688153088,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "55509641",
+      "user_usec": "45319737",
+      "system_usec": "10189903",
+      "nice_usec": "0",
+      "nr_periods": "742",
+      "nr_throttled": "20",
+      "throttled_usec": "183561",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 74.185637105
+  },
+  {
+    "phase": "gate-player-v4",
+    "id": "104ffd05ab2e487ebceea8213357e2f0",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3677835264,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "64826022",
+      "user_usec": "54439731",
+      "system_usec": "10386290",
+      "nice_usec": "0",
+      "nr_periods": "828",
+      "nr_throttled": "20",
+      "throttled_usec": "256066",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 82.86680217199999
+  },
+  {
+    "phase": "gate-player-v7",
+    "id": "d5eba6d6dc53429cab786dc37667565d",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107378688,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3681611776,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "59591746",
+      "user_usec": "48620646",
+      "system_usec": "10971100",
+      "nice_usec": "0",
+      "nr_periods": "797",
+      "nr_throttled": "21",
+      "throttled_usec": "182053",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 79.774470366
+  },
+  {
+    "phase": "gate-player-v8",
+    "id": "943924ed855c4ef3bd88709da7862f1e",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107382784,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3723030528,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "60430684",
+      "user_usec": "49288036",
+      "system_usec": "11142648",
+      "nice_usec": "0",
+      "nr_periods": "822",
+      "nr_throttled": "22",
+      "throttled_usec": "191630",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 82.238393723
+  },
+  {
+    "phase": "gate-player-v9",
+    "id": "b75b0b832aba4ff1b1408d06b815366d",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107378688,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 3662282752,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "92601997",
+      "user_usec": "79837471",
+      "system_usec": "12764525",
+      "nice_usec": "0",
+      "nr_periods": "1108",
+      "nr_throttled": "17",
+      "throttled_usec": "194851",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 110.74846466199999
+  },
+  {
+    "phase": "gate-prebuilt-inspect",
+    "id": "c84c291c83194d809c3623202611432c",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 134,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 25722880,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "58144",
+      "user_usec": "7268",
+      "system_usec": "50876",
+      "nice_usec": "0",
+      "nr_periods": "2",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.18598360100008904
+  },
+  {
+    "phase": "gate-prebuilt-repair",
+    "id": "8a0526e75f634e828189bf68020dfe6b",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 695099392,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "14270580",
+      "user_usec": "6018462",
+      "system_usec": "8252118",
+      "nice_usec": "0",
+      "nr_periods": "696",
+      "nr_throttled": "46",
+      "throttled_usec": "317873",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 69.67159336099985
+  },
+  {
+    "phase": "gate-wine-environment",
+    "id": "88332d9445e1403089e4d2e54d914ec6",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 19881984,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "37899",
+      "user_usec": "11369",
+      "system_usec": "26529",
+      "nice_usec": "0",
+      "nr_periods": "1",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.09741392399996585
+  },
+  {
+    "phase": "gate-wine-inspect",
+    "id": "474c63a69053410794198f69a756c622",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 2,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 8126464,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "8167",
+      "user_usec": "0",
+      "system_usec": "8167",
+      "nice_usec": "0",
+      "nr_periods": "1",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.04210793100014598
+  },
+  {
+    "phase": "gate-wine-options",
+    "id": "ae3e020e9013424a8562921a07dab07f",
+    "populated": false,
+    "command_started": true,
+    "exit_code": 0,
+    "effective_vm_memory_bytes": 4107374592,
+    "effective_limits": {
+      "memory.max": "3758096384",
+      "memory.swap.max": "536870912",
+      "cpu.max": "100000 100000",
+      "pids.max": "256",
+      "memory.oom.group": "1"
+    },
+    "peak_memory_bytes": 27557888,
+    "memory_events": {
+      "low": "0",
+      "high": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_kill": "0",
+      "oom_group_kill": "0"
+    },
+    "cpu": {
+      "usage_usec": "58439",
+      "user_usec": "3246",
+      "system_usec": "55193",
+      "nice_usec": "0",
+      "nr_periods": "1",
+      "nr_throttled": "0",
+      "throttled_usec": "0",
+      "nr_bursts": "0",
+      "burst_usec": "0"
+    },
+    "seconds": 0.1495017160000316
+  }
+]

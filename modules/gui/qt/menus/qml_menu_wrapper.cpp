@@ -36,6 +36,9 @@
 #include <QScreen>
 #include <QActionGroup>
 #include <QAbstractProxyModel>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 namespace
 {
@@ -282,6 +285,28 @@ void QmlGlobalMenu::popup(QPoint pos)
 
     submenu = m_menu->addMenu(qtr( "Tool&s" ));
     ToolsMenu( p_intf, submenu );
+
+    // Render the stored catalog only; the QML presentation owner applies all
+    // profile validation, setting coverage and mutations through real actions.
+    const auto raw=m_ctx->settingValue(QStringLiteral("redesign/customization-v1"),QString()).toString();
+    const auto store=raw.size()<=262144?QJsonDocument::fromJson(raw.toUtf8()).object():QJsonObject();
+    const auto selected=store.value(QStringLiteral("selected")).toString();
+    auto *profiles=m_menu->addMenu(selected.isEmpty()?qtr("Profile"):qtr("Profile (%1)").arg(QString(selected).replace('&',QStringLiteral("&&"))));
+    const auto saved=store.value(QStringLiteral("profiles")).toArray();
+    if(saved.size()<=32)for(const auto &item:saved){
+        const auto name=item.toObject().value(QStringLiteral("name")).toString();
+        if(name.isEmpty()||name.size()>128)continue;
+        auto *action=profiles->addAction(QString(name).replace('&',QStringLiteral("&&")));action->setCheckable(true);action->setChecked(name==selected);
+        connect(action,&QAction::triggered,m_ctx,[ctx=m_ctx,name](){emit ctx->playerProfileSelected(name);});
+    }
+    profiles->addSeparator();
+    connect(profiles->addAction(qtr("New / Manage Profiles…")),&QAction::triggered,m_ctx,&MainCtx::playerProfilesRequested);
+    auto *saveProfile=profiles->addAction(qtr("Save Current Profile"));saveProfile->setEnabled(!selected.isEmpty());
+    connect(saveProfile,&QAction::triggered,m_ctx,&MainCtx::playerProfileSaveRequested);
+    auto *restoreProfile=profiles->addAction(qtr("Restore Saved Profile"));restoreProfile->setEnabled(!selected.isEmpty());
+    connect(restoreProfile,&QAction::triggered,m_ctx,[ctx=m_ctx,selected](){emit ctx->playerProfileSelected(selected);});
+    connect(m_menu->addAction(qtr("Customize Player…")),&QAction::triggered,m_ctx,&MainCtx::customizePlayerRequested);
+    connect(m_menu->addAction(qtr("Welcome / Appearance Setup…")),&QAction::triggered,m_ctx,&MainCtx::requestPlayerOnboarding);
 
     /* View menu, a bit different */
     submenu = m_menu->addMenu(qtr( "V&iew" ));

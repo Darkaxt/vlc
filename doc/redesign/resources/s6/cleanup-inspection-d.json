@@ -1,0 +1,713 @@
+{
+  "transaction": "6d4725546ee6f1a572f441b4e7c628d9",
+  "root": "D:\\Temp\\vlc-s6-20261028",
+  "state": "reviewed",
+  "all_signed_members_inspected": true,
+  "total": 5197,
+  "decisions": {
+    "candidate": 5197
+  },
+  "extensions": {
+    "<directory>": 164,
+    ".py": 52,
+    ".log": 147,
+    ".c": 4,
+    ".pro": 1,
+    ".cpp": 3,
+    ".txt": 30,
+    ".md": 3,
+    ".ico": 2,
+    ".exe": 6,
+    ".xml": 8,
+    ".dtd": 1,
+    ".catalog": 1,
+    ".ttf": 2,
+    ".vlt": 1,
+    ".pc": 2,
+    ".lib": 2,
+    ".a": 2,
+    ".h": 122,
+    ".hpp": 2,
+    ".dll": 411,
+    ".jar": 2,
+    ".luac": 40,
+    ".html": 17,
+    ".json": 2508,
+    ".js": 4,
+    ".png": 158,
+    ".lua": 1,
+    ".css": 3,
+    ".sofa": 1,
+    ".sh": 35,
+    ".tar": 10,
+    ".patch": 1,
+    ".stdout": 3,
+    ".stderr": 3,
+    ".qmlc": 260,
+    ".jsc": 33,
+    ".out": 1,
+    ".in": 1,
+    ".mkv": 1,
+    ".ready": 1148,
+    "": 1
+  },
+  "top_level_examples": {
+    ".": [
+      "."
+    ],
+    "verify.py": [
+      "verify.py"
+    ],
+    "verify-restart.py": [
+      "verify-restart.py"
+    ],
+    "verify-player-runtime.py": [
+      "verify-player-runtime.py"
+    ],
+    "verify-player-capture.py": [
+      "verify-player-capture.py"
+    ],
+    "verify-overlay.py": [
+      "verify-overlay.py"
+    ],
+    "verify-ml-folder.py": [
+      "verify-ml-folder.py"
+    ],
+    "upnp.log": [
+      "upnp.log"
+    ],
+    "upnp-url-check.c": [
+      "upnp-url-check.c"
+    ],
+    "update-s6-checkpoint.py": [
+      "update-s6-checkpoint.py"
+    ],
+    "subtitle-data-check.pro": [
+      "subtitle-data-check.pro"
+    ],
+    "subtitle-data-check.cpp": [
+      "subtitle-data-check.cpp"
+    ],
+    "stop-s6-distro.py": [
+      "stop-s6-distro.py"
+    ],
+    "stop-s6-command.txt": [
+      "stop-s6-command.txt"
+    ],
+    "static-runtime.log": [
+      "static-runtime.log"
+    ],
+    "stage-player.py": [
+      "stage-player.py"
+    ],
+    "stage-final-overlay.py": [
+      "stage-final-overlay.py"
+    ],
+    "stage-downloads.py": [
+      "stage-downloads.py"
+    ],
+    "selected-crt.log": [
+      "selected-crt.log"
+    ],
+    "s6_ui.py": [
+      "s6_ui.py"
+    ],
+    "s6-verified-checkpoint.md": [
+      "s6-verified-checkpoint.md"
+    ],
+    "s6-geometry.py": [
+      "s6-geometry.py"
+    ],
+    "runtime-repair.log": [
+      "runtime-repair.log"
+    ],
+    "runtime": [
+      "runtime",
+      "runtime\\vlc.ico",
+      "runtime\\vlc.exe"
+    ],
+    "run-presentation-matrix.py": [
+      "run-presentation-matrix.py"
+    ],
+    "run-native-timer.py": [
+      "run-native-timer.py"
+    ],
+    "run-in-toolchain.sh": [
+      "run-in-toolchain.sh"
+    ],
+    "retire-s6-registration.py": [
+      "retire-s6-registration.py"
+    ],
+    "retire-registration-command.txt": [
+      "retire-registration-command.txt"
+    ],
+    "resume-verified-baseline.sh": [
+      "resume-verified-baseline.sh"
+    ],
+    "resume-baseline.sh": [
+      "resume-baseline.sh"
+    ],
+    "repair-prebuilt.sh": [
+      "repair-prebuilt.sh"
+    ],
+    "relink-static-runtime.sh": [
+      "relink-static-runtime.sh"
+    ],
+    "regenerate-autotools.sh": [
+      "regenerate-autotools.sh"
+    ],
+    "recovery-command.txt": [
+      "recovery-command.txt"
+    ],
+    "rebuild-upnp.sh": [
+      "rebuild-upnp.sh"
+    ],
+    "rebuild-qt-timers.sh": [
+      "rebuild-qt-timers.sh"
+    ],
+    "rebuild-qt-network.sh": [
+      "rebuild-qt-network.sh"
+    ],
+    "read-s6-response.py": [
+      "read-s6-response.py"
+    ],
+    "read-onboarding-metrics.py": [
+      "read-onboarding-metrics.py"
+    ],
+    "read-editor-metrics.py": [
+      "read-editor-metrics.py"
+    ],
+    "qt-timers.log": [
+      "qt-timers.log"
+    ],
+    "qt-timer-check.cpp": [
+      "qt-timer-check.cpp"
+    ],
+    "qt-timer-check-build.log": [
+      "qt-timer-check-build.log"
+    ],
+    "qt-relink.log": [
+      "qt-relink.log"
+    ],
+    "qt-network.log": [
+      "qt-network.log"
+    ],
+    "prepare-runtime.sh": [
+      "prepare-runtime.sh"
+    ],
+    "prepare-runtime-crt.sh": [
+      "prepare-runtime-crt.sh"
+    ],
+    "prepare-review.py": [
+      "prepare-review.py"
+    ],
+    "prepare-review-command.txt": [
+      "prepare-review-command.txt"
+    ],
+    "prepare-native.py": [
+      "prepare-native.py"
+    ],
+    "prepare-design.py": [
+      "prepare-design.py"
+    ],
+    "player-runtime-v9-overlay.tar": [
+      "player-runtime-v9-overlay.tar"
+    ],
+    "player-runtime-v9-build.log": [
+      "player-runtime-v9-build.log"
+    ],
+    "player-runtime-v8-overlay.tar": [
+      "player-runtime-v8-overlay.tar"
+    ],
+    "player-runtime-v8-build.log": [
+      "player-runtime-v8-build.log"
+    ],
+    "player-runtime-v7-overlay.tar": [
+      "player-runtime-v7-overlay.tar"
+    ],
+    "player-runtime-v7-build.log": [
+      "player-runtime-v7-build.log"
+    ],
+    "player-runtime-v6-overlay.tar": [
+      "player-runtime-v6-overlay.tar"
+    ],
+    "player-runtime-v4-overlay.tar": [
+      "player-runtime-v4-overlay.tar"
+    ],
+    "player-runtime-v4-build.log": [
+      "player-runtime-v4-build.log"
+    ],
+    "player-runtime-v3-overlay.tar": [
+      "player-runtime-v3-overlay.tar"
+    ],
+    "player-runtime-v3-build.log": [
+      "player-runtime-v3-build.log"
+    ],
+    "player-runtime-v2-overlay.tar": [
+      "player-runtime-v2-overlay.tar"
+    ],
+    "player-runtime-v2-build.log": [
+      "player-runtime-v2-build.log"
+    ],
+    "player-runtime-v10-overlay.tar": [
+      "player-runtime-v10-overlay.tar"
+    ],
+    "player-runtime-v10-build.log": [
+      "player-runtime-v10-build.log"
+    ],
+    "player-overlay.tar": [
+      "player-overlay.tar"
+    ],
+    "player-normal-build.log": [
+      "player-normal-build.log"
+    ],
+    "player-final-overlay.tar": [
+      "player-final-overlay.tar"
+    ],
+    "player-final-build.log": [
+      "player-final-build.log"
+    ],
+    "player-configure.log": [
+      "player-configure.log"
+    ],
+    "player-build.log": [
+      "player-build.log"
+    ],
+    "playback-check.c": [
+      "playback-check.c"
+    ],
+    "pending-connect-peer.py": [
+      "pending-connect-peer.py"
+    ],
+    "patches": [
+      "patches",
+      "patches\\README.md",
+      "patches\\mingw-v12-process-exit.patch"
+    ],
+    "onboarding-recovery-command.txt": [
+      "onboarding-recovery-command.txt"
+    ],
+    "normal-check": [
+      "normal-check",
+      "normal-check\\tmp",
+      "normal-check\\evidence"
+    ],
+    "native-tmp": [
+      "native-tmp"
+    ],
+    "native-outputs": [
+      "native-outputs"
+    ],
+    "native-cache": [
+      "native-cache",
+      "native-cache\\recovery-wrong-type-v2-readback",
+      "native-cache\\recovery-wrong-type-v2-readback\\ecab5d70fe61c58c19157eb8dc67b34c49531914.qmlc"
+    ],
+    "measure-vhd-retirement.py": [
+      "measure-vhd-retirement.py"
+    ],
+    "m4-smoke.out": [
+      "m4-smoke.out"
+    ],
+    "m4-smoke.in": [
+      "m4-smoke.in"
+    ],
+    "link-fixed-qt.py": [
+      "link-fixed-qt.py"
+    ],
+    "launch-s6.py": [
+      "launch-s6.py"
+    ],
+    "isolated_desktop.py": [
+      "isolated_desktop.py"
+    ],
+    "inventory.c": [
+      "inventory.c"
+    ],
+    "install-icons.py": [
+      "install-icons.py"
+    ],
+    "inspect-toolchain.sh": [
+      "inspect-toolchain.sh"
+    ],
+    "inspect-qt-palette.sh": [
+      "inspect-qt-palette.sh"
+    ],
+    "inspect-prebuilt.sh": [
+      "inspect-prebuilt.sh"
+    ],
+    "inspect-player.py": [
+      "inspect-player.py"
+    ],
+    "inspect-old-design-cleanup.py": [
+      "inspect-old-design-cleanup.py"
+    ],
+    "inspect-native-windows.py": [
+      "inspect-native-windows.py"
+    ],
+    "inspect-inventory.py": [
+      "inspect-inventory.py"
+    ],
+    "inspect-generator-inputs.sh": [
+      "inspect-generator-inputs.sh"
+    ],
+    "inspect-final-cleanup.py": [
+      "inspect-final-cleanup.py"
+    ],
+    "inspect-design-cleanup.py": [
+      "inspect-design-cleanup.py"
+    ],
+    "inspect-control-failure.py": [
+      "inspect-control-failure.py"
+    ],
+    "inspect-autotools.sh": [
+      "inspect-autotools.sh"
+    ],
+    "gate-wine-options": [
+      "gate-wine-options",
+      "gate-wine-options\\ae3e020e9013424a8562921a07dab07f-result.json",
+      "gate-wine-options\\ae3e020e9013424a8562921a07dab07f-request.json"
+    ],
+    "gate-wine-inspect": [
+      "gate-wine-inspect",
+      "gate-wine-inspect\\474c63a69053410794198f69a756c622-result.json",
+      "gate-wine-inspect\\474c63a69053410794198f69a756c622-request.json"
+    ],
+    "gate-wine-environment": [
+      "gate-wine-environment",
+      "gate-wine-environment\\88332d9445e1403089e4d2e54d914ec6-result.json",
+      "gate-wine-environment\\88332d9445e1403089e4d2e54d914ec6-request.json"
+    ],
+    "gate-prebuilt-repair": [
+      "gate-prebuilt-repair",
+      "gate-prebuilt-repair\\8a0526e75f634e828189bf68020dfe6b-result.json",
+      "gate-prebuilt-repair\\8a0526e75f634e828189bf68020dfe6b-request.json"
+    ],
+    "gate-prebuilt-inspect": [
+      "gate-prebuilt-inspect",
+      "gate-prebuilt-inspect\\c84c291c83194d809c3623202611432c-result.json",
+      "gate-prebuilt-inspect\\c84c291c83194d809c3623202611432c-request.json"
+    ],
+    "gate-player-v9": [
+      "gate-player-v9",
+      "gate-player-v9\\b75b0b832aba4ff1b1408d06b815366d-result.json",
+      "gate-player-v9\\b75b0b832aba4ff1b1408d06b815366d-request.json"
+    ],
+    "gate-player-v8": [
+      "gate-player-v8",
+      "gate-player-v8\\943924ed855c4ef3bd88709da7862f1e-result.json",
+      "gate-player-v8\\943924ed855c4ef3bd88709da7862f1e-request.json"
+    ],
+    "gate-player-v7": [
+      "gate-player-v7",
+      "gate-player-v7\\d5eba6d6dc53429cab786dc37667565d-result.json",
+      "gate-player-v7\\d5eba6d6dc53429cab786dc37667565d-request.json"
+    ],
+    "gate-player-v4": [
+      "gate-player-v4",
+      "gate-player-v4\\104ffd05ab2e487ebceea8213357e2f0-result.json",
+      "gate-player-v4\\104ffd05ab2e487ebceea8213357e2f0-request.json"
+    ],
+    "gate-player-v3": [
+      "gate-player-v3",
+      "gate-player-v3\\c43db0b144a44cf8a009dbb0df7f7b01-result.json",
+      "gate-player-v3\\c43db0b144a44cf8a009dbb0df7f7b01-request.json"
+    ],
+    "gate-player-v2": [
+      "gate-player-v2",
+      "gate-player-v2\\b6e2b1cf863841149c8cad4ed85265c7-result.json",
+      "gate-player-v2\\b6e2b1cf863841149c8cad4ed85265c7-request.json"
+    ],
+    "gate-player-v10": [
+      "gate-player-v10",
+      "gate-player-v10\\7c61fcef344c45048d66dce622d7b721-result.json",
+      "gate-player-v10\\7c61fcef344c45048d66dce622d7b721-request.json"
+    ],
+    "gate-player-final": [
+      "gate-player-final",
+      "gate-player-final\\5df50a60d1234a19a405abbbe00125c7-result.json",
+      "gate-player-final\\5df50a60d1234a19a405abbbe00125c7-request.json"
+    ],
+    "gate-player": [
+      "gate-player",
+      "gate-player\\8e43a8d064754841bae8b06237cf30e6-result.json",
+      "gate-player\\8e43a8d064754841bae8b06237cf30e6-request.json"
+    ],
+    "gate-normal": [
+      "gate-normal",
+      "gate-normal\\d33bd878dfd14ce9931ec678b2aec87c-result.json",
+      "gate-normal\\d33bd878dfd14ce9931ec678b2aec87c-request.json"
+    ],
+    "gate-m4-isolation": [
+      "gate-m4-isolation",
+      "gate-m4-isolation\\79368b61e9de48c7a559d8ddbaca2c34-result.json",
+      "gate-m4-isolation\\79368b61e9de48c7a559d8ddbaca2c34-request.json"
+    ],
+    "gate-inspect-chroot": [
+      "gate-inspect-chroot",
+      "gate-inspect-chroot\\bf26cb551e724b73b3f70d3456745c52-result.json",
+      "gate-inspect-chroot\\bf26cb551e724b73b3f70d3456745c52-request.json"
+    ],
+    "gate-inspect": [
+      "gate-inspect",
+      "gate-inspect\\ddf5e2b17a49469797d5d92dc4c810d3-result.json",
+      "gate-inspect\\ddf5e2b17a49469797d5d92dc4c810d3-request.json"
+    ],
+    "gate-forced-autotools": [
+      "gate-forced-autotools",
+      "gate-forced-autotools\\1ad8ff27f83d4742838da05af55823ba-result.json",
+      "gate-forced-autotools\\1ad8ff27f83d4742838da05af55823ba-request.json"
+    ],
+    "gate-bootstrap-recovery": [
+      "gate-bootstrap-recovery",
+      "gate-bootstrap-recovery\\85298c685169415d861ac7bca67cf0b7-result.json",
+      "gate-bootstrap-recovery\\85298c685169415d861ac7bca67cf0b7-request.json"
+    ],
+    "gate-baseline-verified": [
+      "gate-baseline-verified",
+      "gate-baseline-verified\\29fdaee7828847e99fee4c9ff62c2c74-result.json",
+      "gate-baseline-verified\\29fdaee7828847e99fee4c9ff62c2c74-request.json"
+    ],
+    "gate-baseline-repaired": [
+      "gate-baseline-repaired",
+      "gate-baseline-repaired\\8df4179196a3460ebc3c048d7cc57def-result.json",
+      "gate-baseline-repaired\\8df4179196a3460ebc3c048d7cc57def-request.json"
+    ],
+    "gate-baseline": [
+      "gate-baseline",
+      "gate-baseline\\5fd05a7106494b0bb1769a4d0121d56f-result.json",
+      "gate-baseline\\5fd05a7106494b0bb1769a4d0121d56f-request.json"
+    ],
+    "gate-autotools-regeneration": [
+      "gate-autotools-regeneration",
+      "gate-autotools-regeneration\\f3beb5163f8d446cbc954fde5259d516-result.json",
+      "gate-autotools-regeneration\\f3beb5163f8d446cbc954fde5259d516-request.json"
+    ],
+    "gate-autotools": [
+      "gate-autotools",
+      "gate-autotools\\6b2a8b98b47e4e219e6c1339be4fed87-result.json",
+      "gate-autotools\\6b2a8b98b47e4e219e6c1339be4fed87-request.json"
+    ],
+    "gate-aclocal-recovery": [
+      "gate-aclocal-recovery",
+      "gate-aclocal-recovery\\f3b9e3a62c394645afc6b10c86e1291a-result.json",
+      "gate-aclocal-recovery\\f3b9e3a62c394645afc6b10c86e1291a-request.json"
+    ],
+    "gate-aclocal-forced": [
+      "gate-aclocal-forced",
+      "gate-aclocal-forced\\40e04503dc1e4dfc8bb8b050ac0df97e-result.json",
+      "gate-aclocal-forced\\40e04503dc1e4dfc8bb8b050ac0df97e-request.json"
+    ],
+    "fixtures": [
+      "fixtures",
+      "fixtures\\S6 sample.mkv",
+      "fixtures\\excluded-child"
+    ],
+    "finish-profiles.py": [
+      "finish-profiles.py"
+    ],
+    "finish-profiles-v2.py": [
+      "finish-profiles-v2.py"
+    ],
+    "finish-native-appearance.py": [
+      "finish-native-appearance.py"
+    ],
+    "finish-evidence-summary.py": [
+      "finish-evidence-summary.py"
+    ],
+    "exercise-recovery.py": [
+      "exercise-recovery.py"
+    ],
+    "exercise-profiles.py": [
+      "exercise-profiles.py"
+    ],
+    "exercise-presentation.py": [
+      "exercise-presentation.py"
+    ],
+    "exercise-onboarding.py": [
+      "exercise-onboarding.py"
+    ],
+    "exercise-onboarding-recovery.py": [
+      "exercise-onboarding-recovery.py"
+    ],
+    "exercise-native-appearance.py": [
+      "exercise-native-appearance.py"
+    ],
+    "exercise-layout.py": [
+      "exercise-layout.py"
+    ],
+    "exercise-empty-layout.py": [
+      "exercise-empty-layout.py"
+    ],
+    "exercise-drag-removal.py": [
+      "exercise-drag-removal.py"
+    ],
+    "exercise-accent-contrast.py": [
+      "exercise-accent-contrast.py"
+    ],
+    "evidence": [
+      "evidence",
+      "evidence\\wsl-stopped.json",
+      "evidence\\vhd-retirement-before.json"
+    ],
+    "diagnose-wine.sh": [
+      "diagnose-wine.sh"
+    ],
+    "diagnose-wine-outer.sh": [
+      "diagnose-wine-outer.sh"
+    ],
+    "curate-evidence.py": [
+      "curate-evidence.py"
+    ],
+    "configure-player.py": [
+      "configure-player.py"
+    ],
+    "config-save-check.c": [
+      "config-save-check.c"
+    ],
+    "cleanup-vhd-command.txt": [
+      "cleanup-vhd-command.txt"
+    ],
+    "cleanup-review-profile-command.txt": [
+      "cleanup-review-profile-command.txt"
+    ],
+    "cleanup-portable-command.txt": [
+      "cleanup-portable-command.txt"
+    ],
+    "cleanup-native-timer-command.txt": [
+      "cleanup-native-timer-command.txt"
+    ],
+    "cleanup-downloads-command.txt": [
+      "cleanup-downloads-command.txt"
+    ],
+    "cleanup-archive-command.txt": [
+      "cleanup-archive-command.txt"
+    ],
+    "capture-player-window.cpp": [
+      "capture-player-window.cpp"
+    ],
+    "cancel-pristine-relink.py": [
+      "cancel-pristine-relink.py"
+    ],
+    "cancel-pristine-relink-command.txt": [
+      "cancel-pristine-relink-command.txt"
+    ],
+    "build.sh": [
+      "build.sh"
+    ],
+    "build-s6.sh": [
+      "build-s6.sh"
+    ],
+    "build-s6-command.txt": [
+      "build-s6-command.txt"
+    ],
+    "build-runtime-v9.sh": [
+      "build-runtime-v9.sh"
+    ],
+    "build-runtime-v9-command.txt": [
+      "build-runtime-v9-command.txt"
+    ],
+    "build-runtime-v8.sh": [
+      "build-runtime-v8.sh"
+    ],
+    "build-runtime-v8-command.txt": [
+      "build-runtime-v8-command.txt"
+    ],
+    "build-runtime-v7.sh": [
+      "build-runtime-v7.sh"
+    ],
+    "build-runtime-v7-command.txt": [
+      "build-runtime-v7-command.txt"
+    ],
+    "build-runtime-v6.sh": [
+      "build-runtime-v6.sh"
+    ],
+    "build-runtime-v6-command.txt": [
+      "build-runtime-v6-command.txt"
+    ],
+    "build-runtime-v4.sh": [
+      "build-runtime-v4.sh"
+    ],
+    "build-runtime-v4-command.txt": [
+      "build-runtime-v4-command.txt"
+    ],
+    "build-runtime-v3.sh": [
+      "build-runtime-v3.sh"
+    ],
+    "build-runtime-v3-command.txt": [
+      "build-runtime-v3-command.txt"
+    ],
+    "build-runtime-v2.sh": [
+      "build-runtime-v2.sh"
+    ],
+    "build-runtime-v2-command.txt": [
+      "build-runtime-v2-command.txt"
+    ],
+    "build-runtime-v10.sh": [
+      "build-runtime-v10.sh"
+    ],
+    "build-runtime-v10-command.txt": [
+      "build-runtime-v10-command.txt"
+    ],
+    "build-qt-timer-check.sh": [
+      "build-qt-timer-check.sh"
+    ],
+    "build-player.sh": [
+      "build-player.sh"
+    ],
+    "build-normal-s6.sh": [
+      "build-normal-s6.sh"
+    ],
+    "build-normal-command.txt": [
+      "build-normal-command.txt"
+    ],
+    "build-final-diagnostics.sh": [
+      "build-final-diagnostics.sh"
+    ],
+    "build-final-command.txt": [
+      "build-final-command.txt"
+    ],
+    "build-checks.sh": [
+      "build-checks.sh"
+    ],
+    "bootstrap-regenerated.log": [
+      "bootstrap-regenerated.log"
+    ],
+    "bootstrap-regenerated-forced.log": [
+      "bootstrap-regenerated-forced.log"
+    ],
+    "bootstrap-outer.sh": [
+      "bootstrap-outer.sh"
+    ],
+    "bootstrap-baseline.sh": [
+      "bootstrap-baseline.sh"
+    ],
+    "baseline-verified-cache.log": [
+      "baseline-verified-cache.log"
+    ],
+    "baseline-resumed.log": [
+      "baseline-resumed.log"
+    ],
+    "baseline-checks-build.log": [
+      "baseline-checks-build.log"
+    ],
+    "autom4te-force": [
+      "autom4te-force"
+    ],
+    "autoconf-verbose.log": [
+      "autoconf-verbose.log"
+    ],
+    "aclocal-regenerated.log": [
+      "aclocal-regenerated.log"
+    ],
+    "aclocal-forced.log": [
+      "aclocal-forced.log"
+    ],
+    "abort-known-assertion-command.txt": [
+      "abort-known-assertion-command.txt"
+    ]
+  },
+  "exclusions": [],
+  "unexpected": [],
+  "unique_identities": 5197
+}

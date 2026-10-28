@@ -7,6 +7,12 @@ import { fileURLToPath } from 'node:url';
 import { decode, expandSelection, resolveStyleReferences, hash, id } from './export.mjs';
 
 export const icons = [
+  ['45:22', 'forward10'], ['45:28', 'backward10'],
+  ['45:32', 'forward15'], ['45:36', 'backward15'],
+  ['1919:9572', 'replay'], ['2115:7386', 'speed'],
+  ['2115:7492', 'snapshot'], ['2127:7779', 'bookmark'],
+  ['2146:9032', 'hdr'], ['2154:9680', 'zoom'], ['6073:14046', 'quit'],
+  ['2139:8439', 'pip'],
   ['2437:14888', 'edit'],
   ['2139:8985', 'settings-info'], ['1803:2957', 'settings-general'], ['999:4960', 'settings-interface'],
   ['3046:10386', 'settings-privacy'], ['1089:4450', 'settings-controls'],
@@ -97,6 +103,19 @@ export function extractPlayerAssets(destination) {
         if (!blob?.bytes) throw new Error('Missing saved path geometry');
         const opacity = (paint.opacity ?? 1) * (paint.color?.a ?? 1);
         paths.push(`<path fill="white" fill-opacity="${opacity}" fill-rule="${geometryPath.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`);
+      }
+    }
+    // Text-bearing S6 icons retain the original outlined glyph blobs too.
+    // Their coordinates are em-normalized, Y-up from the saved baseline.
+    // Use those bytes/positions instead of substituting or shaping a font.
+    if(node.type==='TEXT' && !paths.length){
+      const glyphs=node.derivedTextData?.glyphs;
+      const paints=(node.fillPaints??[]).filter(p=>p.visible!==false&&(p.opacity??1)!==0);
+      if(!glyphs?.length||paints.some(p=>p.type!=='SOLID'))throw new Error(`Missing supported saved glyph outlines: ${node.name}`);
+      for(const glyph of glyphs){
+        const blob=document.blobs[glyph.commandsBlob-(document.blobBaseIndex??0)];
+        if(!blob?.bytes||(glyph.rotation??0)!==0||!Number.isFinite(glyph.fontSize))throw new Error(`Unsupported saved glyph: ${node.name}`);
+        for(const paint of paints)paths.push(`<path fill="white" fill-opacity="${(paint.opacity??1)*(paint.color?.a??1)}" transform="translate(${glyph.position.x} ${glyph.position.y}) scale(${glyph.fontSize} ${-glyph.fontSize})" d="${pathCommands(blob.bytes)}"/>`);
       }
     }
     // Figma saves the final boolean outline; its children are construction

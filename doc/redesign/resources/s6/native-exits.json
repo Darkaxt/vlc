@@ -1,0 +1,162 @@
+[
+  {
+    "case": "native-v1",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v10",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v11",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v12",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v13",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v2",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v3",
+    "exit_code": 3,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v4",
+    "exit_code": 3,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v5",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v6",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v7",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v8",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "native-v9",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-core-write-retry",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-core-write-retry-full-size",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-excluded-folder-full-size",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-first-skip-full-size",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-interface-write-retry-full-size",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-invalid-folder-full-size",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "onboarding-skip-restart-full-size",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-malformed",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-missing-v2",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-missing-v2-readback",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-newer",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-oversized",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-oversized-v2",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-oversized-v2-readback",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-present-empty-v2",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-present-empty-v2-readback",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-write-retry",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-wrong-type-v2",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  },
+  {
+    "case": "recovery-wrong-type-v2-readback",
+    "exit_code": 0,
+    "input_desktop_preserved": true
+  }
+]

@@ -1,0 +1,158 @@
+{
+  "transaction": "cf0427be7df6d126babf5852f95ac292",
+  "root": "E:\\Temp\\vlc-s6-20261025",
+  "state": "reviewed",
+  "all_signed_members_inspected": true,
+  "total": 714,
+  "decisions": {
+    "candidate": 714
+  },
+  "extensions": {
+    "<directory>": 41,
+    ".py": 7,
+    ".exe": 1,
+    "": 592,
+    ".json": 33,
+    ".txt": 7,
+    ".sh": 7,
+    ".mjs": 3,
+    ".c": 2,
+    ".md": 1,
+    ".patch": 1,
+    ".ps1": 2,
+    ".stdout": 5,
+    ".stderr": 5,
+    ".png": 5,
+    ".log": 2
+  },
+  "top_level_examples": {
+    ".": [
+      "."
+    ],
+    "wsl": [
+      "wsl"
+    ],
+    "verify.py": [
+      "verify.py"
+    ],
+    "tools": [
+      "tools",
+      "tools\\crane.exe"
+    ],
+    "tmp": [
+      "tmp",
+      "tmp\\node-compile-cache",
+      "tmp\\node-compile-cache\\v24.13.0-x64-cf738c9d"
+    ],
+    "setup-stage.py": [
+      "setup-stage.py"
+    ],
+    "setup-preflight.json": [
+      "setup-preflight.json"
+    ],
+    "setup-command.txt": [
+      "setup-command.txt"
+    ],
+    "s6-geometry.py": [
+      "s6-geometry.py"
+    ],
+    "run-in-toolchain.sh": [
+      "run-in-toolchain.sh"
+    ],
+    "resume-command.txt": [
+      "resume-command.txt"
+    ],
+    "render-s6.mjs": [
+      "render-s6.mjs"
+    ],
+    "relink-static-runtime.sh": [
+      "relink-static-runtime.sh"
+    ],
+    "prepare-runtime.sh": [
+      "prepare-runtime.sh"
+    ],
+    "playback-check.c": [
+      "playback-check.c"
+    ],
+    "patches": [
+      "patches",
+      "patches\\README.md",
+      "patches\\mingw-v12-process-exit.patch"
+    ],
+    "migrate-s6.ps1": [
+      "migrate-s6.ps1"
+    ],
+    "migrate-command.txt": [
+      "migrate-command.txt"
+    ],
+    "link-fixed-qt.py": [
+      "link-fixed-qt.py"
+    ],
+    "inventory.c": [
+      "inventory.c"
+    ],
+    "inspect-toolchain-command.txt": [
+      "inspect-toolchain-command.txt"
+    ],
+    "inspect-s6-metrics.py": [
+      "inspect-s6-metrics.py"
+    ],
+    "inspect-inventory.py": [
+      "inspect-inventory.py"
+    ],
+    "inspect-figma.mjs": [
+      "inspect-figma.mjs"
+    ],
+    "finish-migration.ps1": [
+      "finish-migration.ps1"
+    ],
+    "finish-migration-command.txt": [
+      "finish-migration-command.txt"
+    ],
+    "expand-s6.mjs": [
+      "expand-s6.mjs"
+    ],
+    "evidence": [
+      "evidence",
+      "evidence\\wsl-import.stdout",
+      "evidence\\wsl-import.stderr"
+    ],
+    "design-cleanup-command.txt": [
+      "design-cleanup-command.txt"
+    ],
+    "design": [
+      "design",
+      "design\\source-6648-20666.png",
+      "design\\source-6587-19923.png"
+    ],
+    "cancel-fallback.py": [
+      "cancel-fallback.py"
+    ],
+    "cancel-fallback-command.txt": [
+      "cancel-fallback-command.txt"
+    ],
+    "cache": [
+      "cache",
+      "cache\\npm",
+      "cache\\npm\\_update-notifier-last-checked"
+    ],
+    "build.sh": [
+      "build.sh"
+    ],
+    "build-checks.sh": [
+      "build-checks.sh"
+    ],
+    "bootstrap-outer.sh": [
+      "bootstrap-outer.sh"
+    ],
+    "bootstrap-baseline.sh": [
+      "bootstrap-baseline.sh"
+    ],
+    "baseline-build.log": [
+      "baseline-build.log"
+    ]
+  },
+  "exclusions": [],
+  "unexpected": [],
+  "unique_identities": 714
+}

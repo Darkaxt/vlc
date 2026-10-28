@@ -73,13 +73,14 @@ FocusScope {
     Binding {
         target: MainCtx
         property: "preferHotkeys"
-        value: !libraryBrowser.activeFocus
+        value: !libraryBrowser.activeFocus && !PlayerCustomization.editing && !PlayerCustomization.profilesVisible && !PlayerCustomization.onboardingVisible
         restoreMode: Binding.RestoreNone
     }
     Component.onDestruction: MainCtx.preferHotkeys = false
 
     Keys.priority: Keys.AfterItem
     Keys.onPressed: (event) => {
+        if(PlayerCustomization.editing){if(event.key===Qt.Key_Escape)PlayerCustomization.cancel();event.accepted=true;return}
         if (event.accepted)
             return
 
@@ -123,6 +124,25 @@ FocusScope {
     property bool _keyboardNavigation: false
     property bool libraryVisible: false
     property url libraryFolder: ""
+    property string layoutLibrarySection:""
+    property int layoutQueueTab:0
+    function layoutAction(key,invoker){
+        switch(key){
+        case "browser":layoutLibrarySection="";topBar.browseRequested();break
+        case "folder":topBar.browseFolderRequested();break
+        case "home":case "playlists":
+            layoutLibrarySection=key;libraryFolder="";libraryVisible=true
+            if(libraryBrowser.item)libraryBrowser.item.navigate(key)
+            break
+        case "bookmarks":case "chapters":
+            layoutQueueTab=key==="chapters"?2:1
+            if(playlistpopup.item)playlistpopup.item.positionTab=layoutQueueTab
+            if(!playlistVisibility.isPlaylistVisible)controlBar.toggleQueue()
+            break
+        case "sidebar":controlBar.toggleQueue();break
+        case "pip":MainCtx.playerView=false;break
+        }
+    }
     readonly property bool _surfaceHovered: playerSpecializationLoader.item?.pointerHovered ?? pointer.hovered
     readonly property point _surfacePointer: playerSpecializationLoader.item?.pointerPosition ?? pointer.point.position
 
@@ -155,6 +175,10 @@ FocusScope {
         }
     }
     HoverHandler { id: pointer }
+    Connections {
+        target:PlayerCustomization
+        function onEditingChanged(){if(PlayerCustomization.editing)chrome.hidden=false}
+    }
     TapHandler {
         acceptedButtons: Qt.AllButtons
         gesturePolicy: TapHandler.DragThreshold
@@ -162,7 +186,7 @@ FocusScope {
     }
     Shortcut {
         sequence: "Ctrl+Shift+H"
-        enabled: rootPlayer.visible
+        enabled: rootPlayer.visible && !PlayerCustomization.editing && !PlayerCustomization.profilesVisible && !PlayerCustomization.onboardingVisible
         onActivated: chrome.toggleHidden()
     }
 
@@ -964,9 +988,14 @@ FocusScope {
         anchors.right: parent.right
         z: 2
         title: Player.name
+        checkedControls:controlBar.checkedControls
         showCSD: MainCtx.clientSideDecoration && !chrome.fullscreen
         visible: chrome.topVisible
         onHideChromeRequested: chrome.hidden = true
+        onActionRequested:(key,invoker)=>{
+            if(["audio","subtitles","tools","speed","zoom","queue","showQueue","more"].includes(key))controlBar.activate(key,invoker)
+            else rootPlayer.layoutAction(key,invoker)
+        }
         onBrowseFolderRequested: {
             if (!MainCtx.mediaLibraryAvailable) { MainCtx.playerView = false; return }
             rootPlayer.libraryFolder = MainCtx.folderMRL(Player.url)
@@ -990,7 +1019,7 @@ FocusScope {
         width: active ? Math.min(PlayerStyle.px(427),rootPlayer.width-PlayerStyle.px(180)) : 0
         z: 2
         source: active ? "qrc:///qt/qml/VLC/Player/PlayerLibrary.qml" : ""
-        onLoaded: { item.compact = true; if (rootPlayer.libraryFolder.toString()) item.openAddress(rootPlayer.libraryFolder.toString()) }
+        onLoaded: { item.compact = true; if (rootPlayer.libraryFolder.toString()) item.openAddress(rootPlayer.libraryFolder.toString());else if(rootPlayer.layoutLibrarySection)item.navigate(rootPlayer.layoutLibrarySection) }
         Connections {
             target: libraryBrowser.item
             function onCloseRequested() { rootPlayer.libraryVisible = false; topBar.forceActiveFocus() }
@@ -1121,6 +1150,7 @@ FocusScope {
             wheelEnabled: true
 
             redesigned: true
+            positionTab:rootPlayer.layoutQueueTab
             padding: 0
 
             background: Rectangle {
@@ -1249,7 +1279,9 @@ FocusScope {
         popupParent: rootPlayer
         visible: chrome.bottomVisible
         queueVisible: playlistVisibility.isPlaylistVisible
+        onHideChromeRequested:chrome.hidden=true
         onToggleQueue: playlistVisibility.togglePlaylistVisibility()
+        onExternalActionRequested:(key,invoker)=>rootPlayer.layoutAction(key,invoker)
         Navigation.parentItem: rootPlayer
         Navigation.upItem: topBar
     }
@@ -1260,9 +1292,11 @@ FocusScope {
         ctx: MainCtx
     }
 
+    PlayerLayoutEditor { anchors.fill:parent;z:10 }
+
     TapHandler {
         acceptedButtons: Qt.RightButton
-        enabled: !MainCtx.hasEmbededVideo
+        enabled: !MainCtx.hasEmbededVideo && !PlayerCustomization.editing
 
         onTapped: (eventPoint, button) => {
             if (button & Qt.RightButton) {
@@ -1274,6 +1308,7 @@ FocusScope {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.BackButton
+        enabled: !PlayerCustomization.editing
         propagateComposedEvents: true
         cursorShape: undefined
         onClicked: {

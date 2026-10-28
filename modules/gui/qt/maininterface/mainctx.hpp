@@ -122,7 +122,9 @@ class MainCtx : public QObject
     Q_PROPERTY(bool hasGridListMode MEMBER m_hasGridListMode NOTIFY hasGridListModeChanged FINAL)
     Q_PROPERTY(Grouping grouping READ grouping WRITE setGrouping NOTIFY groupingChanged FINAL)
     Q_PROPERTY(QColor redesignAccent READ getRedesignAccent NOTIFY redesignAccentChanged FINAL)
+    Q_PROPERTY(QColor redesignAccentText READ getRedesignAccentText NOTIFY redesignAccentChanged FINAL)
     Q_PROPERTY(ColorSchemeModel* colorScheme READ getColorScheme CONSTANT FINAL)
+    Q_PROPERTY(bool onboardingRequested READ onboardingRequested NOTIFY onboardingRequestedChanged FINAL)
     Q_PROPERTY(bool hasVLM READ hasVLM CONSTANT FINAL)
     Q_PROPERTY(bool clientSideDecoration READ useClientSideDecoration NOTIFY useClientSideDecorationChanged FINAL)
     Q_PROPERTY(bool hasFirstrun READ hasFirstrun CONSTANT FINAL)
@@ -245,8 +247,23 @@ public:
     inline double getMinIntfUserScaleFactor() const { return MIN_INTF_USER_SCALE_FACTOR; }
     inline double getMaxIntfUserScaleFactor() const { return MAX_INTF_USER_SCALE_FACTOR; }
     QColor getRedesignAccent() const;
+    QColor getRedesignAccentText() const;
     MLBookmarkModel *getBookmarks();
     Q_INVOKABLE void addBookmark();
+    Q_INVOKABLE QVariantMap presentationSettings() const;
+    Q_INVOKABLE bool previewAppearance(int theme, const QString &accent);
+    Q_INVOKABLE QString saveCustomization(const QString &encoded, const QVariantMap &values);
+    Q_INVOKABLE void finishRedesignOnboarding(bool finish, const QVariantMap &values, const QString &folder);
+    Q_INVOKABLE QString chooseOnboardingFolder(const QString &current);
+    Q_INVOKABLE QString shortcutLabel(const QString &option) const;
+    bool onboardingRequested() const { return m_onboardingRequested; }
+    Q_INVOKABLE void requestPlayerOnboarding() {
+        if (!m_onboardingRequested) {
+            m_onboardingRequested=true;
+            emit onboardingRequestedChanged();
+        }
+        emit playerOnboardingRequested();
+    }
     void dispatchShortcutFeedback(int key);
     inline bool hasMediaLibrary() const { return b_hasMedialibrary; }
     inline MediaLib* getMediaLibrary() const { return m_medialib; }
@@ -408,6 +425,7 @@ public:
     bool historyEnabled() const { return var_InheritBool(p_intf, "save-recentplay"); }
 
     Q_INVOKABLE QVariant settingValue(const QString &key, const QVariant &defaultValue) const;
+    Q_INVOKABLE bool hasSetting(const QString &key) const;
     Q_INVOKABLE void setSettingValue(const QString &key, const QVariant &value);
 
     Q_INVOKABLE static void setAttachedToolTip(QObject* toolTip);
@@ -462,6 +480,15 @@ protected:
     VideoSurfaceProvider* m_videoSurfaceProvider = nullptr;
     bool m_showRemainingTime = false;
     QSet<QMenu *> m_playerMenus;
+    QString m_previewAccent;
+    QString saveCustomizationImpl(const QString &encoded, const QVariantMap &values, bool dismissOnboarding);
+    void completeRedesignOnboarding(bool finish, const QVariantMap &values, const QString &error, bool folderAdded=false);
+    void resolveOnboardingFolder(quint64 revision, const QString &error, bool folderAdded);
+    struct OnboardingFolderRequest;
+    std::unique_ptr<OnboardingFolderRequest> m_onboardingFolderRequest;
+    quint64 m_onboardingFolderRevision=0;
+    int m_beforePreviewTheme=-1;
+    bool m_onboardingRequested=false;
 
     /* */
     QSettings           *settings = nullptr;
@@ -639,6 +666,13 @@ signals:
     void preferHotkeysChanged();
 
     void redesignAccentChanged();
+    void customizePlayerRequested();
+    void playerProfilesRequested();
+    void playerProfileSelected(const QString &name);
+    void playerProfileSaveRequested();
+    void playerOnboardingRequested();
+    void onboardingRequestedChanged();
+    void playerOnboardingFinished(const QString &error);
     void hidePlayerChromeRequested();
     void hotkeyFeedback(const QString &action, const QString &shortcut, int duration);
     void useGlobalShortcutsChanged( bool );

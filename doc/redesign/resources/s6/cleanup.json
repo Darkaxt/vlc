@@ -1,0 +1,148 @@
+{
+  "state": "COMPLETE",
+  "transactions": [
+    {
+      "transaction_id": "6d4725546ee6f1a572f441b4e7c628d9",
+      "state": "applied",
+      "candidate_count": 5197,
+      "deleted_bytes": 1851726238,
+      "result_counts": {
+        "deleted": 5197
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "cf0427be7df6d126babf5852f95ac292",
+      "state": "applied",
+      "candidate_count": 714,
+      "deleted_bytes": 43503523,
+      "result_counts": {
+        "deleted": 714
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "8f518ad690aa4418ff528facb0a6f7c5",
+      "state": "applied",
+      "candidate_count": 2,
+      "deleted_bytes": 30312235008,
+      "result_counts": {
+        "deleted": 2
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "3105aa2b87ac272d666fb7e3072dd346",
+      "state": "applied",
+      "candidate_count": 10,
+      "deleted_bytes": 739927144,
+      "result_counts": {
+        "deleted": 10
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "3e61f8505dfe87628bf7b89490b47fb4",
+      "state": "applied",
+      "candidate_count": 12,
+      "deleted_bytes": 744408,
+      "result_counts": {
+        "deleted": 12
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "9fc63763cf98f8f6f5f0655ba249be61",
+      "state": "applied",
+      "candidate_count": 10,
+      "deleted_bytes": 606795,
+      "result_counts": {
+        "deleted": 10
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "bb638343704c9d9feb3511ef7088da83",
+      "state": "applied",
+      "candidate_count": 1,
+      "deleted_bytes": 152953286,
+      "result_counts": {
+        "deleted": 1
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "a123051e7e72fa366f3c57ec1e0c3c16",
+      "state": "applied",
+      "candidate_count": 1,
+      "deleted_bytes": 7282223104,
+      "result_counts": {
+        "deleted": 1
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "d96e4aec0a24b79819ec5ebaf1d07153",
+      "state": "applied",
+      "candidate_count": 782,
+      "deleted_bytes": 31348252,
+      "result_counts": {
+        "deleted": 782
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "ddfd019434317fa7c2283ec544a8c21a",
+      "state": "applied",
+      "candidate_count": 104,
+      "deleted_bytes": 22208331,
+      "result_counts": {
+        "deleted": 104
+      },
+      "excluded_count": 0,
+      "errors": []
+    },
+    {
+      "transaction_id": "66bca01f943b992ab2987ec301ab04f7",
+      "state": "applied",
+      "candidate_count": 7,
+      "deleted_bytes": 760544382,
+      "result_counts": {
+        "deleted": 7
+      },
+      "excluded_count": 0,
+      "errors": []
+    }
+  ],
+  "final_source_formatting_cleanup": {
+    "transaction_id": "7901bd088c72335c3a98904529b8f07a",
+    "state": "applied",
+    "candidate_count": 3,
+    "deleted_bytes": 4901,
+    "excluded_count": 0,
+    "errors": [],
+    "purpose": "One-off binary LF normalization of four owned JSON evidence records; parsed values preserved and cached whitespace check passed. No application change."
+  },
+  "exact_scratch_roots_absent": [
+    "D:/Temp/vlc-s6-20261028",
+    "E:/Temp/vlc-s6-20261025",
+    "E:/Temp/vlc-s6-finalize-20261028"
+  ],
+  "disk_and_registration_retired": true,
+  "review_portable_empty": true,
+  "retained_outputs": [
+    "D:/VLC-Redesign/S6",
+    "Canonical source and compact doc/redesign/resources/s6 evidence"
+  ],
+  "byte_scope": "Helper logical counts; vhd-retirement.json records measured allocation and D-volume free-space delta.",
+  "status_diagnostics": "Concurrent status processes briefly encountered SQLITE_BUSY; that cohort completed. Serial status confirmed all transactions applied, without revocation, deletion replay or alternate mechanism."
+}

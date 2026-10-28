@@ -2,297 +2,65 @@
 import QtQuick
 import QtQuick.Templates as T
 import QtQuick.Layouts
-import QtQuick.Controls.impl
 import VLC.MainInterface
 import VLC.Player
 import VLC.Playlist
 import VLC.Menus as Menus
-import VLC.Style
 import VLC.Util
 
 T.Pane {
-    id: bar
-    property Item popupParent: parent
-    property bool queueVisible: false
-    readonly property bool compact: width < PlayerStyle.px(760)
-    readonly property bool menuOpen: subtitles.visible || audio.visible || settings.visible || subtitleMatching.visible || playbackMenu.shown
-    readonly property real sliderY: (height - seek.height) / 2
+    id:bar
+    property Item popupParent:parent
+    property Item lastInvoker:null
+    property bool queueVisible:false
+    readonly property var checkedControls:({audio:audio.visible,subtitles:subtitles.visible,tools:settings.visible,queue:queueVisible,more:playbackMenu.shown})
+    readonly property bool compact:width<PlayerStyle.px(760)
+    readonly property bool menuOpen:subtitles.visible||audio.visible||settings.visible||subtitleMatching.visible||playbackMenu.shown||PlayerCustomization.editing
+    readonly property real sliderY:(height-PlayerStyle.px(28))/2
     signal toggleQueue()
+    signal hideChromeRequested()
+    signal externalActionRequested(string key,var invoker)
     signal forceUnlock()
-    onForceUnlock: { subtitles.close(); audio.close(); settings.close(); subtitleMatching.close(); playbackMenu.close() }
-    implicitHeight: PlayerStyle.px(54)
-    padding: 0
-    hoverEnabled: true
-    enabled: visible
-    Accessible.name: qsTr("Player controls")
-    AccessibleCompat.id: "playerControlBar"
-    background: Rectangle {
-        objectName: "playerVideoBackdrop"
-        readonly property real backgroundBlurRadius: PlayerStyle.px(50)
-        color: PlayerStyle.chrome
+    onForceUnlock:{subtitles.close();audio.close();settings.close();subtitleMatching.close();playbackMenu.close()}
+    implicitHeight:PlayerStyle.px(54);padding:0;hoverEnabled:true;enabled:visible
+    Accessible.name:qsTr("Player controls");AccessibleCompat.id:"playerControlBar"
+    background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(50);color:PlayerStyle.chrome}
+    function restoreFocus(){if(lastInvoker)lastInvoker.forceActiveFocus(Qt.PopupFocusReason)}
+    function activate(key,invoker){
+        lastInvoker=invoker
+        switch(key){
+        case "audio":subtitles.close();audio.open();break
+        case "subtitles":audio.close();subtitles.open();break
+        case "tools":audio.close();subtitles.close();settings.showPage(0);break
+        case "speed":settings.showPage(0);break
+        case "zoom":settings.showPage(1);break
+        case "more":playbackMenu.popup(invoker.mapToGlobal(0,invoker.height));break
+        case "queue":bar.toggleQueue();break
+        case "showQueue":if(!queueVisible)bar.toggleQueue();break
+        default:externalActionRequested(key,invoker)
+        }
     }
-
     T.Pane {
-        parent: bar.popupParent
-        x: PlayerStyle.px(20); y: PlayerStyle.px(60)
-        width: Math.min(PlayerStyle.px(400), parent.width - PlayerStyle.px(40))
-        padding: PlayerStyle.px(16)
-        visible: MediaTools.statisticsVisible
-        z: 1
-        background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(8); opacity: 0.9 }
-        contentItem: Text { text: MediaTools.statisticsText; textFormat: Text.PlainText; color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); wrapMode: Text.Wrap }
-        Accessible.name: qsTr("Playback statistics")
+        parent:bar.popupParent;x:PlayerStyle.px(20);y:PlayerStyle.px(60)
+        width:Math.min(PlayerStyle.px(400),parent.width-PlayerStyle.px(40));padding:PlayerStyle.px(16)
+        visible:MediaTools.statisticsVisible;z:1
+        background:Rectangle{color:PlayerStyle.panel;radius:PlayerStyle.px(8);opacity:0.9}
+        contentItem:Text{text:MediaTools.statisticsText;textFormat:Text.PlainText;color:PlayerStyle.trackForeground;font.family:PlayerStyle.fontFamily;font.pixelSize:PlayerStyle.px(14);wrapMode:Text.Wrap}
+        Accessible.name:qsTr("Playback statistics")
     }
     RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: PlayerStyle.px(bar.compact ? 12 : 20)
-        anchors.rightMargin: anchors.leftMargin
-        spacing: PlayerStyle.px(bar.compact ? 12 : 20)
-
-        RowLayout {
-            Layout.fillWidth: false
-            Layout.minimumWidth: implicitWidth
-            Layout.maximumWidth: implicitWidth
-            spacing: PlayerStyle.px(8)
-            PlayerIconButton {
-                glyph: "previous"
-                description: qsTr("Previous")
-                enabled: MainPlaylistController.hasPrev
-                implicitHeight: PlayerStyle.px(28)
-                AccessibleCompat.id: "previousButton"
-                onClicked: MainPlaylistController.prev()
-            }
-            PlayerIconButton {
-                glyph: Player.playingState === Player.PLAYING_STATE_PLAYING ? "pause" : "play"
-                description: Player.playingState === Player.PLAYING_STATE_PLAYING ? qsTr("Pause") : qsTr("Play")
-                accented: true
-                implicitWidth: PlayerStyle.px(bar.compact ? 40 : 54)
-                implicitHeight: PlayerStyle.px(28)
-                enabled: !MainPlaylistController.empty
-                AccessibleCompat.id: "playButton"
-                onClicked: MainPlaylistController.togglePlayPause()
-            }
-            PlayerIconButton {
-                glyph: "next"
-                description: qsTr("Next")
-                enabled: MainPlaylistController.hasNext
-                implicitHeight: PlayerStyle.px(28)
-                AccessibleCompat.id: "nextButton"
-                onClicked: MainPlaylistController.next()
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: PlayerStyle.px(8)
-            Text {
-                AccessibleCompat.id: "playerElapsedTime"
-                Layout.preferredWidth: PlayerStyle.px(76)
-                visible: !bar.compact
-                text: Player.time.formatHMS(0)
-                color: PlayerStyle.foreground
-                font.family: PlayerStyle.fontFamily
-                font.pixelSize: PlayerStyle.px(14)
-                horizontalAlignment: Text.AlignHCenter
-            }
-            T.Slider {
-                id: seek
-                Layout.fillWidth: true
-                Layout.minimumWidth: PlayerStyle.px(60)
-                implicitHeight: PlayerStyle.px(28)
-                padding: PlayerStyle.px(2)
-                from: 0; to: 1
-                enabled: Player.seekable
-                activeFocusOnTab: true
-                Accessible.name: qsTr("Playback position")
-                Accessible.description: Player.time.formatHMS(0) + " / " + Player.length.formatHMS(0)
-                AccessibleCompat.id: "progressSlider"
-                Binding on value {
-                    when: !seek.pressed
-                    value: Player.position
-                    // Retain the current clock value when pressing. Restoring
-                    // the last edit suppresses moved() on a repeated seek.
-                    restoreMode: Binding.RestoreNone
-                }
-                onMoved: Player.position = value
-                PlayerSeekAnalysis { overlayParent: bar.popupParent }
-                background: Rectangle {
-                    color: PlayerStyle.timeline
-                    radius: PlayerStyle.px(6)
-                    Rectangle {
-                        x: PlayerStyle.px(2); y: PlayerStyle.px(2)
-                        width: Math.max(0, (parent.width - PlayerStyle.px(4)) * seek.visualPosition)
-                        height: parent.height - PlayerStyle.px(4)
-                        color: PlayerStyle.accent
-                        opacity: 0.24
-                        radius: PlayerStyle.px(4)
-                    }
-                    border.width: seek.visualFocus ? PlayerStyle.px(2) : 0
-                    border.color: PlayerStyle.accent
-                }
-                handle: Rectangle {
-                    x: seek.leftPadding + seek.visualPosition * (seek.availableWidth - width)
-                    y: seek.topPadding
-                    width: PlayerStyle.px(8)
-                    height: seek.availableHeight
-                    radius: PlayerStyle.px(4)
-                    color: PlayerStyle.accent
-                }
-            }
-            Text {
-                Layout.preferredWidth: PlayerStyle.px(76)
-                visible: !bar.compact
-                text: Player.length.valid() ? Player.length.formatHMS(0) : "—:—"
-                color: PlayerStyle.foreground
-                font.family: PlayerStyle.fontFamily
-                font.pixelSize: PlayerStyle.px(14)
-                horizontalAlignment: Text.AlignHCenter
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: false
-            Layout.minimumWidth: implicitWidth
-            Layout.maximumWidth: implicitWidth
-            spacing: PlayerStyle.px(8)
-            PlayerIconButton {
-                glyph: Player.muted ? "muted" : "volume"
-                description: Player.muted ? qsTr("Unmute") : qsTr("Mute")
-                implicitWidth: PlayerStyle.px(24)
-                implicitHeight: PlayerStyle.px(28)
-                AccessibleCompat.id: "muteButton"
-                onClicked: Player.muted = !Player.muted
-            }
-            T.Slider {
-                id: volume
-                implicitWidth: PlayerStyle.px(bar.compact ? 48 : 88)
-                implicitHeight: PlayerStyle.px(28)
-                padding: 0
-                from: 0; to: MainCtx.maxVolume / 100
-                stepSize: 0.05
-                activeFocusOnTab: true
-                Accessible.name: qsTr("Volume")
-                Accessible.description: qsTr("%1 percent").arg(Math.round(Player.volume * 100))
-                AccessibleCompat.id: "volumeSlider"
-                Binding on value {
-                    when: !volume.pressed
-                    value: Player.volume
-                    restoreMode: Binding.RestoreNone
-                }
-                onMoved: { Player.volume = value; Player.muted = false }
-                handle: Item {}
-                background: Item {
-                    clip: true
-                    opacity: Player.muted ? 0.45 : 1
-                    // Original Figma vectors, using VLC's existing SVG plugin.
-                    IconImage {
-                        width: volume.width * 89 / 88; height: volume.height
-                        sourceSize: Qt.size(width, height)
-                        source: "qrc:/redesign/icons/volume-cone.svg"
-                        color: PlayerStyle.dark ? "#090909" : "#888888"
-                    }
-                    Item {
-                        width: parent.width * volume.position
-                        height: parent.height
-                        clip: true
-                        Image {
-                            width: volume.width * 89 / 88; height: volume.height
-                            sourceSize: Qt.size(width, height)
-                            source: "qrc:/redesign/icons/volume-level.svg"
-                        }
-                    }
-                    Rectangle {
-                        anchors.fill: parent
-                        color: "transparent"
-                        border.color: PlayerStyle.accent
-                        border.width: volume.visualFocus ? PlayerStyle.px(2) : 0
-                        radius: PlayerStyle.px(4)
-                    }
-                }
-            }
-        }
-        RowLayout {
-            Layout.fillWidth: false
-            Layout.minimumWidth: implicitWidth
-            Layout.maximumWidth: implicitWidth
-            spacing: PlayerStyle.px(12)
-            PlayerIconButton {
-                id: toolsButton
-                glyph: "tools"
-                description: qsTr("Playback, video tracks and tools")
-                checked: settings.visible
-                AccessibleCompat.id: "toolsButton"
-                onClicked: { audio.close(); subtitles.close(); settings.showPage(0) }
-            }
-            PlayerIconButton {
-                id: subtitleButton
-                glyph: "subtitles"
-                description: qsTr("Subtitles")
-                checked: subtitles.visible
-                AccessibleCompat.id: "subtitleButton"
-                onClicked: { audio.close(); subtitles.open() }
-            }
-            PlayerIconButton {
-                id: audioButton
-                glyph: "audio"
-                description: qsTr("Audio and output device")
-                checked: audio.visible
-                AccessibleCompat.id: "audioButton"
-                onClicked: { subtitles.close(); audio.open() }
-            }
-        }
-        PlayerIconButton {
-            glyph: "queue"
-            description: qsTr("Current playback queue")
-            checked: bar.queueVisible
-            AccessibleCompat.id: "playqueueToggle"
-            onClicked: bar.toggleQueue()
-            DropArea {
-                anchors.fill: parent
-                onEntered: drag => {
-                    if (drag.hasUrls && !bar.queueVisible) bar.toggleQueue()
-                }
-                onDropped: drop => {
-                    if (drop.hasUrls) {
-                        MainPlaylistController.append(drop.urls, false)
-                        drop.acceptProposedAction()
-                    }
-                }
-            }
-        }
+        anchors.fill:parent;anchors.leftMargin:PlayerStyle.px(bar.compact?12:20);anchors.rightMargin:anchors.leftMargin
+        spacing:PlayerStyle.px(bar.compact?12:20)
+        PlayerLayoutStrip{zone:"bottomLeft";compact:bar.compact;popupParent:bar.popupParent;checkedControls:bar.checkedControls;Layout.preferredWidth:Math.min(implicitWidth,bar.width*0.3);Layout.fillHeight:true;onActionRequested:(key,invoker)=>bar.activate(key,invoker)}
+        PlayerLayoutStrip{zone:"bottomCenter";compact:bar.compact;popupParent:bar.popupParent;checkedControls:bar.checkedControls;Layout.fillWidth:true;Layout.minimumWidth:PlayerStyle.px(24);Layout.fillHeight:true;onActionRequested:(key,invoker)=>bar.activate(key,invoker)}
+        PlayerLayoutStrip{zone:"bottomRight";compact:bar.compact;popupParent:bar.popupParent;checkedControls:bar.checkedControls;Layout.preferredWidth:Math.min(implicitWidth,bar.width*0.5);Layout.fillHeight:true;onActionRequested:(key,invoker)=>bar.activate(key,invoker)}
     }
-    PlayerTracksPopup {
-        id: subtitles
-        parent: bar.popupParent
-        subtitles: true
-        onSettingsRequested: page => settings.showPage(page)
-        x: parent.width - width - PlayerStyle.px(20)
-        y: bar.y - height - PlayerStyle.px(20)
-        onClosed: subtitleButton.forceActiveFocus(Qt.PopupFocusReason)
-    }
-    PlayerTracksPopup {
-        id: audio
-        parent: bar.popupParent
-        subtitles: false
-        onSettingsRequested: page => settings.showPage(page)
-        x: parent.width - width - PlayerStyle.px(20)
-        y: bar.y - height - PlayerStyle.px(20)
-        onClosed: audioButton.forceActiveFocus(Qt.PopupFocusReason)
-    }
-    PlayerSettingsPopup {
-        id: settings
-        parent: bar.popupParent
-        x: Math.max(PlayerStyle.px(20), parent.width - width - PlayerStyle.px(20))
-        y: bar.y - height - PlayerStyle.px(20)
-        onMatchSubtitlesRequested: { subtitleMatching.online = false; subtitleMatching.open() }
-        onRemoteSubtitlesRequested: { subtitleMatching.online = true; subtitleMatching.open() }
-        onClosed: toolsButton.forceActiveFocus(Qt.PopupFocusReason)
-    }
-    PlayerSubtitleDialog {
-        id: subtitleMatching
-        parent: bar.popupParent
-        x: (parent.width - width) / 2
-        y: (parent.height - height) / 2
-    }
-    Menus.QmlGlobalMenu { id: playbackMenu; ctx: MainCtx }
+    PlayerTracksPopup{id:subtitles;parent:bar.popupParent;subtitles:true;onSettingsRequested:page=>settings.showPage(page);x:parent.width-width-PlayerStyle.px(20);y:bar.y-height-PlayerStyle.px(20);onClosed:bar.restoreFocus()}
+    PlayerTracksPopup{id:audio;parent:bar.popupParent;subtitles:false;onSettingsRequested:page=>settings.showPage(page);x:parent.width-width-PlayerStyle.px(20);y:bar.y-height-PlayerStyle.px(20);onClosed:bar.restoreFocus()}
+    PlayerSettingsPopup{id:settings;parent:bar.popupParent;x:Math.max(PlayerStyle.px(20),parent.width-width-PlayerStyle.px(20));y:bar.y-height-PlayerStyle.px(20)
+        onMatchSubtitlesRequested:{subtitleMatching.online=false;subtitleMatching.open()}
+        onRemoteSubtitlesRequested:{subtitleMatching.online=true;subtitleMatching.open()}
+        onClosed:bar.restoreFocus()}
+    PlayerSubtitleDialog{id:subtitleMatching;parent:bar.popupParent;x:(parent.width-width)/2;y:(parent.height-height)/2}
+    Menus.QmlGlobalMenu{id:playbackMenu;ctx:MainCtx;playerChromeCommand:true;onHidePlayerChromeRequested:bar.hideChromeRequested()}
 }

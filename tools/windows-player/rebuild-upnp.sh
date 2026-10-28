@@ -5,14 +5,15 @@ set -eu
 source_root=/work/src
 prefix=/work/build/contrib/x86_64-w64-mingw32
 work=/work/upnp-rebuild-s2
-archive=/scratch/cache/pupnp-release-1.14.31.tar.gz
+archive_dir=${1:-/scratch/cache}
+archive="$archive_dir/pupnp-release-1.14.31.tar.gz"
 runtime_lib=${VLC_RUNTIME_LIB_DIR:-/work/runtime-crt-only}
 test -f "$runtime_lib/dllcrt2.o"
 # Keep Windows system import libraries out of the CRT search directory: in
 # particular, MinGW's libupnp.a is unrelated to the pupnp library below.
 test ! -e "$runtime_lib/libupnp.a"
 
-(cd /scratch/cache && sha512sum --check "$source_root/contrib/src/upnp/SHA512SUMS")
+(cd "$archive_dir" && sha512sum --check "$source_root/contrib/src/upnp/SHA512SUMS")
 test ! -e "$work"
 mkdir -p "$work"
 tar -xf "$archive" -C "$work"
@@ -40,7 +41,7 @@ cmake -S "$source_dir" -B "$work/build" -G Ninja \
     -DCMAKE_INSTALL_PREFIX="$prefix" -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUPNP_BUILD_SHARED=OFF \
     -DBUILD_TESTING=OFF -DUPNP_BUILD_SAMPLES=OFF -DUPNP_ENABLE_IPV6=ON
-cmake --build "$work/build" --parallel 2
+cmake --build "$work/build" --parallel 1
 cmake --install "$work/build"
 
 x86_64-w64-mingw32-gcc -B"$runtime_lib/" -L"$runtime_lib" \
@@ -49,5 +50,5 @@ x86_64-w64-mingw32-gcc -B"$runtime_lib/" -L"$runtime_lib" \
     -L"$prefix/lib" -lupnp -lixml -lpthread -liphlpapi -lws2_32 \
     -o /scratch/runtime/upnp-url-check.exe
 cd /work/build/win64/modules
-make -j2 -W "$prefix/lib/libupnp.a" libupnp_plugin.la
+make -j1 -W "$prefix/lib/libupnp.a" libupnp_plugin.la
 cp .libs/libupnp_plugin.dll /scratch/runtime/plugins/services_discovery/libupnp_plugin.dll

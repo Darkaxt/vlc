@@ -13,6 +13,7 @@ QtObject {
     readonly property color trackForeground: dark ? "#969696" : "#2e2e2e"
     readonly property color sectionForeground: dark ? "#6b6b6b" : "#676767"
     readonly property color accent: MainCtx.redesignAccent
+    readonly property color accentForeground: MainCtx.redesignAccentText
     readonly property color accentWell: Qt.colorEqual(accent,"#d37918") ? "#371f06" : Qt.darker(accent,4)
     readonly property color accentKnob: Qt.colorEqual(accent,"#d37918") ? "#ab6314" : Qt.darker(accent,1.25)
     readonly property color timeline: dark ? "#090909" : "#dedede"

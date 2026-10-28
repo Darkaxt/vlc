@@ -1,0 +1,18 @@
+{
+  "distribution": "VLC-S6-20261025",
+  "registration": "{3468ff09-eda0-419b-8616-642d8c902637}",
+  "native_unregister_exit_code": 0,
+  "registration_absent": true,
+  "disk_absent": true,
+  "unrelated_bindings_unchanged": true,
+  "d_free_bytes_after": 929441648640,
+  "path": "D:\\Temp\\vlc-s6-20261028\\wsl\\ext4.vhdx",
+  "logical_bytes": 30312235008,
+  "allocated_bytes": 30312235008,
+  "d_free_bytes_before": 899129421824,
+  "normal_review_verified": true,
+  "all_linux_groups_empty": true,
+  "distribution_stopped": true,
+  "d_free_bytes_increase_measured": 30312226816,
+  "free_space_scope": "Observed D volume delta; unrelated concurrent writes are not attributed to this task."
+}

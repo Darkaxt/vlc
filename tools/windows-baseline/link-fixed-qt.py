@@ -17,7 +17,7 @@ subprocess.run(['/work/src/configure', *args], check=True)
 libtool = (build / 'libtool').read_text()
 predeps = re.findall(r'^predep_objects="(.*)"$', libtool, re.M)
 assert any('/work/runtime-fixed/lib/dllcrt2.o' in value for value in predeps), predeps
-subprocess.run(['make', '-C', 'modules/gui/qt', 'V=1', '-j2',
+subprocess.run(['make', '-C', 'modules/gui/qt', 'V=1', '-j1',
                 '-W', 'libqt_plugin_la-qt.lo', 'libqt_plugin.la'], check=True)
 plugin = build / 'modules/gui/qt/.libs/libqt_plugin.dll'
 subprocess.run(['x86_64-w64-mingw32-objdump', '-p', str(plugin)], check=True)

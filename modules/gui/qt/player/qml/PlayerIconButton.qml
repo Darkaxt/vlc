@@ -33,7 +33,7 @@ T.ToolButton {
       IconImage {
         anchors.centerIn: parent
         source: "qrc:/redesign/icons/" + button.glyph + ".svg"
-        color: button.accented ? "#2e2e2e" : button.foreground
+        color: button.accented ? PlayerStyle.accentForeground : button.foreground
         opacity: button.enabled ? 1 : 0.45
         sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
         width: PlayerStyle.px(24)

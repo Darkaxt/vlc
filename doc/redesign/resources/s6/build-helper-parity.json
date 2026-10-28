@@ -1,0 +1,11 @@
+{
+  "matched": true,
+  "scope": "Canonical maintained build helpers compared byte-for-byte with the actual task copies before scratch retirement. The MinGW backport also matched the former E staging copy.",
+  "sha256": {
+    "tools/windows-baseline/patches/mingw-v12-process-exit.patch": "6b3bd4443d05257c6df80aec79d04014f4fc3665660a47171fa6b7701d65e9e4",
+    "tools/windows-baseline/prepare-runtime.sh": "fc18c86c6794ba0e87a9917178f02d0790552633871896821d7a71459c27bf87",
+    "tools/windows-baseline/link-fixed-qt.py": "a62805a52adc7f25235d77a71ea075e5542d6030a09c84e6eaa5f16aea87a609",
+    "tools/windows-baseline/build.sh": "f18cd0b46bd296df7b2573d60db8375d2588057ef318b69ba2e19bc15446c165",
+    "tools/windows-baseline/relink-static-runtime.sh": "d17ac102aaac91e4f26ddd2c99ec1c0955391b4428f322624eb36202a29eabce"
+  }
+}

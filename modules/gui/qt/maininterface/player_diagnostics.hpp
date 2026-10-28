@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QCryptographicHash>
 #include <QRadioButton>
 #include <QStyleOptionButton>
 #include <QDir>
@@ -18,6 +19,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJSValue>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -47,15 +49,19 @@
 #include <memory>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include <utility>
 #include "util/accessible_compat_attached.hpp"
 #include "player/player_controller.hpp"
 #include "player/player_media_tools.hpp"
 #include "player/player_media_analysis.hpp"
+#include "maininterface/mainctx.hpp"
 
 class PlayerDiagnostics final : public QObject
 {
 public:
+    ~PlayerDiagnostics() override { stopCoreObservation(); }
+
     static void attach(QQuickItem *root, QQmlEngine *engine, PlayerController *player)
     {
         const QString directory = qEnvironmentVariable("VLC_PLAYER_DIAGNOSTICS_DIR");
@@ -79,16 +85,47 @@ private:
     QList<QPointer<QWidget>> m_widgets;
     quint64 m_revision = 0;
     bool m_busy = false;
+    vlc_player_t *m_observationPlayer = nullptr;
+    vlc_player_listener_id *m_positionListener = nullptr;
+    std::function<void()> m_coreObservationCheck;
+
+    void stopCoreObservation()
+    {
+        if (m_positionListener) {
+            vlc_player_locker lock{m_observationPlayer};
+            vlc_player_RemoveListener(m_observationPlayer,m_positionListener);
+        }
+        m_positionListener=nullptr;
+        m_observationPlayer=nullptr;
+        m_coreObservationCheck={};
+    }
+
+    bool observeCorePosition(std::function<void()> check)
+    {
+        // The UI publishes a requested seek position before the input commits
+        // its time, and suppresses timer updates while paused/seeking. Observe
+        // the native event that follows input->time/position assignment instead.
+        static const vlc_player_cbs callbacks=[] {
+            vlc_player_cbs value{};
+            value.on_position_changed=[](vlc_player_t *,vlc_tick_t,double,void *data) {
+                auto *owner=static_cast<PlayerDiagnostics *>(data);
+                QMetaObject::invokeMethod(owner,[owner] {
+                    const auto check=owner->m_coreObservationCheck;
+                    if(check)check();
+                },Qt::QueuedConnection);
+            };
+            return value;
+        }();
+        m_coreObservationCheck=std::move(check);
+        m_observationPlayer=m_player->getPlayer();
+        vlc_player_locker lock{m_observationPlayer};
+        m_positionListener=vlc_player_AddListener(m_observationPlayer,&callbacks,this);
+        return m_positionListener!=nullptr;
+    }
 
     PlayerDiagnostics(QQuickItem *root, QQmlEngine *engine, PlayerController *player, const QString &directory, const QString &token)
         : QObject(root), m_root(root), m_player(player), m_directory(directory), m_token(token)
     {
-#ifdef _WIN32
-        // Fatal native regressions belong in this owned test's stderr. A CRT
-        // message box on an inactive desktop otherwise hides the failure and
-        // prevents the existing process-exit observation from completing.
-        _set_error_mode(_OUT_TO_STDERR);
-#endif
         m_clock.start();
         connect(engine, &QQmlEngine::warnings, this, [this](const QList<QQmlError> &errors) {
             for (const auto &error : errors)
@@ -116,6 +153,7 @@ private:
         write(id + QStringLiteral(".json"), value);
         write(id + QStringLiteral(".ready"), {{QStringLiteral("id"), id}});
         if (id == m_pendingId) {
+            stopCoreObservation();
             if (m_waitExpression) m_waitExpression->deleteLater();
             m_waitExpression = nullptr;
             m_pendingId.clear();
@@ -247,6 +285,30 @@ private:
             {QStringLiteral("tree"), tree}, {QStringLiteral("images"), images},
             {QStringLiteral("qml_errors"), m_errors}, {QStringLiteral("truncated"), m_items.size() >= 8000},
             {QStringLiteral("coverage"), QStringLiteral("Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation.")}};
+        if(auto *engine=qmlEngine(m_root)){
+            const int type=qmlTypeId("VLC.Player",1,0,"PlayerCustomization");
+            if(type>=0)if(auto *owner=engine->singletonInstance<QObject *>(type)){
+                QJsonObject state;
+                for(const char *key:{"accepted","draft","editing","error","saveError","onboardingVisible","onboardingSaving"}){
+                    QVariant value=owner->property(key);
+                    if(value.metaType()==QMetaType::fromType<QJSValue>())value=value.value<QJSValue>().toVariant();
+                    state[QString::fromLatin1(key)]=QJsonValue::fromVariant(value);
+                }
+                result[QStringLiteral("customization")]=state;
+            }
+            const int contextType=qmlTypeId("VLC.MainInterface",1,0,"MainCtx");
+            if(contextType>=0)if(auto *context=engine->singletonInstance<MainCtx *>(contextType)){
+                result[QStringLiteral("presentation")]=QJsonObject::fromVariantMap(context->presentationSettings());
+                result[QStringLiteral("rendered_accent")]=context->getRedesignAccent().name();
+                const QVariant saved=context->settingValue(QStringLiteral("redesign/customization-v1"),QVariant());
+                const auto encoded=saved.toString().toUtf8();
+                result[QStringLiteral("customization_saved")]=QJsonObject{
+                    {QStringLiteral("present"),context->hasSetting(QStringLiteral("redesign/customization-v1"))},
+                    {QStringLiteral("type"),QString::fromLatin1(saved.metaType().name()?saved.metaType().name():"")},
+                    {QStringLiteral("bytes"),qint64(encoded.size())},
+                    {QStringLiteral("sha256"),QString::fromLatin1(QCryptographicHash::hash(encoded,QCryptographicHash::Sha256).toHex())}};
+            }
+        }
         if (m_player) {
             QJsonObject services;
             for (const auto &entry : {std::pair{"redesignMediaTools", QStringList{QStringLiteral("status"), QStringLiteral("matches"), QStringLiteral("cues"), QStringLiteral("timelineStatus"), QStringLiteral("subtitleLoaded"), QStringLiteral("subtitleTimeScale"), QStringLiteral("subtitleFPSSupported"), QStringLiteral("statisticsVisible"), QStringLiteral("statisticsText"), QStringLiteral("presets"), QStringLiteral("activePreset"), QStringLiteral("timelineVisible"), QStringLiteral("waveformVisible"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("videoInfo")}},
@@ -324,6 +386,9 @@ private:
             row.insert(QStringLiteral("font_pixel_size"),widget->font().pixelSize());
             row.insert(QStringLiteral("font_point_size"),widget->font().pointSizeF());
             row.insert(QStringLiteral("dpr"),widget->devicePixelRatioF());
+            row.insert(QStringLiteral("palette_highlight"),widget->palette().color(QPalette::Highlight).name());
+            row.insert(QStringLiteral("palette_window"),widget->palette().color(QPalette::Window).name());
+            row.insert(QStringLiteral("palette_text"),widget->palette().color(QPalette::Text).name());
             row.insert(QStringLiteral("x"),widget->x());row.insert(QStringLiteral("y"),widget->y());
             row.insert(QStringLiteral("checked"),QJsonValue::fromVariant(widget->property("checked")));
             if (auto *combo = qobject_cast<QComboBox *>(widget)) {
@@ -784,6 +849,12 @@ private:
             render();
         };
         connect(expression, &QQmlExpression::valueChanged, this, check);
+        if ((awaitCore==QStringLiteral("position") || awaitCore==QStringLiteral("time_seconds"))
+            && !observeCorePosition(check)) {
+            respond(id,{{QStringLiteral("id"),id},{QStringLiteral("status"),QStringLiteral("failed")},
+                {QStringLiteral("error"),QStringLiteral("core_observation_listener_failed_action_not_undone")}});
+            return;
+        }
         if (!awaitCore.isEmpty()) {
             connect(m_player, &PlayerController::inputChanged, expression, check);
             connect(m_player, &PlayerController::playingStateChanged, expression, check);

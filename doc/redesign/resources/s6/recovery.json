@@ -1,0 +1,106 @@
+{
+  "result": "PASS",
+  "cases": [
+    {
+      "case": "recovery-malformed",
+      "kind": "malformed",
+      "result": "PASS",
+      "saved": {
+        "bytes": 1,
+        "present": true,
+        "sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+        "type": "QString"
+      },
+      "read_only_preserved": true,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "recovery-newer",
+      "kind": "newer",
+      "result": "PASS",
+      "saved": {
+        "bytes": 1266,
+        "present": true,
+        "sha256": "bf2d3e1e57e45287a35fcc4833ee8fd595e2270379a9b8c4d59ca9361404f63c",
+        "type": "QString"
+      },
+      "read_only_preserved": true,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "recovery-oversized-v2",
+      "kind": "oversized",
+      "result": "PASS",
+      "saved": {
+        "bytes": 262158,
+        "present": true,
+        "sha256": "5b890d733d30d31cb192b6a03873e280541d091829b2da36942092c23c312f49",
+        "type": "QString"
+      },
+      "readback_case": "recovery-oversized-v2-readback",
+      "readback_response": "a78007c21fdf4a54b7f3334d23baac2c.json",
+      "read_only_preserved": true,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "recovery-wrong-type-v2",
+      "kind": "wrong-type",
+      "result": "PASS",
+      "saved": {
+        "bytes": 1266,
+        "present": true,
+        "sha256": "5dc347826d9ade08a3db75a6850493a9eebb0ba4a156351186710024b33c58a0",
+        "type": "QByteArray"
+      },
+      "readback_case": "recovery-wrong-type-v2-readback",
+      "readback_response": "28f6c7fdf4d14e45ba6796ed4301db7b.json",
+      "read_only_preserved": true,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "recovery-present-empty-v2",
+      "kind": "present-empty",
+      "result": "PASS",
+      "saved": {
+        "bytes": 0,
+        "present": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "type": "QString"
+      },
+      "readback_case": "recovery-present-empty-v2-readback",
+      "readback_response": "4ce45a96bedb4bce98886b1ab0ad1e28.json",
+      "read_only_preserved": true,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "recovery-missing-v2",
+      "kind": "missing",
+      "result": "PASS",
+      "saved": {
+        "bytes": 0,
+        "present": false,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "type": ""
+      },
+      "readback_case": "recovery-missing-v2-readback",
+      "readback_response": "50f62047975b418caf18f38c2816cced.json",
+      "read_only_preserved": false,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "recovery-write-retry",
+      "kind": "real-write-failure-and-retry",
+      "result": "PASS",
+      "accepted_unchanged_on_failure": true,
+      "retry_saved": true,
+      "exit_code": 0,
+      "input_desktop_preserved": true
+    }
+  ]
+}

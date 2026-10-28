@@ -3,6 +3,102 @@
   "extraction": "Saved outlined paths with nested affine matrices; white masks and original volume gradient.",
   "icons": [
     {
+      "id": "45:22",
+      "name": "name=forward-10-sec, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "forward10.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "91570661015c85ddbf9d39926c6bea1cdebc7afa67694322b0e45fb6d2b4b790"
+    },
+    {
+      "id": "45:28",
+      "name": "name=backward-10-sec, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "backward10.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "73be71679e5e430bd8351876f1acf59c3f9fd9a88cf983d6f47cdbe8919dffbb"
+    },
+    {
+      "id": "45:32",
+      "name": "name=forward-15-sec, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "forward15.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "74225701d14ac3ee75ef5486a50aafd2ff54228f30026d57fef59a4b652aff83"
+    },
+    {
+      "id": "45:36",
+      "name": "name=backward-15-sec, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "backward15.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "574ffcb61ee49893c9ce1c9bc0330d3f3d7a7676168493bd07a67cd48dfcbb70"
+    },
+    {
+      "id": "1919:9572",
+      "name": "name=replay, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "replay.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "a99d0d385885962081bec5b9acbe8e0d6501f2d5f803f76d290ea2b2ec48a7cf"
+    },
+    {
+      "id": "2115:7386",
+      "name": "name=speed, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "speed.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "d4039abd9b0295a0aaa5f2be81f4c1658be27fa35e371450a6948730a505f356"
+    },
+    {
+      "id": "2115:7492",
+      "name": "name=snapshot, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "snapshot.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "b8d53dad1e7ffec783604e8fde1e47338035f0ff28324048f959c453181f4fa5"
+    },
+    {
+      "id": "2127:7779",
+      "name": "name=bookmark, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "bookmark.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "e413a34761ce95193700b084cb5ac9af74a8d2f25c87b356bcdebe36ce34a7ad"
+    },
+    {
+      "id": "2146:9032",
+      "name": "name=HDR, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "hdr.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "1313c206296a2d794d93e2ba491b61634d1288df39857e1268438a7d68f10e17"
+    },
+    {
+      "id": "2154:9680",
+      "name": "name=zoom, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "zoom.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "6fa392c05da906b35636d3869e34e6402d91138633ecdd5797df188040a6e4eb"
+    },
+    {
+      "id": "6073:14046",
+      "name": "name=quit, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "quit.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "17c823480005a1b0daf1d27faf9de46f528130dbb85d504d06bb799840dda411"
+    },
+    {
+      "id": "2139:8439",
+      "name": "name=PiP, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "pip.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "44729c627aca19824229926a8b4acb4f8790df23deef96b92648eb63b89b530d"
+    },
+    {
       "id": "2437:14888",
       "name": "name=edit, direction=default, state=default, value=default, EQ=default, two-tone=no",
       "filename": "edit.svg",

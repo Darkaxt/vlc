@@ -116,6 +116,12 @@ MainUI::MainUI(qt_intf_t *p_intf, MainCtx *mainCtx, QWindow* interfaceWindow,  Q
 #ifdef VLC_PLAYER_DIAGNOSTICS
     if (!qEnvironmentVariableIsEmpty("VLC_PLAYER_DIAGNOSTICS_DIR"))
     {
+#ifdef _WIN32
+        // Set this before QML creation, which can call native configuration
+        // code. A failed assertion must exit this test, not hide in a modal
+        // CRT dialog on its inactive desktop before diagnostics can attach.
+        _set_error_mode(_OUT_TO_STDERR);
+#endif
         QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
         const int proxyPort = qEnvironmentVariableIntValue("VLC_PLAYER_DIAGNOSTICS_PROXY_PORT");
         if (proxyPort > 0 && proxyPort <= 65535

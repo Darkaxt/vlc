@@ -1,0 +1,46 @@
+{
+  "result": "PASS",
+  "cases": [
+    {
+      "case": "onboarding-core-write-retry-full-size",
+      "kind": "core-write-retry",
+      "result": "PASS",
+      "real_failure_preserved": true,
+      "retry_saved": true,
+      "root_count": 1
+    },
+    {
+      "case": "onboarding-interface-write-retry-full-size",
+      "kind": "interface-write-retry",
+      "result": "PASS",
+      "real_failure_preserved": true,
+      "retry_saved": true,
+      "root_count": 1
+    },
+    {
+      "case": "onboarding-invalid-folder-full-size",
+      "kind": "invalid-folder",
+      "result": "PASS",
+      "roots_preserved": true
+    },
+    {
+      "case": "onboarding-excluded-folder-full-size",
+      "kind": "excluded-ancestor-folder",
+      "result": "PASS",
+      "exclusion_preserved": true
+    },
+    {
+      "case": "onboarding-first-skip-full-size",
+      "kind": "first-run-skip",
+      "result": "PASS",
+      "presentation_preserved": true
+    },
+    {
+      "case": "onboarding-skip-restart-full-size",
+      "kind": "skip-subsequent-startup",
+      "result": "PASS",
+      "dismissal_persisted": true,
+      "prior_state_preserved": true
+    }
+  ]
+}

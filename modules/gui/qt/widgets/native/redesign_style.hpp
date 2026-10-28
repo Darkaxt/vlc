@@ -9,6 +9,17 @@
 #include <QPalette>
 inline void applyRedesignDialogStyle(QWidget *widget, qt_intf_t *intf)
 {
+    if(intf->p_mi && !widget->property("redesignStyleBound").toBool()){
+        widget->setProperty("redesignStyleBound",true);
+        QObject::connect(intf->p_mi,&MainCtx::redesignAccentChanged,widget,
+                         [widget,intf](){applyRedesignDialogStyle(widget,intf);});
+        QObject::connect(intf->p_mi->getColorScheme(),&ColorSchemeModel::currentChanged,widget,
+                         [widget,intf](){applyRedesignDialogStyle(widget,intf);});
+    }
+    // Qt's stylesheet repolish restores its cached pre-stylesheet palette.
+    // Unpolish the previous sheet before installing the new native palette,
+    // so an existing window cannot restore the old theme/accent underneath it.
+    widget->setStyleSheet(QString());
     static const int fontId =
         QFontDatabase::addApplicationFont(":/redesign/fonts/InterVariable.ttf");
     static const auto families = QFontDatabase::applicationFontFamilies(fontId);
@@ -31,7 +42,7 @@ inline void applyRedesignDialogStyle(QWidget *widget, qt_intf_t *intf)
     palette.setColor(QPalette::WindowText, QColor(fg));
     palette.setColor(QPalette::ButtonText, QColor(fg));
     palette.setColor(QPalette::Highlight, accent);
-    palette.setColor(QPalette::HighlightedText, QColor("#2e2e2e"));
+    palette.setColor(QPalette::HighlightedText, intf->p_mi ? intf->p_mi->getRedesignAccentText() : QColor("#2e2e2e"));
     palette.setColor(QPalette::PlaceholderText, QColor(dark ? "#3f3f3f" : "#676767"));
     widget->setPalette(palette);
     widget->setAutoFillBackground(true);

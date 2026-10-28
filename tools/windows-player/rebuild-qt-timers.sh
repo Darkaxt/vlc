@@ -13,5 +13,5 @@ for name in 0001-Mingw-own-animation-timers-in-QThreadStorage.patch \
     fi
     patch --dry-run --reverse --fuzz=0 -p1 < "$patch_file"
 done
-cmake --build vlc_build --target Core --parallel 2
+cmake --build vlc_build --target Core --parallel 1
 cmake --install vlc_build

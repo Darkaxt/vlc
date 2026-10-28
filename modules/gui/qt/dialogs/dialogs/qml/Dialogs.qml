@@ -24,6 +24,7 @@ import VLC.Dialogs
 import VLC.Widgets as Widgets
 import VLC.Util
 import VLC.Style
+import VLC.Player
 
 Item {
     id: root
@@ -603,9 +604,11 @@ Item {
             target: DialogsProvider
 
             function onShowToolbarEditorDialog() {
-                toolbarEditorDialogLoader.active = true
+                toolbarEditorDialogLoader.active=true
                 toolbarEditorDialogLoader.item.open()
             }
         }
     }
+    PlayerOnboarding { parent: root.bgContent; previewItem:root.bgContent }
+    PlayerProfiles { parent: root.bgContent }
 }

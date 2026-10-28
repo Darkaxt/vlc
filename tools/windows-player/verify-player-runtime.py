@@ -12,8 +12,8 @@ parser.add_argument('--with-media-library',action='store_true',help='Exercise no
 options=parser.parse_args()
 s=options.scratch.resolve();r=options.runtime.resolve();e=options.evidence.resolve()
 repo=Path(__file__).resolve().parents[2]
-if s.drive.upper()!='E:' or r.drive.upper()!='E:' or not e.is_relative_to(s):
- parser.error('Use an explicit E: scratch root, evidence below it, and an isolated E: runtime')
+if s.drive.upper() not in ('D:','E:') or r.drive.upper() not in ('D:','E:') or not e.is_relative_to(s):
+ parser.error('Use an explicit D:/E: scratch root, evidence below it, and an isolated D:/E: runtime')
 if not options.fixture.is_file():parser.error('The playback fixture must exist')
 if not (r/'portable').is_dir() or any((r/'portable').iterdir()):
  parser.error('The isolated runtime must have an existing empty portable directory; preserve prior settings separately')
@@ -23,7 +23,7 @@ from isolated_desktop import IsolatedProcess
 assert r.is_dir() and (r/'portable').is_dir()
 e.mkdir(parents=True,exist_ok=True)
 qt=r/'plugins/gui/libqt_plugin.dll';blob=qt.read_bytes()
-markers=['VLC_PLAYER_DIAGNOSTICS_DIR','VLC_PLAYER_DIAGNOSTICS_TOKEN','VLC_PLAYER_DIAGNOSTICS_OFFSCREEN','VLC_PLAYER_DIAGNOSTICS_PROXY_PORT','redesignSeekRequests','offscreen_session_is_capture_only','PlayerDiagnostics']
+markers=['VLC_PLAYER_DIAGNOSTICS_DIR','VLC_PLAYER_DIAGNOSTICS_TOKEN','VLC_PLAYER_DIAGNOSTICS_OFFSCREEN','VLC_PLAYER_DIAGNOSTICS_PROXY_PORT','redesignSeekRequests','offscreen_session_is_capture_only','core_observation_listener_failed_action_not_undone','palette_highlight','PlayerDiagnostics']
 for marker in markers:
  for encoding in ['ascii','utf-16le']:assert marker.encode(encoding) not in blob,(marker,encoding)
 print('Normal plugin contains no diagnostic transport, authentication or offscreen mode',flush=True)

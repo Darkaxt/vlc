@@ -8,11 +8,11 @@ archive_dir=${3:-/scratch/downloads}
 test -f "$contrib_build/Makefile"
 test -f "$archive_dir/qtbase-everywhere-src-6.8.3.tar.xz"
 (cd "$archive_dir" && sha512sum --check "$source_root/contrib/src/qt/SHA512SUMS")
-export JOBS=2 CMAKE_BUILD_PARALLEL_LEVEL=2 MESON_BUILD='-j 2'
+export JOBS=1 CMAKE_BUILD_PARALLEL_LEVEL=1 MESON_BUILD='-j 1' CARGO_BUILD_JOBS=1
 # Use the maintained contrib dependency graph, Windows toolchain and existing
 # Qt patches. Native build tools keep networking disabled. Target QtNetwork
 # uses Schannel and Windows certificate validation; no OpenSSL DLL is added.
-make -C "$contrib_build" -j2 TARBALLS="$archive_dir" .qt
+make -C "$contrib_build" -j1 TARBALLS="$archive_dir" .qt
 prefix=/work/build/contrib/x86_64-w64-mingw32
 test -f "$prefix/lib/libQt6Network.a"
 test -f "$prefix/mkspecs/modules/qt_lib_network.pri"

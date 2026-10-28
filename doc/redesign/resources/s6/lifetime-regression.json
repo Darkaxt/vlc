@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "sha256": "84fd22aca69d13bea1e10bcf081741be7c78ea09106c21475b66dc0427b306d0",
+  "stdout": "PASS: animation timers and regex JIT stack are destroyed before thread storage release\n",
+  "stderr": ""
+}

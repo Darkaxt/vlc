@@ -1,0 +1,22 @@
+{
+  "existing_profile_unchanged": true,
+  "windows_language_key_unchanged": true,
+  "installed_settings": [
+    {
+      "path": "C:\\Users\\darka\\AppData\\Roaming\\vlc\\vlcrc",
+      "exists": true,
+      "sha256": "e9e51d7c9b171ed21fb9cd6c84f6e76896e6f5254d4d2dddb91d2b1b2627a42d"
+    },
+    {
+      "path": "C:\\Users\\darka\\AppData\\Roaming\\vlc\\vlc-qt-interface.ini",
+      "exists": true,
+      "sha256": "740c0bd63339bd23a9f3644c9e96b93633cc59ec03a6d58aaa51f527d1228f21"
+    }
+  ],
+  "language": {
+    "key_exists": false,
+    "exists": false
+  },
+  "fixture_sha256": "fe76ed2ba5a1793092d65cc479ba6b2e373c731b9ee8ccac758bfd7889b76394",
+  "fixture_bytes": 2508208
+}

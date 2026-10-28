@@ -1,0 +1,1132 @@
+{
+  "matched": true,
+  "files": [
+    {
+      "path": "contrib/src/qt/0001-Mingw-own-animation-timers-in-QThreadStorage.patch",
+      "sha256": "412638d3d520fe4f68038b08993e91b021efd35313a069d5ea4b935293943842",
+      "bytes": 2598
+    },
+    {
+      "path": "contrib/src/qt/0002-Mingw-own-regex-JIT-in-QThreadStorage.patch",
+      "sha256": "3539cb60db3b95af947f016bdeae23bd75f744a914922415adc2cc1e5fd62670",
+      "bytes": 2302
+    },
+    {
+      "path": "contrib/src/qt/rules.mak",
+      "sha256": "fb39b00dd51cdf78dca016724cdc2ed3ba6777082d5de5c15dbf9d2db21e8de6",
+      "bytes": 5546
+    },
+    {
+      "path": "contrib/src/upnp/mingw-posix-aliases.patch",
+      "sha256": "4cae97bf26c93579970c32218d82ca873d7c688dd88f786cef553e6eba117445",
+      "bytes": 815
+    },
+    {
+      "path": "contrib/src/upnp/rules.mak",
+      "sha256": "355788cb3f4db0e2de3ee702795128a05998fe13670e4fba993b6649a8f8ff05",
+      "bytes": 1362
+    },
+    {
+      "path": "modules/audio_filter/equalizer.c",
+      "sha256": "efa9f0840ffd0451c592b83ebbdf5eeff0bed36e79d0b83a5d2ff015ba61e1ae",
+      "bytes": 19431
+    },
+    {
+      "path": "modules/gui/qt/Makefile.am",
+      "sha256": "c425350c6c7b70b451f370a6f631a2c9f13cd913c2c569938704257d469109b4",
+      "bytes": 74306
+    },
+    {
+      "path": "modules/gui/qt/assets.qrc",
+      "sha256": "87408c504224b85a1945f44b69a7b219144a514a3f03fae8479eb7da4d6335a1",
+      "bytes": 15458
+    },
+    {
+      "path": "modules/gui/qt/dialogs/dialogs/qml/Dialogs.qml",
+      "sha256": "c6e878ac5ff6b2c5be89b2d7ded64af9cc5cac07422908b5e578e4c94facc3f1",
+      "bytes": 20195
+    },
+    {
+      "path": "modules/gui/qt/dialogs/dialogs_provider.cpp",
+      "sha256": "b926444f964bbc5a57ec49a529bb02bb29708fd635f56399e4c2d8ea10c5695d",
+      "bytes": 32187
+    },
+    {
+      "path": "modules/gui/qt/dialogs/dialogs_provider.hpp",
+      "sha256": "ed30af5ba40b63a7c6296e11f9b3d5f4f7271855eec1004f7d6ad79233dd645c",
+      "bytes": 11685
+    },
+    {
+      "path": "modules/gui/qt/dialogs/extensions/extensions.cpp",
+      "sha256": "e2011ebc5ba0eec6729dee85685f162b64d0c47a3979de4b193ed403ed174d1e",
+      "bytes": 22856
+    },
+    {
+      "path": "modules/gui/qt/dialogs/open/open.cpp",
+      "sha256": "c1e8478d98c734813dc922100b76f413fdc2d5db29708671f9975bb16a807369",
+      "bytes": 16299
+    },
+    {
+      "path": "modules/gui/qt/dialogs/plugins/plugins.cpp",
+      "sha256": "7d916b50a6fc7850e08704829d50606181588943e67886bf77f515b63b88c68f",
+      "bytes": 46185
+    },
+    {
+      "path": "modules/gui/qt/dialogs/plugins/plugins.hpp",
+      "sha256": "527cfb55fa4eb253942abf0a77bdebd1cb77486a7560d61fb6fc731e1247060e",
+      "bytes": 7178
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/preferences.cpp",
+      "sha256": "a37271c4944a7932e603fa4bb066c61b81e5cfe00a8bc682b86d614eb9f1b2d1",
+      "bytes": 65640
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/preferences.hpp",
+      "sha256": "fe6c512a9ca29ecced3e8db662150b12a43d23de7e65cc698f057bca1617e250",
+      "bytes": 2947
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/preferences_languages.hpp",
+      "sha256": "95cd3abc96217538d2015a5512b03814f81037622a60ca327e7f24ee678bbf17",
+      "bytes": 2178
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/preferences_widgets.cpp",
+      "sha256": "df9860d19327cb708fce51bbbf3024e3c6e2df431fab34025c48fe780bc33d5e",
+      "bytes": 73688
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/preferences_widgets.hpp",
+      "sha256": "4543a08d71267a33e29e36c0f83365574ea98380121e53f71862f61024af2f46",
+      "bytes": 15761
+    },
+    {
+      "path": "modules/gui/qt/dialogs/preferences/simple_preferences.cpp",
+      "sha256": "01df10962a0c8ee86433bdd43e3b272d022834a77416de3bcf7ca99979569a55",
+      "bytes": 62255
+    },
+    {
+      "path": "modules/gui/qt/dialogs/sout/convert.cpp",
+      "sha256": "c26de78c49b2bb3650dd6f0d658064eb9b8b40b90375a573d9b52a11bbebe639",
+      "bytes": 9519
+    },
+    {
+      "path": "modules/gui/qt/dialogs/sout/profile_selector.cpp",
+      "sha256": "7e87265f1bf038802a8f5954548f6b65a60c5407ebf8d5486d356e826ac549ed",
+      "bytes": 33874
+    },
+    {
+      "path": "modules/gui/qt/dialogs/sout/sout.cpp",
+      "sha256": "7d26769966948cd4f080e0dc14aa5703ff084cb4e4c97a1f04bcaf265aef6926",
+      "bytes": 7407
+    },
+    {
+      "path": "modules/gui/qt/fonts/redesign/InterVariable.ttf",
+      "sha256": "4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf",
+      "bytes": 879708
+    },
+    {
+      "path": "modules/gui/qt/fonts/redesign/LICENSE.txt",
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+      "bytes": 4380
+    },
+    {
+      "path": "modules/gui/qt/fonts/redesign/source.json",
+      "sha256": "1fa1f635f01b1630e316102359b5742ad4b298713faaf52677c78d9e8cab356c",
+      "bytes": 187
+    },
+    {
+      "path": "modules/gui/qt/maininterface/compositor_dcomp.cpp",
+      "sha256": "fcc287f93c79df1a4c2d1a6731865aef6b0b0e19c16bf6ba742f1fabbbebf8e1",
+      "bytes": 19632
+    },
+    {
+      "path": "modules/gui/qt/maininterface/compositor_dcomp.hpp",
+      "sha256": "fd2f6a424c164540224e5466fbc345f086d8b06a9750ee4825619304ed2c4aac",
+      "bytes": 3627
+    },
+    {
+      "path": "modules/gui/qt/maininterface/interface_window_handler.cpp",
+      "sha256": "110847596251a0a75c73830ae3c5b0f64b973e88dd6f18374c3cc2f0ea4a90af",
+      "bytes": 17601
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainctx.cpp",
+      "sha256": "5ed2d359b0ea31d77e76ddddaa64e1359dd52a767adf3342c974f52a5421fdd1",
+      "bytes": 58609
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainctx.hpp",
+      "sha256": "7764abba67a7b0eafd34a09abee3d9f233cb9d8397c8ea236e489d582b67dbb8",
+      "bytes": 28995
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainctx_win32.cpp",
+      "sha256": "51e4079e83c5e50578715715fd2ea2ff9decf76af6a98ece39fb259e9bcc6ce0",
+      "bytes": 40425
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainui.cpp",
+      "sha256": "d79e4e0e74b3ad911ba8364c40040e2d628e2be02de4c5249b240bc10aa3add1",
+      "bytes": 27157
+    },
+    {
+      "path": "modules/gui/qt/maininterface/mainui.hpp",
+      "sha256": "b2c61c0f986e4d2aba141ab0216002da4fdc4a5fbe7b66a426723411e0f54b72",
+      "bytes": 2479
+    },
+    {
+      "path": "modules/gui/qt/maininterface/player_diagnostics.hpp",
+      "sha256": "7e21bc0d750f21fa98648f83e8f2ad1e73f60a6dccf6f41419782d27a30bd527",
+      "bytes": 59117
+    },
+    {
+      "path": "modules/gui/qt/maininterface/player_video_backdrop.hpp",
+      "sha256": "ddd55114f0ba62dd1a4028793f931ac8b1bb0c8c04c7afaf04c69300a0fdd73d",
+      "bytes": 10692
+    },
+    {
+      "path": "modules/gui/qt/maininterface/qml/MainDisplay.qml",
+      "sha256": "baabe06f8f2e7c3bae365c0c5d4ef7b0c8ac40f43ef9f8a734e3b74f5a55a390",
+      "bytes": 41943
+    },
+    {
+      "path": "modules/gui/qt/maininterface/qml/MainInterface.qml",
+      "sha256": "13d0d03c9c77d0ae9d260efdebc6735e73b54ecab41031eeb683bca43e70a4fb",
+      "bytes": 14839
+    },
+    {
+      "path": "modules/gui/qt/maininterface/qml/SideNavigationPane.qml",
+      "sha256": "7f214a65d4f106f728088f7db9a836b6ac64498b8bf44438ac2639df54b73cb1",
+      "bytes": 11363
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlaudiomodel.cpp",
+      "sha256": "c773c98bb5fc0428123508f1d566e1dd4d3422ff045f7fd62967bd906f8bed0a",
+      "bytes": 7117
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlaudiomodel.hpp",
+      "sha256": "87639832a1fa2694d7306b1d661634123a67dc281e869319e3081c5969bf3e0c",
+      "bytes": 2783
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlbookmarkmodel.cpp",
+      "sha256": "8aeb2c039aa36f8e91dc35e4b83ae6c6cc9d6762b84de97f3688cda4b90ff0de",
+      "bytes": 19624
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlbookmarkmodel.hpp",
+      "sha256": "f3eb5d34de57ddd4a1b3c0afdb74eb007a4e521ef74da311e598e8a8ab217813",
+      "bytes": 5403
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlfolder.cpp",
+      "sha256": "2eb32840d48b4e4282bc608be16fe78a902669c18ba938f6811b624f529dc334",
+      "bytes": 2008
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlmediamodel.cpp",
+      "sha256": "38fe565b372372b986ad6b4094c48a9a82aaf1fd5243f49d93da895cfc4fe45a",
+      "bytes": 10743
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlmediamodel.hpp",
+      "sha256": "06c1b09431a899e3e7b589118806f4f51802ccab0deb1a0a44e20c2d44c02e50",
+      "bytes": 2989
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlplaylistlistmodel.cpp",
+      "sha256": "ef1496f266e04f3e8271ae053fca1a589372783146a36b1628b12f76ff6d2177",
+      "bytes": 17087
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlplaylistlistmodel.hpp",
+      "sha256": "cbd2c2d723604d3392dd9fa5917864cbea84ac70228c51796bdd27b7551cbed8",
+      "bytes": 4900
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlvideofoldersmodel.cpp",
+      "sha256": "2026edca3b88db749a3d7e252f97fc6d11c752e6cf0e2097b41d2c397040f9c5",
+      "bytes": 16433
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlvideofoldersmodel.hpp",
+      "sha256": "11af4fee29cd85b718d5feab314fb6291ca062a0272c651c2be97214f12ec459",
+      "bytes": 3548
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlvideomodel.cpp",
+      "sha256": "8566a1bb8b64ba924ecdb26d7e820385535a1a7cc0bf0f1f47d2781542f31b24",
+      "bytes": 8107
+    },
+    {
+      "path": "modules/gui/qt/medialibrary/mlvideomodel.hpp",
+      "sha256": "7dd85c03303a1c5630f8e5e16e18a93e0eb75f01d1b7b37fc0cbedfba1ace12d",
+      "bytes": 3323
+    },
+    {
+      "path": "modules/gui/qt/menus/menus.cpp",
+      "sha256": "e2b46a8968526904bfbc830b534a5498dd7194844a80df9dff68d6e3938851ff",
+      "bytes": 33648
+    },
+    {
+      "path": "modules/gui/qt/menus/menus.hpp",
+      "sha256": "6a6164c7a7acc0d02a482b8bfda3b1122f3013f98a138cfc3b1935fd06152361",
+      "bytes": 3300
+    },
+    {
+      "path": "modules/gui/qt/menus/qml_menu_wrapper.cpp",
+      "sha256": "dee117b5f2a93ac167c00796b6f9739466c6bbacf04c173b4bc3e248228603b1",
+      "bytes": 41125
+    },
+    {
+      "path": "modules/gui/qt/menus/qml_menu_wrapper.hpp",
+      "sha256": "80ae9810f6f907afb4bc438efbddf111078ec96c0201ed6ad524aff6de73b694",
+      "bytes": 12330
+    },
+    {
+      "path": "modules/gui/qt/meson.build",
+      "sha256": "d516818f0de518c0b1d82b5230d7365d60403fe8b8d7974ea478a7038a07d7cb",
+      "bytes": 54886
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/README.md",
+      "sha256": "127a56a64c844873c444b3ecbfeb0a683d4803f6e7e8580d061899de6a5c3dba",
+      "bytes": 1915
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/add.svg",
+      "sha256": "4149fb7cc611702291fdeb6b018b72af3f68701d7e13c2abdd795edcd93257cb",
+      "bytes": 1129
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/albums.svg",
+      "sha256": "2557fb47e22d534d710b4748d5959859cc564e9b78d64ce3bfd3df37a32d5c25",
+      "bytes": 8393
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/artists.svg",
+      "sha256": "eaa6e02d9ec58a0143e9274bced2b8083b476e5286d080f6d327128dbe03742e",
+      "bytes": 9063
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/audio.svg",
+      "sha256": "3dab78cc136b3f4e1e25b18820018b1c2e574a705741cc491de3d8efab59ed10",
+      "bytes": 2469
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/back.svg",
+      "sha256": "29f5f5f84068b94cb44d456f81fe569acedf5249a65e282e17d78a2daaee7216",
+      "bytes": 1848
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/backward10.svg",
+      "sha256": "73be71679e5e430bd8351876f1acf59c3f9fd9a88cf983d6f47cdbe8919dffbb",
+      "bytes": 5032
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/backward15.svg",
+      "sha256": "574ffcb61ee49893c9ce1c9bc0330d3f3d7a7676168493bd07a67cd48dfcbb70",
+      "bytes": 5247
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/bookmark.svg",
+      "sha256": "e413a34761ce95193700b084cb5ac9af74a8d2f25c87b356bcdebe36ce34a7ad",
+      "bytes": 5859
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/bookmarks.svg",
+      "sha256": "c61e051fd5e2537fc9f5254b767733a4887c4e6763b64ef818b48c79f83d71f7",
+      "bytes": 4899
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/chapters.svg",
+      "sha256": "1de576908b4de6fc5a0aa2894151814eed99cd7ab35a4302ab929dae80c2d162",
+      "bytes": 2896
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/chevron-down.svg",
+      "sha256": "a25f4f67af696a87e0389b7e9f27191ebf4da40ca1c3bae2b30eb250dbfacb59",
+      "bytes": 1434
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/choice-empty.svg",
+      "sha256": "9a65878c79085925fe85839a30f81422bcc47b77086d2c91cb66343f9b99827e",
+      "bytes": 141
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/choice-selected.svg",
+      "sha256": "ccdf171038293eed71b26f5a7585ca699bd87abb20f72fa476241ff21b31332a",
+      "bytes": 1575
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/close.svg",
+      "sha256": "7a7e5f2bdd9068c473cd2e52c15bccda6253f88b4de892a39f4b25370a9f1cc7",
+      "bytes": 2116
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/edit.svg",
+      "sha256": "39ebdbed9d47717efaf9b0af024fb898915cb4c06a179eddf40cdc1d25979aad",
+      "bytes": 5684
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/expand-library.svg",
+      "sha256": "bf8f813ca67c67b3dddf34dcd7790f5b3ce2856dfc4e90b7e7df71ff95bc7268",
+      "bytes": 3454
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/folder.svg",
+      "sha256": "17689e857fb443f09a4beb2d2a45eee33031ff4c483450273a4e8bd11f6a582d",
+      "bytes": 2480
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/forward.svg",
+      "sha256": "efd80513e4b414c3682892fef0941cd772b652186a1febe206ca70b93e4be3a8",
+      "bytes": 1834
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/forward10.svg",
+      "sha256": "91570661015c85ddbf9d39926c6bea1cdebc7afa67694322b0e45fb6d2b4b790",
+      "bytes": 5028
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/forward15.svg",
+      "sha256": "74225701d14ac3ee75ef5486a50aafd2ff54228f30026d57fef59a4b652aff83",
+      "bytes": 5243
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/fullscreen.svg",
+      "sha256": "ff27a602af740dd14bf9d825e42a864e69060a81de6faee0d31233ab0e8fff34",
+      "bytes": 3563
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/genres.svg",
+      "sha256": "22159b1aac6f26442c416e3b5545ef2d644f9ec6848ff95475360a1be5911e62",
+      "bytes": 2630
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/grid.svg",
+      "sha256": "ad2908f950d39b13714704da438f2c9208f8d503d718feaf1c3ce2e6759c2fef",
+      "bytes": 821
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/hdr.svg",
+      "sha256": "1313c206296a2d794d93e2ba491b61634d1288df39857e1268438a7d68f10e17",
+      "bytes": 3723
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/home-active.svg",
+      "sha256": "80c599aa2c39bdd18333eefb1f4a6748099135999ed56b52c326eb28348ab2e9",
+      "bytes": 1181
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/home.svg",
+      "sha256": "2e40f52d8793cbfe74c268fb3e7c3356093f7b080bf8d97e72880476801c44f9",
+      "bytes": 2905
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-music-active.svg",
+      "sha256": "82d86c5d3b6f5fc204f4309ad20b226d281aade2394c50bd01ab2ca8b76d668a",
+      "bytes": 2078
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-music.svg",
+      "sha256": "06b0e02d7b93a916ed11412740fc149e6b05ccaad911c217207e31bf96099a63",
+      "bytes": 9083
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-playlists-active.svg",
+      "sha256": "6d63e75f479544a656f6542ae5f040d732a658f415d78ae03023d488ede69bc9",
+      "bytes": 3103
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-playlists.svg",
+      "sha256": "6c3859a3668c3007d3de0d04b0c61ecdc339e7c8706834e93c3e5a23c0125ea2",
+      "bytes": 3079
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-videos-active.svg",
+      "sha256": "4446be0640f2f9ea0a795455f414746509bfac53228d67066c604903bc739d11",
+      "bytes": 1451
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-videos.svg",
+      "sha256": "1c10b2cc2f9c49f12c83510bdac31fc29e69c41eea05a85d3d15a7233f1e8e24",
+      "bytes": 3879
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/list.svg",
+      "sha256": "dc62f328ed403d7dd0ac650ff19a98c7e9e198619c357a424ddb8b2c1e16503d",
+      "bytes": 1993
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/manifest.json",
+      "sha256": "5916eef1d1c1af870fa02c4dfdeb64578f5a016d10a5014f82a7e62bef8999c2",
+      "bytes": 23421
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/maximize.svg",
+      "sha256": "81365571e4c55847277c0c730f813629ea4f2e0bb5ddabdd3993976e249e96b4",
+      "bytes": 907
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/minimize.svg",
+      "sha256": "f16c31279735ab32421da0afea2abbede8ac256ccd331a47524214d1ff24bf4a",
+      "bytes": 618
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/more.svg",
+      "sha256": "7963ecaf686f63e0c3bf37f7d7cd03b84a51c2be502226712207ef81fec5814f",
+      "bytes": 2300
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/move.svg",
+      "sha256": "b8599183ef18cf6ea6fb42db014e61aa62d667a4734297ff7a1050ff59bb1f29",
+      "bytes": 1092
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/music.svg",
+      "sha256": "32155834ac61277007c4752b87ee15d4cd453a42312c3b171592e09d915e67ce",
+      "bytes": 6350
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/muted.svg",
+      "sha256": "60fa070e523827fe76480c762af26b5cc02204186ae20fe166905a859b9473a6",
+      "bytes": 5163
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-down-dark.svg",
+      "sha256": "6c3e1ffc4bb29e149d067bf7bc14b20e87b4e08a52d2f1fcaf560b25deb95272",
+      "bytes": 1436
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-down-light.svg",
+      "sha256": "a67cd731873e800b40cadaefff06e31441516fcd17b188f20e156d699365b7c5",
+      "bytes": 1436
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-up-dark.svg",
+      "sha256": "246f81d41be6029693816b4136949e88f703beb900b33b0d6133a5dd9b8d7754",
+      "bytes": 1473
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-up-light.svg",
+      "sha256": "614e1e9b24d88925028fe5a0cbfdba5fba2f2a61d41d64a407c06ccade208d6e",
+      "bytes": 1473
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/network-active.svg",
+      "sha256": "600a64ab51fa4e9070b0efbab42b256e18efd9ca99c89e2ab83718c099462bfd",
+      "bytes": 6180
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/network.svg",
+      "sha256": "5a3b24a7d8bde9b9689715085b228bc6aa54fda38fe56170ac8addc2449f761f",
+      "bytes": 6308
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/next.svg",
+      "sha256": "9dad4463559b6e145f929e6751493e932978c67bfdeea92263cd0d9b18cbcb3c",
+      "bytes": 2320
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/pause.svg",
+      "sha256": "ec164906334538fa8620878975ba27784596f88f654f06dcd53d17117fb46469",
+      "bytes": 1806
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/pip.svg",
+      "sha256": "44729c627aca19824229926a8b4acb4f8790df23deef96b92648eb63b89b530d",
+      "bytes": 1709
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/play.svg",
+      "sha256": "3658047363d0cd0a939afa4ad8b86bc74022e6c4d3b74e8a9dfb09882583dcdd",
+      "bytes": 3147
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/playback.svg",
+      "sha256": "dbc7cfaa9751cd7bf958c22e67996d9ef984a742c051f97963a87aab315b38d7",
+      "bytes": 1397
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/previous.svg",
+      "sha256": "65be52bbb93afecbca4bad7e70d032c40d61160fcb83225f91f6b83253b93207",
+      "bytes": 2323
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/queue-tab.svg",
+      "sha256": "9cf1079c9107518ba0762c55ad75ece0d14672eb021069c87328520aac004c82",
+      "bytes": 1559
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/queue.svg",
+      "sha256": "6c4a7aa6866d89fabc7da2720d6b3857383e9abbb00f5a8d96d429fc779f4fec",
+      "bytes": 2947
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/quit.svg",
+      "sha256": "17c823480005a1b0daf1d27faf9de46f528130dbb85d504d06bb799840dda411",
+      "bytes": 2935
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/recent.svg",
+      "sha256": "613f48cb6efa5835dc7088aad15e14bee792d8c7e5dff8badd4337e8167ec61a",
+      "bytes": 4103
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/remove.svg",
+      "sha256": "ed9883e32992d9fa0cb0f27502d90048f5d4c75a500a42f768b3617e403f8634",
+      "bytes": 656
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/repeat.svg",
+      "sha256": "da4a195a16426b2e800a4e3cba29772187a4889a78f30b24630fb4b75270593e",
+      "bytes": 5051
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/replay.svg",
+      "sha256": "a99d0d385885962081bec5b9acbe8e0d6501f2d5f803f76d290ea2b2ec48a7cf",
+      "bytes": 2769
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/search.svg",
+      "sha256": "d257088c34f5412a5bc76726a38204f6310be17db907c52fd3cc9ab2625fe898",
+      "bytes": 2609
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-controls.svg",
+      "sha256": "268f05fad927f40dcbcb1032e10402feb5907c78cf0a5b2c02d8170d4563a49d",
+      "bytes": 6005
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-extensions.svg",
+      "sha256": "7b226c722b761074602b5890394b45cfda00bacfc94b3d93ac2317c3bf7cf91e",
+      "bytes": 10215
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-general.svg",
+      "sha256": "31f16f8fa4f20890475eec4188db635c800f8a16efa76008168fccf6e2c59886",
+      "bytes": 3207
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-info.svg",
+      "sha256": "9b983d471654daa40505c9846ff675f2754d39160fdff58cd5968b48709a6584",
+      "bytes": 1913
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-interface.svg",
+      "sha256": "a67ec4fc497b3d153dffab1036d9ae3fb07fb75a5c9b5124cf79659a9f3d785b",
+      "bytes": 3745
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-privacy.svg",
+      "sha256": "956ff8cdd7c451b3027a6f36821279aab193b49fcf8d5a24586d1b09ea439ec0",
+      "bytes": 5680
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-recording.svg",
+      "sha256": "7c606dee526b1ac52dc834d4280bdc10b4f4fce28533e0ed11697af77a311701",
+      "bytes": 1796
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/shuffle.svg",
+      "sha256": "48df117638cea6c6906c6db1baf81c2de89982bcc8259c575a3ba9624ab64580",
+      "bytes": 6111
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/sidebar.svg",
+      "sha256": "db00cb4dfda51b01563fbfc9195385534760e71ccd24cc6e57db13cd1362d79a",
+      "bytes": 1480
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/snapshot.svg",
+      "sha256": "b8d53dad1e7ffec783604e8fde1e47338035f0ff28324048f959c453181f4fa5",
+      "bytes": 4297
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/sort.svg",
+      "sha256": "f46269212fb119e8b90164b622a1a11115ce7cb9dc4c5f44fa54627bc09018cf",
+      "bytes": 4051
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/speed.svg",
+      "sha256": "d4039abd9b0295a0aaa5f2be81f4c1658be27fa35e371450a6948730a505f356",
+      "bytes": 3368
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/stop.svg",
+      "sha256": "fbc7801b6736e51253e1b980d454428c95499fbbae1061f3fd6f6f5ed18d2ccd",
+      "bytes": 971
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/subtitles.svg",
+      "sha256": "019f2ce0c2ec6c9dc27e7deb81fb1237e66fca37e1ba129627ab6b469e2257b1",
+      "bytes": 2335
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/tools.svg",
+      "sha256": "0a151166c78a89c4221a912eb52e06162c507bdb95821ba79834b9be9f8251f7",
+      "bytes": 16728
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/video.svg",
+      "sha256": "23ba9b569266b3de4e619da24ee18ff932730a19efb4d9bc7bd5561c97b49ef4",
+      "bytes": 3019
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/vlc.svg",
+      "sha256": "91e8b14a02215c57e36d3375b364a112ba2c5da57df0cb41194a9f26c22042d0",
+      "bytes": 2353
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/volume-cone.svg",
+      "sha256": "5824a25ead0436e84722aef053c1db7fc86658cb8b10254d6c410150785b09cb",
+      "bytes": 634
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/volume-level.svg",
+      "sha256": "90816c47740dde25e60db42abcccf0ee5c9055c52c99b1ed4e019a5993330562",
+      "bytes": 1815
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/volume.svg",
+      "sha256": "628b3677d43d1b089d7d5675b0a38b551ee6d37a079e9dc657fb0443dffb14e4",
+      "bytes": 4567
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/zoom.svg",
+      "sha256": "6fa392c05da906b35636d3869e34e6402d91138633ecdd5797df188040a6e4eb",
+      "bytes": 3637
+    },
+    {
+      "path": "modules/gui/qt/player/input_models.cpp",
+      "sha256": "a431dbc3afd2157b7fd9f2175fd4ddd6979723986d19d2f28b995d7dd88ce2ad",
+      "bytes": 18451
+    },
+    {
+      "path": "modules/gui/qt/player/input_models.hpp",
+      "sha256": "a34e96bf92e0f15f7383b7fe5a18c59e43acef52c14d44251924ab06c1239e05",
+      "bytes": 8368
+    },
+    {
+      "path": "modules/gui/qt/player/player_controller.cpp",
+      "sha256": "dfe3f44a9a6b915090fadd14bf9bf973c6356445f98f302140fef2bb23332393",
+      "bytes": 81489
+    },
+    {
+      "path": "modules/gui/qt/player/player_controller.hpp",
+      "sha256": "b7cec363828a6e452e7ee81f06b15deb0ccd8341af94c3722e32a71f433fac39",
+      "bytes": 21892
+    },
+    {
+      "path": "modules/gui/qt/player/player_media_analysis.cpp",
+      "sha256": "a0ab3d256bc00c09ffcacd0fca56ecdac691a1e81c9dfc11c5a9491ce953a335",
+      "bytes": 17461
+    },
+    {
+      "path": "modules/gui/qt/player/player_media_analysis.hpp",
+      "sha256": "65a296c4237072d74d62644c37bbb73563c70e9bc0401b4bc82c76632f2975fe",
+      "bytes": 5335
+    },
+    {
+      "path": "modules/gui/qt/player/player_media_tools.cpp",
+      "sha256": "609b2c55a8f90fc1a0b3c3388918b53c91e018002faaa244db86f6693155741b",
+      "bytes": 53747
+    },
+    {
+      "path": "modules/gui/qt/player/player_media_tools.hpp",
+      "sha256": "fdb5b473887129b54209c50be76ea6d3ad78c707482ebbaa20dc7736798d0116",
+      "bytes": 6051
+    },
+    {
+      "path": "modules/gui/qt/player/qml/LibraryGlass.qml",
+      "sha256": "caf949d24d1563fd09a40f81cac9455d7b86255d496285171707b6de0c949564",
+      "bytes": 4067
+    },
+    {
+      "path": "modules/gui/qt/player/qml/LibraryState.qml",
+      "sha256": "d69d8ce8388bba3b96c756990513881de5eb829d54f5cd1b2ccb0edd6b20ce4f",
+      "bytes": 3902
+    },
+    {
+      "path": "modules/gui/qt/player/qml/MiniPlayer.qml",
+      "sha256": "8cc6242f3cc9215d4ea6848f2fde5bba0dcde926c2b0c391fd5a84800730b5e3",
+      "bytes": 3442
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PIPPlayer.qml",
+      "sha256": "a2e5a7470f98e6207d078733669cda8058c1ccd9b2087537d4f4f19ce0147d32",
+      "bytes": 6433
+    },
+    {
+      "path": "modules/gui/qt/player/qml/Player.qml",
+      "sha256": "d735de17ac68b4e94d1af26079fd4b032de84e167d5af760fff41c84a58512d0",
+      "bytes": 54920
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerChromeState.qml",
+      "sha256": "5f6f651ed878331bc9684cf5fe977bbfc72cf2b476fac878c32a965268a2e531",
+      "bytes": 642
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerCustomization.qml",
+      "sha256": "f4b5cad728e4e66c0f58fac78a90666de2b2f893f306bcf4b85fd33f886d0d87",
+      "bytes": 5877
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerIconButton.qml",
+      "sha256": "cec8e0b400e6671bca710ef65e54b62f58b5d187ada5cd7ec1eb360d7502f964",
+      "bytes": 1598
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLayoutControl.qml",
+      "sha256": "2dfdb68c917a4856c8b05ae16a35803f2deb27776b99e6758f5e757f362b79f4",
+      "bytes": 12842
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLayoutDrag.qml",
+      "sha256": "25ca2a76d4b829eb23544c3a478f2592e11695c4241242a015bc4b38ec0c5f60",
+      "bytes": 3968
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLayoutEditor.qml",
+      "sha256": "cc3bb4f71dcef55c2b42769af57b41142915f7980455ce2b9093eda526845c09",
+      "bytes": 11064
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLayoutRules.js",
+      "sha256": "173220f2fe34cdecd0d78f59bd7141aa45f1c4e07f5a3e8bd10606784d6dc281",
+      "bytes": 3879
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLayoutStrip.qml",
+      "sha256": "9113602c2463183d846fb2ab8212dc478180d50dbf952971409b5b526ab86329",
+      "bytes": 3781
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLibrary.qml",
+      "sha256": "e400befec2ac05ccb8bd120dfa5deb5988a297d28ddcbcd9ce290b1bb755d10a",
+      "bytes": 51186
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLibraryDisplay.qml",
+      "sha256": "0d5342b47017cd2440b8dc388debc4f10537e29d6eae2347340b8fa4e7bf9e9b",
+      "bytes": 6293
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLibraryHome.qml",
+      "sha256": "1c6cc36b8ec33b37b6b3f373d48825cca0092954bba497bd1da78edb05d1ae42",
+      "bytes": 11991
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLibraryNetworkDialog.qml",
+      "sha256": "c3f631f49b2c2201dec8b07b719c99335041dfeabba86686f3bf5ec8b97c8775",
+      "bytes": 7773
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerLibraryTextDialog.qml",
+      "sha256": "fab34b51d40fd47dc60cd3beaeae6695bfd7413f8e7719788ba5b33d527e619e",
+      "bytes": 2303
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerOnboarding.qml",
+      "sha256": "830a87245e8686baa93a1abc13d2a42e82183092a8843b11546b182d4cb3c388",
+      "bytes": 18988
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerPositions.qml",
+      "sha256": "4d352f3e869b6f7e993602142eb8782d0676e7f7de963609c67a8af79a40fa1b",
+      "bytes": 7388
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerProfiles.qml",
+      "sha256": "bed53748f82226ef51f79378dae8a351492abd7f05c634fcb5a42e5b0d7559b7",
+      "bytes": 4309
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerQueueHeader.qml",
+      "sha256": "418a43d6fad96c9d658ff4a03cf16287f9b740329906c8ebe577d55f78da1b3f",
+      "bytes": 7408
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerResume.qml",
+      "sha256": "b3b988dd10f25f770ea21a4d57ad4e3228a266049ff908b5776660b472203d4d",
+      "bytes": 2490
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSeekAnalysis.qml",
+      "sha256": "389725848656a0451dc1ce28a9727daa4e49302559b8057cca40d91d4b6f52b3",
+      "bytes": 5197
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSettingRow.qml",
+      "sha256": "2938e58f0f541c5863869e2cf68bf7b1fe0ff7afe4ef81403fd5967d34d9411e",
+      "bytes": 8153
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSettingsChoice.qml",
+      "sha256": "456fc049dc56445af4a83d7ea431b4ef1165781fbd5a1a0e81e3467f53569abe",
+      "bytes": 2823
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSettingsPopup.qml",
+      "sha256": "d8c5217d70399fcf3d52e86f96a70079e1059a8a26c1f09f45e4cbd697a54ace",
+      "bytes": 35295
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSettingsSwitch.qml",
+      "sha256": "4d2e283ebb21f9a6fd264d0d91ffc66bff7d6eded58f261bd7c7ca66742b70f3",
+      "bytes": 2285
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSetupButton.qml",
+      "sha256": "b79fd8029811d40307a5698466cec6830eb77b15ea108ae25f538e12519adce9",
+      "bytes": 1380
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerStyle.qml",
+      "sha256": "e78f58b1137f1b9584f58a195b63f69e8495ddb1f23fa8468332baba80ae0957",
+      "bytes": 1351
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerSubtitleDialog.qml",
+      "sha256": "8c9f617ffa4a15a0fe8af1d81549c14ba5f6b20637f7c819be18911e1d61f4a9",
+      "bytes": 12815
+    },
+    {
+      "path": "modules/gui/qt/player/qml/PlayerTracksPopup.qml",
+      "sha256": "83dee539c7695a94eb6c750ba1d45565076e15a107b344b2e8311be39a2ba02c",
+      "bytes": 13958
+    },
+    {
+      "path": "modules/gui/qt/player/qml/RedesignControlBar.qml",
+      "sha256": "8ee0f9492fc171b618b80ce69e9fb407dfd61743f7a709136429f637f6a0a8aa",
+      "bytes": 4787
+    },
+    {
+      "path": "modules/gui/qt/player/qml/RedesignTopBar.qml",
+      "sha256": "df2420b19587a8ee7603be6de32fbab9500747ce58c98486bb8c1fa4e6c51086",
+      "bytes": 4913
+    },
+    {
+      "path": "modules/gui/qt/player/subtitle_archive.hpp",
+      "sha256": "8466d4cdc649ed0ed783241c32b10317e2edd64c6a15648114cc80a0fd040bc6",
+      "bytes": 3299
+    },
+    {
+      "path": "modules/gui/qt/player/subtitle_data.hpp",
+      "sha256": "e76d6f2201c05bc7eadfb8a1a8bb740dccf93f47c39742f36f6e7508fbac8ce7",
+      "bytes": 8492
+    },
+    {
+      "path": "modules/gui/qt/player/subtitle_search.cpp",
+      "sha256": "9aa1a71f229415de916729e6d226618609253d1dfa054f4bee0c49e690c4b533",
+      "bytes": 24382
+    },
+    {
+      "path": "modules/gui/qt/player/subtitle_search.hpp",
+      "sha256": "6b7a6a8782230ffd8a67826ac9eb30b8051d0b95a6c2759ce37dc83690fad92d",
+      "bytes": 3018
+    },
+    {
+      "path": "modules/gui/qt/playlist/playlist_model.cpp",
+      "sha256": "f7bd28b78ea1e79b9122872c3507536c74a6d71a41c40e74f677e38f70ae4436",
+      "bytes": 15325
+    },
+    {
+      "path": "modules/gui/qt/playlist/playlist_model.hpp",
+      "sha256": "f4dc2cc80d97bf51611983e69169992995e32d884c1e35a75cde2b8e0cf0a7ad",
+      "bytes": 3469
+    },
+    {
+      "path": "modules/gui/qt/playlist/playlist_model_p.hpp",
+      "sha256": "04a9f6cc91d6b9ccad552500984c1f14ae5f785acd41836fd3450f5d0847bba6",
+      "bytes": 2885
+    },
+    {
+      "path": "modules/gui/qt/playlist/qml/PlaylistDelegate.qml",
+      "sha256": "0d25efe15a1b9c9e81cd24d6a3ef01fe8a19e84148ca06a6e67d51e5fd81d95e",
+      "bytes": 16975
+    },
+    {
+      "path": "modules/gui/qt/playlist/qml/PlaylistPane.qml",
+      "sha256": "24e96ede21fe9bbcfbf1d1a6c117e47b995bd80f49be03d02f079116a8621eed",
+      "bytes": 26681
+    },
+    {
+      "path": "modules/gui/qt/plugins.hpp",
+      "sha256": "8eafa10cf9b93d3389f39b422b729967a14477470e471db1ec2438c080b1772d",
+      "bytes": 3392
+    },
+    {
+      "path": "modules/gui/qt/qt.cpp",
+      "sha256": "56d680aa79153e4ce0ab2682b3bb26179bb8c2537ddf4ade2fc7b259fc7ebb47",
+      "bytes": 61801
+    },
+    {
+      "path": "modules/gui/qt/qt6.pro",
+      "sha256": "9ab9d0461e958ba6ea12f3d2dfeb23d3835e9a36c3e4038d2c320655aac37a54",
+      "bytes": 944
+    },
+    {
+      "path": "modules/gui/qt/tests/test_player_chrome.cpp",
+      "sha256": "efaf250ae247dddb706bf4224b8d3c1017c22736c6095c5e7a4d2f81253d1048",
+      "bytes": 2681
+    },
+    {
+      "path": "modules/gui/qt/util/model_recovery_agent.hpp",
+      "sha256": "0eff3d6eb74d8d281f937372240e315f70201c87fd7d587e845380f4ce9f05a0",
+      "bytes": 8441
+    },
+    {
+      "path": "modules/gui/qt/widgets/native/redesign_style.hpp",
+      "sha256": "d28cc5fc9cd8f67cd72ce46458c7c7610221dd60228faf467e92f7884b50418b",
+      "bytes": 6504
+    },
+    {
+      "path": "modules/gui/qt/widgets/qml/DragItem.qml",
+      "sha256": "5a56d149fc4d91ff471f7c810f7b854562a64d3affcf838d5d3eddc39fb5602a",
+      "bytes": 22248
+    },
+    {
+      "path": "modules/misc/medialibrary/medialibrary.cpp",
+      "sha256": "bd58d9726658242916d81ea1da073f05e9aad998e2b0a1866f9dd1e540fcf4a7",
+      "bytes": 102183
+    },
+    {
+      "path": "modules/stream_out/transcode/pcr_sync.c",
+      "sha256": "50bb8320be9dcdb0adec577b3b387fa472766b503fdaedc5613604ba94f6f494",
+      "bytes": 9049
+    },
+    {
+      "path": "modules/text_renderer/freetype/freetype.c",
+      "sha256": "978ab4254e15c6b665de86e6e977a171adbe33155f5dc6725f71f0ebc5d90f9d",
+      "bytes": 53262
+    },
+    {
+      "path": "share/lua/extensions/VLSub.lua",
+      "sha256": "2641432bddb8a6081f810468ebe2713fc844b7e68d7db152028a18adeb14aca7",
+      "bytes": 54552
+    },
+    {
+      "path": "src/config/file.c",
+      "sha256": "fd401740803af19380dd302c0c3c790eebb1c674a070ab6e86a66089db8baa58",
+      "bytes": 15750
+    },
+    {
+      "path": "src/win32/filesystem.c",
+      "sha256": "d3c65620be6f8cbfb1777ddce20d0d61eddf02aabc329b910d944521a26fd7c3",
+      "bytes": 17655
+    },
+    {
+      "path": "tools/windows-player/README.md",
+      "sha256": "53b32b658c1457ee729d83b9e1b6efaa44cde33983d79bc985bf95d9d1d85fd1",
+      "bytes": 34944
+    },
+    {
+      "path": "tools/windows-player/build-player.sh",
+      "sha256": "c9d986754bdee92296378003659bf2851511d9645cebc28427cea506be936b84",
+      "bytes": 2765
+    },
+    {
+      "path": "tools/windows-player/build-qt-timer-check.sh",
+      "sha256": "7ee2e49dc6ec9d2a5928e33f6f09a5dfb477a027061fce615c3b3292f6798241",
+      "bytes": 847
+    },
+    {
+      "path": "tools/windows-player/capture-player-window.cpp",
+      "sha256": "577d18bd495289de7eb2f6c0c07a3bd93bd2af6c92298f54f7f3fb4c95d6187a",
+      "bytes": 6734
+    },
+    {
+      "path": "tools/windows-player/check-customization.mjs",
+      "sha256": "bb6a224e7abec6a32d70e09664fac0a4fb091a70626e1d530d5b1ff6185499ee",
+      "bytes": 2588
+    },
+    {
+      "path": "tools/windows-player/config-save-check.c",
+      "sha256": "93fbc4a82b5f72577161c6a9ac11288a087317669de3b6b02b59de3f164df6b4",
+      "bytes": 3684
+    },
+    {
+      "path": "tools/windows-player/configure-player.py",
+      "sha256": "f818a60c51ebf0ce0b6ab2946604d1c52da13a3dfc2fdda79c1a6e6cd4273423",
+      "bytes": 2062
+    },
+    {
+      "path": "tools/windows-player/inspect-player.py",
+      "sha256": "7d0a098dc664016776516af3868097eab78b36f200e02f1842415743f1ef0be0",
+      "bytes": 15272
+    },
+    {
+      "path": "tools/windows-player/isolated_desktop.py",
+      "sha256": "53d79a2f094f5df65a03bf43853704525ff1fd360a8fc9fb5ef82957d730f6c9",
+      "bytes": 4908
+    },
+    {
+      "path": "tools/windows-player/pending-connect-peer.py",
+      "sha256": "ffbf24126796120854a6e05ade80155263e105f2412d78a4d063690d76e56cb8",
+      "bytes": 3200
+    },
+    {
+      "path": "tools/windows-player/prepare-runtime-crt.sh",
+      "sha256": "a0be244f6126f2ab245d970336b5d064ecad687948ae82edd89e5fe6dfac5590",
+      "bytes": 552
+    },
+    {
+      "path": "tools/windows-player/qt-timer-check.cpp",
+      "sha256": "2f969bccb430f7d14dc07f42a3d27f95b3243c4763b90d768d5efa4b9326a04e",
+      "bytes": 3410
+    },
+    {
+      "path": "tools/windows-player/rebuild-qt-network.sh",
+      "sha256": "7594d4165d1d467512664dbca5b7eb941d2a14ad6a8be5963cc8d1dfaea32306",
+      "bytes": 1138
+    },
+    {
+      "path": "tools/windows-player/rebuild-qt-timers.sh",
+      "sha256": "ba01b1ba2c554fd806c77ac03a56c319e3655787e0a0faa6be1eb80f3c557592",
+      "bytes": 697
+    },
+    {
+      "path": "tools/windows-player/rebuild-upnp.sh",
+      "sha256": "7345fb102d2ef95b197848b6235c5556714bb06b757510728cadd6e7cc77779c",
+      "bytes": 2547
+    },
+    {
+      "path": "tools/windows-player/subtitle-data-check.cpp",
+      "sha256": "f58a4cf0f6345d158db2df68ca94287eba5094ce83fa7cd8b707d53649c9da58",
+      "bytes": 10111
+    },
+    {
+      "path": "tools/windows-player/subtitle-data-check.pro",
+      "sha256": "a19a7aed943a41446a0a9863e087bd50f3fce565b530f378ad183d7e5a3f7ff4",
+      "bytes": 282
+    },
+    {
+      "path": "tools/windows-player/upnp-url-check.c",
+      "sha256": "dfd86637c89fa1787a701b71cb286c27d902bff0558021688b147d10b3a683dc",
+      "bytes": 813
+    },
+    {
+      "path": "tools/windows-player/verify-player-capture.py",
+      "sha256": "1ecc712a5080613b802a764ba92c0148d4e3cc046958f2bc095249c75cf087db",
+      "bytes": 8051
+    },
+    {
+      "path": "tools/windows-player/verify-player-runtime.py",
+      "sha256": "65b45b52965ec32dc402898c4ea8ad2dd3035d7948bee0922d3bb45d0a7e1625",
+      "bytes": 5950
+    },
+    {
+      "path": "tools/windows-player/check-ui-labels.py",
+      "sha256": "23bbbad820fc3f3d1d3d1f867f5435fe99e439cb5cf741d7dbfd1009134968cd",
+      "bytes": 726
+    }
+  ],
+  "source_base": "0d22d6d556da68a54387dae112db66437c19b457",
+  "pinned_upstream": "392bc1d0abdb7396b6c97fef206efa1d23868e19"
+}

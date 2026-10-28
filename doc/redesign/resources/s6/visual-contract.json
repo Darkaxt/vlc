@@ -1,0 +1,3043 @@
+{
+  "figma_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "captures": [
+    {
+      "file": "editor-dark-100.png",
+      "sha256": "82de1fcdbebae2e942b35c3cd461b1c7b8357da2eba2dfa263ea73aa5a0647bb",
+      "dpr": 1.00000000005,
+      "panel": {
+        "actions": [],
+        "enabled": true,
+        "focused": false,
+        "height": 655,
+        "id": "playerLayoutEditor",
+        "name": "Customize Player",
+        "node": 527,
+        "opacity": 1,
+        "parent": 526,
+        "role": 10,
+        "type": "QQuickColumnLayout_QML_151",
+        "visible": true,
+        "width": 1048,
+        "x": 436,
+        "y": 189.5,
+        "z": 0
+      },
+      "presentation": {
+        "accent": "#d37918",
+        "grid": false,
+        "remaining": true,
+        "theme": 2
+      }
+    },
+    {
+      "file": "editor-light-100.png",
+      "sha256": "a010e0bf231a614f84f87afe5b70a07328bcc0ffce2eba07543e38c629cb588f",
+      "dpr": 1.00000000005,
+      "panel": {
+        "actions": [],
+        "enabled": true,
+        "focused": false,
+        "height": 655,
+        "id": "playerLayoutEditor",
+        "name": "Customize Player",
+        "node": 527,
+        "opacity": 1,
+        "parent": 526,
+        "role": 10,
+        "type": "QQuickColumnLayout_QML_151",
+        "visible": true,
+        "width": 1048,
+        "x": 436,
+        "y": 189.5,
+        "z": 0
+      },
+      "presentation": {
+        "accent": "#8e42ff",
+        "grid": true,
+        "remaining": true,
+        "theme": 1
+      }
+    },
+    {
+      "file": "editor-dark-150.png",
+      "sha256": "9663db7457be2c015c0ea55deb4c9bdd9ddd5729bf4dcf6de300ef53c66879ee",
+      "dpr": 1.5,
+      "panel": {
+        "actions": [],
+        "enabled": true,
+        "focused": false,
+        "height": 655,
+        "id": "playerLayoutEditor",
+        "name": "Customize Player",
+        "node": 527,
+        "opacity": 1,
+        "parent": 526,
+        "role": 10,
+        "type": "QQuickColumnLayout_QML_198",
+        "visible": true,
+        "width": 1048,
+        "x": 436,
+        "y": 189.5,
+        "z": 0
+      },
+      "presentation": {
+        "accent": "#d37918",
+        "grid": false,
+        "remaining": true,
+        "theme": 2
+      }
+    },
+    {
+      "file": "editor-light-150.png",
+      "sha256": "100b6fffd3fee23e322a4b3d9fded6fcd4f9dfaa5e3d369fb430f2005a77648e",
+      "dpr": 1.5,
+      "panel": {
+        "actions": [],
+        "enabled": true,
+        "focused": false,
+        "height": 655,
+        "id": "playerLayoutEditor",
+        "name": "Customize Player",
+        "node": 527,
+        "opacity": 1,
+        "parent": 526,
+        "role": 10,
+        "type": "QQuickColumnLayout_QML_198",
+        "visible": true,
+        "width": 1048,
+        "x": 436,
+        "y": 189.5,
+        "z": 0
+      },
+      "presentation": {
+        "accent": "#8e42ff",
+        "grid": true,
+        "remaining": true,
+        "theme": 1
+      }
+    },
+    {
+      "file": "editor-dark-200.png",
+      "sha256": "34ae4d9962ab32e1ddb1b297bf6ef916e67d2397a6e87cfc4feda418d24a4d0d",
+      "dpr": 1.99999999995,
+      "panel": {
+        "actions": [],
+        "enabled": true,
+        "focused": false,
+        "height": 655,
+        "id": "playerLayoutEditor",
+        "name": "Customize Player",
+        "node": 527,
+        "opacity": 1,
+        "parent": 526,
+        "role": 10,
+        "type": "QQuickColumnLayout_QML_195",
+        "visible": true,
+        "width": 1048,
+        "x": 436,
+        "y": 189.5,
+        "z": 0
+      },
+      "presentation": {
+        "accent": "#d37918",
+        "grid": false,
+        "remaining": true,
+        "theme": 2
+      }
+    },
+    {
+      "file": "editor-light-200.png",
+      "sha256": "c05aa7b284fbae75d671ab57edcc536deef439402f0a67f6e0651c605422b711",
+      "dpr": 1.99999999995,
+      "panel": {
+        "actions": [],
+        "enabled": true,
+        "focused": false,
+        "height": 655,
+        "id": "playerLayoutEditor",
+        "name": "Customize Player",
+        "node": 527,
+        "opacity": 1,
+        "parent": 526,
+        "role": 10,
+        "type": "QQuickColumnLayout_QML_195",
+        "visible": true,
+        "width": 1048,
+        "x": 436,
+        "y": 189.5,
+        "z": 0
+      },
+      "presentation": {
+        "accent": "#8e42ff",
+        "grid": true,
+        "remaining": true,
+        "theme": 1
+      }
+    },
+    {
+      "file": "onboarding-welcome-100.png",
+      "sha256": "5d78fc7133e1fd4fcec122fd55d417aa1c2d9279c2df8fe7aca93f5d3f44909f",
+      "dpr": 1.00000000005
+    },
+    {
+      "file": "onboarding-theme-100.png",
+      "sha256": "c30cd1d6aa7c388f918cbb4d5ed5141e0b3818bfcd84837bc638826268d34061",
+      "dpr": 1.00000000005
+    }
+  ],
+  "source_metrics": {
+    "editor": [
+      {
+        "id": "6587:19923",
+        "depth": 0,
+        "xy": [
+          0,
+          0
+        ],
+        "name": "Player - customize",
+        "type": "FRAME",
+        "size": {
+          "x": 1920,
+          "y": 1080
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 1
+            }
+          },
+          {
+            "type": "IMAGE",
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "transform": {
+              "m00": 1,
+              "m01": 0,
+              "m02": 0,
+              "m10": 0,
+              "m11": 1,
+              "m12": 0
+            },
+            "image": {
+              "hash": {
+                "0": 107,
+                "1": 21,
+                "2": 172,
+                "3": 90,
+                "4": 182,
+                "5": 138,
+                "6": 67,
+                "7": 85,
+                "8": 125,
+                "9": 36,
+                "10": 131,
+                "11": 106,
+                "12": 179,
+                "13": 148,
+                "14": 7,
+                "15": 251,
+                "16": 149,
+                "17": 188,
+                "18": 20,
+                "19": 234
+              },
+              "name": "video"
+            },
+            "imageThumbnail": {
+              "hash": {
+                "0": 20,
+                "1": 23,
+                "2": 8,
+                "3": 110,
+                "4": 202,
+                "5": 186,
+                "6": 60,
+                "7": 246,
+                "8": 15,
+                "9": 82,
+                "10": 194,
+                "11": 251,
+                "12": 15,
+                "13": 22,
+                "14": 202,
+                "15": 232,
+                "16": 247,
+                "17": 128,
+                "18": 53,
+                "19": 255
+              },
+              "name": "video"
+            },
+            "animationFrame": 0,
+            "imageScaleMode": "FILL",
+            "imageShouldColorManage": true,
+            "rotation": 0,
+            "scale": 0.5,
+            "originalImageWidth": 1920,
+            "originalImageHeight": 1080,
+            "thumbHash": {},
+            "altText": ""
+          },
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.09803921729326248,
+              "g": 0.09803921729326248,
+              "b": 0.10196078568696976,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.09803921729326248,
+              "c1": 0.09803921729326248,
+              "c2": 0.10196078568696976,
+              "c3": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:1",
+        "depth": 1,
+        "xy": [
+          0,
+          0
+        ],
+        "name": "Frame 55",
+        "type": "FRAME",
+        "size": {
+          "x": 1920,
+          "y": 1080
+        }
+      },
+      {
+        "id": "4294967294:2",
+        "depth": 2,
+        "xy": [
+          0,
+          972
+        ],
+        "name": "Frame 228",
+        "type": "FRAME",
+        "size": {
+          "x": 1920,
+          "y": 108
+        }
+      },
+      {
+        "id": "4294967294:3",
+        "depth": 3,
+        "xy": [
+          0,
+          972
+        ],
+        "name": "Controls",
+        "type": "FRAME",
+        "size": {
+          "x": 1920,
+          "y": 54
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.0966796875,
+              "g": 0.0966796875,
+              "b": 0.0966796875,
+              "a": 1
+            },
+            "opacity": 0.949999988079071,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.0966796875,
+              "c1": 0.0966796875,
+              "c2": 0.0966796875,
+              "c3": 0.949999988079071
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "BACKGROUND_BLUR",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "radius": 50,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.25
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.25
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:4",
+        "depth": 3,
+        "xy": [
+          0,
+          1026
+        ],
+        "name": "Controls",
+        "type": "FRAME",
+        "size": {
+          "x": 1920,
+          "y": 54
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.0966796875,
+              "g": 0.0966796875,
+              "b": 0.0966796875,
+              "a": 1
+            },
+            "opacity": 0.949999988079071,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.0966796875,
+              "c1": 0.0966796875,
+              "c2": 0.0966796875,
+              "c3": 0.949999988079071
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "BACKGROUND_BLUR",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "radius": 50,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.25
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.25
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:68",
+        "depth": 3,
+        "xy": [
+          20,
+          981
+        ],
+        "name": "seekbar",
+        "type": "FRAME",
+        "size": {
+          "x": 1880,
+          "y": 36
+        }
+      },
+      {
+        "id": "4294967294:76",
+        "depth": 2,
+        "xy": [
+          -427,
+          40
+        ],
+        "name": "sidebar",
+        "type": "FRAME",
+        "size": {
+          "x": 427,
+          "y": 986
+        }
+      },
+      {
+        "id": "4294967294:77",
+        "depth": 3,
+        "xy": [
+          -427,
+          40
+        ],
+        "name": "Frame 3",
+        "type": "FRAME",
+        "size": {
+          "x": 50,
+          "y": 986
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.0966796875,
+              "g": 0.0966796875,
+              "b": 0.0966796875,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.0966796875,
+              "c1": 0.0966796875,
+              "c2": 0.0966796875,
+              "c3": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:118",
+        "depth": 3,
+        "xy": [
+          -377,
+          40
+        ],
+        "name": "Frame 20",
+        "type": "FRAME",
+        "size": {
+          "x": 377,
+          "y": 986
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.054901961237192154,
+              "g": 0.054901961237192154,
+              "b": 0.054901961237192154,
+              "a": 1
+            },
+            "opacity": 0.949999988079071,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.054901961237192154,
+              "c1": 0.054901961237192154,
+              "c2": 0.054901961237192154,
+              "c3": 0.949999988079071
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "BACKGROUND_BLUR",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "radius": 50,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.25
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.25
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:344",
+        "depth": 2,
+        "xy": [
+          701,
+          950
+        ],
+        "name": "continue",
+        "type": "FRAME",
+        "size": {
+          "x": 519,
+          "y": 52
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.0966796875,
+              "g": 0.0966796875,
+              "b": 0.0966796875,
+              "a": 1
+            },
+            "opacity": 0.949999988079071,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.0966796875,
+              "c1": 0.0966796875,
+              "c2": 0.0966796875,
+              "c3": 0.949999988079071
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "BACKGROUND_BLUR",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "radius": 50,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.25
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.25
+            }
+          }
+        ],
+        "cornerRadius": 16
+      },
+      {
+        "id": "4294967294:345",
+        "depth": 3,
+        "xy": [
+          721,
+          966.5
+        ],
+        "name": "You’ve watched till 00:45:08 already.",
+        "type": "TEXT",
+        "size": {
+          "x": 283,
+          "y": 19
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.7768179178237915,
+              "g": 0.7768179178237915,
+              "b": 0.7768179178237915,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.7768179178237915,
+              "c1": 0.7768179178237915,
+              "c2": 0.7768179178237915,
+              "c3": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:346",
+        "depth": 3,
+        "xy": [
+          1064,
+          960
+        ],
+        "name": "Frame 141",
+        "type": "FRAME",
+        "size": {
+          "x": 146,
+          "y": 32
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.8274509906768799,
+              "g": 0.4745098054409027,
+              "b": 0.0941176488995552,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.8274509906768799,
+              "c1": 0.4745098054409027,
+              "c2": 0.0941176488995552,
+              "c3": 1
+            }
+          }
+        ],
+        "cornerRadius": 6
+      },
+      {
+        "id": "4294967294:348",
+        "depth": 2,
+        "xy": [
+          0,
+          0
+        ],
+        "name": "topbar",
+        "type": "FRAME",
+        "size": {
+          "x": 1920,
+          "y": 40
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.0966796875,
+              "g": 0.0966796875,
+              "b": 0.0966796875,
+              "a": 1
+            },
+            "opacity": 0.949999988079071,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.0966796875,
+              "c1": 0.0966796875,
+              "c2": 0.0966796875,
+              "c3": 0.949999988079071
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "BACKGROUND_BLUR",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "radius": 50,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.25
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.25
+            }
+          }
+        ]
+      },
+      {
+        "id": "4294967294:349",
+        "depth": 3,
+        "xy": [
+          6,
+          6
+        ],
+        "name": "Frame 9",
+        "type": "FRAME",
+        "size": {
+          "x": 300,
+          "y": 28
+        }
+      },
+      {
+        "id": "4294967294:378",
+        "depth": 3,
+        "xy": [
+          1614,
+          8
+        ],
+        "name": "Frame 10",
+        "type": "FRAME",
+        "size": {
+          "x": 300,
+          "y": 24
+        }
+      },
+      {
+        "id": "4294967294:392",
+        "depth": 3,
+        "xy": [
+          184,
+          1039
+        ],
+        "name": "Frame 229",
+        "type": "FRAME",
+        "size": {
+          "x": 131,
+          "y": 27
+        }
+      },
+      {
+        "id": "4294967294:394",
+        "depth": 1,
+        "xy": [
+          436,
+          189.5
+        ],
+        "name": "Add Subtitles to Playlist/Folder",
+        "type": "FRAME",
+        "size": {
+          "x": 1048,
+          "y": 655
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.054901961237192154,
+              "g": 0.054901961237192154,
+              "b": 0.054901961237192154,
+              "a": 1
+            },
+            "opacity": 0.949999988079071,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.054901961237192154,
+              "c1": 0.054901961237192154,
+              "c2": 0.054901961237192154,
+              "c3": 0.949999988079071
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "BACKGROUND_BLUR",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "radius": 50,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.25
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.25
+            }
+          },
+          {
+            "type": "DROP_SHADOW",
+            "offset": {
+              "x": 0,
+              "y": 8
+            },
+            "radius": 15,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "spread": 0,
+            "showShadowBehindNode": false,
+            "color": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0.46000000834465027
+            },
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0,
+              "c1": 0,
+              "c2": 0,
+              "c3": 0.46000000834465027
+            }
+          }
+        ],
+        "cornerRadius": 14
+      },
+      {
+        "id": "4294967294:395",
+        "depth": 2,
+        "xy": [
+          436,
+          189.5
+        ],
+        "name": "Frame 120",
+        "type": "FRAME",
+        "size": {
+          "x": 1048,
+          "y": 94
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.035719651728868484,
+              "g": 0.035719651728868484,
+              "b": 0.035719651728868484,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.035719651728868484,
+              "c1": 0.035719651728868484,
+              "c2": 0.035719651728868484,
+              "c3": 1
+            }
+          }
+        ],
+        "cornerRadius": 14
+      },
+      {
+        "id": "4294967294:396",
+        "depth": 3,
+        "xy": [
+          445,
+          198.5
+        ],
+        "name": "Frame 207",
+        "type": "FRAME",
+        "size": {
+          "x": 1030,
+          "y": 32
+        }
+      },
+      {
+        "id": "4294967294:403",
+        "depth": 3,
+        "xy": [
+          445,
+          242.5
+        ],
+        "name": "Frame 208",
+        "type": "FRAME",
+        "size": {
+          "x": 1030,
+          "y": 32
+        }
+      },
+      {
+        "id": "4294967294:405",
+        "depth": 2,
+        "xy": [
+          436,
+          283.5
+        ],
+        "name": "Frame 124",
+        "type": "FRAME",
+        "size": {
+          "x": 1048,
+          "y": 489
+        }
+      },
+      {
+        "id": "4294967294:406",
+        "depth": 3,
+        "xy": [
+          470,
+          317.5
+        ],
+        "name": "Frame 235",
+        "type": "FRAME",
+        "size": {
+          "x": 980,
+          "y": 421
+        }
+      },
+      {
+        "id": "4294967294:611",
+        "depth": 2,
+        "xy": [
+          436,
+          772.5
+        ],
+        "name": "Frame 225",
+        "type": "FRAME",
+        "size": {
+          "x": 1048,
+          "y": 72
+        }
+      },
+      {
+        "id": "4294967294:612",
+        "depth": 3,
+        "xy": [
+          456,
+          792.5
+        ],
+        "name": "Frame 140",
+        "type": "FRAME",
+        "size": {
+          "x": 100,
+          "y": 32
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.10770357400178909,
+              "g": 0.10770357400178909,
+              "b": 0.10770357400178909,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.10770357400178909,
+              "c1": 0.10770357400178909,
+              "c2": 0.10770357400178909,
+              "c3": 1
+            }
+          }
+        ],
+        "cornerRadius": 6
+      },
+      {
+        "id": "4294967294:614",
+        "depth": 3,
+        "xy": [
+          1364,
+          792.5
+        ],
+        "name": "Frame 141",
+        "type": "FRAME",
+        "size": {
+          "x": 100,
+          "y": 32
+        },
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.21568627655506134,
+              "g": 0.12156862765550613,
+              "b": 0.0235294122248888,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.21568627655506134,
+              "c1": 0.12156862765550613,
+              "c2": 0.0235294122248888,
+              "c3": 1
+            }
+          }
+        ],
+        "cornerRadius": 6
+      },
+      {
+        "palette_child": "4294967294:407",
+        "name": "Frame 247",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 0,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:412",
+        "name": "Frame 245",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 110,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:418",
+        "name": "Frame 232",
+        "size": {
+          "x": 86,
+          "y": 82
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 220,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:425",
+        "name": "Frame 234",
+        "size": {
+          "x": 86,
+          "y": 82
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 330,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:432",
+        "name": "Frame 235",
+        "size": {
+          "x": 86,
+          "y": 82
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 440,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:439",
+        "name": "Frame 253",
+        "size": {
+          "x": 86,
+          "y": 78
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 550,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:445",
+        "name": "Frame 254",
+        "size": {
+          "x": 86,
+          "y": 78
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 660,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:451",
+        "name": "Frame 236",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 770,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:457",
+        "name": "Frame 237",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 880,
+          "m10": 0,
+          "m11": 1,
+          "m12": 0
+        }
+      },
+      {
+        "palette_child": "4294967294:464",
+        "name": "Frame 238",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 0,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:471",
+        "name": "Frame 239",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 110,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:478",
+        "name": "Frame 240",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 220,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:485",
+        "name": "Frame 242",
+        "size": {
+          "x": 86,
+          "y": 82
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 330,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:492",
+        "name": "Frame 243",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 440,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:499",
+        "name": "Frame 244",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 550,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:508",
+        "name": "Frame 248",
+        "size": {
+          "x": 86,
+          "y": 82
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 660,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:514",
+        "name": "Frame 251",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 770,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:520",
+        "name": "Frame 252",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 880,
+          "m10": 0,
+          "m11": 1,
+          "m12": 120
+        }
+      },
+      {
+        "palette_child": "4294967294:526",
+        "name": "Frame 255",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 0,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:532",
+        "name": "Frame 249",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 110,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:537",
+        "name": "Frame 262",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 220,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:544",
+        "name": "Frame 263",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 330,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:551",
+        "name": "Frame 264",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 440,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:558",
+        "name": "Frame 265",
+        "size": {
+          "x": 86,
+          "y": 78
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 550,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:565",
+        "name": "Frame 261",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 660,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:572",
+        "name": "Frame 258",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 770,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:577",
+        "name": "Frame 259",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 880,
+          "m10": 0,
+          "m11": 1,
+          "m12": 240
+        }
+      },
+      {
+        "palette_child": "4294967294:585",
+        "name": "Frame 241",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 0,
+          "m10": 0,
+          "m11": 1,
+          "m12": 356
+        }
+      },
+      {
+        "palette_child": "4294967294:593",
+        "name": "Frame 260",
+        "size": {
+          "x": 86,
+          "y": 61
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 110,
+          "m10": 0,
+          "m11": 1,
+          "m12": 356
+        }
+      },
+      {
+        "palette_child": "4294967294:598",
+        "name": "Frame 233",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": 220,
+          "m10": 0,
+          "m11": 1,
+          "m12": 356
+        }
+      },
+      {
+        "palette_child": "4294967294:607",
+        "name": "Frame 250",
+        "size": {
+          "x": 86,
+          "y": 28
+        },
+        "transform": {
+          "m00": 1,
+          "m01": 0,
+          "m02": -175,
+          "m10": 0,
+          "m11": 1,
+          "m12": 721
+        }
+      },
+      {
+        "first_cells": "4294967294:407",
+        "name": "Frame 247",
+        "type": "FRAME",
+        "size": {
+          "x": 86,
+          "y": 65
+        },
+        "strokeWeight": 1
+      },
+      {
+        "first_cells": "4294967294:408",
+        "name": "Frame 6",
+        "type": "FRAME",
+        "size": {
+          "x": 24,
+          "y": 32
+        },
+        "strokePaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.41960784792900085,
+              "g": 0.41960784792900085,
+              "b": 0.41960784792900085,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.41960784792900085,
+              "c1": 0.41960784792900085,
+              "c2": 0.41960784792900085,
+              "c3": 1
+            }
+          }
+        ],
+        "strokeWeight": 1
+      },
+      {
+        "first_cells": "4294967294:411",
+        "name": "Spacer",
+        "type": "TEXT",
+        "size": {
+          "x": 86,
+          "y": 17
+        },
+        "strokeWeight": 1,
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.5607843399047852,
+              "g": 0.5607843399047852,
+              "b": 0.5607843399047852,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.5607843399047852,
+              "c1": 0.5607843399047852,
+              "c2": 0.5607843399047852,
+              "c3": 1
+            }
+          }
+        ]
+      },
+      {
+        "first_cells": "4294967294:418",
+        "name": "Frame 232",
+        "type": "FRAME",
+        "size": {
+          "x": 86,
+          "y": 82
+        },
+        "strokeWeight": 1
+      },
+      {
+        "first_cells": "4294967294:419",
+        "name": "Icon Wrapper",
+        "type": "FRAME",
+        "size": {
+          "x": 30,
+          "y": 32
+        },
+        "strokePaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.41960784792900085,
+              "g": 0.41960784792900085,
+              "b": 0.41960784792900085,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.41960784792900085,
+              "c1": 0.41960784792900085,
+              "c2": 0.41960784792900085,
+              "c3": 1
+            }
+          }
+        ],
+        "strokeWeight": 1
+      },
+      {
+        "first_cells": "4294967294:424",
+        "name": "Playback Speed",
+        "type": "TEXT",
+        "size": {
+          "x": 86,
+          "y": 34
+        },
+        "strokeWeight": 1,
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.5607843399047852,
+              "g": 0.5607843399047852,
+              "b": 0.5607843399047852,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.5607843399047852,
+              "c1": 0.5607843399047852,
+              "c2": 0.5607843399047852,
+              "c3": 1
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Spacer"
+        ],
+        "icons": [
+          {
+            "name": "Frame 6",
+            "size": {
+              "x": 24,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Divider"
+        ],
+        "icons": [
+          {
+            "name": "Frame 6",
+            "size": {
+              "x": 24,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Playback Speed"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Forward\n10s"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Backward\n10s"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Forward \n15s"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Backward15s"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Stop"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Repeat"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Shuffle"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Record"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Snapshot"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Picture in Picture"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "HDR"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Zoom"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Right Sidebar"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 32,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Quit VLC"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "VLC Settings"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Go Home"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Thumbnail"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "File Name"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Artist Name"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Folder Name"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Playlist Name"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Properties"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Replay"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Chapters"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Bookmark"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Bookmarks"
+        ],
+        "icons": [
+          {
+            "name": "Icon",
+            "size": {
+              "x": 28,
+              "y": 28
+            }
+          }
+        ]
+      },
+      {
+        "palette_icons": [
+          "Playlists"
+        ],
+        "icons": [
+          {
+            "name": "Icon Wrapper",
+            "size": {
+              "x": 30,
+              "y": 32
+            }
+          }
+        ]
+      },
+      {
+        "button_typography": "4294967294:613",
+        "name": "Cancel",
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "fontSize": 14,
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.5607843399047852,
+              "g": 0.5607843399047852,
+              "b": 0.5607843399047852,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.5607843399047852,
+              "c1": 0.5607843399047852,
+              "c2": 0.5607843399047852,
+              "c3": 1
+            }
+          }
+        ]
+      },
+      {
+        "button_typography": "4294967294:615",
+        "name": "Save",
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "fontSize": 14,
+        "fillPaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.8274509906768799,
+              "g": 0.4745098054409027,
+              "b": 0.0941176488995552,
+              "a": 1
+            },
+            "opacity": 1,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.8274509906768799,
+              "c1": 0.4745098054409027,
+              "c2": 0.0941176488995552,
+              "c3": 1
+            }
+          }
+        ]
+      }
+    ],
+    "onboarding": [
+      {
+        "frame": "1899:3055",
+        "id": "4294967294:6",
+        "xy": [
+          417,
+          286
+        ],
+        "text": "Welcome to VLC!",
+        "colors": [
+          "#eaeaea"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Welcome to VLC!",
+        "type": "TEXT",
+        "size": {
+          "x": 256,
+          "y": 39
+        },
+        "fontSize": 32,
+        "fontName": {
+          "family": "Inter",
+          "style": "Light",
+          "postscript": "Inter-Light"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1.3667711019515991
+      },
+      {
+        "frame": "1899:3055",
+        "id": "4294967294:7",
+        "xy": [
+          248,
+          362
+        ],
+        "text": "VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.",
+        "colors": [
+          "#969696"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.",
+        "type": "TEXT",
+        "size": {
+          "x": 595,
+          "y": 84
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Light",
+          "postscript": "Inter-Light"
+        },
+        "lineHeight": {
+          "value": 1.75,
+          "units": "RAW"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1899:3055",
+        "id": "4294967294:9",
+        "xy": [
+          959.5,
+          677.5
+        ],
+        "text": "Next",
+        "colors": [
+          "#161616"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 100,
+          "y": 32
+        },
+        "name": "Next",
+        "type": "TEXT",
+        "size": {
+          "x": 37,
+          "y": 19
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1899:3055",
+        "id": "4294967294:12",
+        "xy": [
+          248,
+          500
+        ],
+        "text": "Choose a Media Folder to get started with",
+        "colors": [
+          "#8f8f8f"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 280,
+          "y": 17
+        },
+        "name": "Choose a Media Folder to get started with",
+        "type": "TEXT",
+        "size": {
+          "x": 280,
+          "y": 17
+        },
+        "fontSize": 14,
+        "fontName": {
+          "family": "Inter",
+          "style": "Regular",
+          "postscript": "Inter-Regular"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1899:3055",
+        "id": "4294967294:17",
+        "xy": [
+          757.5,
+          541.5
+        ],
+        "text": "Browse",
+        "colors": [
+          "#8f8f8f"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 114,
+          "y": 35
+        },
+        "name": "Browse",
+        "type": "TEXT",
+        "size": {
+          "x": 57,
+          "y": 19
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Regular",
+          "postscript": "Inter-Regular"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:358",
+        "xy": [
+          329,
+          173
+        ],
+        "text": "Select your preferred theme and color.",
+        "colors": [
+          "#969696"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Select your preferred theme and color.",
+        "type": "TEXT",
+        "size": {
+          "x": 432,
+          "y": 42
+        },
+        "fontSize": 24,
+        "fontName": {
+          "family": "Inter",
+          "style": "Light",
+          "postscript": "Inter-Light"
+        },
+        "lineHeight": {
+          "value": 1.75,
+          "units": "RAW"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:360",
+        "xy": [
+          959.5,
+          677.5
+        ],
+        "text": "Next",
+        "colors": [
+          "#161616"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 100,
+          "y": 32
+        },
+        "name": "Next",
+        "type": "TEXT",
+        "size": {
+          "x": 37,
+          "y": 19
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:373",
+        "xy": [
+          41,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 153",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokePaints": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.8274509906768799,
+              "g": 0.4745098054409027,
+              "b": 0.0941176488995552,
+              "a": 1
+            },
+            "opacity": 0.30000001192092896,
+            "visible": true,
+            "blendMode": "NORMAL",
+            "authoredColor": {
+              "space": "DEFAULT",
+              "c0": 0.8274509906768799,
+              "c1": 0.4745098054409027,
+              "c2": 0.0941176488995552,
+              "c3": 0.30000001192092896
+            }
+          }
+        ],
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:374",
+        "xy": [
+          53,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#d37918"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:375",
+        "xy": [
+          121,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 154",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:376",
+        "xy": [
+          133,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#e15032"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:377",
+        "xy": [
+          201,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 155",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:378",
+        "xy": [
+          213,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#c49e23"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:379",
+        "xy": [
+          281,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 156",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:380",
+        "xy": [
+          293,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#19a234"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:381",
+        "xy": [
+          361,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 157",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:382",
+        "xy": [
+          373,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#18aad3"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:383",
+        "xy": [
+          441,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 158",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:384",
+        "xy": [
+          453,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#185dd3"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:385",
+        "xy": [
+          521,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 159",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:386",
+        "xy": [
+          533,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#8e42ff"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:387",
+        "xy": [
+          601,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 160",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:388",
+        "xy": [
+          613,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#f052b3"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:389",
+        "xy": [
+          681,
+          655
+        ],
+        "text": "",
+        "colors": [],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Frame 161",
+        "type": "FRAME",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "strokeWeight": 4
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:390",
+        "xy": [
+          693,
+          667
+        ],
+        "text": "",
+        "colors": [
+          "#afafaf"
+        ],
+        "effective_opacity": 0.5,
+        "parent_size": {
+          "x": 64,
+          "y": 64
+        },
+        "name": "Ellipse 11",
+        "type": "ELLIPSE",
+        "size": {
+          "x": 40,
+          "y": 40
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:3670",
+        "id": "4294967294:392",
+        "xy": [
+          850.5,
+          677.5
+        ],
+        "text": "Back",
+        "colors": [
+          "#8f8f8f"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 100,
+          "y": 32
+        },
+        "name": "Back",
+        "type": "TEXT",
+        "size": {
+          "x": 39,
+          "y": 19
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:6770",
+        "id": "4294967294:1",
+        "xy": [
+          341,
+          60
+        ],
+        "text": "Learn the basic keyboard shortcuts.",
+        "colors": [
+          "#969696"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 1090,
+          "y": 759
+        },
+        "name": "Learn the basic keyboard shortcuts.",
+        "type": "TEXT",
+        "size": {
+          "x": 409,
+          "y": 42
+        },
+        "fontSize": 24,
+        "fontName": {
+          "family": "Inter",
+          "style": "Regular",
+          "postscript": "Inter-Regular"
+        },
+        "lineHeight": {
+          "value": 1.75,
+          "units": "RAW"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:6770",
+        "id": "4294967294:4",
+        "xy": [
+          954.5,
+          677.5
+        ],
+        "text": "Finish",
+        "colors": [
+          "#161616"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 100,
+          "y": 32
+        },
+        "name": "Finish",
+        "type": "TEXT",
+        "size": {
+          "x": 47,
+          "y": 19
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      },
+      {
+        "frame": "1902:6770",
+        "id": "4294967294:71",
+        "xy": [
+          850.5,
+          677.5
+        ],
+        "text": "Back",
+        "colors": [
+          "#8f8f8f"
+        ],
+        "effective_opacity": 1,
+        "parent_size": {
+          "x": 100,
+          "y": 32
+        },
+        "name": "Back",
+        "type": "TEXT",
+        "size": {
+          "x": 39,
+          "y": 19
+        },
+        "fontSize": 16,
+        "fontName": {
+          "family": "Inter",
+          "style": "Semi Bold",
+          "postscript": "Inter-SemiBold"
+        },
+        "lineHeight": {
+          "value": 100,
+          "units": "PERCENT"
+        },
+        "strokeWeight": 1
+      }
+    ],
+    "frames": {
+      "6587:19923": "5837b13745136a676990312787372effcf9d0b001180f179bf7415ffe666ba9b",
+      "6648:20666": "e5fdf853b549beee56850f018238924de7c49576564ae5fd07789aa9a0092a40",
+      "1899:3055": "d2a65c98d98d2b95f64c639f1e2d46c09b6128b89830d945aec900ddaa7b9100",
+      "1902:3670": "28d6692fdea82673f3eadc073c49e7e17db05e82f56559ce35de190cce9d475d",
+      "1902:6770": "c37d582854b1995a5fda8520066fbb594f6fdf839f6a1c5cee0ecb76c2691564"
+    }
+  },
+  "scope": "Native Qt UI grabs and actual instantiated hierarchy. Separate video and desktop backdrop blur pixels are not included. Cached offline reference PNG defects are not the appearance oracle.",
+  "small_text_contrast_reference": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+}

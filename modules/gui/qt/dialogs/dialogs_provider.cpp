@@ -75,7 +75,6 @@
 #define BASE_DIALOG(X) \
     X(prefsDialog) \
     X(openDialog) \
-    X(firstRunDialog) \
     X(extendedDialog) \
     X(messagesDialog) \
     X(gotoTimeDialog) \
@@ -271,6 +270,7 @@ bool DialogsProvider::eventFilter(QObject *watched, QEvent *event) {
     case QEvent::Close:
     case QEvent::Destroy:
     {
+        if(watched==m_firstRunDialog.get()){emit firstRunDialogVisibleChanged();break;}
         ALL_DIALOG(CASE_DIALOG)
         break;
     }
@@ -310,6 +310,7 @@ void DialogsProvider::shortcutsDialog()
 
 void DialogsProvider::firstRunDialog()
 {
+    if(p_intf->p_mi){p_intf->p_mi->requestPlayerOnboarding();return;}
     ensureDialog(m_firstRunDialog);
     QVLCDialog::setWindowTransientParent(m_firstRunDialog.get(), nullptr, p_intf);
     m_firstRunDialog->show();
@@ -1082,3 +1083,9 @@ void DialogsProvider::toggleDialogVisible(std::unique_ptr<T>& dialog) {
     }
 
 ALL_DIALOG(DIALOG_VISIBLE_GETTER)
+
+bool DialogsProvider::firstRunDialogVisible() const
+{
+    if(p_intf->p_mi && p_intf->p_mi->onboardingRequested())return true;
+    return m_firstRunDialog && m_firstRunDialog->isVisible();
+}

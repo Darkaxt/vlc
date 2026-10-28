@@ -1,0 +1,30 @@
+{
+  "before": {
+    "PSChildName": "{3468ff09-eda0-419b-8616-642d8c902637}",
+    "DistributionName": "VLC-S6-20261025",
+    "BasePath": "E:\\Temp\\vlc-s6-20261025\\wsl",
+    "DefaultUid": 0,
+    "Version": 2
+  },
+  "after": {
+    "distribution": "VLC-S6-20261025",
+    "registration": "{3468ff09-eda0-419b-8616-642d8c902637}",
+    "source": "E:\\Temp\\vlc-s6-20261025\\wsl",
+    "destination": "D:\\Temp\\vlc-s6-20261028\\wsl",
+    "disk_length": 10414456832,
+    "scratch": "D:\\Temp\\vlc-s6-20261028",
+    "native_command": "Reported nonzero; not replayed. Actual destination and registration independently reconciled.",
+    "linux_verification": "Pending gate inspection",
+    "other_bindings": [
+      {
+        "DistributionName": "Ubuntu",
+        "BasePath": "C:\\Users\\darka\\AppData\\Local\\Packages\\CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc\\LocalState"
+      },
+      {
+        "DistributionName": "docker-desktop",
+        "BasePath": "\\\\?\\C:\\Users\\darka\\AppData\\Local\\Docker\\wsl\\main"
+      }
+    ]
+  },
+  "final_verification": "All fork source read-backs/builds and delivered native normal-runtime verification passed; scratch disk subsequently retired."
+}

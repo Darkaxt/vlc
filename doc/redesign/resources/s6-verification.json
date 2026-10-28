@@ -1,0 +1,141 @@
+{
+  "stage": "S6",
+  "status": "ACTIVE",
+  "product_acceptance_verified": true,
+  "scope_stop": "before S7",
+  "closure_remaining": [
+    "verified commit and GitHub source synchronization"
+  ],
+  "review_runtime": "D:\\VLC-Redesign\\S6",
+  "normal_runtime": {
+    "plugin_cache_exit": 0,
+    "pid": 56364,
+    "desktop": "VLC-S2-7ee46d033b3e48379f0dc2b974fa15da",
+    "exit_code": 0,
+    "qml_runtime_errors": [],
+    "media_library_enabled": true,
+    "checks": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true,
+      "native_media_library_started": true
+    },
+    "qt_plugin_sha256": "4b3355094ff0880c7db0e96b548ec835f850f089a65212c6defe7fa3fc5960f6",
+    "upnp_plugin_sha256": "08ab7e6d9589a2ca902755aa82eecea2326778f5840df6e0f525b869114c3211",
+    "debug_markers_absent": [
+      "VLC_PLAYER_DIAGNOSTICS_DIR",
+      "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+      "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+      "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+      "redesignSeekRequests",
+      "offscreen_session_is_capture_only",
+      "core_observation_listener_failed_action_not_undone",
+      "palette_highlight",
+      "PlayerDiagnostics"
+    ],
+    "profile_isolation": "Existing empty portable directory beside executable",
+    "capture_scope": "Inactive desktop, no OS input or desktop switching",
+    "verified_utc": "2026-10-28T20:47:39.389550+00:00",
+    "passed": true
+  },
+  "source_base": "0d22d6d556da68a54387dae112db66437c19b457",
+  "pinned_upstream": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "qt": "6.8.3",
+  "figma_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "source_parity_verified": true,
+  "workflow_continuations": {
+    "profiles": "Retained failed prefix records stdout encoding and an expected-name assertion missing documented trimming. Read-back confirmed completed actions; profiles_completed finishes rename, duplicate rejection, deletion and media preservation without replay.",
+    "native_appearance": "The retained prefix verifies preview/cancel on the same native window, then rejects the ampersand submenu query before dispatch. The corrected exact-label driver continuation verifies profile switching on that same window."
+  },
+  "preservation": {
+    "existing_profile_unchanged": true,
+    "windows_language_key_unchanged": true,
+    "installed_settings": [
+      {
+        "path": "C:\\Users\\darka\\AppData\\Roaming\\vlc\\vlcrc",
+        "exists": true,
+        "sha256": "e9e51d7c9b171ed21fb9cd6c84f6e76896e6f5254d4d2dddb91d2b1b2627a42d"
+      },
+      {
+        "path": "C:\\Users\\darka\\AppData\\Roaming\\vlc\\vlc-qt-interface.ini",
+        "exists": true,
+        "sha256": "740c0bd63339bd23a9f3644c9e96b93633cc59ec03a6d58aaa51f527d1228f21"
+      }
+    ],
+    "language": {
+      "key_exists": false,
+      "exists": false
+    },
+    "fixture_sha256": "fe76ed2ba5a1793092d65cc479ba6b2e373c731b9ee8ccac758bfd7889b76394",
+    "fixture_bytes": 2508208
+  },
+  "requirements": {
+    "R50": {
+      "status": "satisfied and verified",
+      "evidence": [
+        "s6/native-workflows.json",
+        "s6/recovery.json"
+      ],
+      "behavior": "Actual six-zone drag/drop, drag/keyboard removal and insertion, reset/cancel/save, moved playback/seek, empty/narrow recovery, named snapshot CRUD/switch/restore/restart, strict read-only recovery and real write-error retry."
+    },
+    "R51": {
+      "status": "satisfied and verified",
+      "evidence": [
+        "s6/native-workflows.json",
+        "s6/onboarding-recovery.json"
+      ],
+      "behavior": "Actual first-run, theme/accent live preview, Skip/reopen/Finish/restart, configured shortcut labels, acknowledged explicit native folder addition, invalid/excluded-root preservation, existing-root deduplication, native save rollback/retry and prior-user isolation."
+    },
+    "R04/R52": {
+      "status": "satisfied and verified for S6",
+      "evidence": [
+        "s6/visual-contract.json",
+        "s6/preservation.json",
+        "s6/normal-runtime.json"
+      ],
+      "behavior": "Source Figma panel/text geometry, light/dark native UI at actual DPR 1/1.5/2, keyboard/scroll/narrow/long Unicode labels, same-window native palette lifecycle, resolved assets and all nine primary-label accent contrasts; normal delivered runtime."
+    }
+  },
+  "advancement_blockers": [
+    "source commit/synchronization"
+  ],
+  "tracked_deferrals": [
+    {
+      "owner": "S7/R61",
+      "requirement": "Resolve pinned-upstream WASAPI startup-paused double-start",
+      "reason": "Normal-start UI pause/seek/resume passes; --start-paused resume returned AUDCLNT_E_NOT_STOPPED then hit the native started-state assertion.",
+      "resolution": "Reproduce and resolve the double-start lifecycle; verify resume, advancing clock and normal exit with both startup modes before final integrated playback/release acceptance.",
+      "current_stage_independent": true
+    }
+  ],
+  "limits": [
+    "Native Qt grabs omit separately composed video and physical desktop backdrop pixels.",
+    "S7 integrated engine/device/input matrix and final application release remain unstarted; this is the authorized S6 local review folder.",
+    "Prior S2-S5 review deliverables are preserved. No rollback package or installation over the existing VLC is created."
+  ],
+  "resource_retirement": {
+    "distribution": "VLC-S6-20261025",
+    "registration": "{3468ff09-eda0-419b-8616-642d8c902637}",
+    "native_unregister_exit_code": 0,
+    "registration_absent": true,
+    "disk_absent": true,
+    "unrelated_bindings_unchanged": true,
+    "d_free_bytes_after": 929441648640,
+    "path": "D:\\Temp\\vlc-s6-20261028\\wsl\\ext4.vhdx",
+    "logical_bytes": 30312235008,
+    "allocated_bytes": 30312235008,
+    "d_free_bytes_before": 899129421824,
+    "normal_review_verified": true,
+    "all_linux_groups_empty": true,
+    "distribution_stopped": true,
+    "d_free_bytes_increase_measured": 30312226816,
+    "free_space_scope": "Observed D volume delta; unrelated concurrent writes are not attributed to this task."
+  },
+  "refactoring_assessment": {
+    "result": "no current-acceptance finding",
+    "decision": "No speculative consolidation. QML owns validated presentation drafts; existing native owners retain persisted settings, library and playback; scoped event subscriptions clean up deterministically."
+  }
+}

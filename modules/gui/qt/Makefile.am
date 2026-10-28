@@ -803,6 +803,19 @@ EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
 	pixmaps/redesign/manifest.json pixmaps/redesign/README.md
 
 libqt_plugin_la_RES = \
+	player/qml/PlayerLayoutRules.js \
+	pixmaps/redesign/forward10.svg \
+	pixmaps/redesign/backward10.svg \
+	pixmaps/redesign/forward15.svg \
+	pixmaps/redesign/backward15.svg \
+	pixmaps/redesign/replay.svg \
+	pixmaps/redesign/speed.svg \
+	pixmaps/redesign/snapshot.svg \
+	pixmaps/redesign/bookmark.svg \
+	pixmaps/redesign/hdr.svg \
+	pixmaps/redesign/zoom.svg \
+	pixmaps/redesign/quit.svg \
+	pixmaps/redesign/pip.svg \
 	pixmaps/redesign/edit.svg \
 	pixmaps/redesign/settings-info.svg \
 	pixmaps/redesign/settings-general.svg \
@@ -1248,6 +1261,13 @@ libqml_module_player_a_ModulePath = VLC/Player
 libqml_module_player_a_CXXFLAGS = $(libqt_plugin_la_CXXFLAGS)
 libqml_module_player_a_CPPFLAGS = $(libqt_plugin_la_CPPFLAGS)
 libqml_module_player_a_QML = \
+	player/qml/PlayerLayoutControl.qml \
+	player/qml/PlayerLayoutStrip.qml \
+	player/qml/PlayerLayoutDrag.qml \
+	player/qml/PlayerLayoutEditor.qml \
+	player/qml/PlayerSetupButton.qml \
+	player/qml/PlayerOnboarding.qml \
+	player/qml/PlayerProfiles.qml \
 	player/qml/PlayerChromeState.qml \
 	player/qml/PlayerIconButton.qml \
 	player/qml/PlayerTracksPopup.qml \
@@ -1292,6 +1312,7 @@ libqml_module_player_a_QML = \
 	player/qml/NavigationBox.qml
 
 libqml_module_player_a_Singleton_QML = \
+	player/qml/PlayerCustomization.qml \
 	player/qml/PlayerStyle.qml \
 	player/qml/LibraryState.qml \
 	player/qml/PlayerControlbarControls.qml

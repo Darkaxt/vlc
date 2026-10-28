@@ -12,6 +12,11 @@ import os
 import uuid
 
 
+def visible_label(text):
+    # Qt uses && for a literal ampersand and & for a mnemonic marker.
+    return '&'.join(part.replace('&', '') for part in text.split('&&'))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
@@ -168,12 +173,12 @@ def main():
             elif args.op == 'widget_click':
                 if args.menu_action:
                     matches = [(n['node'], i) for n in before['widgets'] for i, a in enumerate(n.get('actions', []))
-                               if a['enabled'] and a['text'].replace('&', '').split('\t', 1)[0] == args.menu_action]
+                               if a['enabled'] and visible_label(a['text']).split('\t', 1)[0] == args.menu_action]
                     if len(matches) != 1:
                         raise RuntimeError('Expected one enabled menu action; matched ' + str(len(matches)))
                     fields['node'], fields['action'] = matches[0]
                 elif args.widget_text:
-                    matches = [n for n in before['widgets'] if n['enabled'] and n.get('text', '').replace('&', '') == args.widget_text]
+                    matches = [n for n in before['widgets'] if n['enabled'] and visible_label(n.get('text', '')) == args.widget_text]
                     if len(matches) != 1:
                         raise RuntimeError('Expected one enabled native widget; matched ' + str(len(matches)))
                     fields['node'] = matches[0]['node']

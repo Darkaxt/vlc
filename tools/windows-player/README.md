@@ -1,5 +1,22 @@
 # Native player inspection without desktop control
 
+Current Windows storage rules use an exact registered `D:/Temp/<task>` root for
+active WSL disks, compiler/dependency trees and sustained-I/O tests. Historical
+E: examples below describe completed runs; preserve existing bindings until an
+authorized migration. All heavy WSL commands use the installed `wsl-build-gate`
+with the 4 GiB VM ceiling, bounded workload and one compiler job. The native
+normal-runtime verifier accepts isolated D:/E: packages and scratch; current S6
+work uses D:. It still rejects a nonempty portable profile.
+
+S6's `redesign/customization-v1` owns only the six player layout areas and named
+profiles covering layout, theme, raw accent, Grid/List and elapsed/remaining
+display. It preserves malformed/newer/oversized stores read-only. Native toolbar
+profiles and their Tools editor remain available separately; Customize Player
+opens the new in-place Figma editor. Onboarding previews are not persisted by an
+unfinished app close. Existing native preference editors repaint theme/accent
+without rebuilding their unsaved values. Runtime acceptance is recorded in the
+stage ledger, not implied by these source contracts.
+
 Build the pinned [Windows baseline](../windows-baseline/README.md) first, keeping
 its SDK/runtime backports and configured build directory. The S1 pristine-source
 gate applies before the redesign overlay, not afterwards. Apply the fork's maintained overlay to that source tree, including the changed
@@ -297,6 +314,11 @@ Snapshot bounds use each item's layout rectangle; TextInput.boundingRect() can
 cover only its text/cursor and does not describe its clickable control rectangle.
 The diagnostic build also records the last delivered pointer sequence and eight
 seek submissions, making UI dispatch and core acceptance independently inspectable.
+Core time/position observations temporarily subscribe to the native player's
+position event, after the input assigns its actual time and position. The UI's
+early seek-request position is insufficient while paused: its interpolated
+timers stop during seeking. Completion, cancellation and teardown unregister
+this listener; normal builds contain neither it nor the diagnostic transport.
 
 An action response reports dispatch and the observed tree; verify the expected
 effect separately. Dispatch does not establish playback or asset readiness.

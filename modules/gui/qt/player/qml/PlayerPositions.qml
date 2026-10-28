@@ -121,7 +121,7 @@ ColumnLayout {
     }
     Connections {
         target: Player
-        function onCurrentMediaChanged() {
+        function onInputChanged() {
             root.selectedBookmarkTimestamp = -1
             positions.currentIndex = -1
             rename.text = ""

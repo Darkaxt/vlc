@@ -65,6 +65,10 @@
 
 #include <QKeyEvent>
 #include <QPalette>
+#include <QSettings>
+#include <QJsonDocument>
+#include <QFileDialog>
+#include <QFileInfo>
 
 #include <QUrl>
 #include <QDate>
@@ -73,6 +77,7 @@
 #include <QInputDialog>
 #include <QMenu>
 #include <QPointer>
+#include <cmath>
 
 #include <QQmlProperty>
 
@@ -95,6 +100,29 @@
 #define VLC_REFERENCE_SCALE_FACTOR 96.
 
 using  namespace vlc::playlist;
+
+struct MainCtx::OnboardingFolderRequest
+{
+    MainCtx *owner;
+    quint64 revision;
+    QString url;
+    QVariantMap values;
+    vlc_ml_event_callback_t *callback=nullptr;
+};
+
+static bool onboardingFolderMatches(const QString &first,const QString &second,bool descendants=false)
+{
+    const auto normalized=[](const QString &value){
+        return QUrl(value).adjusted(QUrl::StripTrailingSlash|QUrl::NormalizePathSegments).toString(QUrl::FullyEncoded);
+    };
+#ifdef _WIN32
+    const auto sensitivity=Qt::CaseInsensitive;
+#else
+    const auto sensitivity=Qt::CaseSensitive;
+#endif
+    const auto target=normalized(first), candidate=normalized(second);
+    return target.compare(candidate,sensitivity)==0||(descendants&&target.startsWith(candidate+QLatin1Char('/'),sensitivity));
+}
 
 static int HotkeyFeedbackCB(vlc_object_t *, const char *, vlc_value_t,
                             vlc_value_t value, void *opaque)
@@ -268,6 +296,7 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
 
     /* VideoWidget connects for asynchronous calls */
     connect( this, &MainCtx::askToQuit, THEDP, &DialogsProvider::quit, Qt::QueuedConnection  );
+    connect(this, &MainCtx::onboardingRequestedChanged, THEDP, &DialogsProvider::firstRunDialogVisibleChanged);
 
     /** END of CONNECTS**/
 
@@ -357,7 +386,15 @@ void MainCtx::closePlayerMenus()
 
 MainCtx::~MainCtx()
 {
+    if(m_onboardingFolderRequest){
+        if(m_onboardingFolderRequest->callback)
+            m_medialib->unregisterEventListener(m_onboardingFolderRequest->callback);
+        m_onboardingFolderRequest.reset();
+    }
     /* Save states */
+
+    // An app close during onboarding must not persist an unfinished preview.
+    if(m_beforePreviewTheme>=0)m_colorScheme->setCurrentIndex(m_beforePreviewTheme);
 
     var_DelCallback(vlc_object_instance(p_intf),"key-pressed",HotkeyFeedbackCB,this);
     m_threadRunner->destroy();
@@ -606,15 +643,213 @@ void MainCtx::sendVLCHotkey(int vlcHotkey)
 QColor MainCtx::getRedesignAccent() const
 {
     char *raw=var_InheritString(p_intf,"qt-accent-color");const QString value=qfu(raw).trimmed();free(raw);
-    if(value==QStringLiteral("system")) {
+    const QString effective=m_previewAccent.isNull()?value:m_previewAccent;
+    if(effective==QStringLiteral("system")) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
         return QGuiApplication::palette().color(QPalette::Accent);
 #else
         return QGuiApplication::palette().color(QPalette::Highlight);
 #endif
     }
-    if(value.isEmpty() || value==QStringLiteral("default"))return QColor(QStringLiteral("#d37918"));
-    const QColor color(value);return color.isValid()?color:QColor(QStringLiteral("#d37918"));
+    if(effective.isEmpty() || effective==QStringLiteral("default"))return QColor(QStringLiteral("#d37918"));
+    const QColor color(effective);return color.isValid()?color:QColor(QStringLiteral("#d37918"));
+}
+
+QColor MainCtx::getRedesignAccentText() const
+{
+    const QColor accent=getRedesignAccent(), dark(Qt::black);
+    // Preserve the original Figma glyph on orange. Other accents use the
+    // higher-contrast black/white endpoint, including small primary labels.
+    if(accent==QColor(QStringLiteral("#d37918")))return QColor(QStringLiteral("#2e2e2e"));
+    const auto luminance=[](const QColor &color){
+        const auto channel=[](double value){return value<=0.04045?value/12.92:std::pow((value+0.055)/1.055,2.4);};
+        return 0.2126*channel(color.redF())+0.7152*channel(color.greenF())+0.0722*channel(color.blueF());
+    };
+    const double value=luminance(accent), foreground=luminance(dark);
+    const double darkContrast=(std::max(value,foreground)+0.05)/(std::min(value,foreground)+0.05);
+    return darkContrast>=1.05/(value+0.05)?dark:QColor(Qt::white);
+}
+
+QVariantMap MainCtx::presentationSettings() const
+{
+    char *raw=var_InheritString(p_intf,"qt-accent-color");
+    QString accent=qfu(raw).trimmed();free(raw);
+    if(accent.isEmpty())accent=QStringLiteral("default");
+    if(accent!=QStringLiteral("system") && accent!=QStringLiteral("default"))
+        accent=QColor(accent).isValid()?QColor(accent).name():QStringLiteral("default");
+    return {{QStringLiteral("theme"),m_colorScheme->currentIndex()},
+            {QStringLiteral("accent"),accent},{QStringLiteral("grid"),m_gridView},
+            {QStringLiteral("remaining"),m_showRemainingTime}};
+}
+
+bool MainCtx::previewAppearance(int theme,const QString &accent)
+{
+    if(theme<0||theme>2||(accent!=QStringLiteral("system")&&accent!=QStringLiteral("default")&&!QColor(accent).isValid()))return false;
+    if(m_previewAccent.isNull())m_beforePreviewTheme=m_colorScheme->currentIndex();
+    m_previewAccent=accent;
+    m_colorScheme->setCurrentIndex(theme);
+    emit redesignAccentChanged();
+    return true;
+}
+
+QString MainCtx::saveCustomization(const QString &encoded,const QVariantMap &values)
+{
+    return saveCustomizationImpl(encoded,values,false);
+}
+
+QString MainCtx::saveCustomizationImpl(const QString &encoded,const QVariantMap &values,bool dismissOnboarding)
+{
+    // One explicit, current presentation contract; never enumerate arbitrary
+    // VLC options or import credentials/media into profile snapshots.
+    if(!encoded.isEmpty()&&(encoded.size()>262144||!QJsonDocument::fromJson(encoded.toUtf8()).isObject()))
+        return qtr("The saved player customization is invalid.");
+    const bool apply=!values.isEmpty();
+    const int theme=values.value(QStringLiteral("theme")).toInt();
+    const QString accent=values.value(QStringLiteral("accent")).toString();
+    if(apply&&(values.size()!=4||!values.contains(QStringLiteral("theme"))||!values.contains(QStringLiteral("accent"))||theme<0||theme>2||values.value(QStringLiteral("theme")).toDouble()!=theme
+            ||values.value(QStringLiteral("grid")).metaType().id()!=QMetaType::Bool
+            ||values.value(QStringLiteral("remaining")).metaType().id()!=QMetaType::Bool
+            ||(accent!=QStringLiteral("system")&&accent!=QStringLiteral("default")&&!QColor(accent).isValid())))
+        return qtr("The profile's appearance settings are invalid.");
+    char *oldRaw=config_GetPsz("qt-accent-color");
+    const QByteArray oldAccent=oldRaw?QByteArray(oldRaw):QByteArray();free(oldRaw);
+    const auto oldAsk=config_GetInt("qt-privacy-ask");
+    const bool saveCore=apply||dismissOnboarding;
+    const auto restoreCore=[&](){
+        if(apply)config_PutPsz("qt-accent-color",oldAccent.constData());
+        if(dismissOnboarding)config_PutInt("qt-privacy-ask",oldAsk);
+    };
+    if(apply)config_PutPsz("qt-accent-color",qtu(accent));
+    if(dismissOnboarding)config_PutInt("qt-privacy-ask",0);
+    if(saveCore&&config_SaveConfigFile(p_intf)!=0){
+        restoreCore();
+        return qtr("VLC settings could not be saved. Your accepted player layout is unchanged.");
+    }
+    if(encoded.isEmpty()&&!apply)return {};
+    const QString key=QStringLiteral("redesign/customization-v1");
+    const QStringList keys={key,QStringLiteral("MainWindow/color-scheme-index"),QStringLiteral("MainWindow/grid-view"),QStringLiteral("MainWindow/ShowRemainingTime")};
+    // QSettings retains its first error for the object's lifetime. A fresh
+    // writer to the same native file permits a real retry after a write failure;
+    // Qt shares this file's value cache with the existing settings owner.
+    QSettings writer(settings->fileName(),settings->format());
+    QVariantList old;for(const auto &k:keys)old.push_back(writer.value(k));
+    if(!encoded.isEmpty())writer.setValue(key,encoded);
+    if(apply){
+        writer.setValue(keys[1],theme);
+        writer.setValue(keys[2],values.value(QStringLiteral("grid")));
+        writer.setValue(keys[3],values.value(QStringLiteral("remaining")));
+    }
+    writer.sync();
+    if(writer.status()!=QSettings::NoError){
+        for(int i=0;i<keys.size();++i){if(old[i].isValid())writer.setValue(keys[i],old[i]);else writer.remove(keys[i]);}
+        writer.sync();
+        restoreCore();
+        if(saveCore&&config_SaveConfigFile(p_intf)!=0)
+            return qtr("Interface settings could not be written, and the prior VLC preferences could not be restored on disk. Your accepted layout is unchanged. Restore write access before retrying.");
+        return qtr("Interface settings could not be written. The accepted layout was preserved; check that the settings file is writable.");
+    }
+    if(apply){
+        m_previewAccent=QString();
+        m_beforePreviewTheme=-1;
+        m_colorScheme->setCurrentIndex(theme);
+        setGridView(values.value(QStringLiteral("grid")).toBool());
+        setShowRemainingTime(values.value(QStringLiteral("remaining")).toBool());
+        emit redesignAccentChanged();
+    }
+    return {};
+}
+
+QString MainCtx::chooseOnboardingFolder(const QString &current)
+{
+    return QFileDialog::getExistingDirectory(nullptr,qtr("Choose a Media Folder"),current);
+}
+
+QString MainCtx::shortcutLabel(const QString &option) const
+{
+    const auto *parameter=config_FindConfig(qtu(option));
+    if(!parameter||parameter->i_type!=CONFIG_ITEM_KEY)return qtr("Unassigned");
+    char *raw=var_InheritString(p_intf,qtu(option));
+    const QString text=qfu(raw);free(raw);
+    QStringList result;
+    for(const auto &key:text.split('\t',Qt::SkipEmptyParts))result.push_back(key);
+    return result.isEmpty()?qtr("Unassigned"):result.join(QStringLiteral(" / "));
+}
+
+void MainCtx::completeRedesignOnboarding(bool finish,const QVariantMap &values,const QString &error,bool folderAdded)
+{
+    if(!error.isEmpty()){emit playerOnboardingFinished(error);return;}
+    auto failure=saveCustomizationImpl({},finish?values:QVariantMap{},true);
+    if(!failure.isEmpty()&&folderAdded)
+        failure+=qtr(" The selected media folder was added, but setup has not finished. Restore write access and retry, or skip setup.");
+    if(failure.isEmpty()&&!finish){
+        previewAppearance(values.value(QStringLiteral("theme")).toInt(),values.value(QStringLiteral("accent")).toString());
+        m_previewAccent=QString();m_beforePreviewTheme=-1;emit redesignAccentChanged();
+    }
+    if(failure.isEmpty()&&m_onboardingRequested){
+        m_onboardingRequested=false;
+        emit onboardingRequestedChanged();
+    }
+    emit playerOnboardingFinished(failure);
+}
+
+void MainCtx::resolveOnboardingFolder(quint64 revision,const QString &error,bool folderAdded)
+{
+    if(!m_onboardingFolderRequest||m_onboardingFolderRequest->revision!=revision)return;
+    auto request=std::move(m_onboardingFolderRequest);
+    m_medialib->unregisterEventListener(request->callback);
+    completeRedesignOnboarding(true,request->values,error,folderAdded);
+}
+
+void MainCtx::finishRedesignOnboarding(bool finish,const QVariantMap &values,const QString &folder)
+{
+    // Keep the original request pending; the QML form is disabled until its
+    // actual root-added/failure result, not until discovery has merely queued.
+    if(m_onboardingFolderRequest)return;
+    if(!finish||folder.isEmpty()){completeRedesignOnboarding(finish,values,{});return;}
+    const QFileInfo entry(folder);
+    if(!entry.exists()||!entry.isDir()||!m_medialib){completeRedesignOnboarding(finish,values,qtr("Choose an existing media folder with the media library enabled, or leave the folder blank."));return;}
+    struct FolderResult{bool ok=false;bool existing=false;bool banned=false;};
+    const auto url=QUrl::fromLocalFile(entry.absoluteFilePath()).toString(QUrl::FullyEncoded);
+    const auto revision=++m_onboardingFolderRevision;
+    m_onboardingFolderRequest=std::make_unique<OnboardingFolderRequest>(OnboardingFolderRequest{this,revision,url,values});
+    m_onboardingFolderRequest->callback=m_medialib->registerEventListener([](void *data,const vlc_ml_event_t *event){
+        if(event->i_type!=VLC_ML_EVENT_ENTRY_POINT_ADDED&&event->i_type!=VLC_ML_EVENT_DISCOVERY_FAILED)return;
+        const auto *request=static_cast<OnboardingFolderRequest *>(data);
+        const QString observed=QUrl::fromEncoded(event->i_type==VLC_ML_EVENT_ENTRY_POINT_ADDED?
+            event->entry_point_added.psz_entry_point:event->discovery_failed.psz_entry_point).toString(QUrl::FullyEncoded);
+        if(!onboardingFolderMatches(request->url,observed))return;
+        const bool success=event->i_type==VLC_ML_EVENT_ENTRY_POINT_ADDED&&event->entry_point_added.b_success;
+        QMetaObject::invokeMethod(request->owner,[owner=request->owner,revision=request->revision,success](){
+            owner->resolveOnboardingFolder(revision,success?QString():qtr("The media library could not add that folder. Your other settings have not been changed."),success);
+        },Qt::QueuedConnection);
+    },m_onboardingFolderRequest.get());
+    if(!m_onboardingFolderRequest->callback){
+        m_onboardingFolderRequest.reset();
+        completeRedesignOnboarding(true,values,qtr("The media library could not observe the folder operation. Your other settings have not been changed."));
+        return;
+    }
+    m_medialib->runOnMLThread<FolderResult>(this,
+        [url](vlc_medialibrary_t *ml,FolderResult &result){
+            ml_unique_ptr<vlc_ml_folder_list_t> list(vlc_ml_list_entry_points(ml,nullptr));
+            if(!list)return;
+            for(const auto &folder:ml_range_iterate<vlc_ml_folder_t>(list)){
+                if(!folder.psz_mrl)continue;
+                if(onboardingFolderMatches(url,QUrl::fromEncoded(folder.psz_mrl).toString(QUrl::FullyEncoded))){result.existing=true;result.ok=true;return;}
+            }
+            ml_unique_ptr<vlc_ml_folder_list_t> banned(vlc_ml_list_banned_entry_points(ml,nullptr));
+            if(!banned)return;
+            for(const auto &folder:ml_range_iterate<vlc_ml_folder_t>(banned)){
+                if(folder.psz_mrl&&onboardingFolderMatches(url,QUrl::fromEncoded(folder.psz_mrl).toString(QUrl::FullyEncoded),true)){
+                    result.existing=true;result.banned=true;return;
+                }
+            }
+            result.ok=vlc_ml_add_folder(ml,qtu(url))==VLC_SUCCESS;
+        },
+        [this,revision](quint64,FolderResult &result){
+            if(result.existing||!result.ok)
+                resolveOnboardingFolder(revision,result.banned?qtr("That folder is excluded in your existing library settings. Change the exclusion explicitly or leave this folder blank."):
+                    result.ok?QString():qtr("The media library could not add that folder. Your other settings have not been changed."),false);
+        });
 }
 
 MLBookmarkModel *MainCtx::getBookmarks()
@@ -1173,6 +1408,11 @@ QWindow *MainCtx::intfMainWindow() const
 QVariant MainCtx::settingValue(const QString &key, const QVariant &defaultValue) const
 {
     return settings->value(key, defaultValue);
+}
+
+bool MainCtx::hasSetting(const QString &key) const
+{
+    return settings->contains(key);
 }
 
 void MainCtx::setSettingValue(const QString &key, const QVariant &value)

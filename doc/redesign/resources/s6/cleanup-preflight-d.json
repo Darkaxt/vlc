@@ -1,0 +1,94 @@
+{
+  "schema": "recodex.policy-inspection.v1",
+  "version": "0.1.0",
+  "submitted_command_executed": false,
+  "input": {
+    "sha256": "774ce71f30579b5c8611f069819923e87183d867a6246daf204d1b5a82855723",
+    "utf8_bytes": 183,
+    "shell": "pwsh"
+  },
+  "engine_identity": {
+    "path": "E:\\ReCodex\\releases\\ReCodex-Policy-Inspector-0.1.0-windows-x64\\bin\\recodex-policy-engine.exe",
+    "sha256": "469e55b5211a9370f4d2609fbfd0f9fc245588fd33e861e6704f05d04894bc64",
+    "version": "0.1.0"
+  },
+  "upstream": {
+    "repository": "https://github.com/openai/codex",
+    "commit": "7ae831991792744434027c431dfbc7e81dd5c12c",
+    "source_equivalence_to_installed_runtime": false,
+    "files": [
+      {
+        "path": "engine/vendor/windows_dangerous_commands.rs",
+        "upstream_path": "codex-rs/shell-command/src/command_safety/windows_dangerous_commands.rs",
+        "sha256": "642972c033a248e0534478975389d0821c528048b73d550a7237f9d9d951d5f6"
+      },
+      {
+        "path": "engine/vendor/powershell_tree_sitter.rs",
+        "upstream_path": "codex-rs/shell-command/src/command_safety/powershell_tree_sitter.rs",
+        "sha256": "b67599e443dd814dc3e0d72d8c36817ab72afa3d3492637ca3121c70fd78b46d"
+      },
+      {
+        "path": "engine/vendor/powershell_tree_sitter_tests.rs",
+        "upstream_path": "codex-rs/shell-command/src/command_safety/powershell_tree_sitter_tests.rs",
+        "sha256": "00d9ac194afee868c1ff799a46a10a073b43a2976f0fd90059dbe0427d7ba7c5"
+      },
+      {
+        "path": "engine/vendor/fixtures/powershell_lowering.json",
+        "upstream_path": "codex-rs/shell-command/src/command_safety/fixtures/powershell_lowering.json",
+        "sha256": "fd8f7db84883596642fe9fa84ee5b270df692669b98c86923add5b9083b46451"
+      }
+    ]
+  },
+  "runtime_source_equivalence_established": false,
+  "engine": {
+    "dangerous": false,
+    "findings": [],
+    "groups": [
+      {
+        "dangerous": false,
+        "findings": [],
+        "index": 0,
+        "rule_check_argv": [
+          "pwsh",
+          "-NoLogo",
+          "-Command",
+          "python -B C:\\Users\\darka\\.agents\\skills\\transactional-cleanup\\scripts\\invoke_transactional_cleanup.py apply --ticket 88d55d44c44b435c5ddba659371b5018ccdf6265838b613c1ebb5924ec062c4f\r\n"
+        ]
+      }
+    ],
+    "parsing": {
+      "mode": "opaque",
+      "reason": "Literal subset lowering rejected input: non-canonical numeric-leading bare word. Using upstream opaque shlex tokens."
+    }
+  },
+  "explicit_rules": {
+    "status": "not_selected",
+    "files": [],
+    "groups": [],
+    "runtime": null,
+    "coverage": "Selected files only; not a discovery of every active policy layer."
+  },
+  "scenario": {
+    "approval": "never",
+    "full_access": true,
+    "configuration_source": "User-selected simulation; installed configuration is not inferred.",
+    "outcome": "no_block_identified",
+    "group_decisions": [
+      {
+        "index": 0,
+        "decision": "no_block_identified",
+        "origin": "audited_fallback"
+      }
+    ],
+    "note": "Conditional local prediction only. Source/runtime equivalence, host policy and remote reviews are not established."
+  },
+  "coverage": {
+    "windows_heuristics": "Pinned historical source; dependency versions recorded in engine/Cargo.lock.",
+    "command_decomposition": "Audited literal PowerShell lowering, otherwise original shell invocation. Other app-server normalization is not replayed.",
+    "guardian": "not_evaluated",
+    "server_side_policies": "not_evaluated",
+    "windows_execution_and_antivirus": "not_evaluated",
+    "managed_host_policy": "not_evaluated",
+    "installed_effective_configuration": "not_inferred"
+  }
+}

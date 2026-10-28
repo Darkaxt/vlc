@@ -3,6 +3,18 @@
         <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
     </qresource>
     <qresource prefix="/redesign/icons">
+        <file alias="forward10.svg">pixmaps/redesign/forward10.svg</file>
+        <file alias="backward10.svg">pixmaps/redesign/backward10.svg</file>
+        <file alias="forward15.svg">pixmaps/redesign/forward15.svg</file>
+        <file alias="backward15.svg">pixmaps/redesign/backward15.svg</file>
+        <file alias="replay.svg">pixmaps/redesign/replay.svg</file>
+        <file alias="speed.svg">pixmaps/redesign/speed.svg</file>
+        <file alias="snapshot.svg">pixmaps/redesign/snapshot.svg</file>
+        <file alias="bookmark.svg">pixmaps/redesign/bookmark.svg</file>
+        <file alias="hdr.svg">pixmaps/redesign/hdr.svg</file>
+        <file alias="zoom.svg">pixmaps/redesign/zoom.svg</file>
+        <file alias="quit.svg">pixmaps/redesign/quit.svg</file>
+        <file alias="pip.svg">pixmaps/redesign/pip.svg</file>
         <file alias="edit.svg">pixmaps/redesign/edit.svg</file>
         <file alias="settings-info.svg">pixmaps/redesign/settings-info.svg</file>
 
@@ -208,5 +220,8 @@
         <file alias="addon_magenta.svg">pixmaps/addons/addon_magenta.svg</file>
         <file alias="addon_red.svg">pixmaps/addons/addon_red.svg</file>
         <file alias="addon_yellow.svg">pixmaps/addons/addon_yellow.svg</file>
+    </qresource>
+    <qresource prefix="/qt/qml/VLC/Player">
+        <file alias="PlayerLayoutRules.js">player/qml/PlayerLayoutRules.js</file>
     </qresource>
 </RCC>
