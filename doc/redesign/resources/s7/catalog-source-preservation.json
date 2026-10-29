@@ -1,0 +1,1062 @@
+{
+  "schema": "vlc_redesign.catalog_source_preservation.v1",
+  "positive": {
+    "source_commit": "f83765523a1ef6741b78275df6ef9d7b8c25b20b",
+    "changed_catalogs": [
+      {
+        "path": "po/ach.po",
+        "generated_sha256": "9ea4d4ab034c913b361e6f3c851fa0fe463fc362a704741e96f6a06ae672847a",
+        "source_sha256": "093d74d5858e51786e8b58b03418df9d32df137220e6b0001e73f5ab05d69914",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ach",
+          "source": "ach"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/af.po",
+        "generated_sha256": "d350d825937a274fc0fc29a7a4d043bb30824c90c16189d57e7202431d3f9259",
+        "source_sha256": "a6dc636ca4123ab0b83fb4479866a4faa1bcbe8c6540eeea3d5640cb15eb847a",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "af",
+          "source": "af"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/am.po",
+        "generated_sha256": "462dde0d5f674628c9c51426f86d0fc093916af7705d50716541550cbcc24c34",
+        "source_sha256": "10f0fd55c97f0a7e2a04776ff0f45bf9333dc68c1185d5fc13473de4174a3248",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "am",
+          "source": "am"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/an.po",
+        "generated_sha256": "7d6c2c62378de621a7e3139512535c159586386df69d7f5c6f4dc404dac71d9a",
+        "source_sha256": "9f37f6a9cccb4feec588199ae265a1f8c92d7632d0afa9a0f719360682574384",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "an",
+          "source": "an"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ar.po",
+        "generated_sha256": "64694f84714deaff8c42d5f2957ef3bf09785966666132f364463ed3a377ff23",
+        "source_sha256": "ea5b862d536d3c347accd6dd6e7afbc664e16c254492efac1b53f797343885e1",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ar",
+          "source": "ar"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/as.po",
+        "generated_sha256": "9033fb3f19a9db788f1f1382d4b4a4a5a6dd7b41abcda28d7d27285841bccc41",
+        "source_sha256": "ee9fd8c95be835a7254fb6e582067e6ad9a3a79475019b602797591955536ae4",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "as",
+          "source": "as_IN"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ast.po",
+        "generated_sha256": "6fd92313779d338e1be8f7c9093fecc70a2dc8e45edcf137c46cfb7b1110f662",
+        "source_sha256": "6f31a7495ec8a0710283d713593c4af41ded7c3dcd0d14b4d6727b6142fe4783",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ast",
+          "source": "ast"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/az.po",
+        "generated_sha256": "e420beddd1d846ed59008963f6015207d3deca0c812968f741ef9b66e56861f2",
+        "source_sha256": "708dfcfe2239edcdd7fb67fd12e4e60adf03e0a8dac1f55de38e8d3a4ccd115d",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "az",
+          "source": "az"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/be.po",
+        "generated_sha256": "fee244811056ff7f5fe42b216f8b313c65d48c415da93cdbd09f2587a2fdd316",
+        "source_sha256": "7f3c00272a8bbc4708fda79f431e61d8d5ca09804d4e19a8d038677d0ad4d6e4",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "be",
+          "source": "be"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/bg.po",
+        "generated_sha256": "cd07b586fe6a414798a8a49e9a12c4f6ed3d0e65c54a147e8dab0d1edb46afed",
+        "source_sha256": "e13e0b57d96a48b5bc08a7c115131fd055059d6fa670dd18bf86c6ad1c19ef46",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "bg",
+          "source": "bg"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/bn.po",
+        "generated_sha256": "534c8eea0ea8a669bfbab7b4217aa53ae9ea022cd77995d7cfcb1a78fddd43f5",
+        "source_sha256": "facafa8d4cafc548da3010c56d5179aa3b4078c7406943a42418b2bc1568c33b",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "bn",
+          "source": "bn"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/bn_IN.po",
+        "generated_sha256": "3c93d1ba8dfe35eadaaf3c5894f410311ef22416852ea88f226673f0af172d5d",
+        "source_sha256": "24091292c17b73cae7b62693e1fd962d4d837a547b371532c11b4b6cbfe5972e",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "bn_IN",
+          "source": "bn_IN"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/br.po",
+        "generated_sha256": "a109bd919765ff8b541aaa2942596d825aba6c08032cb3a3282f55961a77a778",
+        "source_sha256": "990bd3f79732f5d6c7dc5059efb8d6cfba00c3726baaab90d0ab2ab6ac277aae",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "br",
+          "source": "br"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/brx.po",
+        "generated_sha256": "ee541b25d2bf3091d23c8242fe989a673614c3827887e4054cc59246b535ec2e",
+        "source_sha256": "dd76d9a08ed1e3b473d7b97416eeb237c1caf99c34831884bcfaa7b46d26e896",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "brx",
+          "source": "brx"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/bs.po",
+        "generated_sha256": "3e0831f711c1ad5559c40af8edacdf2158200e7a26188e4366c2ad18a4cc0758",
+        "source_sha256": "b5615d671c51824c81d106cd2632dd4581607022a281b38b3142e0789109652d",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "bs",
+          "source": "bs"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ca.po",
+        "generated_sha256": "a13412d87e4c00233e72d91b1fc7494f284476dd329e31b617a8c52e416d33e1",
+        "source_sha256": "2b947b9ce4f66843b64cdc59f66e8cab1b02d45cbee97c3d218e43b06bbc8f08",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ca",
+          "source": "ca"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/cgg.po",
+        "generated_sha256": "599b575ae69f7f0cf14adc4d0dcd88c4a55ec5027bd2029650cc92f6b03e445e",
+        "source_sha256": "944d40bbd304c0a6a86d3dcd8fa4234e39eb077a70cd531dcbe75d6049e0ff37",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "cgg",
+          "source": "cgg"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ckb.po",
+        "generated_sha256": "f31819e954d09b5a68a6dbe863fc14e65961c7cfde594b4ef40f4d8188835fc6",
+        "source_sha256": "1a1ed21dc16a40ae665356530b5ca75a1c02261eefb22c455fcf64ab8d5542aa",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ckb",
+          "source": "ckb"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/co.po",
+        "generated_sha256": "840bb01b573e26008d7110184be29b63a5f306c3b6925eaed10662d3849dbb88",
+        "source_sha256": "c1b91032b90e734f281fbcb88b15334ffff28aabad4ea0c52980e43094e64955",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "co",
+          "source": "co"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/cs.po",
+        "generated_sha256": "f610d5ad0bbc3c072a89ea072c9617c48c1c9852088a3bf7b19c2ef193e313b4",
+        "source_sha256": "33c176a3f197446513ea9b3503e8b00df10fbb3d8561e3cb744e8c36986c7be4",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "cs",
+          "source": "cs"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/cy.po",
+        "generated_sha256": "78f93a047b2bcb6a4cd139fd8305d4d83affecc0fd78145b4f19eb426b97aa05",
+        "source_sha256": "d39d5d097d3c7c79350b74a93acabcfbf58d139a5e9778d58e3ec695159da5d5",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "cy",
+          "source": "cy"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/da.po",
+        "generated_sha256": "abedabbbf57be4901cb99d7c40c3d9321b51f36ce81e2f7185e30d888ecb794d",
+        "source_sha256": "1aaaf195fa84e7660ee985987ece01641bb85273d374f05fa32dcbfd3c71efb0",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "da",
+          "source": "da"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/de.po",
+        "generated_sha256": "3dd327adc0f20d6baaca50be3d0bc669b0fda0c3f99e7b731298d5c78ce2d2f7",
+        "source_sha256": "68ade272284ba0f59f9d6ab9789cccbda31f0400ed1e7a3d420ba53c838899c7",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "de",
+          "source": "de"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/el.po",
+        "generated_sha256": "2ac9cb81261125b44e3c0ab3fe1332680fdd9aa2f60687f609a2e0cc624b4698",
+        "source_sha256": "5bb61f0e010422f65d2057b48013d464462ef32cfcfcc6c1eb25e5645f7b1d3b",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "el",
+          "source": "el"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/en_GB.po",
+        "generated_sha256": "f77454342facd05ddbe8284e04a6ad9bd7eedcb9d5bdcc6d0841c8363ad8e1b5",
+        "source_sha256": "f563a9ac3802e5d0ed0ea7994ce66b24c9dfd7a02a6a7a1e3b69412032cd66b5",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "en_GB",
+          "source": "en_GB"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/es.po",
+        "generated_sha256": "b72c9eb12d2b17d61fbe0ed409865ff90a9ad1fdc06ae8f921147eb0d24f74e5",
+        "source_sha256": "9c473014d8338763da3db1dbb5c41a18da1fe20a0fa71e1fce17186a27fc555e",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "es",
+          "source": "es"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/et.po",
+        "generated_sha256": "1ebce5c188b525534a38956140cc3d3eccbb4d2aa578ad5143ced62f0670a0be",
+        "source_sha256": "39c4647b689a5e825ebb7b1c143d9945cfc988e9ecfa2b3ffe7f4e973f8e8a5e",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "et",
+          "source": "et"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/eu.po",
+        "generated_sha256": "edbf6ba5e6000dab4f71a005aef0450911d52dd89cb5451f7102126d590bcd0a",
+        "source_sha256": "af0d841da54e3c4414a82b95480f20f549798cad5af35ea105de2cbdd9e1df24",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "eu",
+          "source": "eu"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/fa.po",
+        "generated_sha256": "414f6ce18283500a2d9ef84876e8bae6a11a204ed1a6580606e251978e38c805",
+        "source_sha256": "c6b2b6b998b074c443f469d6a7da92f045517eed65ca2e434495d68d0b63f1bf",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "fa",
+          "source": "fa"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ff.po",
+        "generated_sha256": "de60083014e35e2dbe0342ba1b926b42fce914d0053283bec8c48daba51afe1c",
+        "source_sha256": "bc7c1982f263054be0af3ce92078e1296607dffc01e481c69fd6719033ef9cf1",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ff",
+          "source": "ff"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/fi.po",
+        "generated_sha256": "479cd02ee20ea09d1fe0b9db8d1882520a920085e00d2126b38652508ae977a1",
+        "source_sha256": "9a9170443fd877efd45fde93522243b90c9d5ebb471b9dcee5c3b3dbe76b2d8e",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "fi",
+          "source": "fi"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/fr.po",
+        "generated_sha256": "9423d8683663e67e75c3d071c72ef7fddaa1cb3dbc2f6f23809dd885a77f771f",
+        "source_sha256": "63bd80f4741ea64bce6a81d4a9e47051097eef258d3af96432af8a3a0efddc9a",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "fr",
+          "source": "fr"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/fur.po",
+        "generated_sha256": "3bf654be404b3ae2648e230f621041d4fd05b97966be7e9b1e5a2ef04f939055",
+        "source_sha256": "c2b1e151b9d036343bc1a428b5770641602662507ea80003fe52bdad3626b894",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "fur",
+          "source": "fur"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/fy.po",
+        "generated_sha256": "588cd8ac8f39ad843243f7c04ea919b979a3927911959a61fb38e741ca6f861a",
+        "source_sha256": "981356239adaaa509f550c3b8c5a268353a8b07ac1f48122f012949bde1d86d7",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "fy",
+          "source": "fy"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ga.po",
+        "generated_sha256": "fc00daec757e20098207d68b69f0e4131fece5e7050f59dc36db189545f760e0",
+        "source_sha256": "90e9cd6a250ac53e7e2d3120d18e5806f8239879594c4b9a2fd97db9e3d77730",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ga",
+          "source": "ga"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/gd.po",
+        "generated_sha256": "90ea0bf7fcbedc5cf857a939fc11ff6280be489a937b922523c96962b1744936",
+        "source_sha256": "a4e21b90c55c87a2c4b48d9b10912552f5eb8f29d06c712c19aa4bdb4a72c623",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "gd",
+          "source": "gd"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/gl.po",
+        "generated_sha256": "166c8a0141452ca068135b63eb7b55ed5f2502eae9038d183c33c6846fbc37fe",
+        "source_sha256": "e78b1a9ab252086c370ed1deee0decb59bc5d2bc8f1310bfc3d422fc8829802d",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "gl",
+          "source": "gl"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/gu.po",
+        "generated_sha256": "580479c929ef794116b61ba0b7f6bbcfa0425738c2720daf569a5331ff74035a",
+        "source_sha256": "1fc2bd845af3d352b5900f95fb310730696295be88bbd21619607bea901cf791",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "gu",
+          "source": "gu"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/he.po",
+        "generated_sha256": "c5429016b23ba3eb3030b4de52d7824914f5279d118423078b93870b14f0c60b",
+        "source_sha256": "5c33611fd8fd4d97a5c38946039a5dcf805a25206b7d3742ae2c7ffaca47a31f",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "he",
+          "source": "he"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/hi.po",
+        "generated_sha256": "50772fcf60475fed1c49bf78c3b5182fa66019b748a67902e87fccbe7ba0d52e",
+        "source_sha256": "c2b12c27e62ae35a29954d1282aae2141951b0f3525bb66a4b5ad1930ff5d12b",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "hi",
+          "source": "hi"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/hr.po",
+        "generated_sha256": "4dd73bed816158a922b3cee5843bbaded393dd831633c73e22ab0cd2d539cf15",
+        "source_sha256": "e46dcbcda33145921631acb41057c09068f39773a5fd2b56f5f01892517e5f89",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "hr",
+          "source": "hr"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/hu.po",
+        "generated_sha256": "05e8f820167dacf4a8115453954134b36375e20ad5d0862d6e11ea7144dbb236",
+        "source_sha256": "59d08175b2e9e846733465eef513b3f23e8c2c779b7133a70c241352a1a90cb5",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "hu",
+          "source": "hu"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/hy.po",
+        "generated_sha256": "ead8f501493653c9f46d460d8d9c3e26d8c980d8b45ed5e88fde934e09973f68",
+        "source_sha256": "006b36e52cca6243fbb40bd890512f4ec0bc881e1db798072c25e4d7756be635",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "hy",
+          "source": "hy"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ia.po",
+        "generated_sha256": "9f36d1377921948102b05ef4c5816e1cf8b6901f819fc437115f97e24d7598a7",
+        "source_sha256": "28cdb5081e7d32c98294801b67dcf043f3857fd2e15c87db306abf77118b9769",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ia",
+          "source": "ia"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/id.po",
+        "generated_sha256": "9bc5ebf5b228c9b82b02c8ee5cbc2db26e8a5945dd7a2ea79fc468b3eac0f78b",
+        "source_sha256": "69a8b0d410376538e0379126f86097a4bf93be911e4733817df77ce3b0154643",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "id",
+          "source": "id"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/is.po",
+        "generated_sha256": "e7d091b4031965f8c70338623bb65c3a74e58d401358841b4e075b6507173a6b",
+        "source_sha256": "c0bb1e932487443a50a0021bf43384a2b46ca0a68e6a75b4025830b55959eba7",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "is",
+          "source": "is"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/it.po",
+        "generated_sha256": "9fb7b244de1b26d2738dc04de82cd7ddbf6ef628d070e5ab891f5941a58dcb0a",
+        "source_sha256": "4620af66266b40a1427161608d9e50d25ac88e6c7dadf8d2308d85c2f9d30e52",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "it",
+          "source": "it"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ja.po",
+        "generated_sha256": "807c64f9f0657183a2c6a6aab4318fb4f909bbdcf6c224318ff78c4316549432",
+        "source_sha256": "3598ea6c85230ea80290da87263d4129ca4d31a21791cf2be70e9a5abac2f780",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ja",
+          "source": "ja"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ka.po",
+        "generated_sha256": "9db10741b8a793f11ebe11275156bdbbb0ba15f03193020180c174f132bf3239",
+        "source_sha256": "f97c19a9fc9028bb10c9f395ec35f9331052fd93a219bdaf326735c3d58a9bd6",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ka",
+          "source": "ka"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/kk.po",
+        "generated_sha256": "f66c96fbb8172bf9af0f5a3fb0f71c92df160e5ef773f47b610c4ebfb75cf5bb",
+        "source_sha256": "a3b956ab951cbb421c76f832dc61689ac47bb9d754bcd146b10124b0811b4a70",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "kk",
+          "source": "kk"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/km.po",
+        "generated_sha256": "cae255ad0db605db6a262f517beea53c596fc9bec4149862ef0780fe34a6ef34",
+        "source_sha256": "bca39b8d9241b4d3cb144a273230fc4584f43786a2b689a6a9c6a30cc06c4be1",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "km",
+          "source": "km"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/kn.po",
+        "generated_sha256": "9e58c45e0f9773838f77bda2fd6561e7d17ceabb11221beb8cfd61017aed1651",
+        "source_sha256": "6693dad65bb5fff01bb5e564c66bdfb7cc7b4772ef3ab8a203a8e862253c80ef",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "kn",
+          "source": "kn"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ko.po",
+        "generated_sha256": "82966b08e7cccf5d4fc78631157affe12cb7606624bc902075c2525d627b9c2c",
+        "source_sha256": "e5ca2bcfe68ff33fa7ccde8f2d28da905c75dfb82690f9f205dbeea74dd41b21",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ko",
+          "source": "ko"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ks_IN.po",
+        "generated_sha256": "9e1b683ed57b3ae5680f30c018c2232ae810433e447c3fce1ace3731e75e560b",
+        "source_sha256": "0c6a368140d5946b66950615b1f74e3ce2adde9526f032f42c3e4d9e129e0bcd",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ks_IN",
+          "source": "ks_IN"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ky.po",
+        "generated_sha256": "8c502f8c30fda4ec1976461a159945cd657ec39177b693a1e48ed4f35d18d727",
+        "source_sha256": "874e42ad0e1ec7a87b294ac97e91097cc0f4f5fc32edb09869ecadff9a97cd58",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ky",
+          "source": "ky"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/lg.po",
+        "generated_sha256": "1b7a15700c9c3a72fd345868ac171a3ea7ecb93103a249183646a9b08de8bce4",
+        "source_sha256": "63131cccc675b4cb995ec989bb5ecb892900b19201fa8dd251515fd30f638877",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "lg",
+          "source": "lg"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/lt.po",
+        "generated_sha256": "026ea054d9debcf672e6a0bb3c581698614777bd291528bcb1b4fafed84d77ee",
+        "source_sha256": "00586d83e5e1410248565104ee15c7db2bfdbece127f933096448d6ab14863c0",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "lt",
+          "source": "lt"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/lv.po",
+        "generated_sha256": "cb47b22c12e9bdd0af3c0380affa2fbfd362406df89c137c6afeab282ce7ead8",
+        "source_sha256": "c2820f2a188830b876396f63c65357ca16b859a44de48bd4b4300262feae730a",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "lv",
+          "source": "lv"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/mai.po",
+        "generated_sha256": "a40d7b9f5bd807a7811b1c1908fb5c736e5b90fced39ddadf6c10e57b56feb0c",
+        "source_sha256": "0ac01e6616d38ce1200063f765a3b8a7ede27a7b2b81893489fbf2840292cebe",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "mai",
+          "source": "mai"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/mk.po",
+        "generated_sha256": "7e22e6d74da63adbd7ebb6801d67bcd043f8889ee6e97887a19f9e206fd5cd5f",
+        "source_sha256": "3b8f5e32a54008f1886396217b899c8e3669aaa5082c60e94774fd235f0673be",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "mk",
+          "source": "mk"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ml.po",
+        "generated_sha256": "88f7f70fa6f16c18cc9b9d7b8a05cc3d79d74491d19cf416467f7c0d7ba9fa88",
+        "source_sha256": "9d38207c71202363a2c5f3b89ae7fd5f0a7e5f0b11aa9236edc4c0f97818da54",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ml",
+          "source": "ml"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/mn.po",
+        "generated_sha256": "de35c14021217aa6fa9f466d3c583ff5ccc993f968c9369420ed932a1f8e9eb1",
+        "source_sha256": "60c7bf98b3ef20205cda743fc7c99632752066b3f1bb9630709482e628d4e9c0",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "mn",
+          "source": "mn"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/mr.po",
+        "generated_sha256": "d05b0c42279bf2972ef04f4ddef3fd5974c65efaf81b8a0a72e54d077b494e2d",
+        "source_sha256": "12f40855e97c522e34215de86d98269a63cf39973d91f9fc893c655ef4c523fd",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "mr",
+          "source": "mr"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ms.po",
+        "generated_sha256": "1c11f01a05fee0a7283763ca512e4e3e2dc1810dc1d29b6f60bedcd573fa6ce7",
+        "source_sha256": "cca7533649ba1a87193b71e67c31147650e1bf81a9c5074b0c7efbf57022838c",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ms",
+          "source": "ms"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/my.po",
+        "generated_sha256": "6bf4558b3c8198c7086572582125226e6851c537546ce4573a8ebb70606be76a",
+        "source_sha256": "3db6173dfcb4ad0490d2116b81e1bd7e48c25d7da16953809051d2efa2e310e7",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "my",
+          "source": "my"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/nb.po",
+        "generated_sha256": "7fa3c833540e139d285c570b8045599c5a7e8fc899e1e188d239d2d7d4fe3a0b",
+        "source_sha256": "ece20a0007c06e4715004d3dbd221027bf3f17ef3349a1bb1e9d19d82737a3a2",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "nb",
+          "source": "nb"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ne.po",
+        "generated_sha256": "40b32d4b24efa06bd930bb4fda508d9cca3381ff3588b25b0a7fd330d87158c2",
+        "source_sha256": "906bb1e9bff73f1b6b51be8cdeda72cc9a2953c4fad1c6fdb53588c2dbb7d05f",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ne",
+          "source": "ne"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/nl.po",
+        "generated_sha256": "61829ab77227d77dc48cc27c808df17d590eee2154b41bbd10e9176fd6ec1959",
+        "source_sha256": "a57f6b631090030587fb54330f2ffb9493a6a4949812d0a760792e9013b2da44",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "nl",
+          "source": "nl"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/nn.po",
+        "generated_sha256": "50c12d56ce4bc0d1834555a24582e793432b972f91aa55746ce4893bd4afed1d",
+        "source_sha256": "464871d5825892f856b3b99718c4a90d90d58afc8bc50490763a9fb9fb0c615e",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "nn",
+          "source": "nn"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/oc.po",
+        "generated_sha256": "26271ee11f0980c65df92c7e8bd0ed5e51d177f6cf51239e35d21716e8b48d16",
+        "source_sha256": "e5476a22add4ba52bcdb99ddca5cb16d99ee0c0d815bd912fb1b6a33f9d49334",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "oc",
+          "source": "oc"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/or.po",
+        "generated_sha256": "b50ab8c532958a6c8298a8702e48e4d7127da1f24f636af0f44848e0393d13c9",
+        "source_sha256": "386cc1db4f40c78fb5d3313dde0ea4177c9ca393ec329787d18e38f95961f71a",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "or",
+          "source": "or"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/pa.po",
+        "generated_sha256": "098b6a3c304cab6de1a7a5445e6b9e6974d9f11e102bf4a6218aaa8aa80e20a1",
+        "source_sha256": "9095748b59da2f5c0a542436e07cae7ed1c039595dd7bdca016c29b1cd4461a9",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "pa",
+          "source": "pa"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/pl.po",
+        "generated_sha256": "49049608d1254e85c7bfe2869b2ba19f720441c543e3269779bd0dc31a6e3f28",
+        "source_sha256": "32ef5958e0d5094c7130e09373cbf19a4c1c25dcd3124641896ba697744b5cd2",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "pl",
+          "source": "pl"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ps.po",
+        "generated_sha256": "f71e79d535202bb09a480a71ea209c6230e39c94b526c3eded7b5ec320b9a581",
+        "source_sha256": "a8e66d82093879bbd690debf30bc1aaeecd233defb47cf3e24845d9f67e4c4c8",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ps",
+          "source": "ps"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/pt_BR.po",
+        "generated_sha256": "efc7784f460daacfd893a70e124a3b9633cf9be0a443048dc44abeb915faed62",
+        "source_sha256": "d6ef0fa4940c9b63979f7238d96841a95bc30d30a189a75d75436f921a31fb91",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "pt_BR",
+          "source": "pt_BR"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/pt_PT.po",
+        "generated_sha256": "499f82b22525d3240568b837290ee1648434f9728526f506a33420172b9cb8d3",
+        "source_sha256": "6eb02b71a386609c3ace3931495a9b435d3e1cb22257ac6a1d3033db571e817d",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "pt_PT",
+          "source": "pt_PT"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ro.po",
+        "generated_sha256": "665cb2d56706f558cadbbe47633fbac5f5024c8e1df4e6bcb2415de43f2c37da",
+        "source_sha256": "61296565682b23bbd1093b385fcf93971e4d11d7aa660a14c39e7374569cd785",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ro",
+          "source": "ro"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ru.po",
+        "generated_sha256": "a4f36c80d75d992534e996cde58701689767c9ff055d2a524b409f70b0298624",
+        "source_sha256": "f72745f0da6be2e346700f163f8564aab24e94671185b3ba3a53aa8a05ecb205",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ru",
+          "source": "ru"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/si.po",
+        "generated_sha256": "db5e35d8383eb423e9e3be03dcd55cc8f33315a73d4124601032534689b8c552",
+        "source_sha256": "a98b7ed8e50775ea13c3ddd9bd8f1681bd2991391d226f235a6a22d7f7aa5091",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "si",
+          "source": "si"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/sk.po",
+        "generated_sha256": "4a5fa474a73ad437e4a98d42b576073f7c70be8d4ea7ed5fcfecf8a4afce5518",
+        "source_sha256": "7f0ce2e4a0905dc6196985eedf42c231e024480c1bb85c0a85ee17d9d5222a08",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "sk",
+          "source": "sk"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/sl.po",
+        "generated_sha256": "949c0b2a9c08e413f3f3321a2d899c1d6f47a5796bd439d8f0092e253b52bdfd",
+        "source_sha256": "5c94cc7358432a98c326a9a0c88d49f6d4e41c566df01e7e9205e747f28c0621",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "sl",
+          "source": "sl"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/sq.po",
+        "generated_sha256": "0ecb181985ce4a29ef9e5043ba087688ea4f6808e7363c800948839cf4702f97",
+        "source_sha256": "81fb49406ab919533f65bd5809bf822c4fd3b1d182960563b5285764de5ab209",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "sq",
+          "source": "sq"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/sr.po",
+        "generated_sha256": "65d5536cf8fa0a6f9821402942e7067eca80f188c19b084a3c41ee0474a0ba1d",
+        "source_sha256": "a871e7ba67038d2c47792318d7619067e3c53a3ab8ad76fcac817339980282bc",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "sr",
+          "source": "sr"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/sv.po",
+        "generated_sha256": "8886f00d67beab3ac8e430136e3c38089476671a21cec696d317d6f7dbb33529",
+        "source_sha256": "1fa30a8dfd305996ec0e0bbbbbe0dcd8f13c2938815fb8517b1aa3f8423d89c4",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "sv",
+          "source": "sv"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ta.po",
+        "generated_sha256": "b6bd60abd73f075b3d96b8ee67cb955734ac42231ba33b8a3663246256abdc8a",
+        "source_sha256": "395905b2aaaa2b45f0e9128b9d746379c083ab6158e733bba367be01b634b8ec",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ta",
+          "source": "ta"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/te.po",
+        "generated_sha256": "5beb9df8a053a14c9f449431d866348f75c624b2fa4a4f284411d273e84c51ba",
+        "source_sha256": "b3449cea3117de449f1ecb96bfa6bbb572baa9cf089e3ad617bc5449ac9dcc4c",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "te",
+          "source": "te"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/tet.po",
+        "generated_sha256": "5165683588ceef65234d7bb8bdacdce2eb6a5c5645c28efd8ed63ff190039e1f",
+        "source_sha256": "2416dfb67578bd403a25c5a552988a6b31b2eb59cdef51a1146151e6998cdeb2",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "tet",
+          "source": "tet"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/th.po",
+        "generated_sha256": "6d0a6de5f6190a3a1f2c6954ce59fedb196415714ed63f04c652a0c1d4ad0054",
+        "source_sha256": "9c0753a29d9f233a0f003c8be4c942e8408028a393a29c1cbfef1cd5dd99be90",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "th",
+          "source": "th"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/tl.po",
+        "generated_sha256": "218a3294605a02938c34122b91c2e7f98fe4eab73fd785796edecd415037b8de",
+        "source_sha256": "69dbfdae9c94f9a2a11e53ceed945c8f6e96193ebd692237559fdbce944b7b85",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "tl",
+          "source": "tl"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/tr.po",
+        "generated_sha256": "4d830137fd8130db628be3ee64b2ea2359b604617e5d3da9397b3e2afad7f328",
+        "source_sha256": "e7978ff3e1dd81f1346a937f47eb9a4fffdbf87c30c4d9a6e2a1a18f1dbe428c",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "tr",
+          "source": "tr"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/ug.po",
+        "generated_sha256": "66206e0829e63ee56ae62aba1a2335ed0cc2a204c71727c3e4084db7f6ba5700",
+        "source_sha256": "26d41a25c013a9812db9abca44677f08e6cb1c3300125bde17c8807687ccfef9",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "ug",
+          "source": "ug"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/uk.po",
+        "generated_sha256": "c97b651f944f7a1542d40e1e8a702445aa59507b0c639d1507818821e2e05c3a",
+        "source_sha256": "80a80249b058c9268bc87b87b09db8010d148244753f6b8d1b60b06356041b54",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "uk",
+          "source": "uk"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/uz.po",
+        "generated_sha256": "7fada0c888ab11e961b0d92e7362568e8b4c66d393923533873b5cf9cdfa957b",
+        "source_sha256": "fb3fc5f0520c7d5573bbfae7a199239b99baf3d89b94d152d7df9c443c74376a",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "uz",
+          "source": "uz"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      },
+      {
+        "path": "po/vi.po",
+        "generated_sha256": "639a1d647f7a31c84c5c2b5c28aa10c1b52a69aa4e968b0d6e056f738d9a2d0e",
+        "source_sha256": "5c04f8d98df6e88898a7d94820806870c356f87cf1c380b75bfca40ced14dc59",
+        "compiled_messages_equivalent": true,
+        "language_header": {
+          "generated": "vi",
+          "source": "vi"
+        },
+        "language_selection": "Catalog path/locale chooses the language; msgmerge --lang rewrites this informational header. Preserve the committed header."
+      }
+    ],
+    "restored_equivalent_generated": true,
+    "source_translations_preserved": true,
+    "template_sha256": "db1f81ec2f91090c1025f03053ecd2ed15e37bfdf00528114039587e4197106d",
+    "comparison": "Same msgmerge --for-msgfmt template path used by the actual GNU gettext .po.gmo build rule, then actual msgfmt output catalog messages and runtime locale metadata."
+  },
+  "negative_control": {
+    "changed_translation_rejected": true,
+    "changed_source_preserved_by_helper": true,
+    "test_fixture_restored": true,
+    "passed": true
+  },
+  "positive_gate": "12b4868534a14689a721ffeaa8905c39",
+  "negative_gate": "276c2544d485492cbbeb6406d4b05a20",
+  "both_gates_exit_zero_group_empty_no_oom": true,
+  "build_rule": "PO_DEPENDS_ON_POT=no preserves tracked PO inputs; .po.gmo still uses msgmerge --for-msgfmt against the original template.",
+  "initial_normal_binding": {
+    "gate": "1d2934856d0c45a3be15414fc8abd5e6",
+    "exit_code": 1,
+    "compilation_started": false,
+    "reason": "Tracked PO sources had been rewritten by prior gettext dependency updates; preserved and diagnosed before reconciliation."
+  }
+}

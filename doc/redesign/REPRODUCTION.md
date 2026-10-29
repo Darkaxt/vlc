@@ -106,6 +106,16 @@ process: the agent shell's `LC_ALL=C.UTF-8` otherwise overrides the launcher's
 LANG selection. The compiled native gettext implementation and actual catalogs
 must both participate in the check.
 
+GNU gettext's default PO dependency rule may merge and rewrite tracked
+translator sources. The maintained build supplies `PO_DEPENDS_ON_POT=no`;
+the normal `.po.gmo` rule still merges against the template into its temporary
+build input. Before normal metadata generation, `reconcile-source-catalogs.py`
+restores prior generated PO changes only after the actual template merge and
+msgfmt results prove equivalent messages and runtime locale metadata. A real
+translation difference stops the operation and preserves the sources. This
+keeps the owned checkout's exact commit identity without disabling catalogs or
+editing the canonical translations.
+
 Build `normal` only after the integrated implementation and its required
 regressions are complete. The final package must contain no diagnostic transport,
 session credentials, test executables, fixtures or user profile. Package notices

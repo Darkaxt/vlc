@@ -13,6 +13,11 @@ case "$mode" in
 esac
 test -f "$build_root/config.status"
 test -f "$source_root/modules/gui/qt/maininterface/player_video_backdrop.hpp"
+if test "$mode" = normal; then
+    python3 "$source_root/tools/windows-player/reconcile-source-catalogs.py" \
+        --source "$source_root" --commit HEAD --restore-equivalent-generated \
+        --output "$runtime/../catalogs-before-normal.json"
+fi
 make -C "$build_root/src" -j1 stamp-revision
 make -C "$build_root/src" -j1 libvlccore.la
 x86_64-w64-mingw32-strip --strip-debug \
@@ -35,7 +40,9 @@ make -C "$build_root/modules/gui/qt" -j1 \
     PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" libqt_plugin.la
 make -C "$build_root/modules" -j1 libfreetype_plugin.la libequalizer_plugin.la libmedialibrary_plugin.la libstream_out_transcode_plugin.la libwasapi_plugin.la libskins2_plugin.la
 make -C "$build_root/share" -j1 lua/extensions/VLSub.luac skins2/default.vlt
-make -C "$build_root/po" -j1 install-data "localedir=$runtime/locale"
+# Compile against the existing template without updating tracked translator
+# sources. GNU gettext still performs its build-only --for-msgfmt merge.
+make -C "$build_root/po" -j1 PO_DEPENDS_ON_POT=no install-data "localedir=$runtime/locale"
 test -f "$runtime/locale/el/LC_MESSAGES/vlc.mo"
 mkdir -p "$runtime/plugins/gui" "$runtime/plugins/services_discovery" "$runtime/plugins/text_renderer" "$runtime/plugins/audio_filter" "$runtime/plugins/misc" "$runtime/plugins/stream_out"
 mkdir -p "$runtime/lua/extensions"
