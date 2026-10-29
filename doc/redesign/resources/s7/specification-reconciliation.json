@@ -1,6 +1,6 @@
 {
   "stage": "S7",
-  "status": "ACTIVE",
+  "status": "COMPLETE",
   "requirements": {
     "R01": {
       "product_verified": true,
@@ -33,11 +33,11 @@
       "product_verified": true,
       "evidence": [
         "native-integrated-verification.json",
-        "../s6-verification.json"
+        "../s6-verification.json",
+        "final-preservation.json",
+        "final-normal-native.json"
       ],
-      "remaining": [
-        "Final private installed-profile/database/language comparison after normal package verification."
-      ]
+      "remaining": []
     },
     "R10": {
       "product_verified": true,
@@ -270,11 +270,11 @@
       "evidence": [
         "asset-inventory.json",
         "loose-asset-inventory-v9.json",
-        "THIRD-PARTY-NOTICES.md"
+        "THIRD-PARTY-NOTICES.md",
+        "final-runtime-assets.json",
+        "final-release.json"
       ],
-      "remaining": [
-        "Bind actual final binary notices and complete corresponding source to the release, then independently retrieve/check both packages."
-      ]
+      "remaining": []
     },
     "R61": {
       "product_verified": true,
@@ -284,19 +284,24 @@
         "wasapi-lifecycle-green.json",
         "wasapi-device-fixed.json",
         "native-pipe-red.json",
-        "native-pipe-green.json"
+        "native-pipe-green.json",
+        "final-normal-native.json"
       ],
       "remaining": []
     },
     "R62": {
-      "product_verified": false,
+      "product_verified": true,
       "evidence": [
         "../../REPRODUCTION.md",
-        "native-sdk-checks.json"
+        "native-sdk-checks.json",
+        "final-release.json",
+        "final-build.json",
+        "final-source-parity.json",
+        "owned-wsl-retirement.json",
+        "final-scratch-cleanup.json"
       ],
-      "remaining": [
-        "Verified implementation commit/source sync; exact-commit normal build; normal package/native/source checks; final published binary/source/hash assets and independent readback; final owned scratch/VM cleanup."
-      ]
+      "remaining": [],
+      "cleanup_evidence": "final-control-cleanup.json"
     },
     "R63": {
       "product_verified": true,
@@ -330,12 +335,12 @@
         "../../SPECIFICATION.md",
         "../../PLAN.md"
       ],
-      "remaining": [
-        "Later separately authorized execution after S8; not an S7 acceptance dependency."
-      ]
+      "remaining": [],
+      "planning_request_satisfied": true,
+      "future_scope": "S9 implementation remains NOT STARTED after S8; planning-only request is satisfied and is not an S7 tracked deferral."
     }
   },
   "external_execution_blocker": null,
   "tracked_deferrals_within_s7": [],
-  "scope": "S2-S6 prior acceptance is reused only for unchanged source owners; changed core/Qt/state owners receive the recorded fresh S7 workflows. Final release remains required."
+  "scope": "All S7 product/release criteria and exact scratch/VM/control cleanup verified; unchanged S2-S6 source owners reuse inspected applicable evidence. No required S7 blocker or tracked deferral remains. R66 planning is satisfied; S8/S9 implementation remains NOT STARTED."
 }

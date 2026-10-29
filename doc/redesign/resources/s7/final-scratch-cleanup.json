@@ -1,0 +1,20 @@
+{
+  "transaction_id": "011011b01b5ff9119a02b167eeb60012",
+  "manifest_sha256": "e567b922bd03280a04a906021f6d466c45349b15499c250e5ac40e1bfa8450fb",
+  "candidate_count": 18204,
+  "candidate_bytes": 10742109642,
+  "excluded_count": 0,
+  "exact_root": "D:\\Temp\\vlc-s7-20261029",
+  "pages_inspected": 19,
+  "all_members_inspected": true,
+  "no_live_scratch_executables": true,
+  "retained_deliverable": "D:\\VLC-Redesign\\releases\\1.0.0",
+  "state": "applied",
+  "deleted_bytes": 10742109642,
+  "result_counts": {
+    "deleted": 18204
+  },
+  "errors": [],
+  "ticket_id": "6cd3ac3b0824a15da5426534c2e87aeda2d34fea0d27370366748d3b27017482",
+  "root_absent": true
+}

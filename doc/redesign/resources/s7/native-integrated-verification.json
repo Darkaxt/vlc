@@ -1,6 +1,6 @@
 {
   "schema": "vlc_redesign.s7_native_integrated_verification.v1",
-  "status": "product workflows verified; final normal package/release pending",
+  "status": "Diagnostic integrated workflows verified; final normal-package delivery separately verified in final-release.json and final-normal-native.json.",
   "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
   "core_sha256": "49b8faae69e5a43093dc78c69a07f7327321aa0fb863c7532692f947578d4ca5",
   "integrated": [

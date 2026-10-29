@@ -1,0 +1,31 @@
+{
+  "stage": "S7",
+  "status": "COMPLETE",
+  "application_source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+  "release_url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.0.0",
+  "release_version": "1.0.0",
+  "product_and_release_acceptance_verified": true,
+  "blockers": [],
+  "tracked_deferrals": [],
+  "later_stages": {
+    "S8": "NOT STARTED",
+    "S9": "NOT STARTED"
+  },
+  "evidence": [
+    "s7/specification-reconciliation.json",
+    "s7/final-release.json",
+    "s7/final-normal-native.json",
+    "s7/final-preservation.json",
+    "s7/final-build.json",
+    "s7/final-source-parity.json",
+    "s7/final-runtime-assets.json",
+    "s7/owned-wsl-retirement.json",
+    "s7/final-scratch-cleanup.json",
+    "s7/final-control-cleanup.json"
+  ],
+  "limits": [
+    "Unsigned Windows binaries",
+    "No separate installed-VLC replacement",
+    "App-owned native UI capture excludes physical display/listening/Dolby Vision verification"
+  ]
+}

@@ -1,7 +1,7 @@
 # Windows x64 reproduction and recovery
 
-This is the S7 working recipe. S7 acceptance and release remain pending in
-[PLAN.md](PLAN.md). The pinned inputs and original baseline are documented in
+This recipe records the verified Windows x64 delivery of [Modern VLC Fork 1.0.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.0.0), application commit `dd61caec26f8cc65f15d78369d09fb254196c810`.
+Normal build, source binding, independent archive readback, native runtime and completed cleanup evidence are linked in [PLAN.md](PLAN.md). The pinned inputs and original baseline are documented in
 [the baseline recipe](../../tools/windows-baseline/README.md); its historical
 E: examples do not override the current D: build-storage requirement.
 

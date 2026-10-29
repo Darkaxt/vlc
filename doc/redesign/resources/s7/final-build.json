@@ -1,0 +1,52 @@
+{
+  "source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+  "gates": [
+    {
+      "id": "c927abdb0b1d40e1ae61ca1b9ca934b5",
+      "exit_code": 0,
+      "populated": false,
+      "effective_vm_memory_bytes": 4107378688,
+      "effective_limits": {
+        "memory.max": "3758096384",
+        "memory.swap.max": "536870912",
+        "cpu.max": "100000 100000",
+        "pids.max": "256",
+        "memory.oom.group": "1"
+      },
+      "peak_memory_bytes": 3692720128,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      },
+      "seconds": 93.45823735300002
+    },
+    {
+      "id": "67deb13f98ef449d930f604f587b691d",
+      "exit_code": 0,
+      "populated": false,
+      "effective_vm_memory_bytes": 4107382784,
+      "effective_limits": {
+        "memory.max": "3758096384",
+        "memory.swap.max": "536870912",
+        "cpu.max": "100000 100000",
+        "pids.max": "256",
+        "memory.oom.group": "1"
+      },
+      "peak_memory_bytes": 643239936,
+      "memory_events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      },
+      "seconds": 17.141095577
+    }
+  ],
+  "identity_relink_scope": "Only source packager root validation changed after the successful normal build; native revision/launchers relinked, unchanged normal Qt hash verified."
+}

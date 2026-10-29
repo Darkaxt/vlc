@@ -1,0 +1,162 @@
+{
+  "application_source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+  "release": {
+    "release_id": 427750778,
+    "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.0.0",
+    "tag": "redesign-v1.0.0",
+    "source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+    "published_at": "2026-10-29T10:58:59Z",
+    "draft": false,
+    "prerelease": false,
+    "latest_release_confirmed": true,
+    "annotated_tag_commit_verified": true,
+    "assets": [
+      {
+        "name": "Modern-VLC-Fork-1.0.0-corresponding-source.tar.gz",
+        "bytes": 832000212,
+        "sha256": "22446f23e743b495184cf250c4d31b173d1e2c14bd2a759ee7072867f39aaa3b",
+        "url": "https://github.com/Darkaxt/vlc/releases/download/redesign-v1.0.0/Modern-VLC-Fork-1.0.0-corresponding-source.tar.gz",
+        "github_digest": "sha256:22446f23e743b495184cf250c4d31b173d1e2c14bd2a759ee7072867f39aaa3b",
+        "independent_download_verified": true
+      },
+      {
+        "name": "Modern-VLC-Fork-1.0.0-win64-portable.zip",
+        "bytes": 454005244,
+        "sha256": "e116d5b0fee33e6b2dc65f4fde5fdab6b7f1ac458d7573b49b53de0d20e7007c",
+        "url": "https://github.com/Darkaxt/vlc/releases/download/redesign-v1.0.0/Modern-VLC-Fork-1.0.0-win64-portable.zip",
+        "github_digest": "sha256:e116d5b0fee33e6b2dc65f4fde5fdab6b7f1ac458d7573b49b53de0d20e7007c",
+        "independent_download_verified": true
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "bytes": 223,
+        "sha256": "c5cf7ca54e870b5ffe75ed97ccdd9afbb9f2bfd3c49f08d3a752dd0f009fb1e3",
+        "url": "https://github.com/Darkaxt/vlc/releases/download/redesign-v1.0.0/SHA256SUMS.txt",
+        "github_digest": "sha256:c5cf7ca54e870b5ffe75ed97ccdd9afbb9f2bfd3c49f08d3a752dd0f009fb1e3",
+        "independent_download_verified": true
+      }
+    ],
+    "passed": true
+  },
+  "independent_downloaded_binary": {
+    "kind": "binary",
+    "archive_sha256": "e116d5b0fee33e6b2dc65f4fde5fdab6b7f1ac458d7573b49b53de0d20e7007c",
+    "source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+    "runtime": "D:\\Temp\\vlc-s7-20261029\\published-readback-v1\\runtime",
+    "all_file_hashes_verified": true,
+    "empty_portable_profile": true,
+    "normal_hooks_and_temporary_traces_absent": true,
+    "native": {
+      "version": "4.0.0-dev Otto Chriek",
+      "compiler": "gcc version 14-posix (GCC)",
+      "changeset": "dd61caec"
+    },
+    "pe": [
+      {
+        "file": "vlc.exe",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "vlc-cache-gen.exe",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "vlc-preparser.exe",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "libvlc.dll",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "libvlccore.dll",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "plugins/gui/libqt_plugin.dll",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "plugins/gui/libskins2_plugin.dll",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      },
+      {
+        "file": "plugins/audio_output/libwasapi_plugin.dll",
+        "amd64": true,
+        "dll_characteristics": "0x560",
+        "aslr_nx_high_entropy": true
+      }
+    ],
+    "passed": true
+  },
+  "independent_complete_source": {
+    "kind": "source",
+    "archive_sha256": "22446f23e743b495184cf250c4d31b173d1e2c14bd2a759ee7072867f39aaa3b",
+    "source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+    "complete_git_tree_verified": true,
+    "corresponding_dependency_archives_verified": 106,
+    "every_manifest_member_hash_verified": true,
+    "removed_font_and_private_inputs_absent": true,
+    "git_history_not_shipped": true,
+    "passed": true
+  },
+  "actual_downloaded_normal_runtime": {
+    "plugin_cache_exit": 0,
+    "pid": 26008,
+    "desktop": "VLC-S2-40cea4b73d524cfca54f0e3cc758ad71",
+    "exit_code": 0,
+    "qml_runtime_errors": [],
+    "media_library_enabled": true,
+    "checks": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true,
+      "native_media_library_started": true
+    },
+    "qt_plugin_sha256": "8c1d4717e7aaad820888eb3fa0808e3f67f446e08ff6dd7bb8826c70b4a61a29",
+    "upnp_plugin_sha256": "fa51b9a7079d7e5b5e74626f5f9fba649251cf53a286d8f854b5216226aa42f3",
+    "debug_markers_absent": [
+      "VLC_PLAYER_DIAGNOSTICS_DIR",
+      "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+      "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+      "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+      "redesignSeekRequests",
+      "offscreen_session_is_capture_only",
+      "core_observation_listener_failed_action_not_undone",
+      "palette_highlight",
+      "PlayerDiagnostics",
+      "optional_legacy_font"
+    ],
+    "profile_isolation": "Existing empty portable directory beside executable",
+    "capture_scope": "Inactive desktop, no OS input or desktop switching",
+    "verified_utc": "2026-10-29T11:04:42.821299+00:00",
+    "passed": true
+  },
+  "stage": "S7",
+  "stage_status": "COMPLETE",
+  "remaining": [],
+  "cleanup_evidence": ["final-scratch-cleanup.json", "final-control-cleanup.json", "owned-wsl-retirement.json"],
+  "local_delivery": "D:\\VLC-Redesign\\releases\\1.0.0",
+  "signatures": {
+    "vlc.exe": "NotSigned",
+    "libvlccore.dll": "NotSigned",
+    "verification": "Windows Get-AuthenticodeSignature on independently extracted exact delivered file hashes; no signing step/claim."
+  }
+}

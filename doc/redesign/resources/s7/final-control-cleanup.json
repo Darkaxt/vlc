@@ -1,0 +1,18 @@
+{
+  "transaction_id": "98f8b7abba757882e7ed8fb1b0ebc552",
+  "manifest_sha256": "60f5589e35c132f7067c2ac321912702b48412374d69f17bcb0846da53579082",
+  "ticket_id": "6d4273585b5aa8e76e05f32f52d6f486820df69d301f8cc17515300596496006",
+  "state": "applied",
+  "exact_root": "E:/Temp/vlc-s7-final-cleanup-20261029",
+  "candidate_count": 28,
+  "candidate_bytes": 21344940,
+  "excluded_count": 0,
+  "deleted_bytes": 21344940,
+  "result_counts": {
+    "deleted": 28
+  },
+  "errors": [],
+  "all_members_inspected": true,
+  "pages_inspected": 1,
+  "root_absent": true
+}

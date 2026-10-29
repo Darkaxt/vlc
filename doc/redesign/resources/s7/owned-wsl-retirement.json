@@ -1,0 +1,27 @@
+{
+  "owned_distribution": "VLC-S7-20261029",
+  "owned_directory": "D:\\Temp\\vlc-s7-20261029\\wsl",
+  "disk_removed_by_inspected_transaction": "5988ec13e3033f82973b615568b989e2",
+  "empty_registration_retired": true,
+  "other_distribution_bindings_preserved": true,
+  "default_distribution_preserved": true,
+  "remaining_distributions": [
+    "Ubuntu",
+    "docker-desktop"
+  ],
+  "global_wsl_shutdown_used": false,
+  "passed": true,
+  "cleanup": {
+    "transaction_id": "5988ec13e3033f82973b615568b989e2",
+    "ticket_id": "c8ad05ee94e80be04392e7a34ea16349020209bc46388b0b83f225d4191d9ba3",
+    "manifest_sha256": null,
+    "candidate_count": 2,
+    "candidate_bytes": 28144828416,
+    "deleted_bytes": 28144828416,
+    "result_counts": {
+      "deleted": 2
+    },
+    "state": "applied",
+    "errors": []
+  }
+}

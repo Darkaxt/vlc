@@ -1,0 +1,106 @@
+{
+  "schema": "vlc_redesign.normal_package_native.v1",
+  "cases": [
+    {
+      "case": "native-greek",
+      "exit_code": 0,
+      "natural_eof": true,
+      "expected_native_log": "translation test: code is \"el\"",
+      "self_locating_without_vlc_path_overrides": true,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "native-free-fallback",
+      "exit_code": 0,
+      "natural_eof": true,
+      "expected_native_log": "using bundled FreeSans for the optional legacy font",
+      "self_locating_without_vlc_path_overrides": true,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "native-cached-font",
+      "exit_code": 0,
+      "natural_eof": true,
+      "expected_native_log": "using the verified user-profile Delicious font",
+      "self_locating_without_vlc_path_overrides": true,
+      "input_desktop_preserved": true
+    },
+    {
+      "case": "control",
+      "passed": true,
+      "observed": {
+        "opened": true,
+        "states": [
+          1,
+          2,
+          5,
+          4
+        ],
+        "stopping_reasons": [
+          1
+        ],
+        "displayed_frames": 148,
+        "white_bitmap_frames": 0,
+        "white_background_frames": 0
+      }
+    },
+    {
+      "case": "embedded",
+      "passed": true,
+      "observed": {
+        "opened": true,
+        "states": [
+          1,
+          2,
+          5,
+          4
+        ],
+        "stopping_reasons": [
+          1
+        ],
+        "displayed_frames": 148,
+        "white_bitmap_frames": 83,
+        "white_background_frames": 0
+      }
+    }
+  ],
+  "archive_sha256": "e116d5b0fee33e6b2dc65f4fde5fdab6b7f1ac458d7573b49b53de0d20e7007c",
+  "source_commit": "dd61caec26f8cc65f15d78369d09fb254196c810",
+  "normal_qt": {
+    "plugin_cache_exit": 0,
+    "pid": 21224,
+    "desktop": "VLC-S2-1c0a3d2094cc443d80a39a901f563ec2",
+    "exit_code": 0,
+    "qml_runtime_errors": [],
+    "media_library_enabled": true,
+    "checks": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true,
+      "native_media_library_started": true
+    },
+    "qt_plugin_sha256": "8c1d4717e7aaad820888eb3fa0808e3f67f446e08ff6dd7bb8826c70b4a61a29",
+    "upnp_plugin_sha256": "fa51b9a7079d7e5b5e74626f5f9fba649251cf53a286d8f854b5216226aa42f3",
+    "debug_markers_absent": [
+      "VLC_PLAYER_DIAGNOSTICS_DIR",
+      "VLC_PLAYER_DIAGNOSTICS_TOKEN",
+      "VLC_PLAYER_DIAGNOSTICS_OFFSCREEN",
+      "VLC_PLAYER_DIAGNOSTICS_PROXY_PORT",
+      "redesignSeekRequests",
+      "offscreen_session_is_capture_only",
+      "core_observation_listener_failed_action_not_undone",
+      "palette_highlight",
+      "PlayerDiagnostics",
+      "optional_legacy_font"
+    ],
+    "profile_isolation": "Existing empty portable directory beside executable",
+    "capture_scope": "Inactive desktop, no OS input or desktop switching",
+    "verified_utc": "2026-10-29T10:52:20.953555+00:00",
+    "passed": true
+  },
+  "cached_font_is_only_in_disposable_extraction": true,
+  "passed": true
+}
