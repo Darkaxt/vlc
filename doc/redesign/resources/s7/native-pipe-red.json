@@ -1,0 +1,36 @@
+{
+  "schema": "vlc_redesign.native_pipe_process_isolation.v1",
+  "core_sha256": "07c6c175812b67f3f517b6e62bfaf224b7b32ce6419a09f68969e39a9d69ee87",
+  "expected_collision": true,
+  "first": {
+    "pid": 58140,
+    "pipes": [
+      {
+        "return": 0,
+        "winerror": 0
+      },
+      {
+        "return": 0,
+        "winerror": 0
+      }
+    ],
+    "passed": true
+  },
+  "second": {
+    "pid": 55968,
+    "pipes": [
+      {
+        "return": -1,
+        "winerror": 231
+      },
+      {
+        "return": -1,
+        "winerror": 231
+      }
+    ],
+    "passed": false
+  },
+  "second_exit": 2,
+  "passed": true,
+  "first_exit": 0
+}

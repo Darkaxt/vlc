@@ -181,6 +181,7 @@ libqt_plugin_la_SOURCES = \
 	maininterface/interface_window_handler.hpp \
 	maininterface/mainctx.cpp \
 	maininterface/mainctx.hpp \
+	maininterface/legacy_font_setup.cpp maininterface/legacy_font_setup.hpp \
 	maininterface/mainctx_submodels.cpp maininterface/mainctx_submodels.hpp \
 	maininterface/mainui.cpp \
 	maininterface/mainui.hpp \
@@ -455,6 +456,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	maininterface/compositor_platform.moc.cpp \
 	maininterface/interface_window_handler.moc.cpp \
 	maininterface/mainctx.moc.cpp \
+	maininterface/legacy_font_setup.moc.cpp \
 	maininterface/mainctx_submodels.moc.cpp \
 	maininterface/mainui.moc.cpp \
 	maininterface/navigationmodel.moc.cpp \

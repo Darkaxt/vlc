@@ -1,0 +1,20 @@
+{
+  "schema": "vlc_redesign.native_sdk_checks.v1",
+  "checks": [
+    {
+      "name": "qt-timer-check.exe",
+      "sha256": "2941a4cfeaae25519645c100d1d41bcc7e853d1f24fc5d0dc7c48f2a1b69a6aa",
+      "exit_code": 0,
+      "stdout": "PASS: animation timers and regex JIT stack are destroyed before thread storage release\n",
+      "stderr": ""
+    },
+    {
+      "name": "upnp-url-check.exe",
+      "sha256": "88f38c4e389ad51d834ed541c364b697efba6c72ab5aff0ac8416fcb37b417dc",
+      "exit_code": 0,
+      "stdout": "UPnP matching HTTP schemes resolve normally; no network request made\n",
+      "stderr": ""
+    }
+  ],
+  "passed": true
+}

@@ -48,7 +48,7 @@ def main():
     parser.add_argument('--await-target')
     parser.add_argument('--await-name')
     parser.add_argument('--await-node', type=int, help='Observation node from a fresh rendered snapshot')
-    parser.add_argument('--await-core', choices=['state', 'position', 'time_seconds', 'length_seconds', 'url', 'seekable'])
+    parser.add_argument('--await-core', choices=['state', 'position', 'time_seconds', 'length_seconds', 'url', 'seekable', 'fullscreen'])
     parser.add_argument('--await-comparison', choices=['equal', 'at_least', 'at_most'], default='equal')
     parser.add_argument('--await-tolerance', type=float, default=0)
     args = parser.parse_args()

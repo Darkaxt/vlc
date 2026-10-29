@@ -1,0 +1,45 @@
+{
+  "schema": "vlc_redesign.s7_baseline_core_reproduction.v1",
+  "upstream_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "scope": "Fresh unchanged baseline core, native decoded picture/audio callbacks, expected missing-input negative control and actual module/option metadata. No Qt presentation or hardware-audio claim.",
+  "decoded-media": {
+    "exit_code": 0,
+    "observed": {
+      "passed": true,
+      "end_of_stream": true,
+      "error": false,
+      "displayed_frames": 146,
+      "changing_frames": 143,
+      "audio_sample_frames": 576512,
+      "audio_peak_s16": 4307
+    }
+  },
+  "missing-media": {
+    "exit_code": 1,
+    "observed": {
+      "passed": false,
+      "end_of_stream": false,
+      "error": true,
+      "displayed_frames": 0,
+      "changing_frames": 0,
+      "audio_sample_frames": 0,
+      "audio_peak_s16": 0
+    }
+  },
+  "inventory": {
+    "exit_code": 0,
+    "observed": {
+      "version": "4.0.0-dev Otto Chriek",
+      "compiler": "gcc version 14-posix (GCC)",
+      "changeset": "392bc1d"
+    }
+  },
+  "runtime_hashes": {
+    "libvlc.dll": "ef25922ce7e1d2efbfc32b79abea49dc2015ab4838dd6353c5e4d10a0f06f4ff",
+    "libvlccore.dll": "6455c5a9a095b6b6edb50c2f5e61b5151953fc77fb696aa06879f596a4a9d33c",
+    "playback-check.exe": "e94495f5bf13e32bb7677a5c8843c38496a79b0e5fb56a9d8b06770a79e36b26",
+    "inventory.exe": "a2e7b6f719c6759cc9f42c2959510f0df746fbab181bcd76ee14d39cde376733"
+  },
+  "fixture_sha256": "ddcaf73de2a8c5c215547fcddecf3e91d83542fd65032b2a7f4eb40f7d26ff6d",
+  "passed": true
+}

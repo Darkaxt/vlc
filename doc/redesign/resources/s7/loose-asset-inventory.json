@@ -1,0 +1,362 @@
+{
+  "schema": "vlc_redesign.loose_asset_inventory.v1",
+  "assets": [
+    {
+      "package_path": "hrtfs/dodeca_and_7channel_3DSL_HRTF.sofa",
+      "source_path": "share/hrtfs/dodeca_and_7channel_3DSL_HRTF.sofa",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "05ca927052cf83663b29546b06998b03ea7fbcd288f7c99e7af8b215ac77ec4e",
+      "bytes": 92388,
+      "license": "LGPL-2.1-or-later",
+      "embedded_license": "Copyright (C) 2017 3D Sound Labs\n\nThis file is part of VLC\n\nVLC is free software; you can redistribute it and/or modify it\nunder the terms of the GNU Lesser General Public License as published by\nthe Free Software Foundation; either version 2.1 of the License, or\n(at your option) any later version.\n\nVLC is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\nGNU Lesser General Public License for more details.\n\nYou should have received a copy of the GNU Lesser General Public License\nalong with VLC; if not, write to the Free Software Foundation,\nInc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.\n\u0003"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/about.png",
+      "source_path": "share/skins2/default/subX/about.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "6fb50b001cf58856079ba582cd22c2cbc7d8a90ac27960c918c19f463eb4727e",
+      "bytes": 33054,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/eq.png",
+      "source_path": "share/skins2/default/subX/eq.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "f7a1dba8554dc6eeed1206bb61f5a936ac2132725b2cf9147d5706531ab37cf5",
+      "bytes": 31809,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/font.otf",
+      "source_path": "share/skins2/default/subX/font.otf",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "4ea777cbe2ffda512c7105212cfcf868784c7e0d7d229ab07da214ab9e0d8bc5",
+      "bytes": 24700,
+      "license": "Retain exact embedded font license/copyright statements recorded in opentype_names and their applicable full license text.",
+      "opentype_names": {
+        "0": [
+          "copyright 1994-1996, Jos Buivenga"
+        ],
+        "1": [
+          "Delicious"
+        ],
+        "2": [
+          "Roman"
+        ],
+        "5": [
+          "001.000"
+        ]
+      }
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/main.png",
+      "source_path": "share/skins2/default/subX/main.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "dc61a2e946c01aeedf965dc41f776b14f701231103147f6e8a3374caa81c07b2",
+      "bytes": 68042,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/pl.png",
+      "source_path": "share/skins2/default/subX/pl.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "90d1b7a745abec75375da6e0ba1d673535d4dcd6cf3d4831f0f6b0d65759e346",
+      "bytes": 7739,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/playtreeglyphs.png",
+      "source_path": "share/skins2/default/subX/playtreeglyphs.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "08e0c11ef9d676cbccb0bcecb230dbf8f90609a70e81b438363a7a640c011728",
+      "bytes": 101,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/sysbuttons.png",
+      "source_path": "share/skins2/default/subX/sysbuttons.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "4fac0c838ceb134fcfc0148daa748968799311fea042ced2d108220b6381a6df",
+      "bytes": 2245,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/vol_anim.png",
+      "source_path": "share/skins2/default/subX/vol_anim.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "d6d5aaf45bb9b85d75874e6cf0718cb6786e21452590466652ad5c63b3706e60",
+      "bytes": 2063,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/vol_slider.png",
+      "source_path": "share/skins2/default/subX/vol_slider.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "2848b2ea15737212df861c7d34852246a8e8fcb4c9c4899286548a673fc9bcdb",
+      "bytes": 73,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/theme.xml",
+      "source_path": "share/skins2/default/theme.xml",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "b789bb99236e7f44071b65182023c200e1344abd5d072ca1668b7d22f82eea79",
+      "bytes": 55484,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/fonts/FreeSans.ttf",
+      "source_path": "share/skins2/fonts/FreeSans.ttf",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3259367eaba45a032d6445acb8640b94540140f13b8ab90654d6d3f06032b812",
+      "bytes": 256627,
+      "license": "Retain exact embedded font license/copyright statements recorded in opentype_names and their applicable full license text.",
+      "opentype_names": {
+        "0": [
+          "Copyleft 2002, 2003 Free Software Foundation."
+        ],
+        "1": [
+          "FreeSans"
+        ],
+        "2": [
+          "Medium"
+        ],
+        "5": [
+          "Version $Revision: 1.1 $ \u0000",
+          "Version $Revision: 1.22 $ "
+        ],
+        "13": [
+          "The use of this font is granted subject to GNU General Public License.",
+          "he use of this font is granted subject to GNU General Public License.\u0000"
+        ],
+        "14": [
+          "http://www.gnu.org/copyleft/gpl.html",
+          "ttp://www.gnu.org/copyleft/gpl.html\u0000"
+        ]
+      }
+    },
+    {
+      "package_path": "skins/fonts/FreeSansBold.ttf",
+      "source_path": "share/skins2/fonts/FreeSansBold.ttf",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "42f28331af81b901b0045ad1af5eb2353d599afde497dbab7e6f80d7a3e3b2c6",
+      "bytes": 64228,
+      "license": "Retain exact embedded font license/copyright statements recorded in opentype_names and their applicable full license text.",
+      "opentype_names": {
+        "0": [
+          "Copyleft 2002, 2003 Free Software Foundation."
+        ],
+        "1": [
+          "FreeSans"
+        ],
+        "2": [
+          "Bold"
+        ],
+        "5": [
+          "Version $Revision: 1.1 $ ",
+          "Version $Revision: 1.8 $ "
+        ],
+        "13": [
+          "The use of this font is granted subject to GNU General Public License."
+        ],
+        "14": [
+          "http://www.gnu.org/copyleft/gpl.html"
+        ]
+      }
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_18_b81900_40x40.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_18_b81900_40x40.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "adb182bf32d80030963bfae7079295b8c35085a85cf5a0fe28046db1b4836e7f",
+      "bytes": 201,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "c6133633c005b1c344f4ae682811157a366af0f9f637ee4fb65e896ffbf0d71e",
+      "bytes": 197,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_flat_10_000000_40x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_flat_10_000000_40x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "61b9e46d291ed3d7800cbc899b7edcb95327d16cd61085bb515381af32bc1469",
+      "bytes": 147,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_glass_100_f6f6f6_1x400.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_glass_100_f6f6f6_1x400.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "49d57607054d07581044a39025ea0ff623185d5e8117b7325084db098795298d",
+      "bytes": 103,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_glass_100_fdf5ce_1x400.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_glass_100_fdf5ce_1x400.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "1a9cb0100308c590bd17ace4d3541dab56cd982af721d0b2ea67f5d746dcab5f",
+      "bytes": 115,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "29043ec911594970261ab6c5e03de903c1161ed13a25a377449c9c3b22134c28",
+      "bytes": 95,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "0307f13b51f07c8d10ede9b29c8f43cb02024fcd2d69f04a26600a4244846ac0",
+      "bytes": 2627,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_highlight-soft_100_eeeeee_1x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_highlight-soft_100_eeeeee_1x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "983c3de6adc1d836b26e97bcb87cb29fb5b31b2fc87ae78563bd6e328907667b",
+      "bytes": 88,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_highlight-soft_75_ffe45c_1x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_highlight-soft_75_ffe45c_1x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "46f39d964785147c69c5ef4495977c1285984a1d99aa087d650036ec6bce8234",
+      "bytes": 126,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_222222_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_222222_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "7ad54e50835a67efbb2e9694e73d24a5dd9545df297afb1569992e0247acc32c",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_228ef1_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_228ef1_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3d9ef9c36b2407d3766fd183927e2778a1e4abaaf2233910453bafaf76e1f3db",
+      "bytes": 5103,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_ef8c08_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_ef8c08_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "40a22c997402ddb59e9e344c2d0a8c4cafe64cf4b103584208863eec05dfa897",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_ffd27a_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_ffd27a_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "1bd643299f5a35060c7057dc76b4a2138cf3723a2ed5f98a25f9c9a954eaced6",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_ffffff_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_ffffff_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "fdcb90174d3b2f5cb8b7a4205e60119419c728c1c76e5a2573aaa8058b6dd3a1",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/favicon.ico",
+      "source_path": "share/lua/http/favicon.ico",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "fd9b5998b98ee0ba86ed7687f215a1cdde90c00b0b1cd11dc83e3614389cb6ad",
+      "bytes": 86358,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Audio-48.png",
+      "source_path": "share/lua/http/images/Audio-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "372b03407e4c070aaf05d9bcf70bc048a2560593b7d3e4c919eda602c1cb5d0b",
+      "bytes": 4675,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Back-48.png",
+      "source_path": "share/lua/http/images/Back-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "e92c787df1d4c93ea84bfce7cf61448dca2879c4c2b9a9d8ad1e8c80f4001ac8",
+      "bytes": 2025,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/buttons.png",
+      "source_path": "share/lua/http/images/buttons.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "c3904f63906db4346d2e0529285397c0ced3dbd5132dba250c3fcb28ed6a96df",
+      "bytes": 11954,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Folder-48.png",
+      "source_path": "share/lua/http/images/Folder-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "a5a4ed70d20cefe54e541e15bc007a6d36339fb6b8428806f7b48f846e8b9160",
+      "bytes": 1353,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Other-48.png",
+      "source_path": "share/lua/http/images/Other-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "48878e2d1d5dcbd686358a180379d61f82aaf862fa2c4030933c1ad4e7299a20",
+      "bytes": 2921,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/speaker-32.png",
+      "source_path": "share/lua/http/images/speaker-32.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3c6cf8b87ad6453bf0d0629893cbe4d0196a3b28e9036b7cc6f19c0168325137",
+      "bytes": 942,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Video-48.png",
+      "source_path": "share/lua/http/images/Video-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "aa6039a0466683c195e0d2c4b4bf8602bd2173e955bc8dd39ca793d207985a3a",
+      "bytes": 5115,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/vlc-48.png",
+      "source_path": "share/lua/http/images/vlc-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "731d5a34a98fee76f9e1aacaa524b3e0ed0cf0ecac3e2f9e2703b38c4a4bc518",
+      "bytes": 15875,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/vlc16x16.png",
+      "source_path": "share/lua/http/images/vlc16x16.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "32030a3d8e8fa75bd89ead94c429f2c3418944d9aa3d1029294b4af99264f5c5",
+      "bytes": 606,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    }
+  ],
+  "upstream_bytes_verified": true,
+  "separate_final_gate": "Preserve all corresponding full font/media notices in the actual delivered package."
+}

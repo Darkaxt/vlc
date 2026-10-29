@@ -4,7 +4,7 @@
 
   <!-- Created using the VLC Skin Editor 0.8.0.dev (http://www.videolan.org/vlc/skineditor.html)-->
 
-  <Font id="mainfont" file="subX/font.otf"/>
+  <Font id="redesign-optional-legacy-font" file="subX/FreeSans.ttf"/>
   <Bitmap id="main.png" file="subX/main.png" alphacolor="#FF00FF">
     <SubBitmap id="main.png.titlebar.left" x="0" y="0" height="24" width="140"/>
     <SubBitmap id="main.png.titlebar.right" x="480" y="0" height="24" width="20"/>
@@ -278,7 +278,7 @@
       </Panel>
       <Panel id="pl.normal.component" y="24" width="0" height="0" rightbottom="rightbottom">
         <Image id="pl.normal.component.background" image="pl.png.background" resize="scale" rightbottom="rightbottom"/>
-        <Playtree id="theplaytree" font="mainfont" fgcolor="#AAAAAA" selcolor="#333333" playcolor="#FFFFFF" bgimage="pl.png.background" itemimage="item" openimage="collapse" closedimage="expand" x="5" y="3" width="469" height="262" rightbottom="rightbottom">
+        <Playtree id="theplaytree" font="redesign-optional-legacy-font" fgcolor="#AAAAAA" selcolor="#333333" playcolor="#FFFFFF" bgimage="pl.png.background" itemimage="item" openimage="collapse" closedimage="expand" x="5" y="3" width="469" height="262" rightbottom="rightbottom">
           <Slider id="Unnamed Slider #84" x="487" y="5" points="(0,258),(0,3)" tooltiptext="" up="eq.png.slider.normal" down="eq.png.slider.hover" over="eq.png.slider.hover" lefttop="righttop" rightbottom="rightbottom"/>
         </Playtree>
       </Panel>
@@ -314,7 +314,7 @@
       </Panel>
       <Panel id="fsc.pl.normal.component" y="24" width="0" height="0" rightbottom="rightbottom">
         <Image id="fsc.pl.normal.component.background" image="pl.png.background" resize="scale" rightbottom="rightbottom"/>
-        <Playtree id="fsc.theplaytree" font="mainfont" fgcolor="#AAAAAA" selcolor="#333333" playcolor="#FFFFFF" bgimage="pl.png.background" itemimage="item" openimage="collapse" closedimage="expand" x="5" y="3" width="469" height="262" rightbottom="rightbottom">
+        <Playtree id="fsc.theplaytree" font="redesign-optional-legacy-font" fgcolor="#AAAAAA" selcolor="#333333" playcolor="#FFFFFF" bgimage="pl.png.background" itemimage="item" openimage="collapse" closedimage="expand" x="5" y="3" width="469" height="262" rightbottom="rightbottom">
           <Slider id="fsc.Unnamed Slider #84" x="487" y="5" points="(0,258),(0,3)" tooltiptext="" up="eq.png.slider.normal" down="eq.png.slider.hover" over="eq.png.slider.hover" lefttop="righttop" rightbottom="rightbottom"/>
         </Playtree>
       </Panel>

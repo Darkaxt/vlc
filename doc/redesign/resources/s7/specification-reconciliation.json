@@ -1,0 +1,341 @@
+{
+  "stage": "S7",
+  "status": "ACTIVE",
+  "requirements": {
+    "R01": {
+      "product_verified": true,
+      "evidence": [
+        "baseline-native-core.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R02": {
+      "product_verified": true,
+      "evidence": [
+        "baseline-native-core.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R03": {
+      "product_verified": true,
+      "evidence": [
+        "baseline-native-core.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R04": {
+      "product_verified": true,
+      "evidence": [
+        "native-integrated-verification.json",
+        "../s6-verification.json"
+      ],
+      "remaining": [
+        "Final private installed-profile/database/language comparison after normal package verification."
+      ]
+    },
+    "R10": {
+      "product_verified": true,
+      "evidence": [
+        "../s2-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R11": {
+      "product_verified": true,
+      "evidence": [
+        "../s2-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R12": {
+      "product_verified": true,
+      "evidence": [
+        "../s2-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R13": {
+      "product_verified": true,
+      "evidence": [
+        "../s2-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R14": {
+      "product_verified": true,
+      "evidence": [
+        "../s2-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R15": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R20": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R21": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R22": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R23": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R24": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R25": {
+      "product_verified": true,
+      "evidence": [
+        "../s3-verification.json",
+        "embedded-image-pixels-v7.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R30": {
+      "product_verified": true,
+      "evidence": [
+        "../s4-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R31": {
+      "product_verified": true,
+      "evidence": [
+        "../s4-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R32": {
+      "product_verified": true,
+      "evidence": [
+        "../s4-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R33": {
+      "product_verified": true,
+      "evidence": [
+        "../s4-verification.json",
+        "../s5-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R40": {
+      "product_verified": true,
+      "evidence": [
+        "../s5-verification.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R41": {
+      "product_verified": true,
+      "evidence": [
+        "../s5-verification.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R42": {
+      "product_verified": true,
+      "evidence": [
+        "../s5-verification.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R43": {
+      "product_verified": true,
+      "evidence": [
+        "../s5-verification.json",
+        "current-inventory-parity.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R50": {
+      "product_verified": true,
+      "evidence": [
+        "../s6-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R51": {
+      "product_verified": true,
+      "evidence": [
+        "../s6-verification.json",
+        "native-integrated-verification.json",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R52": {
+      "product_verified": true,
+      "evidence": [
+        "native-integrated-verification.json",
+        "player-presentation.png",
+        "preferences-presentation.png",
+        "library-presentation.png",
+        "font-presentation.png",
+        "prior-evidence-applicability.json"
+      ],
+      "remaining": []
+    },
+    "R60": {
+      "product_verified": true,
+      "evidence": [
+        "asset-inventory.json",
+        "loose-asset-inventory-v9.json",
+        "THIRD-PARTY-NOTICES.md"
+      ],
+      "remaining": [
+        "Bind actual final binary notices and complete corresponding source to the release, then independently retrieve/check both packages."
+      ]
+    },
+    "R61": {
+      "product_verified": true,
+      "evidence": [
+        "native-integrated-verification.json",
+        "wasapi-lifecycle-red.json",
+        "wasapi-lifecycle-green.json",
+        "wasapi-device-fixed.json",
+        "native-pipe-red.json",
+        "native-pipe-green.json"
+      ],
+      "remaining": []
+    },
+    "R62": {
+      "product_verified": false,
+      "evidence": [
+        "../../REPRODUCTION.md",
+        "native-sdk-checks.json"
+      ],
+      "remaining": [
+        "Verified implementation commit/source sync; exact-commit normal build; normal package/native/source checks; final published binary/source/hash assets and independent readback; final owned scratch/VM cleanup."
+      ]
+    },
+    "R63": {
+      "product_verified": true,
+      "evidence": [
+        "../d1-verification.json",
+        "asset-inventory.json"
+      ],
+      "remaining": []
+    },
+    "R64": {
+      "product_verified": true,
+      "evidence": [
+        "../d1-verification.json",
+        "asset-inventory.json"
+      ],
+      "remaining": []
+    },
+    "R65": {
+      "product_verified": true,
+      "evidence": [
+        "native-integrated-verification.json",
+        "font-presentation.png"
+      ],
+      "remaining": []
+    },
+    "R66": {
+      "planning_recorded": true,
+      "implementation_stage": "S9",
+      "implementation_status": "NOT STARTED",
+      "evidence": [
+        "../../SPECIFICATION.md",
+        "../../PLAN.md"
+      ],
+      "remaining": [
+        "Later separately authorized execution after S8; not an S7 acceptance dependency."
+      ]
+    }
+  },
+  "external_execution_blocker": null,
+  "tracked_deferrals_within_s7": [],
+  "scope": "S2-S6 prior acceptance is reused only for unchanged source owners; changed core/Qt/state owners receive the recorded fresh S7 workflows. Final release remains required."
+}

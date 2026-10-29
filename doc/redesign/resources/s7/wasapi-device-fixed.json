@@ -1,0 +1,23 @@
+{
+  "runtime": "D:\\Temp\\vlc-s7-20261029\\runtime",
+  "tested_copy": "D:\\Temp\\vlc-s7-20261029\\wasapi-device-fixed\\runtime-audio",
+  "wasapi_sha256": "6591913a615462d9e9697a57397039ecc9539c85c8c7207a68924f67dd62d41d",
+  "cases": [
+    {
+      "case": "normal",
+      "exit_code": 0,
+      "passed": true,
+      "wasapi_selected": true,
+      "errors": []
+    },
+    {
+      "case": "startup-paused",
+      "exit_code": 0,
+      "passed": true,
+      "wasapi_selected": true,
+      "errors": []
+    }
+  ],
+  "passed": true,
+  "scope": "Real native audio output, no GUI or OS input; session muted; no physical-listening claim."
+}

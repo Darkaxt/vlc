@@ -22,6 +22,7 @@
  *****************************************************************************/
 
 #include "builder.hpp"
+#include "../../legacy_skin_font.hpp"
 #include "builder_data.hpp"
 #include "interpreter.hpp"
 #include "skin_parser.hpp"
@@ -304,6 +305,24 @@ void Builder::addBitmapFont( const BuilderData::BitmapFont &rData )
 
 void Builder::addFont( const BuilderData::Font &rData )
 {
+    // Only the explicitly marked built-in skin font uses the optional
+    // first-run download. User-selected skins retain their own font bindings.
+    if( rData.m_id == LegacySkinFont::FontId
+     && rData.m_fontFile == "subX/FreeSans.ttf" )
+    {
+        const std::string path = LegacySkinFont::cachePath();
+        if( LegacySkinFont::cacheState(path) == LegacySkinFont::CacheState::Ready )
+        {
+            GenericFont *font = new FT2Font(getIntf(), path, rData.m_size);
+            if( font->init() )
+            {
+                m_pTheme->m_fonts[rData.m_id] = GenericFontPtr(font);
+                msg_Dbg(getIntf(), "using the verified user-profile Delicious font");
+                return;
+            }
+            delete font;
+        }
+    }
     // Try to load the font from the theme directory
     std::string full_path = getFilePath( rData.m_fontFile );
     if( full_path.size() )
@@ -312,6 +331,9 @@ void Builder::addFont( const BuilderData::Font &rData )
         if( pFont->init() )
         {
             m_pTheme->m_fonts[rData.m_id] = GenericFontPtr( pFont );
+            if( rData.m_id == LegacySkinFont::FontId
+             && rData.m_fontFile == "subX/FreeSans.ttf" )
+                msg_Dbg(getIntf(), "using bundled FreeSans for the optional legacy font");
             return;
         }
         delete pFont;

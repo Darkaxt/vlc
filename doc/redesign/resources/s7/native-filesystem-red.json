@@ -1,0 +1,7 @@
+{
+  "schema": "vlc_redesign.native_filesystem_errno.v1",
+  "core_sha256": "654d5dc9ee995b271fe8b2cac38b4db9938a027e63542bc3d73be842c2d7e07c",
+  "missing_file_returned_null": true,
+  "errno": 0,
+  "passed": false
+}

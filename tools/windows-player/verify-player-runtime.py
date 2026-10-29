@@ -23,9 +23,11 @@ from isolated_desktop import IsolatedProcess
 assert r.is_dir() and (r/'portable').is_dir()
 e.mkdir(parents=True,exist_ok=True)
 qt=r/'plugins/gui/libqt_plugin.dll';blob=qt.read_bytes()
-markers=['VLC_PLAYER_DIAGNOSTICS_DIR','VLC_PLAYER_DIAGNOSTICS_TOKEN','VLC_PLAYER_DIAGNOSTICS_OFFSCREEN','VLC_PLAYER_DIAGNOSTICS_PROXY_PORT','redesignSeekRequests','offscreen_session_is_capture_only','core_observation_listener_failed_action_not_undone','palette_highlight','PlayerDiagnostics']
+markers=['VLC_PLAYER_DIAGNOSTICS_DIR','VLC_PLAYER_DIAGNOSTICS_TOKEN','VLC_PLAYER_DIAGNOSTICS_OFFSCREEN','VLC_PLAYER_DIAGNOSTICS_PROXY_PORT','redesignSeekRequests','offscreen_session_is_capture_only','core_observation_listener_failed_action_not_undone','palette_highlight','PlayerDiagnostics','optional_legacy_font']
 for marker in markers:
  for encoding in ['ascii','utf-16le']:assert marker.encode(encoding) not in blob,(marker,encoding)
+for marker in ('S7_TRACE','S7_ARG','S7_INSERT','S7_PLAY','S7_SPAWN_FAIL'):
+ assert marker.encode() not in (r/'libvlccore.dll').read_bytes(),marker
 print('Normal plugin contains no diagnostic transport, authentication or offscreen mode',flush=True)
 env=dict(os.environ)
 for k in list(env):

@@ -1,0 +1,73 @@
+{
+  "transaction": "f485f156524b5d28f19bac8947d75e6c",
+  "manifest_sha256": "fff111004e3ece8033add46b2d19bd84ad6c5b219d1e42a11eb81dd6a1a0bf29",
+  "candidate_count": 2677,
+  "candidate_bytes": 1554832649,
+  "excluded_count": 0,
+  "pages_read_sequentially": 3,
+  "exact_roots": [
+    "D:\\Temp\\vlc-s7-20261029\\font-download-light-100\\runtime",
+    "D:\\Temp\\vlc-s7-20261029\\dependency-notices",
+    "D:\\Temp\\vlc-s7-20261029\\dependency-notices-v2",
+    "D:\\Temp\\vlc-s7-20261029\\source-overlay-player-v6.tar",
+    "D:\\Temp\\vlc-s7-20261029\\source-overlay-player-v6.json",
+    "D:\\Temp\\vlc-s7-20261029\\source-overlay-player-v6.deletions.patch",
+    "D:\\Temp\\vlc-s7-20261029\\qt-timer-check.exe"
+  ],
+  "all_paths_and_decisions_inspected": true,
+  "consumer_evidence": "Native font, PGS and Qt checks exited; fresh Win32_Process query returned no vlc.exe/qt-timer-check.exe. Current WSL build uses v9 inputs and separate fresh v3 notices; original evidence retained.",
+  "state": "applied",
+  "deleted_bytes": 1554832649,
+  "result_counts": {
+    "deleted": 2677
+  },
+  "errors": [],
+  "exclusions": 0,
+  "all_exact_targets_independently_absent": true,
+  "ticket": "6f524a5278db49ecd9f91aafc21c7fc523d15774ac46a1afd1c8e7abee0c199d",
+  "accounting": "Logical bytes removed, not a physical free-space measurement.",
+  "additional_font_copy_retirements": [
+    {
+      "transaction": "a41bedbde1859cc981141c5a71a342f0",
+      "manifest_sha256": "0978a504b8e759edcea5033b183b3cdb068721328ec3f2df5aa4cddeec839647",
+      "candidate_count": 1788,
+      "candidate_bytes": 2817370205,
+      "pages_inspected": 2,
+      "exact_existing_roots": [
+        "D:\\Temp\\vlc-s7-20261029\\font-download-light-1-v9b\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-download-light-100-v9\\runtime"
+      ],
+      "all_members_inspected": true,
+      "consumer_evidence": "Original native Qt/skins tests exited 0; fresh Win32_Process query found no vlc.exe. Root cause and result logs/captures are retained outside runtime targets. Active v10 uses Droot/runtime, not these copies.",
+      "ticket": "65096bdd0eace79dd378b5567842aa2a251617bb4a2958400f139f9880322c2e",
+      "state": "applied",
+      "deleted_bytes": 2817370205,
+      "all_exact_roots_independently_absent": true,
+      "errors": [],
+      "exclusions": 0
+    },
+    {
+      "transaction": "0c4983f6416a2b8d846502cf32f4ce63",
+      "manifest_sha256": "aabb16a60a495447c94b834e0bdcae64d29b041151a4f8e8290fd791984526d8",
+      "candidate_count": 5358,
+      "candidate_bytes": 8443575854,
+      "pages_inspected": 6,
+      "exact_roots": [
+        "D:\\Temp\\vlc-s7-20261029\\font-download-light-1-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-fallback-dark-1-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-cancel-light-15-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-retry-dark-15-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-cached-light-2-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-corrupt-dark-2-v10\\runtime"
+      ],
+      "all_members_inspected": true,
+      "consumer_evidence": "All six original v10 font-case processes and native skins consumers exited 0. Captures/results remain outside targets. The active corrected-DPI matrix uses distinct v11 paths.",
+      "ticket": "ac18c67fa9eef88c3f7f57942d818d530bac91192249c1d355ec3c8b69f85db8",
+      "state": "applied",
+      "deleted_bytes": 8443575854,
+      "all_exact_roots_independently_absent": true,
+      "errors": [],
+      "exclusions": 0
+    }
+  ]
+}

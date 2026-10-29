@@ -1,0 +1,1085 @@
+{
+  "schema": "vlc_redesign.s7_native_integrated_verification.v1",
+  "status": "product workflows verified; final normal package/release pending",
+  "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+  "core_sha256": "49b8faae69e5a43093dc78c69a07f7327321aa0fb863c7532692f947578d4ca5",
+  "integrated": [
+    {
+      "schema": "vlc_redesign.s7_integrated_player.v1",
+      "start_paused": true,
+      "theme": "light",
+      "scale": "1",
+      "language": "en",
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+      "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+      "observed_theme": 1,
+      "observed_dpr": 1,
+      "player_geometry": {
+        "status": "passed",
+        "window": {
+          "active": true,
+          "dpr": 1,
+          "flags": "1",
+          "height": 1080,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "3311c40",
+          "visibility": 2,
+          "visible": true,
+          "width": 1920,
+          "x": 2260,
+          "y": 834
+        },
+        "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+      },
+      "native_preferences": {
+        "type": "PrefsDialog",
+        "node": 0,
+        "width": 1048,
+        "height": 865,
+        "dpr": 1,
+        "font_family": "Inter Variable Text",
+        "font_pixel_size": 14,
+        "font_point_size": -1,
+        "palette_window": "#000000",
+        "palette_text": "#2e2e2e",
+        "palette_highlight": "#d37918"
+      },
+      "localized_cancel_text": "Cancel",
+      "compact_library_geometry": {
+        "status": "passed",
+        "scope": "native library chrome; separately composed video is excluded",
+        "window": {
+          "active": true,
+          "dpr": 1,
+          "flags": "1",
+          "height": 1080,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "3311c40",
+          "visibility": 2,
+          "visible": true,
+          "width": 1920,
+          "x": 2260,
+          "y": 834
+        },
+        "library": {
+          "id": "compactLibrary",
+          "indexed_model_count": 0,
+          "indexing": false,
+          "model_and_mounted_items_ready": true,
+          "ready": true
+        },
+        "source_frames": [
+          "6261:15078",
+          "848:1997",
+          "970:4028"
+        ]
+      },
+      "full_library_geometry": {
+        "status": "passed",
+        "scope": "native library chrome; separately composed video is excluded",
+        "window": {
+          "active": true,
+          "dpr": 1,
+          "flags": "1",
+          "height": 1080,
+          "minimum_height": 360,
+          "minimum_width": 320,
+          "native_id_hex": "3311c40",
+          "visibility": 2,
+          "visible": true,
+          "width": 1920,
+          "x": 2260,
+          "y": 834
+        },
+        "library": {
+          "id": "fullLibrary",
+          "indexed_model_count": 0,
+          "indexing": false,
+          "model_and_mounted_items_ready": true,
+          "ready": true
+        },
+        "source_frames": [
+          "6261:15078",
+          "848:1997",
+          "970:4028"
+        ]
+      },
+      "library_data": {
+        "indexed_video_count": 4,
+        "stored_playlist_create_append_remove_delete": true,
+        "unrelated_imported_playlists_preserved": [
+          "local-playlist.m3u8"
+        ],
+        "queue_urls_after_stored_edits": [
+          "file:///D:/Temp/vlc-s7-20261029/fixtures/Multi-track%20%CE%A9%20%E6%97%A5%E6%9C%AC%E8%AA%9E.mp4",
+          "file:///D:/Temp/vlc-s7-20261029/fixtures/clip-a.mp4"
+        ],
+        "paused_input_and_time_preserved": true,
+        "long_unicode_playlist_name": "S7 stored playlist \u03a9 \u2014 long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-"
+      },
+      "passed": true,
+      "exit_code": 0,
+      "wasapi_selected": true,
+      "qt_event_loop_finished": true,
+      "input_desktop_preserved": true,
+      "driver_exit": 0
+    },
+    {
+      "schema": "vlc_redesign.s7_integrated_player.v1",
+      "start_paused": false,
+      "theme": "dark",
+      "scale": "1",
+      "language": "en",
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+      "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+      "observed_theme": 2,
+      "observed_dpr": 1,
+      "player_geometry": {
+        "status": "passed",
+        "window": {
+          "active": true,
+          "dpr": 1,
+          "flags": "1",
+          "height": 1080,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "3ca0d7c",
+          "visibility": 2,
+          "visible": true,
+          "width": 1920,
+          "x": 2260,
+          "y": 834
+        },
+        "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+      },
+      "native_preferences": {
+        "type": "PrefsDialog",
+        "node": 0,
+        "width": 1048,
+        "height": 865,
+        "dpr": 1,
+        "font_family": "Inter Variable Text",
+        "font_pixel_size": 14,
+        "font_point_size": -1,
+        "palette_window": "#000000",
+        "palette_text": "#8f8f8f",
+        "palette_highlight": "#d37918"
+      },
+      "localized_cancel_text": "Cancel",
+      "compact_library_geometry": {
+        "status": "passed",
+        "scope": "native library chrome; separately composed video is excluded",
+        "window": {
+          "active": true,
+          "dpr": 1,
+          "flags": "1",
+          "height": 1080,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "3ca0d7c",
+          "visibility": 2,
+          "visible": true,
+          "width": 1920,
+          "x": 2260,
+          "y": 834
+        },
+        "library": {
+          "id": "compactLibrary",
+          "indexed_model_count": 0,
+          "indexing": false,
+          "model_and_mounted_items_ready": true,
+          "ready": true
+        },
+        "source_frames": [
+          "6261:15078",
+          "848:1997",
+          "970:4028"
+        ]
+      },
+      "full_library_geometry": {
+        "status": "passed",
+        "scope": "native library chrome; separately composed video is excluded",
+        "window": {
+          "active": true,
+          "dpr": 1,
+          "flags": "1",
+          "height": 1080,
+          "minimum_height": 360,
+          "minimum_width": 320,
+          "native_id_hex": "3ca0d7c",
+          "visibility": 2,
+          "visible": true,
+          "width": 1920,
+          "x": 2260,
+          "y": 834
+        },
+        "library": {
+          "id": "fullLibrary",
+          "indexed_model_count": 0,
+          "indexing": false,
+          "model_and_mounted_items_ready": true,
+          "ready": true
+        },
+        "source_frames": [
+          "6261:15078",
+          "848:1997",
+          "970:4028"
+        ]
+      },
+      "library_data": {
+        "indexed_video_count": 4,
+        "stored_playlist_create_append_remove_delete": true,
+        "unrelated_imported_playlists_preserved": [
+          "local-playlist.m3u8"
+        ],
+        "queue_urls_after_stored_edits": [
+          "file:///D:/Temp/vlc-s7-20261029/fixtures/Multi-track%20%CE%A9%20%E6%97%A5%E6%9C%AC%E8%AA%9E.mp4",
+          "file:///D:/Temp/vlc-s7-20261029/fixtures/clip-a.mp4"
+        ],
+        "paused_input_and_time_preserved": true,
+        "long_unicode_playlist_name": "S7 stored playlist \u03a9 \u2014 long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-long-title-"
+      },
+      "passed": true,
+      "exit_code": 0,
+      "wasapi_selected": true,
+      "qt_event_loop_finished": true,
+      "input_desktop_preserved": true,
+      "driver_exit": 0
+    },
+    {
+      "schema": "vlc_redesign.s7_integrated_player.v1",
+      "start_paused": true,
+      "theme": "light",
+      "scale": "1.5",
+      "language": "en",
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+      "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+      "observed_theme": 1,
+      "observed_dpr": 1.5,
+      "player_geometry": {
+        "status": "passed",
+        "window": {
+          "active": true,
+          "dpr": 1.5,
+          "flags": "1",
+          "height": 720,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "23ef027c",
+          "visibility": 2,
+          "visible": true,
+          "width": 1280,
+          "x": 1406,
+          "y": 486
+        },
+        "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+      },
+      "native_preferences": {
+        "type": "PrefsDialog",
+        "node": 0,
+        "width": 1048,
+        "height": 865,
+        "dpr": 1.5,
+        "font_family": "Inter Variable Text",
+        "font_pixel_size": 14,
+        "font_point_size": -1,
+        "palette_window": "#000000",
+        "palette_text": "#2e2e2e",
+        "palette_highlight": "#d37918"
+      },
+      "localized_cancel_text": "Cancel",
+      "passed": true,
+      "exit_code": 0,
+      "wasapi_selected": true,
+      "qt_event_loop_finished": true,
+      "input_desktop_preserved": true,
+      "driver_exit": 0
+    },
+    {
+      "schema": "vlc_redesign.s7_integrated_player.v1",
+      "start_paused": true,
+      "theme": "light",
+      "scale": "2",
+      "language": "en",
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+      "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+      "observed_theme": 1,
+      "observed_dpr": 2,
+      "player_geometry": {
+        "status": "passed",
+        "window": {
+          "active": true,
+          "dpr": 2,
+          "flags": "1",
+          "height": 540,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "1d470be0",
+          "visibility": 2,
+          "visible": true,
+          "width": 960,
+          "x": 980,
+          "y": 312
+        },
+        "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+      },
+      "native_preferences": {
+        "type": "PrefsDialog",
+        "node": 0,
+        "width": 1048,
+        "height": 865,
+        "dpr": 2,
+        "font_family": "Inter Variable Text",
+        "font_pixel_size": 14,
+        "font_point_size": -1,
+        "palette_window": "#000000",
+        "palette_text": "#2e2e2e",
+        "palette_highlight": "#d37918"
+      },
+      "localized_cancel_text": "Cancel",
+      "passed": true,
+      "exit_code": 0,
+      "wasapi_selected": true,
+      "qt_event_loop_finished": true,
+      "input_desktop_preserved": true,
+      "driver_exit": 0
+    },
+    {
+      "schema": "vlc_redesign.s7_integrated_player.v1",
+      "start_paused": true,
+      "theme": "dark",
+      "scale": "1.5",
+      "language": "en",
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+      "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+      "observed_theme": 2,
+      "observed_dpr": 1.5,
+      "player_geometry": {
+        "status": "passed",
+        "window": {
+          "active": true,
+          "dpr": 1.5,
+          "flags": "1",
+          "height": 720,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "bfd0270",
+          "visibility": 2,
+          "visible": true,
+          "width": 1280,
+          "x": 1406,
+          "y": 486
+        },
+        "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+      },
+      "native_preferences": {
+        "type": "PrefsDialog",
+        "node": 0,
+        "width": 1048,
+        "height": 865,
+        "dpr": 1.5,
+        "font_family": "Inter Variable Text",
+        "font_pixel_size": 14,
+        "font_point_size": -1,
+        "palette_window": "#000000",
+        "palette_text": "#8f8f8f",
+        "palette_highlight": "#d37918"
+      },
+      "localized_cancel_text": "Cancel",
+      "passed": true,
+      "exit_code": 0,
+      "wasapi_selected": true,
+      "qt_event_loop_finished": true,
+      "input_desktop_preserved": true,
+      "driver_exit": 0
+    },
+    {
+      "schema": "vlc_redesign.s7_integrated_player.v1",
+      "start_paused": true,
+      "theme": "dark",
+      "scale": "2",
+      "language": "en",
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+      "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+      "observed_theme": 2,
+      "observed_dpr": 2,
+      "player_geometry": {
+        "status": "passed",
+        "window": {
+          "active": true,
+          "dpr": 2,
+          "flags": "1",
+          "height": 540,
+          "minimum_height": 360,
+          "minimum_width": 472,
+          "native_id_hex": "15d18f0",
+          "visibility": 2,
+          "visible": true,
+          "width": 960,
+          "x": 980,
+          "y": 312
+        },
+        "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+      },
+      "native_preferences": {
+        "type": "PrefsDialog",
+        "node": 0,
+        "width": 1048,
+        "height": 865,
+        "dpr": 2,
+        "font_family": "Inter Variable Text",
+        "font_pixel_size": 14,
+        "font_point_size": -1,
+        "palette_window": "#000000",
+        "palette_text": "#8f8f8f",
+        "palette_highlight": "#d37918"
+      },
+      "localized_cancel_text": "Cancel",
+      "passed": true,
+      "exit_code": 0,
+      "wasapi_selected": true,
+      "qt_event_loop_finished": true,
+      "input_desktop_preserved": true,
+      "driver_exit": 0
+    }
+  ],
+  "localized": {
+    "schema": "vlc_redesign.s7_integrated_player.v1",
+    "start_paused": true,
+    "theme": "light",
+    "scale": "1",
+    "language": "el",
+    "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190",
+    "scope": "App-owned native Qt events on an inactive desktop; no OS input or physical-output claim.",
+    "observed_theme": 1,
+    "observed_dpr": 1,
+    "player_geometry": {
+      "status": "passed",
+      "window": {
+        "active": true,
+        "dpr": 1,
+        "flags": "1",
+        "height": 1080,
+        "minimum_height": 360,
+        "minimum_width": 472,
+        "native_id_hex": "36212a8",
+        "visibility": 2,
+        "visible": true,
+        "width": 1920,
+        "x": 2260,
+        "y": 834
+      },
+      "media_title": "S7 synthetic multi-track \u03a9 \u65e5\u672c\u8a9e"
+    },
+    "native_preferences": {
+      "type": "PrefsDialog",
+      "node": 0,
+      "width": 1048,
+      "height": 865,
+      "dpr": 1,
+      "font_family": "Inter Variable Text",
+      "font_pixel_size": 14,
+      "font_point_size": -1,
+      "palette_window": "#000000",
+      "palette_text": "#2e2e2e",
+      "palette_highlight": "#d37918"
+    },
+    "localized_cancel_text": "\u0386\u03ba\u03c5\u03c1\u03bf",
+    "passed": true,
+    "exit_code": 0,
+    "wasapi_selected": true,
+    "qt_event_loop_finished": true,
+    "native_translation_selected": true,
+    "input_desktop_preserved": true
+  },
+  "inputs": [
+    {
+      "case": "audio",
+      "exit_code": 0,
+      "input_desktop_preserved": true,
+      "qt_event_loop_finished": true,
+      "wasapi_selected": true,
+      "natural_eof": true,
+      "passed": true
+    },
+    {
+      "case": "local-playlist",
+      "exit_code": 0,
+      "input_desktop_preserved": true,
+      "qt_event_loop_finished": true,
+      "wasapi_selected": true,
+      "natural_eof": true,
+      "both_playlist_entries_played_and_released": true,
+      "passed": true
+    },
+    {
+      "case": "embedded-image",
+      "image_track_and_unavailable_text_timeline": {
+        "tracks": [
+          {
+            "id": "spu/3",
+            "language": "eng",
+            "name": "Track 1 - [English]",
+            "selected": true
+          }
+        ],
+        "status": "Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.",
+        "cues": []
+      },
+      "exit_code": 0,
+      "input_desktop_preserved": true,
+      "qt_event_loop_finished": true,
+      "wasapi_selected": true,
+      "natural_eof": true,
+      "passed": true
+    },
+    {
+      "case": "http-playlist",
+      "exit_code": 0,
+      "input_desktop_preserved": true,
+      "qt_event_loop_finished": true,
+      "wasapi_selected": true,
+      "natural_eof": true,
+      "both_playlist_entries_played_and_released": true,
+      "passed": true
+    },
+    {
+      "case": "nonseekable",
+      "exit_code": 0,
+      "input_desktop_preserved": true,
+      "qt_event_loop_finished": true,
+      "wasapi_selected": true,
+      "passed": true
+    },
+    {
+      "case": "missing",
+      "exit_code": 0,
+      "input_desktop_preserved": true,
+      "qt_event_loop_finished": true,
+      "expected_missing_input_error": true,
+      "passed": true
+    }
+  ],
+  "real_loopback_http_server_joined": true,
+  "font_functional": [
+    {
+      "mode": "download",
+      "theme": "light",
+      "scale": "1",
+      "directory": "font-download-light-1-v11",
+      "exit_code": 0,
+      "passed": true,
+      "native_skin": {
+        "exit_code": 0,
+        "actual_font": "using the verified user-profile Delicious font",
+        "natural_eof": true
+      },
+      "failure": null,
+      "observed_theme": 1,
+      "observed_dpr": 1,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "mode": "fallback",
+      "theme": "dark",
+      "scale": "1",
+      "directory": "font-fallback-dark-1-v11",
+      "exit_code": 0,
+      "passed": true,
+      "native_skin": {
+        "exit_code": 0,
+        "actual_font": "using bundled FreeSans for the optional legacy font",
+        "natural_eof": true
+      },
+      "failure": null,
+      "observed_theme": 2,
+      "observed_dpr": 1,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "mode": "cancel",
+      "theme": "light",
+      "scale": "1.5",
+      "directory": "font-cancel-light-15-v11",
+      "exit_code": 0,
+      "passed": true,
+      "native_skin": {
+        "exit_code": 0,
+        "actual_font": "using bundled FreeSans for the optional legacy font",
+        "natural_eof": true
+      },
+      "failure": null,
+      "observed_theme": 1,
+      "observed_dpr": 1.5,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "mode": "retry",
+      "theme": "dark",
+      "scale": "1.5",
+      "directory": "font-retry-dark-15-v11",
+      "exit_code": 0,
+      "passed": true,
+      "native_skin": {
+        "exit_code": 0,
+        "actual_font": "using the verified user-profile Delicious font",
+        "natural_eof": true
+      },
+      "failure": null,
+      "observed_theme": 2,
+      "observed_dpr": 1.5,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "mode": "cached",
+      "theme": "light",
+      "scale": "2",
+      "directory": "font-cached-light-2-v11",
+      "exit_code": 0,
+      "passed": true,
+      "native_skin": {
+        "exit_code": 0,
+        "actual_font": "using the verified user-profile Delicious font",
+        "natural_eof": true
+      },
+      "failure": null,
+      "observed_theme": 1,
+      "observed_dpr": 2,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "mode": "corrupt",
+      "theme": "dark",
+      "scale": "2",
+      "directory": "font-corrupt-dark-2-v11",
+      "exit_code": 0,
+      "passed": true,
+      "native_skin": {
+        "exit_code": 0,
+        "actual_font": "using bundled FreeSans for the optional legacy font",
+        "natural_eof": true
+      },
+      "failure": null,
+      "observed_theme": 2,
+      "observed_dpr": 2,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    }
+  ],
+  "font_presentation": [
+    {
+      "theme": "light",
+      "scale": "1",
+      "directory": "font-presentation-light-1-v12",
+      "exit_code": 0,
+      "passed": true,
+      "observed_theme": 1,
+      "observed_dpr": 1,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "theme": "light",
+      "scale": "1.5",
+      "directory": "font-presentation-light-15-v12",
+      "exit_code": 0,
+      "passed": true,
+      "observed_theme": 1,
+      "observed_dpr": 1.5,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "theme": "light",
+      "scale": "2",
+      "directory": "font-presentation-light-2-v12",
+      "exit_code": 0,
+      "passed": true,
+      "observed_theme": 1,
+      "observed_dpr": 2,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "theme": "dark",
+      "scale": "1",
+      "directory": "font-presentation-dark-1-v12",
+      "exit_code": 0,
+      "passed": true,
+      "observed_theme": 2,
+      "observed_dpr": 1,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "theme": "dark",
+      "scale": "1.5",
+      "directory": "font-presentation-dark-15-v12",
+      "exit_code": 0,
+      "passed": true,
+      "observed_theme": 2,
+      "observed_dpr": 1.5,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    },
+    {
+      "theme": "dark",
+      "scale": "2",
+      "directory": "font-presentation-dark-2-v12",
+      "exit_code": 0,
+      "passed": true,
+      "observed_theme": 2,
+      "observed_dpr": 2,
+      "qt_plugin_sha256": "1c4d18a3b88e6e35b53bcfd6917086473adb58e56d66c791e83aaf2f5126e190"
+    }
+  ],
+  "prior_profile": {
+    "passed": true,
+    "first_exit": 0,
+    "restart_exit": 0,
+    "preserved_customization_sha256": "a45a953b780670181ded292dc73e0c73eb5b9269c662ab344668fe679f52ecb8",
+    "selected_audio_language": "spa"
+  },
+  "visuals": [
+    {
+      "file": "player-presentation.png",
+      "sha256": "b6c8700e6ec492f23c2f78492760c391dbd1a923d667677f65ace9fe94f25443",
+      "captures": [
+        {
+          "case": "light / 1",
+          "original_sha256": "ea32291ec1c634487bd471f8dcc8480be06976234af42f1e0b53f9f1e41c7cfa",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "3311c40",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 2260,
+            "y": 834
+          },
+          "native_preferences": null
+        },
+        {
+          "case": "dark / 1",
+          "original_sha256": "0542c30a30e7e2a90616b15cbcec2c1ad56b2139d5194f96c2722d625291a4e9",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "3ca0d7c",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 2260,
+            "y": 834
+          },
+          "native_preferences": null
+        },
+        {
+          "case": "light / 1.5",
+          "original_sha256": "4537a13cfc8e871e302c7b4babeb348f5f94d2ae447d7a4c01ab8564ec14b39f",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "23ef027c",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 1406,
+            "y": 486
+          },
+          "native_preferences": null
+        },
+        {
+          "case": "light / 2",
+          "original_sha256": "37f67dbb684643b0320150f3b47ccdd699a8ae124c4c66da7c7f751531cab380",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "1d470be0",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 980,
+            "y": 312
+          },
+          "native_preferences": null
+        },
+        {
+          "case": "dark / 1.5",
+          "original_sha256": "25168856095639bc755362c928d808152276db6ed58c3028a8773466d3fb7c0a",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 1.5,
+            "flags": "1",
+            "height": 720,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "bfd0270",
+            "visibility": 2,
+            "visible": true,
+            "width": 1280,
+            "x": 1406,
+            "y": 486
+          },
+          "native_preferences": null
+        },
+        {
+          "case": "dark / 2",
+          "original_sha256": "d2e39e3f57bf063c89e276a1c4d35c7d31664f019eeb0f824637a690c4dc95de",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 2,
+            "flags": "1",
+            "height": 540,
+            "minimum_height": 360,
+            "minimum_width": 472,
+            "native_id_hex": "15d18f0",
+            "visibility": 2,
+            "visible": true,
+            "width": 960,
+            "x": 980,
+            "y": 312
+          },
+          "native_preferences": null
+        }
+      ],
+      "scope": "App-rendered Qt Quick scene; no physical display/output claim"
+    },
+    {
+      "file": "preferences-presentation.png",
+      "sha256": "c1a1d7e85974c0db0ec596ea7dc14bb61a37557ce7f2aaf9069412dec1f5bfbd",
+      "captures": [
+        {
+          "case": "light / 1",
+          "original_sha256": "42d4c0817fa1967d71ab8e9e76249dfa03dd3e38907ba215d85b1230c4cbf867",
+          "pixels": [
+            1048,
+            865
+          ],
+          "window": null,
+          "native_preferences": {
+            "type": "PrefsDialog",
+            "node": 0,
+            "width": 1048,
+            "height": 865,
+            "dpr": 1,
+            "font_family": "Inter Variable Text",
+            "font_pixel_size": 14,
+            "font_point_size": -1,
+            "palette_window": "#000000",
+            "palette_text": "#2e2e2e",
+            "palette_highlight": "#d37918"
+          }
+        },
+        {
+          "case": "dark / 1",
+          "original_sha256": "59bacf874805a3c8821e16312cb33e22d572bcc3d00244feb3006da20fdf5be5",
+          "pixels": [
+            1048,
+            865
+          ],
+          "window": null,
+          "native_preferences": {
+            "type": "PrefsDialog",
+            "node": 0,
+            "width": 1048,
+            "height": 865,
+            "dpr": 1,
+            "font_family": "Inter Variable Text",
+            "font_pixel_size": 14,
+            "font_point_size": -1,
+            "palette_window": "#000000",
+            "palette_text": "#8f8f8f",
+            "palette_highlight": "#d37918"
+          }
+        },
+        {
+          "case": "light / 1.5",
+          "original_sha256": "f86a7c192f8c0e7b74053992f1fe5c9f06f623d0e2f18977fecde97ccbd5f592",
+          "pixels": [
+            1572,
+            1298
+          ],
+          "window": null,
+          "native_preferences": {
+            "type": "PrefsDialog",
+            "node": 0,
+            "width": 1048,
+            "height": 865,
+            "dpr": 1.5,
+            "font_family": "Inter Variable Text",
+            "font_pixel_size": 14,
+            "font_point_size": -1,
+            "palette_window": "#000000",
+            "palette_text": "#2e2e2e",
+            "palette_highlight": "#d37918"
+          }
+        },
+        {
+          "case": "light / 2",
+          "original_sha256": "cdde60cb9f9458957c28242ff37b04cee9c3841080d2ba1eb0b900ecd012cd1e",
+          "pixels": [
+            2096,
+            1730
+          ],
+          "window": null,
+          "native_preferences": {
+            "type": "PrefsDialog",
+            "node": 0,
+            "width": 1048,
+            "height": 865,
+            "dpr": 2,
+            "font_family": "Inter Variable Text",
+            "font_pixel_size": 14,
+            "font_point_size": -1,
+            "palette_window": "#000000",
+            "palette_text": "#2e2e2e",
+            "palette_highlight": "#d37918"
+          }
+        },
+        {
+          "case": "dark / 1.5",
+          "original_sha256": "3e7387137d27e9af06764e7d1ba3535f08ac7b564427a374a4681bdef8414259",
+          "pixels": [
+            1572,
+            1298
+          ],
+          "window": null,
+          "native_preferences": {
+            "type": "PrefsDialog",
+            "node": 0,
+            "width": 1048,
+            "height": 865,
+            "dpr": 1.5,
+            "font_family": "Inter Variable Text",
+            "font_pixel_size": 14,
+            "font_point_size": -1,
+            "palette_window": "#000000",
+            "palette_text": "#8f8f8f",
+            "palette_highlight": "#d37918"
+          }
+        },
+        {
+          "case": "dark / 2",
+          "original_sha256": "2443e0db11e9fafecfb8e0e6c2a74866217500b78204284003b2915d17967137",
+          "pixels": [
+            2096,
+            1730
+          ],
+          "window": null,
+          "native_preferences": {
+            "type": "PrefsDialog",
+            "node": 0,
+            "width": 1048,
+            "height": 865,
+            "dpr": 2,
+            "font_family": "Inter Variable Text",
+            "font_pixel_size": 14,
+            "font_point_size": -1,
+            "palette_window": "#000000",
+            "palette_text": "#8f8f8f",
+            "palette_highlight": "#d37918"
+          }
+        }
+      ],
+      "scope": "App-owned QWidget grab"
+    },
+    {
+      "file": "library-presentation.png",
+      "sha256": "9abb2a7560c23e281ed13117c1f975bfcc0f5ee1bd9aae38cbfa2adb600eeb47",
+      "captures": [
+        {
+          "case": "light / 1 library",
+          "original_sha256": "30858dbb79aed2cd986df526184f57ccecbbcd328da201588978fd5dfe74ed49",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 320,
+            "native_id_hex": "3311c40",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 2260,
+            "y": 834
+          },
+          "native_preferences": null
+        },
+        {
+          "case": "dark / 1 library",
+          "original_sha256": "b87097de5e3988a95aa100fbf8d40b2bfc8a3dd94fe56b77073beecc7bb6d17a",
+          "pixels": [
+            1920,
+            1080
+          ],
+          "window": {
+            "active": true,
+            "dpr": 1,
+            "flags": "1",
+            "height": 1080,
+            "minimum_height": 360,
+            "minimum_width": 320,
+            "native_id_hex": "3ca0d7c",
+            "visibility": 2,
+            "visible": true,
+            "width": 1920,
+            "x": 2260,
+            "y": 834
+          },
+          "native_preferences": null
+        }
+      ],
+      "scope": "App-rendered Qt Quick scene; no physical display/output claim"
+    },
+    {
+      "file": "font-presentation.png",
+      "sha256": "d10488ed7e6030d0c83288f586afddec74def110788a86091b12c9c862de61d3",
+      "scope": "Six actual light/dark DPR1/1.5/2 font-page scenes with base 40px chrome; functional font workflow is a separate matrix."
+    }
+  ],
+  "installed_profile": "Separate private before/after comparison remains required",
+  "scope": "Synthetic profiles/media; real native VLC/Qt/MMDevice/WASAPI, muted output. Inactive desktop; no OS input/activation/switching. No physical listening/Dolby Vision claim."
+}

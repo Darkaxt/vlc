@@ -1,0 +1,18 @@
+{
+  "schema": "vlc_redesign.wasapi_lifecycle_regression.v1",
+  "executable_sha256": "6522e8d9bde570e7a5a932a6272e002c2989b7f7e486ccb8d5becfb7257cf621",
+  "exit_code": 0,
+  "case_results": [
+    0,
+    0,
+    0
+  ],
+  "stdout": "case=buffer-before-resume flush-before-resume=0 result=0 starts=2 stops=2\ncase=resume-before-buffer flush-before-resume=0 result=0 starts=2 stops=2\ncase=buffer-before-resume flush-before-resume=1 result=0 starts=2 stops=2\n",
+  "stderr": "",
+  "upstream_failure_reproduced": false,
+  "corrected_regression_passed": true,
+  "scope": "Actual WASAPI functions with controlled native COM and timer ordering. The test deliberately lacks an audio clock and does not establish hardware playback.",
+  "libvlc_sha256": "ef25922ce7e1d2efbfc32b79abea49dc2015ab4838dd6353c5e4d10a0f06f4ff",
+  "libvlccore_sha256": "6455c5a9a095b6b6edb50c2f5e61b5151953fc77fb696aa06879f596a4a9d33c",
+  "compiled_source_hashes": "1e7550a4dbc7986a992236aa9f2cc3d355f37e0eba258f720dd8f88b2735df15  /work/src/modules/audio_output/wasapi.c\ne85d36dda1cffd8eadec86d620070e26b75e8ca480f5239f3a2a366c8d155ba4  /work/src/tools/windows-player/wasapi-lifecycle-check.c\n"
+}

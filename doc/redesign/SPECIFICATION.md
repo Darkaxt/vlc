@@ -4,7 +4,9 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
-**S6 is COMPLETE (28 October 2026).** R50-R51 and applicable R04/R52 acceptance, the normal isolated review folder at `D:/VLC-Redesign/S6`, preservation, cleanup and GitHub application-source synchronization are verified in [S6 evidence](resources/s6-verification.json). No implementation stage is ACTIVE; S7 and proposed S8 remain NOT STARTED. Work stops before S7. The explicit S6 boundary excludes an intermediate application release or installation over existing VLC. S7/R61 retains the recorded startup-paused WASAPI integration deferral; overall fork completion is not claimed.
+**S7 Integrated verification is ACTIVE (29 October 2026).** The user instructed "start working on S7 then" after the verified independent chat takeover. Authorization is `already_authorized` for R01-R04 final reconciliation, R52 whole-interface acceptance, R60 production asset/licensing inventory, R61 real integrated media/state/input workflows (including resolution of the startup-paused WASAPI failure), and R62 reproducible packaging, recovery/upstream-sync guidance, verification, commit, existing GitHub synchronization and a proper final versioned release with independent package readback. This supersedes the former stop before S7. S0, D1 and S1-S6 remain COMPLETE; proposed S8 remains NOT STARTED and unauthorized. Separate installation over existing VLC and OS desktop-input/activation remain outside scope. Preserve existing profiles, repositories, unrelated WSL distributions and retained review deliverables. Use exact registered `D:/Temp/vlc-s7-20261029` scratch for active native/WSL I/O, the installed bounded WSL gate and one compiler job; use `D:/VLC-Redesign` for intentional retained deliverables. Do not restore or reimport the deleted S6 distribution merely because historical local guidance still names it. Overall fork completion requires every S7 acceptance item and final delivery gate; it is not claimed now.
+
+**S6 is COMPLETE (28 October 2026).** R50-R51 and applicable R04/R52 acceptance, the normal isolated review folder at `D:/VLC-Redesign/S6`, preservation, cleanup and GitHub application-source synchronization are verified in [S6 evidence](resources/s6-verification.json). The explicit S6 boundary excluded an intermediate application release or installation over existing VLC. The historical authorization paragraphs below remain provenance; the current S7 authorization above governs.
 
 On 28 October 2026 the user resumed S6 and approved the scoped move of its existing stopped `VLC-S6-20261025` disk from E: to `D:/Temp/vlc-s6-20261028/wsl`, including scratch-binding updates and verification. This updated the earlier E:-only build-storage constraint: active VM/build/dependency/test I/O used the exact task-owned D: root under the new storage hierarchy, registered as cleanup transaction `6d4725546ee6f1a572f441b4e7c628d9`. After verified normal review delivery, both scratch roots and the temporary disk were removed through inspected cleanup tickets, and only the empty S6 registration was retired; Ubuntu/Docker bindings are unchanged. All heavy Linux work must use the installed WSL gate with the declared shared VM/workload limits and one compiler job, verified at execution. This approval did not move the canonical checkout or remove prior review deliverables. Product scope and the S6 stopping boundary remain unchanged.
 
@@ -225,6 +227,8 @@ S6 implementation contract (28 October, ordinary details preserving R50-R51):
 
 The S7/R61 integrated playback gate owns the observed pinned-upstream WASAPI startup-paused failure: resuming `--start-paused` input returned `AUDCLNT_E_NOT_STOPPED` and hit the existing started-state assertion. Normal startup followed by real UI pause, paused seeking and resume works. S6 verifies its independent editing/profile/onboarding criteria through that normal native workflow; it does not change the audio backend. Before final integrated playback/release acceptance, S7 must resolve the double-start lifecycle and verify actual resume, advancing clock and normal exit for both startup modes. This records a concrete required integration deferral, not satisfaction of that final criterion.
 
+S7's R60 packaging audit also found the optional legacy default skin's Delicious font has no redistributable grant in the retained source. The package uses VLC's existing GPL FreeSans fallback and omits Delicious font bytes. The user's subsequent instruction adds R65: the first-run wizard downloads the unmodified optional font directly from its publisher into the active user's profile and the default skin uses that verified local copy when available. Automatic downloading is distinct from redistributing the font in the release. Preserve the native skins capability, existing custom skins and user settings; verify both font paths. The Figma interface's Inter font contract remains unchanged.
+
 ## Verification and final completion
 
 | ID | Requirement and acceptance criteria | Stage |
@@ -234,6 +238,8 @@ The S7/R61 integrated playback gate owns the observed pinned-upstream WASAPI sta
 | R62 | Document reproducible local packaging, configuration recovery and upstream synchronization. Run focused checks appropriate to changed boundaries; run broader suites when cross-cutting risk requires them. Reconcile every requirement before claiming the full redesign complete. Commit verified scope; perform and verify the final release under the user's standing release authorization after integrated implementation is complete. Do not publish intermediate stages; separate production installation remains outside stage authority. | S7 |
 | R63 | Register this specification, stage plan, attribution, original editable Figma archive, archive contents manifest and editable-access links in the GitHub fork. Omit derivative PDF/PNG exports from Git per the user's updated instruction. Verify relative links, file integrity, upstream parentage and remote commit contents. Keep source/application behavior unchanged in this registration task. | S0 |
 | R64 | Before VLC UI implementation, establish a reproducible design-source workflow from the retained `.fig`: reproduce offline decoding, identify required screen/component variants, export representative custom vector icons, and validate representative screen reconstruction against the original appearance. Record unsupported features and any required Figma fallback. Limit tooling to the project's design needs; do not build a general Figma replacement. D1 was authorized and completed on 17 October 2026; subsequent S1 authorization is recorded above. | D1 |
+| R65 | Extend the existing first-run wizard with direct automatic download of the optional Delicious legacy-skin font from its official publisher. Show the font's source/license and a usable skip/fallback path. Keep the unmodified font in the active user's profile, outside the shipped binary/source packages; validate the download and cached identity before use. Preserve existing profiles/custom skins; reuse the valid cached font on restart/reopening without another download. Verify real publisher HTTPS download, native font use, fallback, cancellation, failure/retry and preserved/corrupt-cache handling. Keep first launch usable offline and retain the existing onboarding/theme/shortcut behavior. | S7 |
+| R66 | After the existing plan, assess measured resource/robustness improvements through profiling and selective Rust migration. Establish a release-bound native baseline, select one justified bounded component, preserve existing UI/playback/state/capability contracts and explicit FFI ownership/lifetimes, then compare equivalent real workflows. Require a demonstrated component-specific benefit and no unacceptable regressions before retaining or broadening the migration. Do not assume a language change alone reduces resource use or begin a wholesale rewrite. Planning is authorized; implementation remains a future stage. | Proposed S9 |
 
 ## Execution constraints
 
@@ -265,6 +271,42 @@ The user explicitly selected the Figma single-row player and then instructed: "F
 On 18 October 2026 the user suggested an additional final stage to support the MPV engine and their libplacebo fork for correct Dolby Vision rendering. Record this as **proposed S8**, NOT STARTED, after S7. This is a future scope proposal, not authorization to implement another engine during S2 and not an added acceptance dependency of the currently authorized stage.
 
 Before S8 implementation, identify the user's exact libplacebo repository/revision and supported platform, establish the engine-selection/integration contract, and define the Dolby Vision profiles/containers and actual rendering/output acceptance matrix. Preserve VLC playback and state while proving a real MPV -> forked-libplacebo -> supported display path. A library name, decoded frames, SDR screenshot or nominal Dolby Vision flag alone does not establish correct Dolby Vision output. Any required architecture/scope changes belong in the authoritative specification before that later implementation begins.
+
+### Proposed S9: profiling and selective Rust migration
+
+On 29 October 2026 the user requested this improvement scope be added after the
+full existing plan. S9 is **NOT STARTED**, after S8. This instruction authorizes
+the specification/plan update and continued S7 work; it does not activate a Rust
+migration or make S9 a prerequisite for S7 delivery.
+
+Profile the completed application first. Bind the baseline to its source commit,
+delivered package, build flags, hardware/drivers and representative media/input
+conditions. Measure idle/playback private memory and working set, peak memory,
+CPU, startup, seek latency, frame pacing/dropped frames and package size; include
+GPU memory when relevant to the measured rendering path. Separate effects of
+algorithms, copies, buffering and dependencies from effects of language choice.
+
+Choose the narrowest component with a concrete safety, maintenance or measured
+resource justification. Candidate areas include bounded parsing/archive handling,
+configuration validation and background-job ownership. These are candidates,
+not a requirement to rewrite every one. Reuse the existing upstream Rust/plugin
+support when suitable. Initially retain Qt/QML and established playback/rendering
+libraries. No generalized engine/provider rewrite is implied.
+
+Before implementation, specify the selected component's real end-to-end behavior,
+ABI/data/ownership/thread-affinity/cancellation/error contracts and measurable
+acceptance thresholds. Preserve Figma appearance, settings identities/recovery,
+plugin/action reachability and the completed VLC/MPV integrations. Rust safety
+does not automatically extend across an incorrect C/C++ interface. Include
+upstream synchronization cost in the assessment.
+
+Prove one integrated migration, compare equivalent release builds and actual
+workloads against the baseline, and report both benefits and regressions. Retain
+or broaden it only when its documented benefit justifies its integration cost
+and all preservation/performance criteria pass. If the experiment does not meet
+those criteria, restore the verified native implementation through Git and record
+the result without claiming a successful migration. Any retained implementation
+requires the normal final release and independent delivery verification.
 
 ### Measured S2 visual contract
 

@@ -1,0 +1,23 @@
+{
+  "id": "0593e9828e364a55984d073dbcb12cad",
+  "exit_code": 0,
+  "populated": false,
+  "effective_vm_memory_bytes": 4107378688,
+  "effective_limits": {
+    "memory.max": "3758096384",
+    "memory.swap.max": "536870912",
+    "cpu.max": "100000 100000",
+    "pids.max": "256",
+    "memory.oom.group": "1"
+  },
+  "peak_memory_bytes": 326230016,
+  "memory_events": {
+    "low": "0",
+    "high": "0",
+    "max": "0",
+    "oom": "0",
+    "oom_kill": "0",
+    "oom_group_kill": "0"
+  },
+  "seconds": 5.119814366
+}

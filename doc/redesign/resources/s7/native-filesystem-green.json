@@ -1,0 +1,8 @@
+{
+  "schema": "vlc_redesign.native_filesystem_errno.v1",
+  "core_sha256": "914588e3db751fdd4295e2994c7aefa192f8bfedfbdc7a96fc30d1751cd8e90f",
+  "missing_file_returned_null": true,
+  "errno": 2,
+  "observed_crt": "msvcrt.dll, the actual pinned MinGW target CRT",
+  "passed": true
+}

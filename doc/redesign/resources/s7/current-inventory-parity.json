@@ -1,0 +1,44 @@
+{
+  "schema": "vlc_redesign.native_capability_preservation.v1",
+  "baseline_sha256": "aca06ce0e8687ef1cd59dcc4a61ec5d4b2668905712d5f0bba4674a6b9084575",
+  "current_sha256": "49075c0113b9cc3167363bcefa295385c3b0dd126018b544c81adee8f177d5a9",
+  "baseline_identity": {
+    "version": "4.0.0-dev Otto Chriek",
+    "compiler": "gcc version 14-posix (GCC)",
+    "changeset": "392bc1d"
+  },
+  "current_identity": {
+    "version": "4.0.0-dev Otto Chriek",
+    "compiler": "gcc version 14-posix (GCC)",
+    "changeset": "392bc1d"
+  },
+  "missing_module_roles": [],
+  "missing_option_name_type_pairs": [],
+  "additional_raw_roles": [],
+  "additional_raw_options": [
+    [
+      "freetype-absolute-fontsize",
+      64
+    ],
+    [
+      "qt-key-add-bookmark",
+      130
+    ],
+    [
+      "qt-shortcut-feedback",
+      96
+    ],
+    [
+      "qt-shortcut-feedback-duration",
+      64
+    ],
+    [
+      "qt-shortcut-feedback-key",
+      96
+    ]
+  ],
+  "baseline_roles_preserved": true,
+  "baseline_option_types_preserved": true,
+  "scope": "Actual native metadata only. No user values. Does not replace action/dialog reachability, option-editor mapping or persistence verification.",
+  "passed": true
+}

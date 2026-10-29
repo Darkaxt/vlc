@@ -31,6 +31,7 @@
 #include <assert.h>
 
 #include <stdio.h>
+#include <wchar.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -132,9 +133,44 @@ int vlc_open (const char *filename, int flags, ...)
         dwCreationDisposition,
         &params);
 #endif
+    const DWORD error = h == INVALID_HANDLE_VALUE ? GetLastError() : ERROR_SUCCESS;
     free (wpath);
     if (h == INVALID_HANDLE_VALUE)
+    {
+        /* CreateFile does not set the C runtime's errno. Callers such as
+         * vlc_fopen must distinguish an absent file from an unreadable one. */
+        switch (error)
+        {
+            case ERROR_FILE_NOT_FOUND:
+            case ERROR_PATH_NOT_FOUND:
+            case ERROR_INVALID_NAME:
+                errno = ENOENT;
+                break;
+            case ERROR_ACCESS_DENIED:
+            case ERROR_SHARING_VIOLATION:
+            case ERROR_LOCK_VIOLATION:
+                errno = EACCES;
+                break;
+            case ERROR_FILE_EXISTS:
+            case ERROR_ALREADY_EXISTS:
+                errno = EEXIST;
+                break;
+            case ERROR_TOO_MANY_OPEN_FILES:
+                errno = EMFILE;
+                break;
+            case ERROR_NOT_ENOUGH_MEMORY:
+            case ERROR_OUTOFMEMORY:
+                errno = ENOMEM;
+                break;
+            case ERROR_INVALID_PARAMETER:
+                errno = EINVAL;
+                break;
+            default:
+                errno = EIO;
+                break;
+        }
         return -1;
+    }
     int fd = _open_osfhandle((intptr_t)h, flags);
     if (unlikely(fd == -1))
     {
@@ -570,12 +606,17 @@ int vlc_pipe (int fds[2])
 
     uint_least64_t c = atomic_fetch_add(&count, 1);
 
-    TCHAR pipeName[MAX_PATH] = {0};
-    if (wsprintf(pipeName, TEXT("\\\\.\\pipe\\AnonPipe_%lu"), c) < 0) {
+    /* The pipe namespace is shared across processes, unlike this counter.
+     * Preparsers and separate VLC instances must not open each other's pipes. */
+    wchar_t pipeName[MAX_PATH];
+    int length = swprintf(pipeName, ARRAY_SIZE(pipeName),
+                         L"\\\\.\\pipe\\VLCAnonPipe_%lu_%llu",
+                         GetCurrentProcessId(), (unsigned long long)c);
+    if (length < 0 || (size_t)length >= ARRAY_SIZE(pipeName)) {
         return -1;
     }
 
-    HANDLE hRead = CreateNamedPipe(pipeName,
+    HANDLE hRead = CreateNamedPipeW(pipeName,
                             PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED,
                             PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
                             1, 4096 * 8, 4096 * 8, 0, NULL);
@@ -583,7 +624,7 @@ int vlc_pipe (int fds[2])
         return -1;
     }
 
-    HANDLE hWrite = CreateFile(pipeName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
+    HANDLE hWrite = CreateFileW(pipeName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
                                FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
                                NULL);
     if (hWrite == INVALID_HANDLE_VALUE) {

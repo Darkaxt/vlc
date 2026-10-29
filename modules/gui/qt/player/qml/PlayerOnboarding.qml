@@ -13,6 +13,24 @@ T.Popup {
     property int page: 0
     property int theme: 0
     property string accent: "default"
+    property bool fontFinishing: false
+    function cancelFont() {
+        fontFinishing=false
+        MainCtx.legacyFont.cancel()
+    }
+    function finishSetup() {
+        PlayerCustomization.closeOnboarding(true,theme,accent,folder.text.trim())
+    }
+    Connections {
+        id:fontEvents
+        target:MainCtx.legacyFont
+        function onChanged() {
+            if(dialog.fontFinishing&&!fontEvents.target.busy){
+                dialog.fontFinishing=false
+                if(fontEvents.target.available)dialog.finishSetup()
+            }
+        }
+    }
     readonly property var swatches: ["#d37918","#e15032","#c49e23","#19a234","#18aad3","#185dd3","#8e42ff","#f052b3","#afafaf"]
     width: Math.min(PlayerStyle.px(1090), parent.width-PlayerStyle.px(40))
     height: Math.min(PlayerStyle.px(759), parent.height-PlayerStyle.px(40))
@@ -29,8 +47,11 @@ T.Popup {
         theme=PlayerCustomization.onboardingOriginal.theme
         accent=PlayerCustomization.onboardingOriginal.accent
         folder.text=""
+        fontFinishing=false
+        MainCtx.legacyFont.refresh()
     }
     onClosed: {
+        cancelFont()
         if(PlayerCustomization.onboardingVisible&&!PlayerCustomization.onboardingSaving)
             PlayerCustomization.closeOnboarding(false,theme,accent,"")
     }
@@ -45,6 +66,7 @@ T.Popup {
     component SetupButton: PlayerSetupButton { fontPixelSize: 16 }
     contentItem: Item {
         Keys.onEscapePressed: event=>{
+            dialog.cancelFont()
             PlayerCustomization.closeOnboarding(false,dialog.theme,dialog.accent,"")
             event.accepted=true
         }
@@ -64,7 +86,7 @@ T.Popup {
             Item {
                 id: pageContent
                 width: body.width
-                implicitHeight: dialog.page===0?Math.max(PlayerStyle.px(625),folderGroup.y+folderGroup.implicitHeight+PlayerStyle.px(20)):dialog.page===1?PlayerStyle.px(615):shortcuts.y+shortcuts.implicitHeight+PlayerStyle.px(20)
+                implicitHeight: dialog.page===0?Math.max(PlayerStyle.px(625),folderGroup.y+folderGroup.implicitHeight+PlayerStyle.px(20)):dialog.page===1?PlayerStyle.px(615):dialog.page===2?shortcuts.y+shortcuts.implicitHeight+PlayerStyle.px(20):fontGroup.y+fontGroup.implicitHeight+PlayerStyle.px(20)
                 height: Math.max(body.height,implicitHeight)
                 ShaderEffectSource {
                     visible: dialog.page===1
@@ -93,7 +115,7 @@ T.Popup {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: parent.width-PlayerStyle.px(80)
                     y: PlayerStyle.px(dialog.page===0?286:dialog.page===1?173:60)
-                    text: dialog.page===0?qsTr("Welcome to VLC!"):dialog.page===1?qsTr("Select your preferred theme and color."):qsTr("Learn the basic keyboard shortcuts.")
+                    text: dialog.page===0?qsTr("Welcome to VLC!"):dialog.page===1?qsTr("Select your preferred theme and color."):dialog.page===2?qsTr("Learn the basic keyboard shortcuts."):qsTr("Get the original classic-skin font.")
                     font.pixelSize: PlayerStyle.px(dialog.page===0?32:24)
                     font.weight: Font.Light
                     color: dialog.page===0&&PlayerStyle.dark?"#eaeaea":PlayerStyle.trackForeground
@@ -245,6 +267,46 @@ T.Popup {
                         }
                     }
                 }
+                ColumnLayout {
+                    id:fontGroup
+                    visible:dialog.page===3
+                    x:PlayerStyle.px(62);y:PlayerStyle.px(154)
+                    width:parent.width-PlayerStyle.px(124)
+                    spacing:PlayerStyle.px(22)
+                    AccessibleCompat.id:"onboardingFontPage"
+                    Label {
+                        Layout.fillWidth:true
+                        text:qsTr("Delicious is the original typeface used by the classic skin. Download it directly from exljbris, or use the bundled FreeSans font. The redesigned interface already includes Inter.")
+                    }
+                    RowLayout {
+                        Layout.fillWidth:true;spacing:PlayerStyle.px(16)
+                        SetupButton { text:qsTr("Font source");onClicked:Qt.openUrlExternally("https://www.exljbris.com/delicious.html");onActiveFocusChanged:if(activeFocus)body.reveal(this) }
+                        SetupButton { text:qsTr("Font license");onClicked:Qt.openUrlExternally("https://www.exljbris.com/eula.html");onActiveFocusChanged:if(activeFocus)body.reveal(this) }
+                    }
+                    Label {
+                        Layout.fillWidth:true
+                        font.pixelSize:PlayerStyle.px(14)
+                        property string status:MainCtx.legacyFont.status
+                        property bool busy:MainCtx.legacyFont.busy
+                        property bool ready:MainCtx.legacyFont.available
+                        AccessibleCompat.id:"onboardingFontStatus"
+                        text:status+(busy&&MainCtx.legacyFont.total>0?" "+Math.round(100*MainCtx.legacyFont.received/MainCtx.legacyFont.total)+"%":"")
+                    }
+                    SetupButton {
+                        visible:MainCtx.legacyFont.busy
+                        text:qsTr("Cancel download")
+                        AccessibleCompat.id:"onboardingFontCancel"
+                        onClicked:dialog.cancelFont()
+                        onActiveFocusChanged:if(activeFocus)body.reveal(this)
+                    }
+                    SetupButton {
+                        visible:!MainCtx.legacyFont.available
+                        text:qsTr("Use FreeSans")
+                        AccessibleCompat.id:"onboardingFontFallback"
+                        onClicked:{dialog.cancelFont();dialog.finishSetup()}
+                        onActiveFocusChanged:if(activeFocus)body.reveal(this)
+                    }
+                }
             }
         }
         ColumnLayout {
@@ -291,22 +353,24 @@ T.Popup {
                 }
                 }
                 Label { visible: dialog.page===2; Layout.fillWidth: true; text: qsTr("Find the full list in the menu.") }
-                Item { visible:dialog.page===0;Layout.fillWidth: true }
-                SetupButton { visible: dialog.page>0; text: qsTr("Back"); onClicked: { dialog.page--; body.contentY=0 } }
+                Item { visible:dialog.page===0||dialog.page===3;Layout.fillWidth: true }
+                SetupButton { visible: dialog.page>0; enabled:!MainCtx.legacyFont.busy;text: qsTr("Back"); onClicked: { dialog.page--; body.contentY=0 } }
                 SetupButton {
-                    text: dialog.page===2?qsTr("Finish"):qsTr("Next")
+                    text: dialog.page===3?(MainCtx.legacyFont.available?qsTr("Finish"):qsTr("Download and finish")):qsTr("Next")
+                    enabled:!MainCtx.legacyFont.busy
                     primary: true
                     AccessibleCompat.id: "onboardingNext"
                     onClicked: {
-                        if(dialog.page<2){dialog.page++;body.contentY=0}
-                        else PlayerCustomization.closeOnboarding(true,dialog.theme,dialog.accent,folder.text.trim())
+                        if(dialog.page<3){dialog.page++;body.contentY=0}
+                        else if(MainCtx.legacyFont.available)dialog.finishSetup()
+                        else{dialog.fontFinishing=true;MainCtx.legacyFont.download()}
                     }
                 }
             }
         }
         Row {
             x:PlayerStyle.px(62);anchors.bottom:parent.bottom;anchors.bottomMargin:PlayerStyle.px(12);spacing:PlayerStyle.px(12)
-            PlayerSetupButton { text: qsTr("Skip"); fontWeight:Font.Normal; implicitHeight:PlayerStyle.px(24);AccessibleCompat.id: "onboardingSkip"; onClicked: PlayerCustomization.closeOnboarding(false,dialog.theme,dialog.accent,"") }
+            PlayerSetupButton { text: qsTr("Skip"); fontWeight:Font.Normal; implicitHeight:PlayerStyle.px(24);AccessibleCompat.id: "onboardingSkip"; onClicked: {dialog.cancelFont();PlayerCustomization.closeOnboarding(false,dialog.theme,dialog.accent,"")} }
             PlayerSetupButton { visible:dialog.page===1;text:qsTr("System accent");fontWeight:Font.Normal;implicitHeight:PlayerStyle.px(24);onClicked:{dialog.accent="system";MainCtx.previewAppearance(dialog.theme,dialog.accent)} }
         }
     }

@@ -115,6 +115,7 @@ typedef struct aout_stream_sys
 #define STARTED_STATE_OK 1
 #define STARTED_STATE_ERROR 2
     uint8_t started_state;
+    bool paused;
 
     uint8_t chans_table[AOUT_CHAN_MAX];
     uint8_t chans_to_reorder;
@@ -226,7 +227,8 @@ static HRESULT Play(aout_stream_t *s, block_t *block, vlc_tick_t date)
         goto out;
     }
     /* Partial-block retries have no date: keep the already scheduled start. */
-    else if (sys->started_state == STARTED_STATE_INIT && date != VLC_TICK_INVALID)
+    else if (sys->started_state == STARTED_STATE_INIT && !sys->paused
+          && date != VLC_TICK_INVALID)
     {
         hr = StartDeferred(s, date);
         if (FAILED(hr))
@@ -324,6 +326,10 @@ static HRESULT Pause(aout_stream_t *s, bool paused)
     aout_stream_sys_t *sys = s->sys;
     HRESULT hr;
 
+    /* The MMDevice worker may still drain blocks queued before this command.
+     * Keep those writes from scheduling a start while the input is paused. */
+    sys->paused = paused;
+
     if (paused)
     {
         aout_stream_DisarmTimer(s);
@@ -338,6 +344,9 @@ static HRESULT Pause(aout_stream_t *s, bool paused)
             hr = S_OK;
         /* Don't reset the timer state, we won't have to start deferred again. */
     }
+    else if (sys->started_state == STARTED_STATE_INIT && sys->written == 0)
+        /* Let the first dated block schedule an empty client's initial start. */
+        hr = S_OK;
     else
         hr = StartNow(s);
     return hr;
@@ -350,10 +359,12 @@ static HRESULT Flush(aout_stream_t *s)
 
     aout_stream_DisarmTimer(s);
     /* Reset the timer state, the next start need to be deferred. */
-    if (sys->started_state == STARTED_STATE_OK)
+    if (sys->started_state == STARTED_STATE_OK
+     || (sys->started_state == STARTED_STATE_INIT && sys->written > 0))
     {
+        if (sys->started_state == STARTED_STATE_OK)
+            IAudioClient_Stop(sys->client);
         sys->started_state = STARTED_STATE_INIT;
-        IAudioClient_Stop(sys->client);
         hr = IAudioClient_Reset(sys->client);
     }
     else
@@ -778,6 +789,7 @@ static HRESULT Start(aout_stream_t *s, audio_sample_format_t *restrict pfmt,
         return E_OUTOFMEMORY;
     sys->client = NULL;
     sys->started_state = STARTED_STATE_INIT;
+    sys->paused = false;
 
     /* Configure audio stream */
     WAVEFORMATEXTENSIBLE_IEC61937 wf_iec61937;

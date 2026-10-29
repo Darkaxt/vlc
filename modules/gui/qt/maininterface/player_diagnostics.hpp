@@ -221,6 +221,7 @@ private:
             core.insert(QString::fromLatin1(entry.first), entry.second == VLC_TICK_INVALID
                 ? QJsonValue(QJsonValue::Null) : QJsonValue(double(entry.second) / CLOCK_FREQ));
         core[QStringLiteral("rate")] = vlc_player_GetRate(player);
+        core[QStringLiteral("fullscreen")] = m_player->isFullscreen();
         core[QStringLiteral("audio_delay_ms")] = double(vlc_player_GetCategoryDelay(player, AUDIO_ES)) / 1000.;
         core[QStringLiteral("subtitle_delay_ms")] = double(vlc_player_GetCategoryDelay(player, SPU_ES)) / 1000.;
         core[QStringLiteral("subtitle_fps")] = vlc_player_GetAssociatedSubsFPS(player);
@@ -298,6 +299,12 @@ private:
             }
             const int contextType=qmlTypeId("VLC.MainInterface",1,0,"MainCtx");
             if(contextType>=0)if(auto *context=engine->singletonInstance<MainCtx *>(contextType)){
+                if(auto *font=context->legacyFont()){
+                    QJsonObject state;
+                    for(const char *key:{"busy","available","status","received","total","location"})
+                        state[QString::fromLatin1(key)]=QJsonValue::fromVariant(font->property(key));
+                    result[QStringLiteral("optional_legacy_font")]=state;
+                }
                 result[QStringLiteral("presentation")]=QJsonObject::fromVariantMap(context->presentationSettings());
                 result[QStringLiteral("rendered_accent")]=context->getRedesignAccent().name();
                 const QVariant saved=context->settingValue(QStringLiteral("redesign/customization-v1"),QVariant());
@@ -558,7 +565,8 @@ private:
             const QMap<QString, QString> properties{{QStringLiteral("state"), QStringLiteral("playingState")},
                 {QStringLiteral("position"), QStringLiteral("position")}, {QStringLiteral("time_seconds"), QStringLiteral("position")},
                 {QStringLiteral("length_seconds"), QStringLiteral("length")}, {QStringLiteral("url"), QStringLiteral("url")},
-                {QStringLiteral("seekable"), QStringLiteral("seekable")}};
+                {QStringLiteral("seekable"), QStringLiteral("seekable")},
+                {QStringLiteral("fullscreen"), QStringLiteral("fullscreen")}};
             if (!m_player || !properties.contains(awaitCore)) error = QStringLiteral("invalid_core_observation");
             else { observed = m_player; awaitProperty = properties.value(awaitCore); }
         }
@@ -575,7 +583,7 @@ private:
         else if (!awaitProperty.isEmpty()) {
             const int index = command.value(QStringLiteral("await_node")).toInt(command.value(QStringLiteral("node")).toInt(-1));
             const QStringList allowed{QStringLiteral("selected"), QStringLiteral("description"), QStringLiteral("visible"),
-                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving"), QStringLiteral("ready"), QStringLiteral("itemCount"), QStringLiteral("indexing")};
+                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving"), QStringLiteral("ready"), QStringLiteral("itemCount"), QStringLiteral("indexing"), QStringLiteral("busy"), QStringLiteral("status")};
             if (!allowed.contains(awaitProperty) || index < 0 || index >= m_items.size() || !m_items[index]
                 || m_items[index]->metaObject()->indexOfProperty(awaitProperty.toUtf8().constData()) < 0)
                 error = QStringLiteral("invalid_observation_rejected_before_dispatch");

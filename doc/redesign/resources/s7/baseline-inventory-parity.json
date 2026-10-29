@@ -1,0 +1,23 @@
+{
+  "schema": "vlc_redesign.native_capability_preservation.v1",
+  "baseline_sha256": "7fd7084832183d0f5c607406e7b27345a23278a61bfa40ee07931fecbe0713d7",
+  "current_sha256": "aca06ce0e8687ef1cd59dcc4a61ec5d4b2668905712d5f0bba4674a6b9084575",
+  "baseline_identity": {
+    "version": "4.0.0-dev Otto Chriek",
+    "compiler": "gcc version 14-posix (GCC)",
+    "changeset": "392bc1d"
+  },
+  "current_identity": {
+    "version": "4.0.0-dev Otto Chriek",
+    "compiler": "gcc version 14-posix (GCC)",
+    "changeset": "392bc1d"
+  },
+  "missing_module_roles": [],
+  "missing_option_name_type_pairs": [],
+  "additional_raw_roles": [],
+  "additional_raw_options": [],
+  "baseline_roles_preserved": true,
+  "baseline_option_types_preserved": true,
+  "scope": "Actual native metadata only. No user values. Does not replace action/dialog reachability, option-editor mapping or persistence verification.",
+  "passed": true
+}

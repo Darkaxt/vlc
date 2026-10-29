@@ -1,0 +1,39 @@
+{
+  "schema": "vlc_redesign.s7_early_cleanup.v1",
+  "transaction": "6210653f40845d552bc32ad37467ebce",
+  "manifest_sha256": "07cf307be1403dad0099680891b169da1977370acf67699081f8dd9465128dbb",
+  "ticket": "5639a6af54cab373d4ea3db2e6bf6e4eaeb56fe7d1965229a42fbca2629fe3c8",
+  "state_readback": "applied",
+  "deleted_members": 5,
+  "deleted_logical_bytes": 7342284459,
+  "exclusions": 0,
+  "errors": [],
+  "targets_verified_absent": [
+    "D:/Temp/vlc-s7-20261029/downloads/toolchain-rootfs.tar",
+    "D:/Temp/vlc-s7-20261029/downloads/debian-base.tar.gz",
+    "D:/Temp/vlc-s7-20261029/downloads/go-containerregistry_Windows_x86_64.tar.gz",
+    "D:/Temp/vlc-s7-20261029/native-tools"
+  ],
+  "provenance": "Created by the S7 pinned-input preparation. Import, export and full toolchain extraction completed; crane exited. The current admitted build uses the extracted toolchain in its owned VM. No remaining consumer or defined recovery need for these exact downloads.",
+  "preserved": "Active WSL disk and extracted source/build/toolchain; contrib and modified-dependency source downloads; native evidence and fixtures; canonical repository and retained prior review packages.",
+  "limits": "Logical exact-file deletion counts only; no claim of measured physical volume reclamation. Main S7 scratch remains active under its separate cleanup transaction.",
+  "additional_retirements": [
+    {
+      "transaction": "d3301819b77259e2a8aa57bd54e64d5e",
+      "manifest_sha256": "5e2f38f38fee93a5512cea2cc1e3168b3980829d92da87da1aefaac9e20ffb8f",
+      "ticket": "cc28dfb341cc0d610c97956715aa0daa78f50f09498e07af8858387aad641217",
+      "state_readback": "applied",
+      "deleted_members": 10,
+      "deleted_logical_bytes": 82207220,
+      "root": "D:/Temp/vlc-s7-20261029",
+      "exact_targets": [
+        "source-overlay-sdk-v1.tar",
+        "source-overlay-player-v3.tar", "source-overlay-player-v3.json", "source-overlay-player-v3.deletions.patch",
+        "source-overlay-player-v4.tar", "source-overlay-player-v4.json", "source-overlay-player-v4.deletions.patch",
+        "source-overlay-player-v5.tar", "source-overlay-player-v5.json", "source-overlay-player-v5.deletions.patch"
+      ],
+      "review": "All signed manifest members inspected; regular single-link NTFS task outputs, no exclusions/reparse objects/tracked source. Separate ticket/apply/status calls completed without errors. Independent Test-Path checks returned false for all ten targets.",
+      "provenance": "Incomplete SDK overlay v1 and superseded unused player overlays v3-v5 from stage-player-source.py. These were never applied and have no remaining consumer. The running SDK overlay v2 and prepared player overlay v6 remain available."
+    }
+  ]
+}

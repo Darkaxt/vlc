@@ -1,0 +1,25 @@
+{
+  "schema": "vlc_redesign.native_recursive_mkdir.v1",
+  "cases": [
+    {
+      "style": "native",
+      "return_code": -1,
+      "errno": 13,
+      "directory_exists": false
+    },
+    {
+      "style": "mixed",
+      "return_code": -1,
+      "errno": 13,
+      "directory_exists": false
+    }
+  ],
+  "drive_root_probe": {
+    "existing_drive": "D:",
+    "mkdir_drive_colon_result": -1,
+    "errno": 13,
+    "purpose": "Diagnose why attempting to create the drive prefix interrupts recursion."
+  },
+  "core_sha256": "914588e3db751fdd4295e2994c7aefa192f8bfedfbdc7a96fc30d1751cd8e90f",
+  "passed": false
+}

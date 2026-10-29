@@ -1,0 +1,18 @@
+{
+  "schema": "vlc_redesign.exact_runtime_copy_cleanup.v1",
+  "transaction": "b253aac3d8206cdf8bc96da1d21f0fa3",
+  "manifest_sha256": "20589c1ff9604cf080034493941b0c21e24e73d790b5e975f853c3beb9bab250",
+  "ticket": "a3b1db0341d4b4e505183f672c7b198ebb2b075e14656d1921653519d6d2e382",
+  "state": "applied",
+  "exact_roots": [
+    "D:/Temp/vlc-s7-20261029/audio-reproduction/runtime-audio",
+    "D:/Temp/vlc-s7-20261029/av-reproduction/runtime-audio",
+    "D:/Temp/vlc-s7-20261029/wasapi-device-fixed/runtime-audio"
+  ],
+  "ownership": "Copies made by S7 verify-start-paused.py; original native operations exited and a fresh process inventory found no vlc.exe. Parent results and logs remain available.",
+  "review": "All 2178 signed manifest members inspected sequentially through the installed helper, confined to the three exact roots and classified as candidates. No exclusions, warnings or errors.",
+  "deleted_members": 2178,
+  "deleted_logical_bytes": 5543735446,
+  "independent_root_absence_check": "Test-Path independently returned false for all three exact roots after apply and terminal status readback.",
+  "scope": "Finished task-generated runtime copies only; canonical source, retained S6 review package, active SDK/runtime and test evidence preserved."
+}

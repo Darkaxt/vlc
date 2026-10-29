@@ -1,0 +1,18 @@
+{
+  "schema": "vlc_redesign.wasapi_lifecycle_regression.v1",
+  "executable_sha256": "a0bc9a8c5432f69f243a9edc30418b3713371afc5f1c7e9716cc568df7e00483",
+  "exit_code": 23,
+  "case_results": [
+    23,
+    25,
+    23
+  ],
+  "stdout": "case=buffer-before-resume flush-before-resume=0 result=23 starts=1 stops=0\ncase=resume-before-buffer flush-before-resume=0 result=25 starts=1 stops=0\ncase=buffer-before-resume flush-before-resume=1 result=23 starts=1 stops=0\n",
+  "stderr": "FAIL: queued first audio started WASAPI while the input was paused\nresume after unexpected start returned 0x88890005\nFAIL: resume started an empty, never-started audio client\nFAIL: queued first audio started WASAPI while the input was paused\nresume after unexpected start returned 0x88890005\n",
+  "upstream_failure_reproduced": true,
+  "corrected_regression_passed": false,
+  "scope": "Actual WASAPI functions with controlled native COM and timer ordering. The test deliberately lacks an audio clock and does not establish hardware playback.",
+  "libvlc_sha256": "ef25922ce7e1d2efbfc32b79abea49dc2015ab4838dd6353c5e4d10a0f06f4ff",
+  "libvlccore_sha256": "6455c5a9a095b6b6edb50c2f5e61b5151953fc77fb696aa06879f596a4a9d33c",
+  "compiled_source_hashes": "1dc93e3100d34b81a48d189aeeb43162424e3770a07042291dd92c50671fab72  /work/src/modules/audio_output/wasapi.c\ne85d36dda1cffd8eadec86d620070e26b75e8ca480f5239f3a2a366c8d155ba4  /work/src/tools/windows-player/wasapi-lifecycle-check.c\n"
+}

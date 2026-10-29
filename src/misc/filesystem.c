@@ -31,7 +31,34 @@ int vlc_mkdir_parent(const char *dirname, mode_t mode)
         return -1;
     }
 
-    char *ptr = path + 1;
+    char *ptr = path;
+#ifdef _WIN32
+    /* Win32 accepts both separators. A skin member can append '/' to a
+     * native temporary path, so walk the same components that mkdir sees. */
+    for (char *cursor = path; *cursor; ++cursor)
+        if (*cursor == '/')
+            *cursor = DIR_SEP_CHAR;
+
+    if (path[0] && path[1] == ':') {
+        /* A drive prefix is a root, not a directory to create. _wmkdir("D:")
+         * returns EACCES even when the drive and requested parents exist. */
+        ptr = path + 2;
+        if (*ptr == DIR_SEP_CHAR)
+            ++ptr;
+    } else if (path[0] == DIR_SEP_CHAR && path[1] == DIR_SEP_CHAR) {
+        /* Preserve the existing server/share root of a UNC path. */
+        char *root_end = strchr(path + 2, DIR_SEP_CHAR);
+        if (root_end != NULL)
+            root_end = strchr(root_end + 1, DIR_SEP_CHAR);
+        if (root_end == NULL) {
+            free(path);
+            return -1;
+        }
+        ptr = root_end + 1;
+    } else
+#endif
+    if (*ptr == DIR_SEP_CHAR)
+        ++ptr;
     while (*ptr) {
         ptr = strchr(ptr, DIR_SEP_CHAR);
         if (ptr == NULL) {

@@ -20,6 +20,7 @@ gui_PLUGINS += libncurses_plugin.la
 endif
 
 EXTRA_DIST += gui/eject.c
+EXTRA_DIST += gui/legacy_skin_font.hpp
 
 libminimal_macosx_plugin_la_SOURCES = \
 	gui/minimal_macosx/intf.h gui/minimal_macosx/intf.m \

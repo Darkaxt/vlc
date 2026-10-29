@@ -16,10 +16,11 @@ sys.dont_write_bytecode = True
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--directory', type=Path, required=True)
+p.add_argument('--origin', choices=['api.opensubtitles.com:443','www.exljbris.com:443'], default='api.opensubtitles.com:443')
 a = p.parse_args()
 e = a.directory.resolve()
-if e.drive.upper() != 'E:':
-    p.error('Use an exact task-owned E: evidence directory')
+if e.drive.upper() not in ('D:', 'E:') or 'Temp' not in e.parts:
+    p.error('Use an exact task-owned D:/E:/Temp evidence directory')
 e.mkdir(parents=True, exist_ok=False)
 owner_stop = threading.Event()
 client = None
@@ -27,7 +28,7 @@ listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listener.bind(('127.0.0.1', 0))
 listener.listen(1)
 started = time.monotonic()
-result = dict(state='started', pid=os.getpid(), port=listener.getsockname()[1], forwarded_connections=0)
+result = dict(state='started', pid=os.getpid(), port=listener.getsockname()[1], accepted_connections=0, forwarded_connections=0)
 
 def write(name, data):
     pending = e / (name + '.pending')
@@ -51,6 +52,7 @@ print('Owned loopback cancellation peer ready', flush=True)
 exit_code = 1
 try:
     client, address = listener.accept()
+    result['accepted_connections'] = 1
     listener.close()
     headers = bytearray()
     while not headers.endswith(b'\r\n\r\n'):
@@ -59,7 +61,7 @@ try:
             raise ValueError('invalid_connect_request')
         headers.extend(byte)
     first = bytes(headers).split(b'\r\n', 1)[0].split()
-    if len(first) != 3 or first[0] != b'CONNECT' or first[1] != b'api.opensubtitles.com:443':
+    if len(first) != 3 or first[0] != b'CONNECT' or first[1] != a.origin.encode('ascii'):
         raise ValueError('unexpected_connect_origin')
     client.sendall(b'HTTP/1.1 200 Connection Established\r\n\r\n')
     greeting = client.recv(65536)
@@ -67,6 +69,7 @@ try:
         raise ValueError('expected_tls_client_hello')
     count = len(greeting)
     write('handshake', dict(state='tls_pending', client_port=address[1], elapsed_ms=round((time.monotonic()-started)*1000)))
+    print(json.dumps({'state':'tls_pending','origin':a.origin}),flush=True)
     while True:
         data = client.recv(65536)
         if not data:

@@ -1,0 +1,101 @@
+{
+  "scope": "Finished exact isolated runtime copies; sibling logs/captures/results retained until final reconciliation. Logical bytes from helper, not a physical-space estimate.",
+  "receipts": [
+    {
+      "transaction_id": "0ea34150c84666d97c9e4e783db895e5",
+      "ticket_id": "a0e3b51505c192a1e2bc2fe1a37ab1dc5b311b84763e0ec80231ec21d7dc2d84",
+      "state": "applied",
+      "candidate_count": 5352,
+      "candidate_bytes": 8443575680,
+      "deleted_bytes": 8443575680,
+      "result_counts": {
+        "deleted": 5352
+      },
+      "errors": [],
+      "exact_roots": [
+        "D:\\Temp\\vlc-s7-20261029\\font-download-light-1-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-fallback-dark-1-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-cancel-light-15-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-retry-dark-15-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-cached-light-2-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-corrupt-dark-2-v11\\runtime"
+      ],
+      "all_roots_absent": true
+    },
+    {
+      "transaction_id": "11f10a5df9aa063d9c5188742afeb948",
+      "ticket_id": "38dae70abea0e61bc54110b4ebd3c4f4f4b9da92e083bec597b82e95a3ebff04",
+      "state": "applied",
+      "candidate_count": 5340,
+      "candidate_bytes": 8443521506,
+      "deleted_bytes": 8443521506,
+      "result_counts": {
+        "deleted": 5340
+      },
+      "errors": [],
+      "exact_roots": [
+        "D:\\Temp\\vlc-s7-20261029\\font-presentation-light-1-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-presentation-light-15-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-presentation-light-2-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-presentation-dark-1-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-presentation-dark-15-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\font-presentation-dark-2-v12\\runtime"
+      ],
+      "all_roots_absent": true
+    },
+    {
+      "transaction_id": "bd9b595e6771551d2209fdfee7fc0c09",
+      "ticket_id": "b525ab1cf7a7ee5e1f3f59c5f369403a066ec1d86c2e5eea9e2686ae728f60d3",
+      "state": "applied",
+      "candidate_count": 15204,
+      "candidate_bytes": 23928175263,
+      "deleted_bytes": 23928175263,
+      "result_counts": {
+        "deleted": 15204
+      },
+      "errors": [],
+      "exact_roots": [
+        "D:\\Temp\\vlc-s7-20261029\\integrated-paused-light-100-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-paused-light-100-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-paused-light-100-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-paused-light-100-v13\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-paused-light-100-v14\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-normal-dark-100-v15\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-normal-dark-100-v16\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-normal-dark-100-v18\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-normal-traced-v17\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-normal-spawn-traced-v19\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-light-15-v20\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\input-paths-v10\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\input-paths-v11\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\input-paths-v12\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\input-paths-v13\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\input-paths-v14\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\prior-profile-v10\\runtime"
+      ],
+      "all_roots_absent": true
+    },
+    {
+      "transaction_id": "e620ed6c5efadbe00bd47cd23152332e",
+      "ticket_id": "377b691d3c1ae01b267b2b69118c6e0eaa604d5e1c755dfbe262f5b3311e18a9",
+      "state": "applied",
+      "candidate_count": 6243,
+      "candidate_bytes": 9851408915,
+      "deleted_bytes": 9851408915,
+      "result_counts": {
+        "deleted": 6243
+      },
+      "errors": [],
+      "exact_roots": [
+        "D:\\Temp\\vlc-s7-20261029\\integrated-paused-light-100-v21\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-normal-dark-100-v21\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-light-15-v21\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-light-2-v21\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-dark-15-v21\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-dark-2-v21\\runtime",
+        "D:\\Temp\\vlc-s7-20261029\\integrated-greek-light-100-v21\\runtime"
+      ],
+      "all_roots_absent": true
+    }
+  ]
+}

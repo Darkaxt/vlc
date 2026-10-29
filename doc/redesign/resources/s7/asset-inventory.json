@@ -1,0 +1,2977 @@
+{
+  "schema": "vlc_redesign.production_resource_inventory.v1",
+  "source_baseline": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+  "figma_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "resources": [
+    {
+      "path": "modules/gui/qt/fonts/redesign/InterVariable.ttf",
+      "resource": "/redesign/fonts/InterVariable.ttf",
+      "sha256": "4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf",
+      "bytes": 879708,
+      "input_source": "working tree",
+      "license": "OFL-1.1",
+      "creator": "The Inter Project Authors",
+      "provenance": "modules/gui/qt/fonts/redesign/source.json",
+      "notice": "modules/gui/qt/fonts/redesign/LICENSE.txt",
+      "changes": "Unmodified retained upstream font"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/forward10.svg",
+      "resource": "/redesign/icons/forward10.svg",
+      "sha256": "91570661015c85ddbf9d39926c6bea1cdebc7afa67694322b0e45fb6d2b4b790",
+      "bytes": 5028,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:22",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/backward10.svg",
+      "resource": "/redesign/icons/backward10.svg",
+      "sha256": "73be71679e5e430bd8351876f1acf59c3f9fd9a88cf983d6f47cdbe8919dffbb",
+      "bytes": 5032,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:28",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/forward15.svg",
+      "resource": "/redesign/icons/forward15.svg",
+      "sha256": "74225701d14ac3ee75ef5486a50aafd2ff54228f30026d57fef59a4b652aff83",
+      "bytes": 5243,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:32",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/backward15.svg",
+      "resource": "/redesign/icons/backward15.svg",
+      "sha256": "574ffcb61ee49893c9ce1c9bc0330d3f3d7a7676168493bd07a67cd48dfcbb70",
+      "bytes": 5247,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:36",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/replay.svg",
+      "resource": "/redesign/icons/replay.svg",
+      "sha256": "a99d0d385885962081bec5b9acbe8e0d6501f2d5f803f76d290ea2b2ec48a7cf",
+      "bytes": 2769,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "1919:9572",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/speed.svg",
+      "resource": "/redesign/icons/speed.svg",
+      "sha256": "d4039abd9b0295a0aaa5f2be81f4c1658be27fa35e371450a6948730a505f356",
+      "bytes": 3368,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2115:7386",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/snapshot.svg",
+      "resource": "/redesign/icons/snapshot.svg",
+      "sha256": "b8d53dad1e7ffec783604e8fde1e47338035f0ff28324048f959c453181f4fa5",
+      "bytes": 4297,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2115:7492",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/bookmark.svg",
+      "resource": "/redesign/icons/bookmark.svg",
+      "sha256": "e413a34761ce95193700b084cb5ac9af74a8d2f25c87b356bcdebe36ce34a7ad",
+      "bytes": 5859,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2127:7779",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/hdr.svg",
+      "resource": "/redesign/icons/hdr.svg",
+      "sha256": "1313c206296a2d794d93e2ba491b61634d1288df39857e1268438a7d68f10e17",
+      "bytes": 3723,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2146:9032",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/zoom.svg",
+      "resource": "/redesign/icons/zoom.svg",
+      "sha256": "6fa392c05da906b35636d3869e34e6402d91138633ecdd5797df188040a6e4eb",
+      "bytes": 3637,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2154:9680",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/quit.svg",
+      "resource": "/redesign/icons/quit.svg",
+      "sha256": "17c823480005a1b0daf1d27faf9de46f528130dbb85d504d06bb799840dda411",
+      "bytes": 2935,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "6073:14046",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/pip.svg",
+      "resource": "/redesign/icons/pip.svg",
+      "sha256": "44729c627aca19824229926a8b4acb4f8790df23deef96b92648eb63b89b530d",
+      "bytes": 1709,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2139:8439",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/edit.svg",
+      "resource": "/redesign/icons/edit.svg",
+      "sha256": "39ebdbed9d47717efaf9b0af024fb898915cb4c06a179eddf40cdc1d25979aad",
+      "bytes": 5684,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2437:14888",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-info.svg",
+      "resource": "/redesign/icons/settings-info.svg",
+      "sha256": "9b983d471654daa40505c9846ff675f2754d39160fdff58cd5968b48709a6584",
+      "bytes": 1913,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2139:8985",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-general.svg",
+      "resource": "/redesign/icons/settings-general.svg",
+      "sha256": "31f16f8fa4f20890475eec4188db635c800f8a16efa76008168fccf6e2c59886",
+      "bytes": 3207,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "1803:2957",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-interface.svg",
+      "resource": "/redesign/icons/settings-interface.svg",
+      "sha256": "a67ec4fc497b3d153dffab1036d9ae3fb07fb75a5c9b5124cf79659a9f3d785b",
+      "bytes": 3745,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "999:4960",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-privacy.svg",
+      "resource": "/redesign/icons/settings-privacy.svg",
+      "sha256": "956ff8cdd7c451b3027a6f36821279aab193b49fcf8d5a24586d1b09ea439ec0",
+      "bytes": 5680,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "3046:10386",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-controls.svg",
+      "resource": "/redesign/icons/settings-controls.svg",
+      "sha256": "268f05fad927f40dcbcb1032e10402feb5907c78cf0a5b2c02d8170d4563a49d",
+      "bytes": 6005,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "1089:4450",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-recording.svg",
+      "resource": "/redesign/icons/settings-recording.svg",
+      "sha256": "7c606dee526b1ac52dc834d4280bdc10b4f4fce28533e0ed11697af77a311701",
+      "bytes": 1796,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2115:7482",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/settings-extensions.svg",
+      "resource": "/redesign/icons/settings-extensions.svg",
+      "sha256": "7b226c722b761074602b5890394b45cfda00bacfc94b3d93ac2317c3bf7cf91e",
+      "bytes": 10215,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2516:9369",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/albums.svg",
+      "resource": "/redesign/icons/albums.svg",
+      "sha256": "2557fb47e22d534d710b4748d5959859cc564e9b78d64ce3bfd3df37a32d5c25",
+      "bytes": 8393,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "6206:13629",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/artists.svg",
+      "resource": "/redesign/icons/artists.svg",
+      "sha256": "eaa6e02d9ec58a0143e9274bced2b8083b476e5286d080f6d327128dbe03742e",
+      "bytes": 9063,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "858:5155",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/genres.svg",
+      "resource": "/redesign/icons/genres.svg",
+      "sha256": "22159b1aac6f26442c416e3b5545ef2d644f9ec6848ff95475360a1be5911e62",
+      "bytes": 2630,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "6191:13585",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/home-active.svg",
+      "resource": "/redesign/icons/home-active.svg",
+      "sha256": "80c599aa2c39bdd18333eefb1f4a6748099135999ed56b52c326eb28348ab2e9",
+      "bytes": 1181,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "87:1026",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-videos.svg",
+      "resource": "/redesign/icons/library-videos.svg",
+      "sha256": "1c10b2cc2f9c49f12c83510bdac31fc29e69c41eea05a85d3d15a7233f1e8e24",
+      "bytes": 3879,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:857",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-videos-active.svg",
+      "resource": "/redesign/icons/library-videos-active.svg",
+      "sha256": "4446be0640f2f9ea0a795455f414746509bfac53228d67066c604903bc739d11",
+      "bytes": 1451,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "87:1015",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-music.svg",
+      "resource": "/redesign/icons/library-music.svg",
+      "sha256": "06b0e02d7b93a916ed11412740fc149e6b05ccaad911c217207e31bf96099a63",
+      "bytes": 9083,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:851",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-music-active.svg",
+      "resource": "/redesign/icons/library-music-active.svg",
+      "sha256": "82d86c5d3b6f5fc204f4309ad20b226d281aade2394c50bd01ab2ca8b76d668a",
+      "bytes": 2078,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "87:1009",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-playlists.svg",
+      "resource": "/redesign/icons/library-playlists.svg",
+      "sha256": "6c3859a3668c3007d3de0d04b0c61ecdc339e7c8706834e93c3e5a23c0125ea2",
+      "bytes": 3079,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "42:357",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/library-playlists-active.svg",
+      "resource": "/redesign/icons/library-playlists-active.svg",
+      "sha256": "6d63e75f479544a656f6542ae5f040d732a658f415d78ae03023d488ede69bc9",
+      "bytes": 3103,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "858:5098",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/recent.svg",
+      "resource": "/redesign/icons/recent.svg",
+      "sha256": "613f48cb6efa5835dc7088aad15e14bee792d8c7e5dff8badd4337e8167ec61a",
+      "bytes": 4103,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2154:9699",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/network-active.svg",
+      "resource": "/redesign/icons/network-active.svg",
+      "sha256": "600a64ab51fa4e9070b0efbab42b256e18efd9ca99c89e2ab83718c099462bfd",
+      "bytes": 6180,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "477:1202",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/home.svg",
+      "resource": "/redesign/icons/home.svg",
+      "sha256": "2e40f52d8793cbfe74c268fb3e7c3356093f7b080bf8d97e72880476801c44f9",
+      "bytes": 2905,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "70:828",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/network.svg",
+      "resource": "/redesign/icons/network.svg",
+      "sha256": "5a3b24a7d8bde9b9689715085b228bc6aa54fda38fe56170ac8addc2449f761f",
+      "bytes": 6308,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "70:833",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/music.svg",
+      "resource": "/redesign/icons/music.svg",
+      "sha256": "32155834ac61277007c4752b87ee15d4cd453a42312c3b171592e09d915e67ce",
+      "bytes": 6350,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "999:4806",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/search.svg",
+      "resource": "/redesign/icons/search.svg",
+      "sha256": "d257088c34f5412a5bc76726a38204f6310be17db907c52fd3cc9ab2625fe898",
+      "bytes": 2609,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "856:2147",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/grid.svg",
+      "resource": "/redesign/icons/grid.svg",
+      "sha256": "ad2908f950d39b13714704da438f2c9208f8d503d718feaf1c3ce2e6759c2fef",
+      "bytes": 821,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2107:6523",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/list.svg",
+      "resource": "/redesign/icons/list.svg",
+      "sha256": "dc62f328ed403d7dd0ac650ff19a98c7e9e198619c357a424ddb8b2c1e16503d",
+      "bytes": 1993,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2107:6531",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/back.svg",
+      "resource": "/redesign/icons/back.svg",
+      "sha256": "29f5f5f84068b94cb44d456f81fe569acedf5249a65e282e17d78a2daaee7216",
+      "bytes": 1848,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:890",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/forward.svg",
+      "resource": "/redesign/icons/forward.svg",
+      "sha256": "efd80513e4b414c3682892fef0941cd772b652186a1febe206ca70b93e4be3a8",
+      "bytes": 1834,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:887",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/expand-library.svg",
+      "resource": "/redesign/icons/expand-library.svg",
+      "sha256": "bf8f813ca67c67b3dddf34dcd7790f5b3ce2856dfc4e90b7e7df71ff95bc7268",
+      "bytes": 3454,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "330:267",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/volume-cone.svg",
+      "resource": "/redesign/icons/volume-cone.svg",
+      "sha256": "5824a25ead0436e84722aef053c1db7fc86658cb8b10254d6c410150785b09cb",
+      "bytes": 634,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": null,
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/volume-level.svg",
+      "resource": "/redesign/icons/volume-level.svg",
+      "sha256": "90816c47740dde25e60db42abcccf0ee5c9055c52c99b1ed4e019a5993330562",
+      "bytes": 1815,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": null,
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/video.svg",
+      "resource": "/redesign/icons/video.svg",
+      "sha256": "23ba9b569266b3de4e619da24ee18ff932730a19efb4d9bc7bd5561c97b49ef4",
+      "bytes": 3019,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "999:4810",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/playback.svg",
+      "resource": "/redesign/icons/playback.svg",
+      "sha256": "dbc7cfaa9751cd7bf958c22e67996d9ef984a742c051f97963a87aab315b38d7",
+      "bytes": 1397,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "999:4802",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/chevron-down.svg",
+      "resource": "/redesign/icons/chevron-down.svg",
+      "sha256": "a25f4f67af696a87e0389b7e9f27191ebf4da40ca1c3bae2b30eb250dbfacb59",
+      "bytes": 1434,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:868",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-down-dark.svg",
+      "resource": "/redesign/icons/native-chevron-down-dark.svg",
+      "sha256": "6c3e1ffc4bb29e149d067bf7bc14b20e87b4e08a52d2f1fcaf560b25deb95272",
+      "bytes": 1436,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:868",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-up-dark.svg",
+      "resource": "/redesign/icons/native-chevron-up-dark.svg",
+      "sha256": "246f81d41be6029693816b4136949e88f703beb900b33b0d6133a5dd9b8d7754",
+      "bytes": 1473,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:868",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-down-light.svg",
+      "resource": "/redesign/icons/native-chevron-down-light.svg",
+      "sha256": "a67cd731873e800b40cadaefff06e31441516fcd17b188f20e156d699365b7c5",
+      "bytes": 1436,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:868",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/native-chevron-up-light.svg",
+      "resource": "/redesign/icons/native-chevron-up-light.svg",
+      "sha256": "614e1e9b24d88925028fe5a0cbfdba5fba2f2a61d41d64a407c06ccade208d6e",
+      "bytes": 1473,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "71:868",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/choice-selected.svg",
+      "resource": "/redesign/icons/choice-selected.svg",
+      "sha256": "ccdf171038293eed71b26f5a7585ca699bd87abb20f72fa476241ff21b31332a",
+      "bytes": 1575,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "494:2394",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/choice-empty.svg",
+      "resource": "/redesign/icons/choice-empty.svg",
+      "sha256": "9a65878c79085925fe85839a30f81422bcc47b77086d2c91cb66343f9b99827e",
+      "bytes": 141,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "494:2400",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/sort.svg",
+      "resource": "/redesign/icons/sort.svg",
+      "sha256": "f46269212fb119e8b90164b622a1a11115ce7cb9dc4c5f44fa54627bc09018cf",
+      "bytes": 4051,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "463:564",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/remove.svg",
+      "resource": "/redesign/icons/remove.svg",
+      "sha256": "ed9883e32992d9fa0cb0f27502d90048f5d4c75a500a42f768b3617e403f8634",
+      "bytes": 656,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "463:560",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/add.svg",
+      "resource": "/redesign/icons/add.svg",
+      "sha256": "4149fb7cc611702291fdeb6b018b72af3f68701d7e13c2abdd795edcd93257cb",
+      "bytes": 1129,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "463:550",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/repeat.svg",
+      "resource": "/redesign/icons/repeat.svg",
+      "sha256": "da4a195a16426b2e800a4e3cba29772187a4889a78f30b24630fb4b75270593e",
+      "bytes": 5051,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "187:470",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/shuffle.svg",
+      "resource": "/redesign/icons/shuffle.svg",
+      "sha256": "48df117638cea6c6906c6db1baf81c2de89982bcc8259c575a3ba9624ab64580",
+      "bytes": 6111,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "187:474",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/move.svg",
+      "resource": "/redesign/icons/move.svg",
+      "sha256": "b8599183ef18cf6ea6fb42db014e61aa62d667a4734297ff7a1050ff59bb1f29",
+      "bytes": 1092,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "463:417",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/bookmarks.svg",
+      "resource": "/redesign/icons/bookmarks.svg",
+      "sha256": "c61e051fd5e2537fc9f5254b767733a4887c4e6763b64ef818b48c79f83d71f7",
+      "bytes": 4899,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2127:7548",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/chapters.svg",
+      "resource": "/redesign/icons/chapters.svg",
+      "sha256": "1de576908b4de6fc5a0aa2894151814eed99cd7ab35a4302ab929dae80c2d162",
+      "bytes": 2896,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2127:7531",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/queue-tab.svg",
+      "resource": "/redesign/icons/queue-tab.svg",
+      "sha256": "9cf1079c9107518ba0762c55ad75ece0d14672eb021069c87328520aac004c82",
+      "bytes": 1559,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2127:7523",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/audio.svg",
+      "resource": "/redesign/icons/audio.svg",
+      "sha256": "3dab78cc136b3f4e1e25b18820018b1c2e574a705741cc491de3d8efab59ed10",
+      "bytes": 2469,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "44:407",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/close.svg",
+      "resource": "/redesign/icons/close.svg",
+      "sha256": "7a7e5f2bdd9068c473cd2e52c15bccda6253f88b4de892a39f4b25370a9f1cc7",
+      "bytes": 2116,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:40",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/folder.svg",
+      "resource": "/redesign/icons/folder.svg",
+      "sha256": "17689e857fb443f09a4beb2d2a45eee33031ff4c483450273a4e8bd11f6a582d",
+      "bytes": 2480,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "51:808",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/fullscreen.svg",
+      "resource": "/redesign/icons/fullscreen.svg",
+      "sha256": "ff27a602af740dd14bf9d825e42a864e69060a81de6faee0d31233ab0e8fff34",
+      "bytes": 3563,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "48:54",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/maximize.svg",
+      "resource": "/redesign/icons/maximize.svg",
+      "sha256": "81365571e4c55847277c0c730f813629ea4f2e0bb5ddabdd3993976e249e96b4",
+      "bytes": 907,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "48:51",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/minimize.svg",
+      "resource": "/redesign/icons/minimize.svg",
+      "sha256": "f16c31279735ab32421da0afea2abbede8ac256ccd331a47524214d1ff24bf4a",
+      "bytes": 618,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "48:46",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/more.svg",
+      "resource": "/redesign/icons/more.svg",
+      "sha256": "7963ecaf686f63e0c3bf37f7d7cd03b84a51c2be502226712207ef81fec5814f",
+      "bytes": 2300,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "247:418",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/muted.svg",
+      "resource": "/redesign/icons/muted.svg",
+      "sha256": "60fa070e523827fe76480c762af26b5cc02204186ae20fe166905a859b9473a6",
+      "bytes": 5163,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "182:198",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/next.svg",
+      "resource": "/redesign/icons/next.svg",
+      "sha256": "9dad4463559b6e145f929e6751493e932978c67bfdeea92263cd0d9b18cbcb3c",
+      "bytes": 2320,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:12",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/pause.svg",
+      "resource": "/redesign/icons/pause.svg",
+      "sha256": "ec164906334538fa8620878975ba27784596f88f654f06dcd53d17117fb46469",
+      "bytes": 1806,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "44:427",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/play.svg",
+      "resource": "/redesign/icons/play.svg",
+      "sha256": "3658047363d0cd0a939afa4ad8b86bc74022e6c4d3b74e8a9dfb09882583dcdd",
+      "bytes": 3147,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "44:419",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/previous.svg",
+      "resource": "/redesign/icons/previous.svg",
+      "sha256": "65be52bbb93afecbca4bad7e70d032c40d61160fcb83225f91f6b83253b93207",
+      "bytes": 2323,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "45:18",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/queue.svg",
+      "resource": "/redesign/icons/queue.svg",
+      "sha256": "6c4a7aa6866d89fabc7da2720d6b3857383e9abbb00f5a8d96d429fc779f4fec",
+      "bytes": 2947,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "217:191",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/sidebar.svg",
+      "resource": "/redesign/icons/sidebar.svg",
+      "sha256": "db00cb4dfda51b01563fbfc9195385534760e71ccd24cc6e57db13cd1362d79a",
+      "bytes": 1480,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "87:1041",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/stop.svg",
+      "resource": "/redesign/icons/stop.svg",
+      "sha256": "fbc7801b6736e51253e1b980d454428c95499fbbae1061f3fd6f6f5ed18d2ccd",
+      "bytes": 971,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "187:322",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/subtitles.svg",
+      "resource": "/redesign/icons/subtitles.svg",
+      "sha256": "019f2ce0c2ec6c9dc27e7deb81fb1237e66fca37e1ba129627ab6b469e2257b1",
+      "bytes": 2335,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "42:398",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/tools.svg",
+      "resource": "/redesign/icons/tools.svg",
+      "sha256": "0a151166c78a89c4221a912eb52e06162c507bdb95821ba79834b9be9f8251f7",
+      "bytes": 16728,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "2230:9222",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/vlc.svg",
+      "resource": "/redesign/icons/vlc.svg",
+      "sha256": "91e8b14a02215c57e36d3375b364a112ba2c5da57df0cb41194a9f26c22042d0",
+      "bytes": 2353,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "48:57",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/redesign/volume.svg",
+      "resource": "/redesign/icons/volume.svg",
+      "sha256": "628b3677d43d1b089d7d5675b0a38b551ee6d37a079e9dc657fb0443dffb14e4",
+      "bytes": 4567,
+      "input_source": "working tree",
+      "license": "CC-BY-4.0",
+      "creator": "Juxtopposed",
+      "source": "https://www.figma.com/community/file/1691465999134370980/vlc-redesign",
+      "source_node": "182:179",
+      "changes": "Saved outlined paths with nested affine matrices; white masks and original volume gradient."
+    },
+    {
+      "path": "share/icons/256x256/vlc.png",
+      "resource": "/logo/vlc256.png",
+      "sha256": "a1ccd4a5006713dc65ad84f41281ce732c23533555debc4e71f6457bb26b8fa1",
+      "bytes": 54221,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/128x128/vlc.png",
+      "resource": "/logo/vlc128.png",
+      "sha256": "731d5a34a98fee76f9e1aacaa524b3e0ed0cf0ecac3e2f9e2703b38c4a4bc518",
+      "bytes": 15875,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/16x16/vlc.png",
+      "resource": "/logo/vlc16.png",
+      "sha256": "32030a3d8e8fa75bd89ead94c429f2c3418944d9aa3d1029294b4af99264f5c5",
+      "bytes": 606,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/48x48/vlc.png",
+      "resource": "/logo/vlc48.png",
+      "sha256": "c5fe9c088e566685ca179e4c4afaee3538dc1dc2fe17b0c13ad29bf300584f69",
+      "bytes": 2924,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/128x128/vlc-xmas.png",
+      "resource": "/logo/vlc128-xmas.png",
+      "sha256": "8522457d5ba96efc99573a3d8c85677b5fcb304b408ec6919e03eef011a1e623",
+      "bytes": 18717,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/48x48/vlc-xmas.png",
+      "resource": "/logo/vlc48-xmas.png",
+      "sha256": "8703b0ad15ee928ff2a47e4e6ff3722849039f6812b241cba7c04f1606573385",
+      "bytes": 3622,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/128x128/vlc-aprilfools.png",
+      "resource": "/logo/vlc128-aprilfools.png",
+      "sha256": "54844919c6805ef1a6dd721189c71a628f5b569a0bd71f0b0285d312ef49fa92",
+      "bytes": 16194,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/48x48/vlc-aprilfools.png",
+      "resource": "/logo/vlc48-aprilfools.png",
+      "sha256": "d25c4d5ed7e4fedb5246d4a8eac27189a485fba8742f58d77b39aeeee0410eee",
+      "bytes": 4384,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "share/icons/128x128/vlc-kb.png",
+      "resource": "/logo/vlc128-kb.png",
+      "sha256": "fd9088c396b58308c4249393e02b3092e3b219660d44f6acbadb32263476fcbc",
+      "bytes": 13981,
+      "input_source": "HEAD object outside sparse checkout",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/icons/atob.svg",
+      "resource": "/icons/atob.svg",
+      "sha256": "006b4eee655274ce762bea34618d67bc28ed201f827f9f2ab80d4e8bea316585",
+      "bytes": 1942,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_download_24_regular.svg",
+      "resource": "/icons/ic_fluent_arrow_download_24_regular.svg",
+      "sha256": "2749dfd0860188f7de7a573a634f3e37fe8ea4e99aa36fd1559e62d1a8243910",
+      "bytes": 893,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_sync_24_regular.svg",
+      "resource": "/icons/ic_fluent_arrow_sync_24_regular.svg",
+      "sha256": "9537e4dc984b915d1d67bf2ed61c1fdf713c69d0b293a4dc12b2520d57ab55b7",
+      "bytes": 1333,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/add.svg",
+      "resource": "/menu/add.svg",
+      "sha256": "017b707d148447ae1af0790120ee35298c04a025952c15b7d3392b1dd4050cf4",
+      "bytes": 211,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/capture-card.svg",
+      "resource": "/menu/capture-card.svg",
+      "sha256": "b70b0e65b4ff6ea7c2f0f100d5ad5e2251879e4ec78af8f42cbbe888c26697d9",
+      "bytes": 475,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/clear.svg",
+      "resource": "/menu/clear.svg",
+      "sha256": "296cf3d04b6833f8a60939d9737488bcf9bede96e9f5fb082b68d08df61d84f1",
+      "bytes": 186,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/disc.svg",
+      "resource": "/menu/disc.svg",
+      "sha256": "7b64d8fe35e7830804963aaee15d71a1cde57e3b4a3943aae9419d0530b194dd",
+      "bytes": 847,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/download.svg",
+      "resource": "/menu/download.svg",
+      "sha256": "00e6969c7d77ef0ec362fa1087d48fcaf2a927282f3f3b02abd03fddb027a3c5",
+      "bytes": 272,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_arrow_eject.svg",
+      "resource": "/menu/ic_fluent_arrow_eject.svg",
+      "sha256": "fadc50396e19381bc49500010271bd0de8ce09bfca7ccb9751f37e24f46b1187",
+      "bytes": 644,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/exit.svg",
+      "resource": "/menu/exit.svg",
+      "sha256": "f0c01eef2ceb72714df217170dc5c9da6c2fa72c4c6d050b2dbb44d8149baf98",
+      "bytes": 237,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_fast_forward.svg",
+      "resource": "/menu/ic_fluent_fast_forward.svg",
+      "sha256": "fa036025d7228e90d7186f29925672f7a47b5c7c9371e5dfcffa389092a4424a",
+      "bytes": 661,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/file.svg",
+      "resource": "/menu/file.svg",
+      "sha256": "5b65f2a769f9c7fc78abf88c9fc748807419a30c639e63b6592e5a679a048052",
+      "bytes": 363,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/folder.svg",
+      "resource": "/menu/folder.svg",
+      "sha256": "e1af3619b7024d9942f661dc78eee0baf57c00c5e9ab4d16613623abafb93843",
+      "bytes": 380,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/help.svg",
+      "resource": "/menu/help.svg",
+      "sha256": "8496827d7a7442c14d1e7b6cd1b74c77925fa1df39c66c945b7b6dc6ee3318b8",
+      "bytes": 789,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/info.svg",
+      "resource": "/menu/info.svg",
+      "sha256": "5691dcb2fa7ae6905d274babaf70d6ecd7ac2c12a667a6d0f25feeda5114ffc5",
+      "bytes": 406,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/media_library.svg",
+      "resource": "/menu/media_library.svg",
+      "sha256": "d16dbc47f61a0fe28131d937266b252fa8bacd6695d3196ba031587ee7f878cd",
+      "bytes": 221,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/messages.svg",
+      "resource": "/menu/messages.svg",
+      "sha256": "4e31b762dea33d92e49fd4b3bb7979e665920a458078f4a522bdfeab1a627828",
+      "bytes": 375,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/movie.svg",
+      "resource": "/menu/movie.svg",
+      "sha256": "923a542e2b2aa16244530fa0c32822c7a1cb67a0809060165b410dd207d6fa32",
+      "bytes": 229,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/music.svg",
+      "resource": "/menu/music.svg",
+      "sha256": "7318efc03111e594643d8fccf9647a397e92bfa7477b32a3a62eedd5bf163f4f",
+      "bytes": 338,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/network.svg",
+      "resource": "/menu/network.svg",
+      "sha256": "c88650b1f7bc637ffd8ebd97353892e4d071345e6a8c2e406f981f495972f2a9",
+      "bytes": 342,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_next.svg",
+      "resource": "/menu/ic_fluent_next.svg",
+      "sha256": "8e2b9c6261def0fde44743cf0baf6fbe4493aa60a5f62a12427ca2f0fb4dcf66",
+      "bytes": 659,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_pause_filled.svg",
+      "resource": "/menu/ic_pause_filled.svg",
+      "sha256": "efb3255987cd7606e04dfaa5edafddfb759e0b0d837dd208e37dadfb4fdf9e02",
+      "bytes": 429,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_playlist.svg",
+      "resource": "/menu/ic_playlist.svg",
+      "sha256": "2a68e50f4354cb4b72c20ac7d9d0b5a4b16755be392cd5bfa5990ad1b7c2402e",
+      "bytes": 1013,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_play_filled.svg",
+      "resource": "/menu/ic_fluent_play_filled.svg",
+      "sha256": "3c243bd5041c44a8e92a1a423d797e73d4da7ed127203d17782d7352393d7f11",
+      "bytes": 360,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/preferences.svg",
+      "resource": "/menu/preferences.svg",
+      "sha256": "d357a604715a2a665210094ca3f1a9a1975e257edcff4023965d672de55ec757",
+      "bytes": 346,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_previous.svg",
+      "resource": "/menu/ic_fluent_previous.svg",
+      "sha256": "638ba40fc6fc3a45ca6501e9bca335036f0818c123a01c393b0e9067d8d5722a",
+      "bytes": 645,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/profile_new.svg",
+      "resource": "/menu/profile_new.svg",
+      "sha256": "b8ace51d8e377bede1e9f67fb5b03dadc1c825b1d413a001665130b8786ecf49",
+      "bytes": 392,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_record.svg",
+      "resource": "/menu/ic_fluent_record.svg",
+      "sha256": "8728b17ca45fe5b8356f48e1a1f07bc6a5518818129b06961908bd962532e7c6",
+      "bytes": 409,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/remove.svg",
+      "resource": "/menu/remove.svg",
+      "sha256": "705c3b355b6a17313d70813422e924a068e44d99b9dcf75db36ce9df7539eede",
+      "bytes": 118,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_arrow_repeat_all.svg",
+      "resource": "/menu/ic_fluent_arrow_repeat_all.svg",
+      "sha256": "f535ce9e665907c415582b8d67cc330b5e3f58903f0565bc6a9082119498b8d3",
+      "bytes": 1641,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/repeat_off.svg",
+      "resource": "/menu/repeat_off.svg",
+      "sha256": "68515067cfa152b136debfe28730f87a3a2fc4e2656b5becd6c92757cae0578c",
+      "bytes": 163,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_arrow_repeat_1.svg",
+      "resource": "/menu/ic_fluent_arrow_repeat_1.svg",
+      "sha256": "9a73f757ed6ffd9d04db5ec5bb9153c268de9b9b438f337d40ac2fd127af0214",
+      "bytes": 2322,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_rewind.svg",
+      "resource": "/menu/ic_fluent_rewind.svg",
+      "sha256": "29b980015fa6e79237ba3b9b4b0b56a502b56016087b1e1d736abe99b0192740",
+      "bytes": 666,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/search_clear.svg",
+      "resource": "/menu/search_clear.svg",
+      "sha256": "334684b6faffd682b5e2b79eee80464e6a52de42c34574911130a032b68bfde7",
+      "bytes": 279,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_options.svg",
+      "resource": "/menu/ic_fluent_options.svg",
+      "sha256": "0becd0f5a6baf8df605c9f0ef77c71b618df4ffc7b0a382e4dc730d060c2d804",
+      "bytes": 919,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_arrow_shuffle.svg",
+      "resource": "/menu/ic_fluent_arrow_shuffle.svg",
+      "sha256": "b2fd625a3dd753224a1178b2a0a3f0f1bd8afe81483f9b26128754980e5ed821",
+      "bytes": 1281,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_skip_back_10.svg",
+      "resource": "/menu/ic_fluent_skip_back_10.svg",
+      "sha256": "76cd686e28d54f49d1d2cbaf29375ac4b3866265d534407248a8442d813451d4",
+      "bytes": 1611,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_skip_forward_10.svg",
+      "resource": "/menu/ic_fluent_skip_forward_10.svg",
+      "sha256": "2cc02e2c7bf7f3e680a2c1ad610f68e702dcf22d3c32481c563d5c1b6bec2d58",
+      "bytes": 1622,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/ic_fluent_stop.svg",
+      "resource": "/menu/ic_fluent_stop.svg",
+      "sha256": "38d01c8fe567dccbe29bde5c1e085364edbb8edf0a431d6f1ed87e037530a915",
+      "bytes": 476,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/stream.svg",
+      "resource": "/menu/stream.svg",
+      "sha256": "2acb74ba9295007d3474a78e8294950bab4d37c4b4ff923dbd800eb644cc1279",
+      "bytes": 679,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/sync.svg",
+      "resource": "/menu/sync.svg",
+      "sha256": "eb2f2776314b51f6bef902ef4c31c35044bf0f015fd62180234b2ad2156374ea",
+      "bytes": 509,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/update.svg",
+      "resource": "/menu/update.svg",
+      "sha256": "652075ac70975ef20bd801f7541e63dde0b35c771c67ded9899742136d5fda27",
+      "bytes": 290,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/volume-high.svg",
+      "resource": "/menu/volume-high.svg",
+      "sha256": "99ab20dfadc987cc10573a304a00fa436fdb216582a16eeee85fba8bde72abde",
+      "bytes": 552,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/volume-low.svg",
+      "resource": "/menu/volume-low.svg",
+      "sha256": "7ccfc9947b09a55f3f74f78c0c74b256ac91a7446ca26d57b30b54de407fbbca",
+      "bytes": 302,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/menu/volume-muted.svg",
+      "resource": "/menu/volume-muted.svg",
+      "sha256": "83ba621240fbfaec3c87fcf228d9fc42050b66568514dcae3dcd8e9a59b66b7d",
+      "bytes": 393,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/cone.svg",
+      "resource": "/misc/cone.svg",
+      "sha256": "f804b270345da915c9116012b12fbd4a62a31c60859cb6b6722f0279ad063e21",
+      "bytes": 873,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/new_indicator.svg",
+      "resource": "/misc/new_indicator.svg",
+      "sha256": "240afaa555911b56021b3cb47d6a28d52b12250419e227af08cfdac7c6aea426",
+      "bytes": 124,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/theme_dark.svg",
+      "resource": "/misc/theme_dark.svg",
+      "sha256": "4e154aed8a46da4f12e66403c6489e4d73a1f7fecfc6eb7bc27692312cbce657",
+      "bytes": 1573,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/theme_daynight.svg",
+      "resource": "/misc/theme_daynight.svg",
+      "sha256": "cd649dee7d55a6837f264eabe090dfa94126341776a8fd9a5265742379e0b1be",
+      "bytes": 4051,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/theme_light.svg",
+      "resource": "/misc/theme_light.svg",
+      "sha256": "8a17a18ab1f80fbbc0ce1094c19148f90d18917930f9d74b22b48d8a2b8ffcfc",
+      "bytes": 1967,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/wait1.svg",
+      "resource": "/misc/wait1.svg",
+      "sha256": "9085db08266f2771e1da4b5cd018746fde12d378850063f1a4adb31cdb608211",
+      "bytes": 317,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/wait2.svg",
+      "resource": "/misc/wait2.svg",
+      "sha256": "5452c2a2e745bbb532a569c2d7cdbc03c94ddc5b545f3a9885f2fdb3057e529c",
+      "bytes": 321,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/wait3.svg",
+      "resource": "/misc/wait3.svg",
+      "sha256": "c664a844c812d6f46f5ee15b77cfdb2e465a9f757123060d3c4bc26479d4cdaa",
+      "bytes": 321,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/misc/wait4.svg",
+      "resource": "/misc/wait4.svg",
+      "sha256": "4790a535aa1c245eb59d961b671ca7c7949dff47e8a6f02c5c710ed39b9d4020",
+      "bytes": 323,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/capture-card.svg",
+      "resource": "/sd/capture-card.svg",
+      "sha256": "77442758dee00a0f4c9643f0a57fad2eb7a00da55d5c0334976cadcda6e97b59",
+      "bytes": 1043,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/disc.svg",
+      "resource": "/sd/disc.svg",
+      "sha256": "bead68cc74ab7de92c5e72d15712eceebe421d85a61c2e443aed1eaabc1a971b",
+      "bytes": 1006,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/file.svg",
+      "resource": "/sd/file.svg",
+      "sha256": "59c9a84cd9eca4bdbcde4644f856a5b90ca48caa0515acf60bfef2d5022fd2fd",
+      "bytes": 388,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/network.svg",
+      "resource": "/sd/network.svg",
+      "sha256": "1d28ad7a0d06f775d24591c1322a65a4ff69c12d83997a8f2846d74b4663cc31",
+      "bytes": 591,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/directory.svg",
+      "resource": "/sd/directory.svg",
+      "sha256": "f1eb74d7745778099047cf8177b28b7efe396f5c82328df3b73f9185c899b849",
+      "bytes": 997,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/stream.svg",
+      "resource": "/sd/stream.svg",
+      "sha256": "2be3c54de0913cf26f3f88437f6f867315cbf15c6ec232ee992815f23877e224",
+      "bytes": 4135,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/node.svg",
+      "resource": "/sd/node.svg",
+      "sha256": "fdf680b14ca6199bbf2ab6a8945875ebaa99acd38c3e68a907b5130d52ae5617",
+      "bytes": 362,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/playlist.svg",
+      "resource": "/sd/playlist.svg",
+      "sha256": "1f19050af043dade2b8214453794ac9bd0ab70ddfcf39f3457269bff722a4f8f",
+      "bytes": 742,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/icecast.svg",
+      "resource": "/sd/icecast.svg",
+      "sha256": "f466ae62fd2e8c4a97b230412fcce06162a3d7784323628aa29b46046c89ee22",
+      "bytes": 907,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/assembleenationale.svg",
+      "resource": "/sd/assembleenationale.svg",
+      "sha256": "a73f6f5b36ce9c4490e6a1ca96d4a629f91a1339b20ad490246bd8078041711f",
+      "bytes": 1119,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/fmc.svg",
+      "resource": "/sd/fmc.svg",
+      "sha256": "ba013a0840f105b0f6a4dfd89154a67ea360a04d948a5a210e346b93c6ba358a",
+      "bytes": 1704,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/podcast.svg",
+      "resource": "/sd/podcast.svg",
+      "sha256": "2d7a7cf5c389d2e7b605e9e92144b81ef40748495706ea9f20f9741e36cbee98",
+      "bytes": 944,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/frenchtv.svg",
+      "resource": "/sd/frenchtv.svg",
+      "sha256": "11f72e5e7cbfdff0190adad30ef967f60424658c7c0b3e4e338bb2154d48f129",
+      "bytes": 1101,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/jamendo.svg",
+      "resource": "/sd/jamendo.svg",
+      "sha256": "3706614d95aeb777a01f59ba841fc71f13d64b96c34955b25df1658daaf1515f",
+      "bytes": 1285,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/katsomo.svg",
+      "resource": "/sd/katsomo.svg",
+      "sha256": "95a0f229c3fd10c7641c081b62640d07919f18e490f599eb51aa160ac3cb7a95",
+      "bytes": 706,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/sd/radio.svg",
+      "resource": "/sd/radio.svg",
+      "sha256": "e3b6a6687bceb3cfda4b82ba7baee9b89eb476e80077d6185ca847cfb1c14190",
+      "bytes": 924,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/add_service.svg",
+      "resource": "/placeholder/add_service.svg",
+      "sha256": "f75e65b0e3aca962b55db5a85d2f53627b45683ebed8f39d775552e845b16704",
+      "bytes": 1622,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart.png",
+      "resource": "/placeholder/noart.png",
+      "sha256": "13fc12cb28478f6524974e5c56d915bd0c81eca291d6a940f314cc845b9a5d21",
+      "bytes": 15524,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart_album.svg",
+      "resource": "/placeholder/noart_album.svg",
+      "sha256": "cfccb5a88e8f61f136a2606c462ed31d87f90212df283d95922a8a1acfed8f66",
+      "bytes": 1192,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart_albumCover.svg",
+      "resource": "/placeholder/noart_albumCover.svg",
+      "sha256": "73eda2f3d520c0aebd52bf48b7dd26edcb17b45b94af4d4f4e78dafacd3170d7",
+      "bytes": 874,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart_artist.svg",
+      "resource": "/placeholder/noart_artist.svg",
+      "sha256": "245d4068b7eaee6d2cfcd057707b4fa0c9e4aefe5c63dd97a02042791efe849b",
+      "bytes": 334,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart_artist_small.svg",
+      "resource": "/placeholder/noart_artist_small.svg",
+      "sha256": "3604207b8264c64c3c406eddbde4f4a03ef97d49d53743216779940daf40a193",
+      "bytes": 367,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart_artistCover.svg",
+      "resource": "/placeholder/noart_artistCover.svg",
+      "sha256": "ca3ca28ceb37e543c925306357ad6c7cfda37e81c5c8dc9e318b5587707eb351",
+      "bytes": 2124,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/placeholder/noart_videoCover.svg",
+      "resource": "/placeholder/noart_videoCover.svg",
+      "sha256": "033ae98e1f5c8410a67615e97c0c555d1f63f3ce292f86f1bd207703dcfc70c8",
+      "bytes": 499,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/VLCIcons.ttf",
+      "resource": "//VLCIcons.ttf",
+      "sha256": "b6662a21ae7755ae1fdabf85a24b0e5eda11895fca6cf5b18eb95bfcd1407c1e",
+      "bytes": 18840,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later AND MIT",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING",
+      "glyph_sources": "modules/gui/qt/pixmaps/VLCIcons.json",
+      "additional_notice": "doc/redesign/resources/s7/FLUENT-ICONS-LICENSE.txt"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_audio.svg",
+      "resource": "/prefsmenu/advprefs_audio.svg",
+      "sha256": "e699fe9d326f244831457cc55ec0523f0650a2560c38ef7ce06f6c7ed535a630",
+      "bytes": 1065,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_codec.svg",
+      "resource": "/prefsmenu/advprefs_codec.svg",
+      "sha256": "2b9a9dc8b336482a5d1287b535572df4d50e45208fe96a37fa012025135e62dc",
+      "bytes": 322,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_extended.svg",
+      "resource": "/prefsmenu/advprefs_extended.svg",
+      "sha256": "40ceb409a6141a3f16d09ff3e9868ec723f6b97387afa61dda8253d393c1e7aa",
+      "bytes": 265,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_intf.svg",
+      "resource": "/prefsmenu/advprefs_intf.svg",
+      "sha256": "89fa8fe949b5e52f83333bf52236a603bff546eaa776f0c81c78f99345fec3cc",
+      "bytes": 827,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_playlist.svg",
+      "resource": "/prefsmenu/advprefs_playlist.svg",
+      "sha256": "bfeea33fec5e2aca1517dff16292d7f07cb40fb6662f17dca75d1699d5cef651",
+      "bytes": 205,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_sout.svg",
+      "resource": "/prefsmenu/advprefs_sout.svg",
+      "sha256": "9130a206ff129c9f4a98b5a0658ffdba60d6557d1f64554e5e77daba1237f9d3",
+      "bytes": 298,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/advprefs_video.svg",
+      "resource": "/prefsmenu/advprefs_video.svg",
+      "sha256": "70f79ff7ab3a45aee256c6f918b68fa24136225ce8743a387652d4b0c1aa3fbe",
+      "bytes": 1040,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_audio.png",
+      "resource": "/prefsmenu/spref_audio.png",
+      "sha256": "26e4573212b422bba2f71eb0de41afb357316d16a00e8b04072b1ebf1cb47fcb",
+      "bytes": 5398,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_hotkeys.png",
+      "resource": "/prefsmenu/spref_hotkeys.png",
+      "sha256": "cdbb53ba65f32834a3b3670be06cd6980c9d9973e07cbaf1139dd3c32b4680f0",
+      "bytes": 6743,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_input.png",
+      "resource": "/prefsmenu/spref_input.png",
+      "sha256": "e8d01e4854add7bef4f5b993fe9799f5a6b58c46409866cb01fb9963338688b2",
+      "bytes": 5805,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_interface.png",
+      "resource": "/prefsmenu/spref_interface.png",
+      "sha256": "f3afe6b9dea95624a759ec6ec54b18f6c31e3f90fbab41cf7652d0c2db1d2b5a",
+      "bytes": 4482,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_medialibrary.png",
+      "resource": "/prefsmenu/spref_medialibrary.png",
+      "sha256": "e3cdc806f1b4dd614899185abffe156b047cc882b2d796fe610f3ec479e81229",
+      "bytes": 5362,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_subtitles.png",
+      "resource": "/prefsmenu/spref_subtitles.png",
+      "sha256": "7719e6bf0c3ec0b37e7f398c9051465bc539e393de98e1d72b91118068d90c8f",
+      "bytes": 4987,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/spref_video.png",
+      "resource": "/prefsmenu/spref_video.png",
+      "sha256": "e47b3ade0eb3eb2fee5377fca961d8fee47f86c3afaa84310b9e389f130eacae",
+      "bytes": 5579,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/sample_complete.png",
+      "resource": "/prefsmenu/sample_complete.png",
+      "sha256": "ceb0b5c9d2e7b4fa8dda351a9e318e05ff02af9514acc6b8d57151dae7ce50b0",
+      "bytes": 6414,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/sample_minimal.png",
+      "resource": "/prefsmenu/sample_minimal.png",
+      "sha256": "fb08b1897ec8ad68e48d4bc476830c23b0c5e282e848f181de56aa702aac16a3",
+      "bytes": 3277,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/prefs/sample_skins.png",
+      "resource": "/prefsmenu/sample_skins.png",
+      "sha256": "50a3a307f82d241d865e32e7aad88f976ac362fed2f82d05f0e389e8da19fb9a",
+      "bytes": 16165,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_default.svg",
+      "resource": "/addons/addon_default.svg",
+      "sha256": "4553f23472d8bce22f57ee1a2a6bb21e6483bbd2b053484e323768f05e26fd11",
+      "bytes": 644,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_broken.svg",
+      "resource": "/addons/addon_broken.svg",
+      "sha256": "b41a1f6cb8268c9a0481c3fd79cfbd9ebead0b3d4566136a45b26b60db688855",
+      "bytes": 1103,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_score.svg",
+      "resource": "/addons/addon_score.svg",
+      "sha256": "c1baefd97873732aec1a30858b86fa7743b4c57fdaae2e2f12d913807965f5ad",
+      "bytes": 7769,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_blue.svg",
+      "resource": "/addons/addon_blue.svg",
+      "sha256": "ea9144c021db8ecf646c9406c4960e00afc920d92a849e74357fd7dd5e4887a8",
+      "bytes": 642,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_cyan.svg",
+      "resource": "/addons/addon_cyan.svg",
+      "sha256": "c40097d49fcc88e8de47154721ab6007b1c120ab93d92917d13afcbd2ff7f515",
+      "bytes": 642,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_green.svg",
+      "resource": "/addons/addon_green.svg",
+      "sha256": "3d356fca2df07b5dca762145a48993903d205b1e653b187ed85e6aa1768779f5",
+      "bytes": 640,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_magenta.svg",
+      "resource": "/addons/addon_magenta.svg",
+      "sha256": "e76918d54f48eb43e22fd666f87b14fc237900b1b248fe1fe3585fe5b78c8b47",
+      "bytes": 644,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_red.svg",
+      "resource": "/addons/addon_red.svg",
+      "sha256": "3c3f092110a9b78483034dfbbb68b377438ee66853ccd4a5f0a8ae33c91ca0fb",
+      "bytes": 639,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/addons/addon_yellow.svg",
+      "resource": "/addons/addon_yellow.svg",
+      "sha256": "a1460340640679486ff1587006915301f1c00d1b239916d0f58c1a3f9b213368",
+      "bytes": 644,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/win7/pause.svg",
+      "resource": "/win7/pause.svg",
+      "sha256": "18ee6ae6a178a8b11493bf67276f5f8e7f920528869509ef1c7220d2fd499b86",
+      "bytes": 345,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/win7/prev.svg",
+      "resource": "/win7/prev.svg",
+      "sha256": "632c98dc4ad19f7fb3d9bb98fe5c7208124e2239a73473271bf8582d66dbc53a",
+      "bytes": 743,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/win7/play.svg",
+      "resource": "/win7/play.svg",
+      "sha256": "eb1cd07a823d01bb631853d2ec1369580cfc921bacfc723315bbfcbf5965223a",
+      "bytes": 347,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    },
+    {
+      "path": "modules/gui/qt/pixmaps/win7/next.svg",
+      "resource": "/win7/next.svg",
+      "sha256": "c728bfb779c93ebc8968b384ed9cb4fa07e3eaff5d9502883406330a386f2fe0",
+      "bytes": 744,
+      "input_source": "working tree",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "license": "GPL-2.0-or-later",
+      "notice": "COPYING; AUTHORS; THANKS; retained per-file notices",
+      "provenance": "Unmodified upstream VLC production resource; preserve existing source notices and COPYING"
+    }
+  ],
+  "font_source_readback": [
+    {
+      "url": "https://raw.githubusercontent.com/rsms/inter/353b61b9f4430d5f420d56605a6e7993e0941470/docs/font-files/InterVariable.ttf",
+      "upstream_sha256": "4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf",
+      "local_sha256": "4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rsms/inter/353b61b9f4430d5f420d56605a6e7993e0941470/LICENSE.txt",
+      "upstream_sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+      "local_sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    }
+  ],
+  "upstream_icon_font_glyphs": [
+    {
+      "key": "active_indicator",
+      "path": "modules/gui/qt/pixmaps/icons/active_indicator.svg",
+      "sha256": "5117ee0c92eaeb3d73fe61b3a64c24f03bf30414da0532022646206de1aad64f",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "add",
+      "path": "modules/gui/qt/pixmaps/icons/add.svg",
+      "sha256": "061bd55655eb8436bbadf89c35b0c982f63728858252042ae5a99c1ae796df25",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "album_cover",
+      "path": "modules/gui/qt/pixmaps/icons/ic_album_cover.svg",
+      "sha256": "12a74d98b70076374678667ad0e644abc69cf61e9bb345518f8a211ad1e3093b",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "aspect_ratio",
+      "path": "modules/gui/qt/pixmaps/icons/ic_aspect_ratio.svg",
+      "sha256": "e34fcbf8291f97ffd0310e5f9978d24c9a8c495ea8f4259b468ef0c6e6ec9fdb",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "atob",
+      "path": "modules/gui/qt/pixmaps/icons/atob.svg",
+      "sha256": "006b4eee655274ce762bea34618d67bc28ed201f827f9f2ab80d4e8bea316585",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "audiosub",
+      "path": "modules/gui/qt/pixmaps/icons/ic_audiosub.svg",
+      "sha256": "fbbc258abec59267f39671e9262d97bc35d3b87e68acc1d79aa727d403f493d6",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "back",
+      "path": "modules/gui/qt/pixmaps/icons/back.svg",
+      "sha256": "2c9c147992634950406673cbc894817cb23b39ed093866426d0be2f0a4213678",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "breadcrumb_sep",
+      "path": "modules/gui/qt/pixmaps/icons/breadcrumb_sep.svg",
+      "sha256": "592517d516bb1e4c9aa88cd957c9686da9e1c55f4c762319d167cf891ca829ff",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "breadcrumb_prev",
+      "path": "modules/gui/qt/pixmaps/icons/breadcrumb_prev.svg",
+      "sha256": "d5bc7c2ca82ae8ba80f40dc9c16fa49c7b92d320e44dc06e286f9a604e51638e",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "bookmark",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_bookmark.svg",
+      "sha256": "e19ddb7fe79ca5b3ce02dcd41e5972f5269c1b3638ccd57a9c1ff250b839d372",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "check",
+      "path": "modules/gui/qt/pixmaps/icons/check.svg",
+      "sha256": "01b5312472cb222e92e51392b54e1bbc37117e832fb705ea54b079d3c6d8edfe",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "clear",
+      "path": "modules/gui/qt/pixmaps/icons/clear.svg",
+      "sha256": "66a9cc4f9bfab90e3a717d05f4eb78abe5ca0e9977e7fe21c4dac9ec7539de2b",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "close",
+      "path": "modules/gui/qt/pixmaps/icons/close.svg",
+      "sha256": "66a9cc4f9bfab90e3a717d05f4eb78abe5ca0e9977e7fe21c4dac9ec7539de2b",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "defullscreen",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_full_screen_minimize.svg",
+      "sha256": "a18966d19d65303f2c526c029e59a4099380a32b82ff27daf2383daacb3dc3ca",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "del",
+      "path": "modules/gui/qt/pixmaps/icons/del.svg",
+      "sha256": "2d490bada3b8558792cff4621e3757a0c89b25af6dcfe9c39e0c34387de749f9",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "dropzone",
+      "path": "modules/gui/qt/pixmaps/icons/dropzone.svg",
+      "sha256": "f96b9d4dea5dcd5264aa876cbc7c8a8e3bdbe797ed12c1799f468e2993685937",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "dvd_menu",
+      "path": "modules/gui/qt/pixmaps/icons/dvd_menu.svg",
+      "sha256": "701e194962daf65707af3ec8bcd461b911888d36f884e11584e51a52706e97b1",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "dvd_next",
+      "path": "modules/gui/qt/pixmaps/icons/dvd_next.svg",
+      "sha256": "0b6b561e5b1d50c9be9c484c21e13e5bfbcacf0a8180e663d237a4885b6c0c93",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "dvd_prev",
+      "path": "modules/gui/qt/pixmaps/icons/dvd_prev.svg",
+      "sha256": "fe2c7410ead6f01f8003dfe07bbb634855ea6ef94b61e565b9486ff2b1ddd50d",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "effect_filter",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_options.svg",
+      "sha256": "c6a6be16fe3d35e20a92e0f5af000900fc927e0228885f36457a94728a368f40",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "eject",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_eject.svg",
+      "sha256": "bca594a0bd702123bb99b0cbdf1dc24f52898c8ff6418884ce491242c5871505",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ellipsis",
+      "path": "modules/gui/qt/pixmaps/icons/ellipsis.svg",
+      "sha256": "11b7bfb2cbdcd42471057962203b9220387123be17dba690c9883d2c0865b843",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "enqueue",
+      "path": "modules/gui/qt/pixmaps/icons/ic_playlist_add.svg",
+      "sha256": "982620c6d667d15699cce1d89427d3982656c99062ec1fbd280cae9e41619e9f",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "expand_inverted",
+      "path": "modules/gui/qt/pixmaps/icons/expand_inverted.svg",
+      "sha256": "d6b624c225caf24c5085f5c8cf018b2f6096bd22efe0ed1d10de63f5513fce08",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "expand",
+      "path": "modules/gui/qt/pixmaps/icons/expand.svg",
+      "sha256": "c25969e989d1646487e6a64f7be45ea8a494c5d060cb10f991a3de3370706a2c",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "faster",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_fast_forward.svg",
+      "sha256": "db5089776bbf9d1f1051fb8d68fae2d6b6bf4b7294ca2a463a2c0719c3ab4e07",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "next_frame",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_next_frame.svg",
+      "sha256": "dc87ef6ac2be69669799bb1afd9bdaa7afc844a688b11d385f663858536932e0",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "previous_frame",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_previous_frame.svg",
+      "sha256": "0d53dab446f3075682dc74ff608611ffe129e0d2b7fc546d1fa3d3724257ff92",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "fullscreen",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_full_screen_maximize.svg",
+      "sha256": "d91c76575ca52c9eee1fa3cf2c92ad1bcb93f74a58641d644956f5613e8e685d",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "grid",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_grid.svg",
+      "sha256": "bb61ca7ca61eb0ee2fd5ed4c574c1972bb460d9b679030293ac5280620ff1e33",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "history",
+      "path": "modules/gui/qt/pixmaps/icons/history.svg",
+      "sha256": "e906c35a6d75ac6a01ec380422ec0a654bd7ee468de45bfa5a2eecb9f699ffd0",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "home",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_home.svg",
+      "sha256": "99689e6e3df04e922387c2bd47b13bd7527364a082f3659ed0dba1fbc7e88fe4",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "info",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_info.svg",
+      "sha256": "e89fb17dbd372070c2c99a13890cb8dedace0c9969a2141d23fa63ae14d16192",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "list",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_apps_list.svg",
+      "sha256": "c60042fb24bbd6e4de1b146386b6db50f6695dc73256f290ec5934e273ce61d2",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "more",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_more_vertical.svg",
+      "sha256": "869a0287516cb9f007206fc1f083a1438489ac4ad5c61b2959446ab48758c981",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "next",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_next.svg",
+      "sha256": "aab0daaa77e27c4eca51f41dcc13335a25410453c3320ab1e92c9b4faa21488c",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ok",
+      "path": "modules/gui/qt/pixmaps/icons/ok.svg",
+      "sha256": "8aed8fcf5076794956fd412f87f594c1795d1a9447e992c79c111be51bb131ae",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "pause_filled",
+      "path": "modules/gui/qt/pixmaps/icons/ic_pause_filled.svg",
+      "sha256": "f687a963b8844427ae13dd58012eeb9de86bda7e0b4ed8561fb8c689e3a3fceb",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "play_filled",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_play_filled.svg",
+      "sha256": "ce65be724eafae2518769c8e6fcdb9e657ec9f315e59e48494ee1547f8f5fede",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "play",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_play.svg",
+      "sha256": "2218967a973636826447bcad95cd8a284db4ca457f0e136aa97bb89feca10018",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_arrow_move",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_move.svg",
+      "sha256": "6aa2820c111080d4f2a40eb435462af5372ea4e6528e2d565c9d5da3c332cb0b",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_chevron_down_24",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_chevron_down_24.svg",
+      "sha256": "52b3569967dcd33b226bd19a7cb3bf1bf491dd22822c4c3a8d36f80cb6612ffa",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_chevron_left_24",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_chevron_left_24.svg",
+      "sha256": "3735add64f88d63dbc609c10c93ac3c5fc09c9e93a1ad8707be5e4a95f5dc2ce",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_chevron_right_24",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_chevron_right_24.svg",
+      "sha256": "ebe7bfcc2d019af0970c8d77ecd35ab49b2981c46d923e676d1e698dc9142fc4",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_chevron_up_24",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_chevron_up_24.svg",
+      "sha256": "052900e9e89261892a758ff3eab908013678a754a312d94f19444d864e3cfb8e",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "panel_left",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_panel_left_48_regular.svg",
+      "sha256": "c67f5d01ac1ec2bab94b3802d6e12532e40f7138de0837914f60b69ce2b481be",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "play_reverse",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_play_reverse_filled.svg",
+      "sha256": "06d476ced24b1e6340685c61e8061b6898ad32459c1bb7d6e879cdcb66e5fdeb",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "playlist",
+      "path": "modules/gui/qt/pixmaps/icons/ic_playlist.svg",
+      "sha256": "caf32c0f5942214c52910b4021a1fba50751850740a616af557d1f3ce6192575",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "playlist_clear",
+      "path": "modules/gui/qt/pixmaps/icons/ic_playlist_clear.svg",
+      "sha256": "bb12fea7d7809dc1f7265eb5ea3d5fa123e8bb4acc0795646ca716cb644b0553",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "previous",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_previous.svg",
+      "sha256": "c5cb77e6f4b8b2a7b2b9fa80403c3d443a3c4935afb81559978875fb9e2d5794",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "profile_new",
+      "path": "modules/gui/qt/pixmaps/icons/profile_new.svg",
+      "sha256": "19a3accdeea96ab7727348aa021f0792cdb28bdff86f32580a610c1661244635",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "record",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_record.svg",
+      "sha256": "a48390170863310cd40bd890f371bad92ce573b829657bd6b394cc82f80281ad",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "remove",
+      "path": "modules/gui/qt/pixmaps/icons/remove.svg",
+      "sha256": "8620db5095250dcf59c37ee9b0015d20b1685b9793c701494aa4d23b1fc74d64",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "renderer",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_cast.svg",
+      "sha256": "eda0f7018a2912ef7641d9265655e6e05f7f1b6cc9ed86c5362362bb933b736a",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "repeat_all",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_repeat_all.svg",
+      "sha256": "25811e189cce811bbffb1f2ab1f0e99661be176dc050e58607ad3fb976938bad",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "repeat_one",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_repeat_1.svg",
+      "sha256": "16a92a0f7f694a3242ef1b1edf885512f5d0e8a97642ba62609d0b70af80fa50",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "search",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_search.svg",
+      "sha256": "001615111ac1720857b45e768490c088319d9e7585d108dc3452ae9af4bc27ec",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "settings",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_settings_48_regular.svg",
+      "sha256": "c4c1d607374b0b5448d37a90ae2b36da22812f41cc23a7cc103b16cbb20e5939",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "shuffle",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_shuffle.svg",
+      "sha256": "759f29ab60e6e6acc6601148d2293f4bd2ae82c6e4802cbdd82454a58e7edb6b",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "skip_back",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_skip_back_10.svg",
+      "sha256": "2a1882f5f4e4e16fc4e9a8d02d842cf3f572fe7463fd03c3d0e995489a808423",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "skip_for",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_skip_forward_10.svg",
+      "sha256": "0594fc7ba625b0e71c53d5b384306bd69076b7f528f6da6c946161a2de4f14f2",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "slower",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_rewind.svg",
+      "sha256": "f196a741794823ad26f81df815fa0cc490be87a9142045fc6aba01e21718ae3f",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "snapshot",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_camera.svg",
+      "sha256": "e2a8ac5cc14cfec32f1da3483d6ec2d28c46344ee51f828cd9acb3e6f231d9ca",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "space",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_spacebar.svg",
+      "sha256": "62bb7c7d541aa7a93e1774098ae00849ea1b8b9427c1c7500789da5bf7235110",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "stop",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_stop.svg",
+      "sha256": "2d4efbda9e0446c93b84279d03772518e1afda604866f5f6347b7eb99c760a05",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "stream",
+      "path": "modules/gui/qt/pixmaps/icons/stream.svg",
+      "sha256": "4c942863a32f5f9b4278bf40208ccdb6b0eaae9392f81a590224bc478aee70ed",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "time",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_clock.svg",
+      "sha256": "01919c373216f0019f6a90af4a1e52a86ae9fa7dce51d0127ba439076c0e8b07",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "topbar_discover",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_globe.svg",
+      "sha256": "3c0cc59aeb42f4300cec3b7e2f2dfb43ddf64206369a7b505ba50a84d1bd1f69",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "topbar_music",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_music_note_2.svg",
+      "sha256": "8f00fc9af315a114f994b8196e6d1ee5cc53892a18f2e395ee1542fd5401a234",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "topbar_network",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_wifi_1.svg",
+      "sha256": "a5a3df3e4635225e0ca1b43225a85acb3082f1a958db8d4422ccf40dda4fe69f",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "topbar_sort",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_sort.svg",
+      "sha256": "1f27d9606275f3f2ad37936ea98c256329140aaa363d4d2812ea10983df946aa",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "topbar_video",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_filmstrip.svg",
+      "sha256": "8f0f391a585755e4e6aaf00023d3b947c3670039465db3a3cc370f6e1677dd32",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "chevron_up",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_chevron_up.svg",
+      "sha256": "a7761545c1c0afc1cce1acc8dbea0001b815340cc2cea283b752a782a4a0bed2",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "chevron_down",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_chevron_down.svg",
+      "sha256": "55c0df14b21c5e5e0a80589badf0727546fcfa21f455441b3fdfceb7c36eb0f2",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "tv",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_tv.svg",
+      "sha256": "7722915ec66fdf49e90246b8fc39a5bbcb6556ccef398a5b2b922e5b558fe682",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "tvtelx",
+      "path": "modules/gui/qt/pixmaps/icons/ic_tvtelx.svg",
+      "sha256": "047346639e8f67d0809dac7c7d94a576ac0e77e9b6665c115c2c3ee69e731d46",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "transparency",
+      "path": "modules/gui/qt/pixmaps/icons/transparency.svg",
+      "sha256": "0bb37abab8e2b6a8dc2f8b2382f12403549aa375a7c24c2349f8144a04e2021d",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "circle",
+      "path": "modules/gui/qt/pixmaps/icons/circle.svg",
+      "sha256": "247de7224295bf36319e92ecefa2a72e3e3578c0d26d5c1281b069d3171d5282",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "visualization",
+      "path": "modules/gui/qt/pixmaps/icons/visualization.svg",
+      "sha256": "3d9b46fd25c4cbecac3f0a4b7a245224c4f1560c01720a6c35320526e25c7442",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "volume_high",
+      "path": "modules/gui/qt/pixmaps/icons/volume_high.svg",
+      "sha256": "af093d709a386f251fa754b6cdd79362283bb07eb71f96ca5e708c76ee076bb1",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "volume_low",
+      "path": "modules/gui/qt/pixmaps/icons/volume_low.svg",
+      "sha256": "82428ef5c2c507a459ca93eb1fa4f58a008caa6a36999954632f082ce7e31424",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "volume_medium",
+      "path": "modules/gui/qt/pixmaps/icons/volume_medium.svg",
+      "sha256": "11c4280299c3132a73bbc0ae427f278248e9a38260b9fb5de8f2bdee42a7675a",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "volume_muted",
+      "path": "modules/gui/qt/pixmaps/icons/volume_muted.svg",
+      "sha256": "2baa1df2525513e6e246af2c28a20128b436caa0f0cf2ef3050517b2a3b3b5c6",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "volume_zero",
+      "path": "modules/gui/qt/pixmaps/icons/volume_zero.svg",
+      "sha256": "92d890442cd38d4300bcaaf394d9c3ac94a57e29972e0a838f037d335239b731",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "window_close",
+      "path": "modules/gui/qt/pixmaps/icons/window_close.svg",
+      "sha256": "2eeca90fee1e860d0b5e272ea6c52ff2a499b876469c805157f222c36e105317",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "window_maximize",
+      "path": "modules/gui/qt/pixmaps/icons/window_maximize.svg",
+      "sha256": "f5f93921a5cd7c001ba9973381854c8d41f48f77fa73a4fa7a4bcd455329e928",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "window_minimize",
+      "path": "modules/gui/qt/pixmaps/icons/window_minimize.svg",
+      "sha256": "474bfa9d3c2c8ef45347a37a0647ae1ea6dcdf7e2995f82231c9b8e70438565a",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "window_restore",
+      "path": "modules/gui/qt/pixmaps/icons/window_restore.svg",
+      "sha256": "7057fc415907f61c345bd597fb4b4f01e113ab141aa3b110dd1548ae50d6ae08",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_document_add_24_regular",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_document_add_24_regular.svg",
+      "sha256": "cc81260c218c0052610c6818d99db7b62f958e2bcaddb585c75b0c286c192f48",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_document_copy_24_regular",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_document_copy_24_regular.svg",
+      "sha256": "c5b03264974b14b3659166c7c9d7cd9e672d19a2d4c06ce6064e2ff3c7827be5",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_arrow_download_24_regular",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_download_24_regular.svg",
+      "sha256": "2749dfd0860188f7de7a573a634f3e37fe8ea4e99aa36fd1559e62d1a8243910",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_arrow_sync_24_regular",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_arrow_sync_24_regular.svg",
+      "sha256": "9537e4dc984b915d1d67bf2ed61c1fdf713c69d0b293a4dc12b2520d57ab55b7",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "medialibrary_add",
+      "path": "modules/gui/qt/pixmaps/icons/ic_medialibrary_add.svg",
+      "sha256": "65061c3fe7c8e7de966369f07efe1b937e6e54c875189f4ffd5ca6bd49f3954e",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "medialibrary_remove",
+      "path": "modules/gui/qt/pixmaps/icons/ic_medialibrary_remove.svg",
+      "sha256": "4defe7a178c217aae37b244b7f727f49029f7e1a6c5d4f4a033db59d39e15695",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "regex",
+      "path": "modules/gui/qt/pixmaps/icons/regex.svg",
+      "sha256": "20890a806dd2d33165b41266b3cd9c37305c97e4b2aba3aafe6b57f59c23613c",
+      "license": "GPL-2.0-or-later",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    },
+    {
+      "key": "ic_fluent_text_change_case_24_regular",
+      "path": "modules/gui/qt/pixmaps/icons/ic_fluent_text_change_case_24_regular.svg",
+      "sha256": "39295f06b343818c63cb5e97df880d66f25e66fda9b62f46c163a87da781fd18",
+      "license": "MIT",
+      "provenance": "Unmodified glyph source named in the pinned upstream VLC font manifest"
+    }
+  ],
+  "fluent_notice": {
+    "url": "https://raw.githubusercontent.com/microsoft/fluentui-system-icons/64e5aa757d1b70c24a283256ddcb8269d0f58773/LICENSE",
+    "sha256": "69bc45dc42b9acb96a69823adbc6ae538374e3c0bde169b855b32c48eaaef52f",
+    "scope": "MIT notice for retained upstream Fluent-named icon glyphs; no new replacement glyphs downloaded."
+  },
+  "production_media_policy": "No embedded Figma raster artwork or test media promoted into new production assets. Existing unchanged upstream resources remain inventoried above.",
+  "separate_final_gates": [
+    "Package all design/font and upstream/dependency notices.",
+    "Provide matching application and modified-dependency source/build inputs for the final package.",
+    "Verify actual final normal runtime and complete native presentation matrix."
+  ],
+  "custom_assets_verified": true
+}

@@ -80,6 +80,7 @@ class UpdateModel;
 #endif
 struct vlc_preparser_t;
 class ThreadRunner;
+class LegacyFontSetup;
 
 namespace vlc {
 namespace playlist {
@@ -125,6 +126,7 @@ class MainCtx : public QObject
     Q_PROPERTY(QColor redesignAccentText READ getRedesignAccentText NOTIFY redesignAccentChanged FINAL)
     Q_PROPERTY(ColorSchemeModel* colorScheme READ getColorScheme CONSTANT FINAL)
     Q_PROPERTY(bool onboardingRequested READ onboardingRequested NOTIFY onboardingRequestedChanged FINAL)
+    Q_PROPERTY(QObject* legacyFont READ legacyFont CONSTANT FINAL)
     Q_PROPERTY(bool hasVLM READ hasVLM CONSTANT FINAL)
     Q_PROPERTY(bool clientSideDecoration READ useClientSideDecoration NOTIFY useClientSideDecorationChanged FINAL)
     Q_PROPERTY(bool hasFirstrun READ hasFirstrun CONSTANT FINAL)
@@ -256,6 +258,7 @@ public:
     Q_INVOKABLE void finishRedesignOnboarding(bool finish, const QVariantMap &values, const QString &folder);
     Q_INVOKABLE QString chooseOnboardingFolder(const QString &current);
     Q_INVOKABLE QString shortcutLabel(const QString &option) const;
+    QObject *legacyFont() const;
     bool onboardingRequested() const { return m_onboardingRequested; }
     Q_INVOKABLE void requestPlayerOnboarding() {
         if (!m_onboardingRequested) {
@@ -489,6 +492,7 @@ protected:
     quint64 m_onboardingFolderRevision=0;
     int m_beforePreviewTheme=-1;
     bool m_onboardingRequested=false;
+    LegacyFontSetup *m_legacyFont=nullptr;
 
     /* */
     QSettings           *settings = nullptr;

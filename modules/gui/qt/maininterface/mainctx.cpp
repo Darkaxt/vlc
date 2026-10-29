@@ -32,6 +32,7 @@
 #include <QJSEngine>
 
 #include "mainctx.hpp"
+#include "legacy_font_setup.hpp"
 #include "mainctx_submodels.hpp"
 #include "medialibrary/mlhelper.hpp"
 #include "medialibrary/mlbookmarkmodel.hpp"
@@ -205,6 +206,7 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
      **/
 
     settings = getSettings();
+    m_legacyFont = new LegacyFontSetup(this);
     m_colorScheme = new ColorSchemeModel(this);
     connect(qGuiApp,&QGuiApplication::paletteChanged,this,&MainCtx::redesignAccentChanged);
 
@@ -762,6 +764,11 @@ QString MainCtx::saveCustomizationImpl(const QString &encoded,const QVariantMap 
 QString MainCtx::chooseOnboardingFolder(const QString &current)
 {
     return QFileDialog::getExistingDirectory(nullptr,qtr("Choose a Media Folder"),current);
+}
+
+QObject *MainCtx::legacyFont() const
+{
+    return m_legacyFont;
 }
 
 QString MainCtx::shortcutLabel(const QString &option) const

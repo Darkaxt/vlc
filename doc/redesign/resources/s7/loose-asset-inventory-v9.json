@@ -1,0 +1,2531 @@
+{
+  "schema": "vlc_redesign.loose_asset_inventory.v1",
+  "assets": [
+    {
+      "package_path": "hrtfs/dodeca_and_7channel_3DSL_HRTF.sofa",
+      "source_path": "share/hrtfs/dodeca_and_7channel_3DSL_HRTF.sofa",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "05ca927052cf83663b29546b06998b03ea7fbcd288f7c99e7af8b215ac77ec4e",
+      "bytes": 92388,
+      "license": "LGPL-2.1-or-later",
+      "embedded_license": "Copyright (C) 2017 3D Sound Labs\n\nThis file is part of VLC\n\nVLC is free software; you can redistribute it and/or modify it\nunder the terms of the GNU Lesser General Public License as published by\nthe Free Software Foundation; either version 2.1 of the License, or\n(at your option) any later version.\n\nVLC is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\nGNU Lesser General Public License for more details.\n\nYou should have received a copy of the GNU Lesser General Public License\nalong with VLC; if not, write to the Free Software Foundation,\nInc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.\n\u0003"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/theme.xml",
+      "source_path": "share/skins2/default/theme.xml",
+      "source_revision": "Current fork working tree, bound by the source hash; bind to final commit before release",
+      "sha256": "ddaa31e06085f7e5ce48a75ab2a813172848a5e83f91691d652060b563b0de20",
+      "bytes": 55551,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/about.png",
+      "source_path": "share/skins2/default/subX/about.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "6fb50b001cf58856079ba582cd22c2cbc7d8a90ac27960c918c19f463eb4727e",
+      "bytes": 33054,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/eq.png",
+      "source_path": "share/skins2/default/subX/eq.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "f7a1dba8554dc6eeed1206bb61f5a936ac2132725b2cf9147d5706531ab37cf5",
+      "bytes": 31809,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/main.png",
+      "source_path": "share/skins2/default/subX/main.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "dc61a2e946c01aeedf965dc41f776b14f701231103147f6e8a3374caa81c07b2",
+      "bytes": 68042,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/playtreeglyphs.png",
+      "source_path": "share/skins2/default/subX/playtreeglyphs.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "08e0c11ef9d676cbccb0bcecb230dbf8f90609a70e81b438363a7a640c011728",
+      "bytes": 101,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/pl.png",
+      "source_path": "share/skins2/default/subX/pl.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "90d1b7a745abec75375da6e0ba1d673535d4dcd6cf3d4831f0f6b0d65759e346",
+      "bytes": 7739,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/sysbuttons.png",
+      "source_path": "share/skins2/default/subX/sysbuttons.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "4fac0c838ceb134fcfc0148daa748968799311fea042ced2d108220b6381a6df",
+      "bytes": 2245,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/vol_anim.png",
+      "source_path": "share/skins2/default/subX/vol_anim.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "d6d5aaf45bb9b85d75874e6cf0718cb6786e21452590466652ad5c63b3706e60",
+      "bytes": 2063,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/vol_slider.png",
+      "source_path": "share/skins2/default/subX/vol_slider.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "2848b2ea15737212df861c7d34852246a8e8fcb4c9c4899286548a673fc9bcdb",
+      "bytes": 73,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "skins/default.vlt!/default/subX/FreeSans.ttf",
+      "source_path": "share/skins2/fonts/FreeSans.ttf",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3259367eaba45a032d6445acb8640b94540140f13b8ab90654d6d3f06032b812",
+      "bytes": 256627,
+      "license": "Retain exact embedded font license/copyright statements recorded in opentype_names and their applicable full license text.",
+      "opentype_names": {
+        "0": [
+          "Copyleft 2002, 2003 Free Software Foundation."
+        ],
+        "1": [
+          "FreeSans"
+        ],
+        "2": [
+          "Medium"
+        ],
+        "5": [
+          "Version $Revision: 1.1 $ \u0000",
+          "Version $Revision: 1.22 $ "
+        ],
+        "13": [
+          "The use of this font is granted subject to GNU General Public License.",
+          "he use of this font is granted subject to GNU General Public License.\u0000"
+        ],
+        "14": [
+          "http://www.gnu.org/copyleft/gpl.html",
+          "ttp://www.gnu.org/copyleft/gpl.html\u0000"
+        ]
+      }
+    },
+    {
+      "package_path": "skins/fonts/FreeSans.ttf",
+      "source_path": "share/skins2/fonts/FreeSans.ttf",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3259367eaba45a032d6445acb8640b94540140f13b8ab90654d6d3f06032b812",
+      "bytes": 256627,
+      "license": "Retain exact embedded font license/copyright statements recorded in opentype_names and their applicable full license text.",
+      "opentype_names": {
+        "0": [
+          "Copyleft 2002, 2003 Free Software Foundation."
+        ],
+        "1": [
+          "FreeSans"
+        ],
+        "2": [
+          "Medium"
+        ],
+        "5": [
+          "Version $Revision: 1.1 $ \u0000",
+          "Version $Revision: 1.22 $ "
+        ],
+        "13": [
+          "The use of this font is granted subject to GNU General Public License.",
+          "he use of this font is granted subject to GNU General Public License.\u0000"
+        ],
+        "14": [
+          "http://www.gnu.org/copyleft/gpl.html",
+          "ttp://www.gnu.org/copyleft/gpl.html\u0000"
+        ]
+      }
+    },
+    {
+      "package_path": "skins/fonts/FreeSansBold.ttf",
+      "source_path": "share/skins2/fonts/FreeSansBold.ttf",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "42f28331af81b901b0045ad1af5eb2353d599afde497dbab7e6f80d7a3e3b2c6",
+      "bytes": 64228,
+      "license": "Retain exact embedded font license/copyright statements recorded in opentype_names and their applicable full license text.",
+      "opentype_names": {
+        "0": [
+          "Copyleft 2002, 2003 Free Software Foundation."
+        ],
+        "1": [
+          "FreeSans"
+        ],
+        "2": [
+          "Bold"
+        ],
+        "5": [
+          "Version $Revision: 1.1 $ ",
+          "Version $Revision: 1.8 $ "
+        ],
+        "13": [
+          "The use of this font is granted subject to GNU General Public License."
+        ],
+        "14": [
+          "http://www.gnu.org/copyleft/gpl.html"
+        ]
+      }
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_18_b81900_40x40.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_18_b81900_40x40.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "adb182bf32d80030963bfae7079295b8c35085a85cf5a0fe28046db1b4836e7f",
+      "bytes": 201,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "c6133633c005b1c344f4ae682811157a366af0f9f637ee4fb65e896ffbf0d71e",
+      "bytes": 197,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_flat_10_000000_40x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_flat_10_000000_40x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "61b9e46d291ed3d7800cbc899b7edcb95327d16cd61085bb515381af32bc1469",
+      "bytes": 147,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_glass_100_f6f6f6_1x400.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_glass_100_f6f6f6_1x400.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "49d57607054d07581044a39025ea0ff623185d5e8117b7325084db098795298d",
+      "bytes": 103,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_glass_100_fdf5ce_1x400.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_glass_100_fdf5ce_1x400.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "1a9cb0100308c590bd17ace4d3541dab56cd982af721d0b2ea67f5d746dcab5f",
+      "bytes": 115,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "29043ec911594970261ab6c5e03de903c1161ed13a25a377449c9c3b22134c28",
+      "bytes": 95,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "0307f13b51f07c8d10ede9b29c8f43cb02024fcd2d69f04a26600a4244846ac0",
+      "bytes": 2627,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_highlight-soft_100_eeeeee_1x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_highlight-soft_100_eeeeee_1x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "983c3de6adc1d836b26e97bcb87cb29fb5b31b2fc87ae78563bd6e328907667b",
+      "bytes": 88,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-bg_highlight-soft_75_ffe45c_1x100.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-bg_highlight-soft_75_ffe45c_1x100.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "46f39d964785147c69c5ef4495977c1285984a1d99aa087d650036ec6bce8234",
+      "bytes": 126,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_222222_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_222222_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "7ad54e50835a67efbb2e9694e73d24a5dd9545df297afb1569992e0247acc32c",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_228ef1_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_228ef1_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3d9ef9c36b2407d3766fd183927e2778a1e4abaaf2233910453bafaf76e1f3db",
+      "bytes": 5103,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_ef8c08_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_ef8c08_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "40a22c997402ddb59e9e344c2d0a8c4cafe64cf4b103584208863eec05dfa897",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_ffd27a_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_ffd27a_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "1bd643299f5a35060c7057dc76b4a2138cf3723a2ed5f98a25f9c9a954eaced6",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/css/ui-lightness/images/ui-icons_ffffff_256x240.png",
+      "source_path": "share/lua/http/css/ui-lightness/images/ui-icons_ffffff_256x240.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "fdcb90174d3b2f5cb8b7a4205e60119419c728c1c76e5a2573aaa8058b6dd3a1",
+      "bytes": 4194,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/favicon.ico",
+      "source_path": "share/lua/http/favicon.ico",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "fd9b5998b98ee0ba86ed7687f215a1cdde90c00b0b1cd11dc83e3614389cb6ad",
+      "bytes": 86358,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Audio-48.png",
+      "source_path": "share/lua/http/images/Audio-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "372b03407e4c070aaf05d9bcf70bc048a2560593b7d3e4c919eda602c1cb5d0b",
+      "bytes": 4675,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Back-48.png",
+      "source_path": "share/lua/http/images/Back-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "e92c787df1d4c93ea84bfce7cf61448dca2879c4c2b9a9d8ad1e8c80f4001ac8",
+      "bytes": 2025,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/buttons.png",
+      "source_path": "share/lua/http/images/buttons.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "c3904f63906db4346d2e0529285397c0ced3dbd5132dba250c3fcb28ed6a96df",
+      "bytes": 11954,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Folder-48.png",
+      "source_path": "share/lua/http/images/Folder-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "a5a4ed70d20cefe54e541e15bc007a6d36339fb6b8428806f7b48f846e8b9160",
+      "bytes": 1353,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Other-48.png",
+      "source_path": "share/lua/http/images/Other-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "48878e2d1d5dcbd686358a180379d61f82aaf862fa2c4030933c1ad4e7299a20",
+      "bytes": 2921,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/speaker-32.png",
+      "source_path": "share/lua/http/images/speaker-32.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "3c6cf8b87ad6453bf0d0629893cbe4d0196a3b28e9036b7cc6f19c0168325137",
+      "bytes": 942,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/Video-48.png",
+      "source_path": "share/lua/http/images/Video-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "aa6039a0466683c195e0d2c4b4bf8602bd2173e955bc8dd39ca793d207985a3a",
+      "bytes": 5115,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/vlc-48.png",
+      "source_path": "share/lua/http/images/vlc-48.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "731d5a34a98fee76f9e1aacaa524b3e0ed0cf0ecac3e2f9e2703b38c4a4bc518",
+      "bytes": 15875,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    },
+    {
+      "package_path": "lua/http/images/vlc16x16.png",
+      "source_path": "share/lua/http/images/vlc16x16.png",
+      "source_revision": "392bc1d0abdb7396b6c97fef206efa1d23868e19",
+      "sha256": "32030a3d8e8fa75bd89ead94c429f2c3418944d9aa3d1029294b4af99264f5c5",
+      "bytes": 606,
+      "license": "GPL-2.0-or-later (upstream VLC distribution; retain per-file notices)"
+    }
+  ],
+  "all_source_bytes_verified": true,
+  "language_catalogs": [
+    {
+      "package_path": "locale/ach/LC_MESSAGES/vlc.mo",
+      "sha256": "164b97e60db70c34d4475a861a5cfd897ac61c29ee8f888bbb5428d14fe591cc",
+      "bytes": 48512,
+      "source_path": "po/ach.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "093d74d5858e51786e8b58b03418df9d32df137220e6b0001e73f5ab05d69914",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-12-08 08:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Acoli (http://www.transifex.com/projects/p/vlc-trans/language/ach/)",
+        "language": "ach",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 890,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/af/LC_MESSAGES/vlc.mo",
+      "sha256": "9632837fd35a027153d184fa48c8467660dbebe83b459b80df02ed9f23178148",
+      "bytes": 105705,
+      "source_path": "po/af.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a6dc636ca4123ab0b83fb4479866a4faa1bcbe8c6540eeea3d5640cb15eb847a",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Gideon Wentink <gjwentink@gmail.com>",
+        "language-team": "Afrikaans (http://www.transifex.com/yaron/vlc-trans/language/af/)",
+        "language": "af",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 1668,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/am/LC_MESSAGES/vlc.mo",
+      "sha256": "9aba2c87cbf6f0b8515aa68d0694b9b1b348b2c88dc4dc68bccd9107ef9f6a67",
+      "bytes": 62933,
+      "source_path": "po/am.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "10f0fd55c97f0a7e2a04776ff0f45bf9333dc68c1185d5fc13473de4174a3248",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2011-04-06 00:53+0200",
+        "last-translator": "Solomon Gizaw <solohavi@yahoo.com>",
+        "language-team": "Amharic (http://www.transifex.com/projects/p/vlc-trans/language/am/)",
+        "language": "am",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);",
+        "x-generator": "Pootle 2.1.5"
+      },
+      "translated_entries": 891,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/an/LC_MESSAGES/vlc.mo",
+      "sha256": "a9e1670669f5b5aeb1c53f39bc99a3c5ceae4aaeb7ae4308543cf18219db919c",
+      "bytes": 407328,
+      "source_path": "po/an.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "9f37f6a9cccb4feec588199ae265a1f8c92d7632d0afa9a0f719360682574384",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Luis Lazaro <luis_laz_zgz@hotmail.com>",
+        "language-team": "Aragonese (http://www.transifex.com/yaron/vlc-trans/language/an/)",
+        "language": "an",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 4349,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ar/LC_MESSAGES/vlc.mo",
+      "sha256": "7b132bf8daae28cea984a6d3251c3d68505348fed78c63e78315686278573d4d",
+      "bytes": 324387,
+      "source_path": "po/ar.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "ea5b862d536d3c347accd6dd6e7afbc664e16c254492efac1b53f797343885e1",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Arabic (http://www.transifex.com/yaron/vlc-trans/language/ar/)",
+        "language": "ar",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;"
+      },
+      "translated_entries": 3223,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/as/LC_MESSAGES/vlc.mo",
+      "sha256": "cccd3ae6c614d41d640ccf823b6f366dc4b3c815d6c1a1cd926493e858f2cfc1",
+      "bytes": 813469,
+      "source_path": "po/as.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "ee9fd8c95be835a7254fb6e582067e6ad9a3a79475019b602797591955536ae4",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-22 02:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Assamese (India) (http://www.transifex.com/yaron/vlc-trans/language/as_IN/)",
+        "language": "as",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5464,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ast/LC_MESSAGES/vlc.mo",
+      "sha256": "ed0764e325566d419c5816410a8b9c5848e18e60007fcb3d873a33ce95032348",
+      "bytes": 405874,
+      "source_path": "po/ast.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "6f31a7495ec8a0710283d713593c4af41ded7c3dcd0d14b4d6727b6142fe4783",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Asturian (http://www.transifex.com/yaron/vlc-trans/language/ast/)",
+        "language": "ast",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 4437,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/az/LC_MESSAGES/vlc.mo",
+      "sha256": "229651c50315332dfaf8f684a8a1548e75e8ae21717e1dfce3fe97a74864fd41",
+      "bytes": 8867,
+      "source_path": "po/az.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "708dfcfe2239edcdd7fb67fd12e4e60adf03e0a8dac1f55de38e8d3a4ccd115d",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Emin Mastizada <emin@mastizada.com>",
+        "language-team": "Azerbaijani (http://www.transifex.com/yaron/vlc-trans/language/az/)",
+        "language": "az",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 156,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/be/LC_MESSAGES/vlc.mo",
+      "sha256": "df266210d7ce0c0636d39562afeb2a1beea6c4ee5626425c1be4631cc1ebb63b",
+      "bytes": 640200,
+      "source_path": "po/be.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "7f3c00272a8bbc4708fda79f431e61d8d5ca09804d4e19a8d038677d0ad4d6e4",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-03-09 18:41+0000",
+        "last-translator": "nesterow <nestserau@me.com>",
+        "language-team": "Belarusian (http://www.transifex.com/projects/p/vlc-trans/language/be/)",
+        "language": "be",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
+      },
+      "translated_entries": 5270,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/bg/LC_MESSAGES/vlc.mo",
+      "sha256": "e36e3e9211b92d98a7f0b85a3a7f2f3b790c4c575eced50fbb571406d3c76731",
+      "bytes": 543267,
+      "source_path": "po/bg.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "e13e0b57d96a48b5bc08a7c115131fd055059d6fa670dd18bf86c6ad1c19ef46",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "\u041c\u0430\u0440\u0438\u043d \u041c\u0438\u043d\u0447\u0435\u0432 <marin.minchev@gmail.com>",
+        "language-team": "Bulgarian (http://www.transifex.com/yaron/vlc-trans/language/bg/)",
+        "language": "bg",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 4195,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/bn/LC_MESSAGES/vlc.mo",
+      "sha256": "48c0ecda74bfbf3bbf8e668770693e388926c7788c6457ce2664dff8356dad08",
+      "bytes": 571996,
+      "source_path": "po/bn.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "facafa8d4cafc548da3010c56d5179aa3b4078c7406943a42418b2bc1568c33b",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Bengali (Bangladesh) (http://www.transifex.com/yaron/vlc-trans/language/bn_BD/)",
+        "language": "bn",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 3960,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/bn_IN/LC_MESSAGES/vlc.mo",
+      "sha256": "cab0bf636f6ef56a8f5d6c6bfcb37f3258da8d31a23c295dca0ce5faee984dd1",
+      "bytes": 682523,
+      "source_path": "po/bn_IN.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "24091292c17b73cae7b62693e1fd962d4d837a547b371532c11b4b6cbfe5972e",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Bengali (India) (http://www.transifex.com/yaron/vlc-trans/language/bn_IN/)",
+        "language": "bn_IN",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 4549,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/br/LC_MESSAGES/vlc.mo",
+      "sha256": "d84d7e7d30a5caab7311748d1b9585e3c4fc60b5d7d0721a696919c91db8c4da",
+      "bytes": 95351,
+      "source_path": "po/br.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "990bd3f79732f5d6c7dc5059efb8d6cfba00c3726baaab90d0ab2ab6ac277aae",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Breton (http://www.transifex.com/yaron/vlc-trans/language/br/)",
+        "language": "br",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 1570,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/brx/LC_MESSAGES/vlc.mo",
+      "sha256": "dcbe055726b3c96a4a8a7146b0d5e4c6ea5aae01464c64c1c4bed8fe1828f201",
+      "bytes": 807203,
+      "source_path": "po/brx.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "dd76d9a08ed1e3b473d7b97416eeb237c1caf99c34831884bcfaa7b46d26e896",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Bodo (http://www.transifex.com/yaron/vlc-trans/language/brx/)",
+        "language": "brx",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5469,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/bs/LC_MESSAGES/vlc.mo",
+      "sha256": "2de1c81a005f2f883ea323c87ec7c5c6114efbd9075783168a147569ee41df7e",
+      "bytes": 162437,
+      "source_path": "po/bs.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "b5615d671c51824c81d106cd2632dd4581607022a281b38b3142e0789109652d",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Bosnian (http://www.transifex.com/yaron/vlc-trans/language/bs/)",
+        "language": "bs",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
+      },
+      "translated_entries": 2334,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ca/LC_MESSAGES/vlc.mo",
+      "sha256": "3c3a54b7d8fc8349a61ee0a2aa607bddb9aab5da79723acf0008787e04581eef",
+      "bytes": 541620,
+      "source_path": "po/ca.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "2b947b9ce4f66843b64cdc59f66e8cab1b02d45cbee97c3d218e43b06bbc8f08",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-04-08 22:09+0000",
+        "last-translator": "Benny Beat <bennybeat@gmail.com>",
+        "language-team": "Catalan (http://www.transifex.com/yaron/vlc-trans/language/ca/)",
+        "language": "ca",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5363,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/cgg/LC_MESSAGES/vlc.mo",
+      "sha256": "9c3f48b0abb0c0009ffcb82e95483152f04c5de8dbe26476d424eb4f9454d7d0",
+      "bytes": 35052,
+      "source_path": "po/cgg.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "944d40bbd304c0a6a86d3dcd8fa4234e39eb077a70cd531dcbe75d6049e0ff37",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2011-04-18 13:01+0200",
+        "last-translator": "Florence Tushabe <tushabe@cit.mak.ac.ug>",
+        "language-team": "Chiga (https://www.transifex.com/projects/p/vlc-trans/language/cgg/)",
+        "language": "cgg",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "x-generator": "Pootle 2.1.5"
+      },
+      "translated_entries": 607,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ckb/LC_MESSAGES/vlc.mo",
+      "sha256": "feb37dca49024f8ae054655f7e8b63415a9ce7371c50c0269d647cc5023f0203",
+      "bytes": 79539,
+      "source_path": "po/ckb.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "1a1ed21dc16a40ae665356530b5ca75a1c02261eefb22c455fcf64ab8d5542aa",
+      "header": {
+        "project-id-version": "vlc 1.0",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2009-06-07 18:52+0300",
+        "last-translator": "Ara Qadir <arastein@gmail.com>",
+        "language-team": "Kurdish (Sorani) <arastein@gmail.com>",
+        "language": "ckb",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "x-poedit-language": "Kurdish (Sorani)",
+        "x-poedit-country": "KURDISTAN"
+      },
+      "translated_entries": 1116,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/co/LC_MESSAGES/vlc.mo",
+      "sha256": "ebe499750a3723a36e6c94947ba42c7d2c143ebc1ad620c1cef7cd7e9647183f",
+      "bytes": 170210,
+      "source_path": "po/co.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "c1b91032b90e734f281fbcb88b15334ffff28aabad4ea0c52980e43094e64955",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-20 03:43+0000",
+        "last-translator": "Patriccollu <Patrick.Santa-Maria@laposte.net>",
+        "language-team": "Corsican (http://www.transifex.com/yaron/vlc-trans/language/co/)",
+        "language": "co",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 2335,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/cs/LC_MESSAGES/vlc.mo",
+      "sha256": "bae20d665467bf21e5ef5aa8d4b518e9a83febcba09d1c1037ff9f10450d6794",
+      "bytes": 247881,
+      "source_path": "po/cs.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "33c176a3f197446513ea9b3503e8b00df10fbb3d8561e3cb744e8c36986c7be4",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Czech (http://www.transifex.com/yaron/vlc-trans/language/cs/)",
+        "language": "cs",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;"
+      },
+      "translated_entries": 3329,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/cy/LC_MESSAGES/vlc.mo",
+      "sha256": "1a7408b90d0cf6ff66dcab494aecbdd3b7c6a09ec2605f0c290514cba980c527",
+      "bytes": 275042,
+      "source_path": "po/cy.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "d39d5d097d3c7c79350b74a93acabcfbf58d139a5e9778d58e3ec695159da5d5",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Welsh (http://www.transifex.com/yaron/vlc-trans/language/cy/)",
+        "language": "cy",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;"
+      },
+      "translated_entries": 3665,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/da/LC_MESSAGES/vlc.mo",
+      "sha256": "608ebe67d2ecf5409b2503a42f3153a7647c551343f6f8335053eb73a75bcb0b",
+      "bytes": 524027,
+      "source_path": "po/da.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "1aaaf195fa84e7660ee985987ece01641bb85273d374f05fa32dcbfd3c71efb0",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-01 07:26+0000",
+        "last-translator": "scootergrisen",
+        "language-team": "Danish (http://www.transifex.com/yaron/vlc-trans/language/da/)",
+        "language": "da",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5515,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/de/LC_MESSAGES/vlc.mo",
+      "sha256": "1c22817f40c8360ae2be1b13eb1d8665b353551c59c0a4cf6ab9b6de3f5529e6",
+      "bytes": 543470,
+      "source_path": "po/de.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "68ade272284ba0f59f9d6ab9789cccbda31f0400ed1e7a3d420ba53c838899c7",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-15 18:51+0100",
+        "last-translator": "Micha\u0142 Trzebiatowski <michtrz@gmail.com>",
+        "language-team": "German (http://www.transifex.com/yaron/vlc-trans/language/de/)",
+        "language": "de",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5541,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/el/LC_MESSAGES/vlc.mo",
+      "sha256": "0605912f57667e8a8bc967e6f01861fbcab72588211176876d818d5cff2b432d",
+      "bytes": 747008,
+      "source_path": "po/el.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "5bb61f0e010422f65d2057b48013d464462ef32cfcfcc6c1eb25e5645f7b1d3b",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-05 19:04+0000",
+        "last-translator": "Savvas Nesseris <nesseris@yahoo.com>",
+        "language-team": "Greek (http://www.transifex.com/yaron/vlc-trans/language/el/)",
+        "language": "el",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5498,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/en_GB/LC_MESSAGES/vlc.mo",
+      "sha256": "1deca7c1b10ddb5ed7fb6ec1da1c7538f2706cef8808444c35e3e8c78dbd879a",
+      "bytes": 53291,
+      "source_path": "po/en_GB.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "f563a9ac3802e5d0ed0ea7994ce66b24c9dfd7a02a6a7a1e3b69412032cd66b5",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "English (United Kingdom) (http://www.transifex.com/yaron/vlc-trans/language/en_GB/)",
+        "language": "en_GB",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 512,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/es/LC_MESSAGES/vlc.mo",
+      "sha256": "cd2291f63e23842f2c177c5fe464de60a6aecfe2e77f2656372dcd95f8407d35",
+      "bytes": 543778,
+      "source_path": "po/es.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "9c473014d8338763da3db1dbb5c41a18da1fe20a0fa71e1fce17186a27fc555e",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "picodotdev <pico.dev@gmail.com>",
+        "language-team": "Spanish (http://www.transifex.com/yaron/vlc-trans/language/es/)",
+        "language": "es",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5515,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/et/LC_MESSAGES/vlc.mo",
+      "sha256": "380a4a27e8fb7f9b7a26708864634ffc365169712e7e07e5761995565175bb32",
+      "bytes": 404073,
+      "source_path": "po/et.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "39c4647b689a5e825ebb7b1c143d9945cfc988e9ecfa2b3ffe7f4e973f8e8a5e",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-07-12 17:35+0000",
+        "last-translator": "Joel Limberg <joel@stuudium.com>",
+        "language-team": "Estonian (http://www.transifex.com/projects/p/vlc-trans/language/et/)",
+        "language": "et",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 4801,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/eu/LC_MESSAGES/vlc.mo",
+      "sha256": "63c32c919e3cd3779b350a4ea79063e1807bef07a2226043972c004c787ed8b5",
+      "bytes": 545412,
+      "source_path": "po/eu.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "af0d841da54e3c4414a82b95480f20f549798cad5af35ea105de2cbdd9e1df24",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-04-04 16:53+0000",
+        "last-translator": "Alexander Gabilondo <alexgabi@openmailbox.org>",
+        "language-team": "Basque (http://www.transifex.com/yaron/vlc-trans/language/eu/)",
+        "language": "eu",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5483,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/fa/LC_MESSAGES/vlc.mo",
+      "sha256": "05c40c9363745f71dcf289d0a452052b49e06f67019e0b81d57f95d546306fc3",
+      "bytes": 164065,
+      "source_path": "po/fa.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "c6b2b6b998b074c443f469d6a7da92f045517eed65ca2e434495d68d0b63f1bf",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Persian (http://www.transifex.com/yaron/vlc-trans/language/fa/)",
+        "language": "fa",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 1777,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ff/LC_MESSAGES/vlc.mo",
+      "sha256": "2d1fc38ec9b048fe4742e576e94d43109222c097ad9826e584b7bd64cea81152",
+      "bytes": 74474,
+      "source_path": "po/ff.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "bc7c1982f263054be0af3ce92078e1296607dffc01e481c69fd6719033ef9cf1",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-12-08 08:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Fulah (http://www.transifex.com/projects/p/vlc-trans/language/ff/)",
+        "language": "ff",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n >= 2);"
+      },
+      "translated_entries": 1242,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/fi/LC_MESSAGES/vlc.mo",
+      "sha256": "4b3aa0786821469b732274afcc373e3964033d986ab02ba90f0a217e850320f4",
+      "bytes": 498757,
+      "source_path": "po/fi.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "9a9170443fd877efd45fde93522243b90c9d5ebb471b9dcee5c3b3dbe76b2d8e",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Finnish (http://www.transifex.com/yaron/vlc-trans/language/fi/)",
+        "language": "fi",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5267,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/fr/LC_MESSAGES/vlc.mo",
+      "sha256": "271c664692e3bafc16cde74567d2a149a3f25b266dedde364296dfcb2844ae23",
+      "bytes": 543800,
+      "source_path": "po/fr.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "63bd80f4741ea64bce6a81d4a9e47051097eef258d3af96432af8a3a0efddc9a",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-20 03:42+0000",
+        "last-translator": "Fan",
+        "language-team": "French (http://www.transifex.com/yaron/vlc-trans/language/fr/)",
+        "language": "fr",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 5516,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/fur/LC_MESSAGES/vlc.mo",
+      "sha256": "71aad3a54a248d3805e58481a809dcc9cec97b97a6619b235a711a238b22fcb2",
+      "bytes": 34975,
+      "source_path": "po/fur.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "c2b1e151b9d036343bc1a428b5770641602662507ea80003fe52bdad3626b894",
+      "header": {
+        "project-id-version": "vlc",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2006-10-22 20:42+0000",
+        "last-translator": "A. Decorte <klenje@adriacom.it>",
+        "language-team": "Friulian <fur@li.org>",
+        "language": "fur",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit"
+      },
+      "translated_entries": 662,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/fy/LC_MESSAGES/vlc.mo",
+      "sha256": "f6fcafa169c749317aad193075cf7122d219d327d551600ca090583100d24ecb",
+      "bytes": 524833,
+      "source_path": "po/fy.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "981356239adaaa509f550c3b8c5a268353a8b07ac1f48122f012949bde1d86d7",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Western Frisian (http://www.transifex.com/yaron/vlc-trans/language/fy/)",
+        "language": "fy",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5479,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ga/LC_MESSAGES/vlc.mo",
+      "sha256": "7c8491ea672d673ca546f8aeecab65d328b171921388ccdd57d5b5dc9086e84f",
+      "bytes": 151405,
+      "source_path": "po/ga.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "90e9cd6a250ac53e7e2d3120d18e5806f8239879594c4b9a2fd97db9e3d77730",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-10-04 04:27+0000",
+        "last-translator": "Se\u00e1n \u00d3 S\u00e9aghdha <sean.anseo@gmail.com>",
+        "language-team": "Irish (http://www.transifex.com/yaron/vlc-trans/language/ga/)",
+        "language": "ga",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);"
+      },
+      "translated_entries": 2535,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/gd/LC_MESSAGES/vlc.mo",
+      "sha256": "9e3b50db0fad057d6b27476b47003f64c10a89a6a62430989cfa1f67ac4f2220",
+      "bytes": 173407,
+      "source_path": "po/gd.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a4e21b90c55c87a2c4b48d9b10912552f5eb8f29d06c712c19aa4bdb4a72c623",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-04-10 17:25+0000",
+        "last-translator": "Michael Bauer",
+        "language-team": "Gaelic, Scottish (http://www.transifex.com/projects/p/vlc-trans/language/gd/)",
+        "language": "gd",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : (n > 2 && n < 20) ? 2 : 3;"
+      },
+      "translated_entries": 2486,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/gl/LC_MESSAGES/vlc.mo",
+      "sha256": "281e46f5a94c557e7ee62bcf076f07ec7cfce830b4f7e3f56f2d46e5682ee919",
+      "bytes": 533743,
+      "source_path": "po/gl.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "e78b1a9ab252086c370ed1deee0decb59bc5d2bc8f1310bfc3d422fc8829802d",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-11-02 18:53+0000",
+        "last-translator": "Gon\u00e7alo Cordeiro <gzcordeiro@gmail.com>",
+        "language-team": "Galician (http://www.transifex.com/projects/p/vlc-trans/language/gl/)",
+        "language": "gl",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5340,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/gu/LC_MESSAGES/vlc.mo",
+      "sha256": "07731258c755e5e6f9b0708d9a3831c01b1f2d45a0067ad6f4fa9240904b81d0",
+      "bytes": 786040,
+      "source_path": "po/gu.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "1fc2bd845af3d352b5900f95fb310730696295be88bbd21619607bea901cf791",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Gujarati (India) (http://www.transifex.com/yaron/vlc-trans/language/gu_IN/)",
+        "language": "gu",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5467,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/he/LC_MESSAGES/vlc.mo",
+      "sha256": "d92ee4adbec1f3b7e32b7c9dbeafb9ff94825b3e118b4bd7112ee582495a88b6",
+      "bytes": 375708,
+      "source_path": "po/he.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "5c33611fd8fd4d97a5c38946039a5dcf805a25206b7d3742ae2c7ffaca47a31f",
+      "header": {
+        "project-id-version": "vlc 3.0.9",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-12-10 22:48+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>, 2020",
+        "language-team": "Hebrew (https://www.transifex.com/yaron/teams/16553/he/)",
+        "language": "he",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;"
+      },
+      "translated_entries": 4183,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/hi/LC_MESSAGES/vlc.mo",
+      "sha256": "3957064f9ddf49e3d7c9dc6a167ec49a830e4105e47e324d37dff9170dbed151",
+      "bytes": 130186,
+      "source_path": "po/hi.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "c2b12c27e62ae35a29954d1282aae2141951b0f3525bb66a4b5ad1930ff5d12b",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-03-04 09:22+0000",
+        "last-translator": "DheerendraRathor <dheeru.rathor14@gmail.com>",
+        "language-team": "Hindi (http://www.transifex.com/projects/p/vlc-trans/language/hi/)",
+        "language": "hi",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 1104,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/hr/LC_MESSAGES/vlc.mo",
+      "sha256": "69d31742b5accb9c5ea1658b71faee520b8efd1a02eccf6d376a376fabc6440a",
+      "bytes": 480633,
+      "source_path": "po/hr.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "e46dcbcda33145921631acb41057c09068f39773a5fd2b56f5f01892517e5f89",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-01-06 22:30+0000",
+        "last-translator": "gogo <trebelnik2@gmail.com>",
+        "language-team": "Croatian (http://www.transifex.com/projects/p/vlc-trans/language/hr/)",
+        "language": "hr",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
+      },
+      "translated_entries": 4994,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/hu/LC_MESSAGES/vlc.mo",
+      "sha256": "ea080e8b16d37e28178bf0b8a3cacf78341eb319221e34c3e273d7b55c296c35",
+      "bytes": 553679,
+      "source_path": "po/hu.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "59d08175b2e9e846733465eef513b3f23e8c2c779b7133a70c241352a1a90cb5",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 02:54+0100",
+        "last-translator": "Bal\u00e1zs Mesk\u00f3 <meskobalazs@gmail.com>",
+        "language-team": "Hungarian (http://www.transifex.com/yaron/vlc-trans/language/hu/)",
+        "language": "hu",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5541,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/hy/LC_MESSAGES/vlc.mo",
+      "sha256": "031508683311a3e7bb328692bb177e96bfccb36fca02461714ab4d2e44487ded",
+      "bytes": 125932,
+      "source_path": "po/hy.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "006b36e52cca6243fbb40bd890512f4ec0bc881e1db798072c25e4d7756be635",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-20 03:43+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Armenian (http://www.transifex.com/yaron/vlc-trans/language/hy/)",
+        "language": "hy",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 1823,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ia/LC_MESSAGES/vlc.mo",
+      "sha256": "8e0bcca291535f88aef652a87d7d5f38b4a7cffd18a12af30777a535e77b433c",
+      "bytes": 10923,
+      "source_path": "po/ia.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "28cdb5081e7d32c98294801b67dcf043f3857fd2e15c87db306abf77118b9769",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-05-04 07:53+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Interlingua (http://www.transifex.com/projects/p/vlc-trans/language/ia/)",
+        "language": "ia",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 235,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/id/LC_MESSAGES/vlc.mo",
+      "sha256": "9bb4b4389d354ebba955d8d080664d9f64579e3b40c07c4f578992747c35c63f",
+      "bytes": 372283,
+      "source_path": "po/id.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "69a8b0d410376538e0379126f86097a4bf93be911e4733817df77ce3b0154643",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Indonesian (http://www.transifex.com/yaron/vlc-trans/language/id/)",
+        "language": "id",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 4127,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/is/LC_MESSAGES/vlc.mo",
+      "sha256": "ddaebe55b9d8d5d0e787eff1e840a0b2c0bdb0fd583023b0d932e3e3be134d18",
+      "bytes": 216254,
+      "source_path": "po/is.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "c0bb1e932487443a50a0021bf43384a2b46ca0a68e6a75b4025830b55959eba7",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-10-26 15:17+0000",
+        "last-translator": "Sveinn \u00ed Felli <sv1@fellsnet.is>",
+        "language-team": "Icelandic (http://www.transifex.com/yaron/vlc-trans/language/is/)",
+        "language": "is",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);"
+      },
+      "translated_entries": 3458,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/it/LC_MESSAGES/vlc.mo",
+      "sha256": "c82938e55952862be82aecfe6c283342fe5b7fa33aa13c1aaea98b71d97a8c3a",
+      "bytes": 545922,
+      "source_path": "po/it.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "4620af66266b40a1427161608d9e50d25ac88e6c7dadf8d2308d85c2f9d30e52",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 03:00+0100",
+        "last-translator": "Vincenzo Reale <vinx.reale@gmail.com>",
+        "language-team": "Italian (http://www.transifex.com/yaron/vlc-trans/language/it/)",
+        "language": "it",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5541,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ja/LC_MESSAGES/vlc.mo",
+      "sha256": "70e73756f80a03d1575ff5deb42d78eb0f6b16f27e8e4eaad9c6965b9d6ce657",
+      "bytes": 604398,
+      "source_path": "po/ja.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "3598ea6c85230ea80290da87263d4129ca4d31a21791cf2be70e9a5abac2f780",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 03:02+0100",
+        "last-translator": "Fumio Nakayama <fumio.n6a@gmail.com>",
+        "language-team": "Japanese (http://www.transifex.com/yaron/vlc-trans/language/ja/)",
+        "language": "ja",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 5539,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ka/LC_MESSAGES/vlc.mo",
+      "sha256": "d20e310c0799f25cfe846e83f34bd86281f3aa5512b12265ad91dece82a40ef8",
+      "bytes": 53385,
+      "source_path": "po/ka.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "f97c19a9fc9028bb10c9f395ec35f9331052fd93a219bdaf326735c3d58a9bd6",
+      "header": {
+        "project-id-version": "vlc",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2008-08-23 18:31+0200",
+        "last-translator": "Alexander Didebulidze <didebuli@in.tum.de>",
+        "language-team": "Georgian <geognome@googlegroups.com>",
+        "language": "ka",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;",
+        "x-generator": "KBabel 1.11.4"
+      },
+      "translated_entries": 759,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/kk/LC_MESSAGES/vlc.mo",
+      "sha256": "71be2af610485ee2b9ba2fe68e20eb85084892264c60503a0d28c6b36edd7d4c",
+      "bytes": 229442,
+      "source_path": "po/kk.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a3b956ab951cbb421c76f832dc61689ac47bb9d754bcd146b10124b0811b4a70",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-02-05 13:10+0000",
+        "last-translator": "Kerimbekov Galym <kegalym2@mail.ru>",
+        "language-team": "Kazakh (http://www.transifex.com/yaron/vlc-trans/language/kk/)",
+        "language": "kk",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 2593,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/km/LC_MESSAGES/vlc.mo",
+      "sha256": "1ad5587968506669a6154b82a558781045c2dcb800d428a2a7b0ac9bbac8dd32",
+      "bytes": 861025,
+      "source_path": "po/km.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "bca39b8d9241b4d3cb144a273230fc4584f43786a2b689a6a9c6a30cc06c4be1",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-09-03 10:44+0000",
+        "last-translator": "Sok Sophea <sksophea@gmail.com>",
+        "language-team": "Khmer (http://www.transifex.com/projects/p/vlc-trans/language/km/)",
+        "language": "km",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 5265,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/kn/LC_MESSAGES/vlc.mo",
+      "sha256": "6fe8f271b05ec74379bf9e45686455d399d1d496894430d73b69f02ca0d82ed5",
+      "bytes": 716757,
+      "source_path": "po/kn.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "6693dad65bb5fff01bb5e564c66bdfb7cc7b4772ef3ab8a203a8e862253c80ef",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-10-06 11:13+0000",
+        "last-translator": "Vikas Hegde <vikashegde82@gmail.com>",
+        "language-team": "Kannada (http://www.transifex.com/yaron/vlc-trans/language/kn/)",
+        "language": "kn",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 5349,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ko/LC_MESSAGES/vlc.mo",
+      "sha256": "5f3d51d84a187e7a94d9583445f46db720726c33616648edfca2331b44fb30e7",
+      "bytes": 547994,
+      "source_path": "po/ko.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "e5ca2bcfe68ff33fa7ccde8f2d28da905c75dfb82690f9f205dbeea74dd41b21",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-20 03:42+0000",
+        "last-translator": "Potato <sheppaul@naver.com>",
+        "language-team": "Korean (http://www.transifex.com/yaron/vlc-trans/language/ko/)",
+        "language": "ko",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 5514,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ks_IN/LC_MESSAGES/vlc.mo",
+      "sha256": "92faa3d12d186438f1b6da99fb9ac653c9652fc2284490684c4d18b18329c728",
+      "bytes": 676688,
+      "source_path": "po/ks_IN.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "0c6a368140d5946b66950615b1f74e3ce2adde9526f032f42c3e4d9e129e0bcd",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-05-21 04:07+0000",
+        "last-translator": "Chandrakant Dhutadmal <chandrakantd@cdac.in>",
+        "language-team": "Kashmiri (India) (http://www.transifex.com/projects/p/vlc-trans/language/ks_IN/)",
+        "language": "ks_IN",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5469,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ky/LC_MESSAGES/vlc.mo",
+      "sha256": "8f2b0ef0c2ad8d797c3c27b12243b42139642400046f7b2c6420b6bb829cb609",
+      "bytes": 37069,
+      "source_path": "po/ky.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "874e42ad0e1ec7a87b294ac97e91097cc0f4f5fc32edb09869ecadff9a97cd58",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-12-08 08:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Kirgyz (http://www.transifex.com/projects/p/vlc-trans/language/ky/)",
+        "language": "ky",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 749,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/lg/LC_MESSAGES/vlc.mo",
+      "sha256": "abc797b6dcee6e58d741d1b356adcc424bf0113f2a36b43ad51611ead476d3f9",
+      "bytes": 47496,
+      "source_path": "po/lg.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "63131cccc675b4cb995ec989bb5ecb892900b19201fa8dd251515fd30f638877",
+      "header": {
+        "project-id-version": "vlc 1.1.8",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2011-05-02 18:38+0200",
+        "last-translator": "James Olweny <sjolweny85@yahoo.co.uk>",
+        "language-team": "Ganda",
+        "language": "lg",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "x-generator": "Pootle 2.1.5"
+      },
+      "translated_entries": 824,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/lt/LC_MESSAGES/vlc.mo",
+      "sha256": "49aee5d792ccbab57b95139578d023b5b4f506395993a91ef3bb8434375ab609",
+      "bytes": 310368,
+      "source_path": "po/lt.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "00586d83e5e1410248565104ee15c7db2bfdbece127f933096448d6ab14863c0",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Lithuanian (http://www.transifex.com/yaron/vlc-trans/language/lt/)",
+        "language": "lt",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);"
+      },
+      "translated_entries": 3827,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/lv/LC_MESSAGES/vlc.mo",
+      "sha256": "db85e0c230d1eeb2a823fe2fe8d2d95d12ceef112e0941e4be49043aa83e2920",
+      "bytes": 546039,
+      "source_path": "po/lv.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "c2820f2a188830b876396f63c65357ca16b859a44de48bd4b4300262feae730a",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-10-21 14:50+0000",
+        "last-translator": "Ingm\u0101rs D\u012bri\u0146\u0161 <melhiors14@gmail.com>",
+        "language-team": "Latvian (http://www.transifex.com/yaron/vlc-trans/language/lv/)",
+        "language": "lv",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);"
+      },
+      "translated_entries": 5518,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/mai/LC_MESSAGES/vlc.mo",
+      "sha256": "1ac63a86210b4e5639b6279f74c62a52c9ef47f035371f33c6d516811dfea6d7",
+      "bytes": 799380,
+      "source_path": "po/mai.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "0ac01e6616d38ce1200063f765a3b8a7ede27a7b2b81893489fbf2840292cebe",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-05-21 03:57+0000",
+        "last-translator": "Chandrakant Dhutadmal <chandrakantd@cdac.in>",
+        "language-team": "Maithili (http://www.transifex.com/projects/p/vlc-trans/language/mai/)",
+        "language": "mai",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5469,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/mk/LC_MESSAGES/vlc.mo",
+      "sha256": "71fdb257d640fa7fe9cfc8320b88722a02ff0d5f5a106b2c93bce7bcf5522afb",
+      "bytes": 10257,
+      "source_path": "po/mk.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "3b8f5e32a54008f1886396217b899c8e3669aaa5082c60e94774fd235f0673be",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-02-27 09:20+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Macedonian (http://www.transifex.com/projects/p/vlc-trans/language/mk/)",
+        "language": "mk",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;"
+      },
+      "translated_entries": 141,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ml/LC_MESSAGES/vlc.mo",
+      "sha256": "7563fa042c0ea58ce987fa8655945be96923b92eb5d618783e85205f95fd9bec",
+      "bytes": 985248,
+      "source_path": "po/ml.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "9d38207c71202363a2c5f3b89ae7fd5f0a7e5f0b11aa9236edc4c0f97818da54",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-01-14 07:00+0000",
+        "last-translator": "Sajeer P <sajeerforyou@gmail.com>",
+        "language-team": "Malayalam (http://www.transifex.com/yaron/vlc-trans/language/ml/)",
+        "language": "ml",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5479,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/mn/LC_MESSAGES/vlc.mo",
+      "sha256": "4a707b9a01ba1f3c97d88f49ef845f5782242af7418c01b62940ee6a50871df5",
+      "bytes": 95842,
+      "source_path": "po/mn.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "60c7bf98b3ef20205cda743fc7c99632752066b3f1bb9630709482e628d4e9c0",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Mongolian (Mongolia) (http://www.transifex.com/yaron/vlc-trans/language/mn_MN/)",
+        "language": "mn",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 1338,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/mr/LC_MESSAGES/vlc.mo",
+      "sha256": "f0ffc124ad04dc6a65328b210b41cd20b155fb03ab49e1b4b201e1d8a6b95ee3",
+      "bytes": 871706,
+      "source_path": "po/mr.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "12f40855e97c522e34215de86d98269a63cf39973d91f9fc893c655ef4c523fd",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-05-27 05:32+0000",
+        "last-translator": "Rajnikant Kumbhar <rajnikant.kumbhar@gmail.com>",
+        "language-team": "Marathi (http://www.transifex.com/yaron/vlc-trans/language/mr/)",
+        "language": "mr",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5479,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ms/LC_MESSAGES/vlc.mo",
+      "sha256": "6906ad8d82d818f7fd0ddf35bc1b9042ff7f52907122aca524a3018815d2c9bc",
+      "bytes": 514150,
+      "source_path": "po/ms.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "cca7533649ba1a87193b71e67c31147650e1bf81a9c5074b0c7efbf57022838c",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "abuyop <abuyop@gmail.com>",
+        "language-team": "Malay (http://www.transifex.com/yaron/vlc-trans/language/ms/)",
+        "language": "ms",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 5514,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/my/LC_MESSAGES/vlc.mo",
+      "sha256": "6d7400f39b5348e6651cfebeecf431b3fad6f6cde9eda271f3fe020c0d34105f",
+      "bytes": 14820,
+      "source_path": "po/my.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "3db6173dfcb4ad0490d2116b81e1bd7e48c25d7da16953809051d2efa2e310e7",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-12-08 08:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Burmese (Myanmar) (http://www.transifex.com/projects/p/vlc-trans/language/my_MM/)",
+        "language": "my",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 194,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/nb/LC_MESSAGES/vlc.mo",
+      "sha256": "29e051db76ae2b47ca4b96de6d57106ed013b5ba724cf305cf19aa869a95cf36",
+      "bytes": 526315,
+      "source_path": "po/nb.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "ece20a0007c06e4715004d3dbd221027bf3f17ef3349a1bb1e9d19d82737a3a2",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Allan Nordh\u00f8y <epost@anotheragency.no>",
+        "language-team": "Norwegian Bokm\u00e5l (Norway) (http://www.transifex.com/yaron/vlc-trans/language/nb_NO/)",
+        "language": "nb",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5516,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ne/LC_MESSAGES/vlc.mo",
+      "sha256": "95d96423fefb453deb843e478583171460e9203b52b9c6c149745f177f0f450b",
+      "bytes": 329813,
+      "source_path": "po/ne.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "906bb1e9bff73f1b6b51be8cdeda72cc9a2953c4fad1c6fdb53588c2dbb7d05f",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Nepali (Nepal) (http://www.transifex.com/yaron/vlc-trans/language/ne_NP/)",
+        "language": "ne",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 2348,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/nl/LC_MESSAGES/vlc.mo",
+      "sha256": "78454fdc965dbfef60c11971eb6e361e744d871748c7cd0ad814988ef3d42495",
+      "bytes": 530074,
+      "source_path": "po/nl.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a57f6b631090030587fb54330f2ffb9493a6a4949812d0a760792e9013b2da44",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-22 21:15+0100",
+        "last-translator": "Thomas De Rocker",
+        "language-team": "Dutch (http://www.transifex.com/yaron/vlc-trans/language/nl/)",
+        "language": "nl",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5541,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/nn/LC_MESSAGES/vlc.mo",
+      "sha256": "f6256d9288f17605172b3f856f24296da14294a4bd62bcf1472a98038165b891",
+      "bytes": 206811,
+      "source_path": "po/nn.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "464871d5825892f856b3b99718c4a90d90d58afc8bc50490763a9fb9fb0c615e",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-05 20:02+0000",
+        "last-translator": "Bj\u00f8rn I. <bjorn.svindseth@online.no>",
+        "language-team": "Norwegian Nynorsk (http://www.transifex.com/yaron/vlc-trans/language/nn/)",
+        "language": "nn",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 3093,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/oc/LC_MESSAGES/vlc.mo",
+      "sha256": "93a3b6565b3e47579a100203f7afdfcf01e80fd44517f4976931b2de91ee0410",
+      "bytes": 536673,
+      "source_path": "po/oc.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "e5476a22add4ba52bcdb99ddca5cb16d99ee0c0d815bd912fb1b6a33f9d49334",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-03-15 09:50+0000",
+        "last-translator": "C\u00e9dric Valmary <cvalmary@yahoo.fr>",
+        "language-team": "Occitan (post 1500) (http://www.transifex.com/yaron/vlc-trans/language/oc/)",
+        "language": "oc",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 5479,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/or/LC_MESSAGES/vlc.mo",
+      "sha256": "04dffeaa0b3005a53b94d512559ee36e80b4ffd70316bbe6c5426bf578fecb22",
+      "bytes": 24797,
+      "source_path": "po/or.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "386cc1db4f40c78fb5d3313dde0ea4177c9ca393ec329787d18e38f95961f71a",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-12-08 08:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Oriya (India) (http://www.transifex.com/projects/p/vlc-trans/language/or_IN/)",
+        "language": "or",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 331,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/pa/LC_MESSAGES/vlc.mo",
+      "sha256": "9295ea0d2977508b9de72b8bfbf74386cdf0e3171d15decf0a3417bdee11504c",
+      "bytes": 266659,
+      "source_path": "po/pa.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "9095748b59da2f5c0a542436e07cae7ed1c039595dd7bdca016c29b1cd4461a9",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Panjabi (Punjabi) (http://www.transifex.com/yaron/vlc-trans/language/pa/)",
+        "language": "pa",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 3295,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/pl/LC_MESSAGES/vlc.mo",
+      "sha256": "119723adc4932999309a0277c0e7763f2b44788724a2a75a4e768128726841a6",
+      "bytes": 541262,
+      "source_path": "po/pl.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "32ef5958e0d5094c7130e09373cbf19a4c1c25dcd3124641896ba697744b5cd2",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-15 17:38+0100",
+        "last-translator": "Micha\u0142 Trzebiatowski <michtrz@gmail.com>",
+        "language-team": "Polish (http://www.transifex.com/yaron/vlc-trans/language/pl/)",
+        "language": "pl",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);"
+      },
+      "translated_entries": 5545,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ps/LC_MESSAGES/vlc.mo",
+      "sha256": "eb5cb0dbb96104e40a07b47b1c0b3a2d42a3ee883a2854db3c5b86702e30340a",
+      "bytes": 38750,
+      "source_path": "po/ps.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a8e66d82093879bbd690debf30bc1aaeecd233defb47cf3e24845d9f67e4c4c8",
+      "header": {
+        "project-id-version": "vlc",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2009-04-12 10:26-0800",
+        "last-translator": "Zabeeh Khan <zabeehkhan @ gmail.com>",
+        "language-team": "Pashto",
+        "language": "ps",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "x-generator": "KBabel 1.3.1"
+      },
+      "translated_entries": 712,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/pt_BR/LC_MESSAGES/vlc.mo",
+      "sha256": "5fc2b8315e9fc5af5e7af8c96ab6eae8e091d6878ea0efb2ace14f63aa616b56",
+      "bytes": 541638,
+      "source_path": "po/pt_BR.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "d6ef0fa4940c9b63979f7238d96841a95bc30d30a189a75d75436f921a31fb91",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2016-01-22 02:26+0000",
+        "last-translator": "ssdoria <ssdoria@gmail.com>",
+        "language-team": "Portuguese (Brazil) (http://www.transifex.com/yaron/vlc-trans/language/pt_BR/)",
+        "language": "pt_BR",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 5483,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/pt_PT/LC_MESSAGES/vlc.mo",
+      "sha256": "176936fde7ec9becc7423d9eed11835e1c641b756fb0ba6811b331ea1ad5fac6",
+      "bytes": 542621,
+      "source_path": "po/pt_PT.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "6eb02b71a386609c3ace3931495a9b435d3e1cb22257ac6a1d3033db571e817d",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-10-10 09:14+0000",
+        "last-translator": "Bruno Queiros <bqueiros@gmail.com>",
+        "language-team": "Portuguese (Portugal) (http://www.transifex.com/yaron/vlc-trans/language/pt_PT/)",
+        "language": "pt_PT",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 5516,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ro/LC_MESSAGES/vlc.mo",
+      "sha256": "5f67a187d048da122c7c3d9a9236d58fe758c88842716103079c81a159842831",
+      "bytes": 381344,
+      "source_path": "po/ro.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "61296565682b23bbd1093b385fcf93971e4d11d7aa660a14c39e7374569cd785",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-08-19 01:41+0000",
+        "last-translator": "Cristian Silaghi <cristian.silaghi@mozilla.ro>",
+        "language-team": "Romanian (http://www.transifex.com/projects/p/vlc-trans/language/ro/)",
+        "language": "ro",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));"
+      },
+      "translated_entries": 4218,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ru/LC_MESSAGES/vlc.mo",
+      "sha256": "8bc14fb6ff008e67a4cf1203fba7502a04392910d2f4c52781ac4d0e465e9756",
+      "bytes": 687837,
+      "source_path": "po/ru.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "f72745f0da6be2e346700f163f8564aab24e94671185b3ba3a53aa8a05ecb205",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Alexander Lakhin <exclusion@gmail.com>",
+        "language-team": "Russian (http://www.transifex.com/yaron/vlc-trans/language/ru/)",
+        "language": "ru",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
+      },
+      "translated_entries": 5545,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/si/LC_MESSAGES/vlc.mo",
+      "sha256": "88e55d61619ed624c4e6812a5954aea5990c18fd71f434e2f0d75bfb8daa3701",
+      "bytes": 263534,
+      "source_path": "po/si.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a98b7ed8e50775ea13c3ddd9bd8f1681bd2991391d226f235a6a22d7f7aa5091",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Sinhala (http://www.transifex.com/yaron/vlc-trans/language/si/)",
+        "language": "si",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 2622,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/sk/LC_MESSAGES/vlc.mo",
+      "sha256": "d06773d30856943532ed1d7b3be1f24c0babed6156969251b6c90151b73d9bbb",
+      "bytes": 561305,
+      "source_path": "po/sk.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "7f0ce2e4a0905dc6196985eedf42c231e024480c1bb85c0a85ee17d9d5222a08",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 03:09+0100",
+        "last-translator": "Mari\u00e1n Hikan\u00edk <podnety@mojepreklady.net>",
+        "language-team": "Slovak (http://www.transifex.com/yaron/vlc-trans/language/sk/)",
+        "language": "sk",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;"
+      },
+      "translated_entries": 5543,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/sl/LC_MESSAGES/vlc.mo",
+      "sha256": "03b32e92be17377522ad7f8ed44fa8950f9bbe8d182458115934fa18441619a6",
+      "bytes": 523639,
+      "source_path": "po/sl.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "5c94cc7358432a98c326a9a0c88d49f6d4e41c566df01e7e9205e747f28c0621",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-10-08 10:16+0000",
+        "last-translator": "Rok \u017derdin <zerdin.rok1@gmail.com>",
+        "language-team": "Slovenian (http://www.transifex.com/yaron/vlc-trans/language/sl/)",
+        "language": "sl",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);"
+      },
+      "translated_entries": 5476,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/sq/LC_MESSAGES/vlc.mo",
+      "sha256": "12d015a3b6fef33a8e39b49a2f8cd87b785cf81c1d61680fb45b944ea007ef1a",
+      "bytes": 64151,
+      "source_path": "po/sq.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "81fb49406ab919533f65bd5809bf822c4fd3b1d182960563b5285764de5ab209",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-20 03:42+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Albanian (http://www.transifex.com/yaron/vlc-trans/language/sq/)",
+        "language": "sq",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 960,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/sr/LC_MESSAGES/vlc.mo",
+      "sha256": "b27a44a46a9fbf0e71375485e6e46b474e40996385e5c37b52b5138504a1c03a",
+      "bytes": 328780,
+      "source_path": "po/sr.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "a871e7ba67038d2c47792318d7619067e3c53a3ab8ad76fcac817339980282bc",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "\u041f\u0440\u0435\u0434\u0440\u0430\u0433 \u0409\u0443\u0431\u0435\u043d\u043e\u0432\u0438\u045b <predragljubenovic@gmail.com>",
+        "language-team": "Serbian (http://www.transifex.com/yaron/vlc-trans/language/sr/)",
+        "language": "sr",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
+      },
+      "translated_entries": 3124,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/sv/LC_MESSAGES/vlc.mo",
+      "sha256": "1436ffe4e5d1ef5d7e396579f2185b06c9200de66af6f1d81a0539ca49418138",
+      "bytes": 424972,
+      "source_path": "po/sv.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "1fa30a8dfd305996ec0e0bbbbbe0dcd8f13c2938815fb8517b1aa3f8423d89c4",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "A. Regnander <anton_r_3@hotmail.com>",
+        "language-team": "Swedish (http://www.transifex.com/yaron/vlc-trans/language/sv/)",
+        "language": "sv",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 4928,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ta/LC_MESSAGES/vlc.mo",
+      "sha256": "37ad8e56bde8d86f3360b9a23636ca4da9da4c7386d2c312458e5e0838505663",
+      "bytes": 143179,
+      "source_path": "po/ta.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "395905b2aaaa2b45f0e9128b9d746379c083ab6158e733bba367be01b634b8ec",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Tamil (http://www.transifex.com/yaron/vlc-trans/language/ta/)",
+        "language": "ta",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 1772,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/te/LC_MESSAGES/vlc.mo",
+      "sha256": "56b0f26369d11e13b74df1d34c9b4c31171071bda9f4a2f196cc8edf0786cd68",
+      "bytes": 138592,
+      "source_path": "po/te.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "b3449cea3117de449f1ecb96bfa6bbb572baa9cf089e3ad617bc5449ac9dcc4c",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-05-01 15:57+0000",
+        "last-translator": "rohitharikiran <rohithharikiran@gmail.com>",
+        "language-team": "Telugu (http://www.transifex.com/projects/p/vlc-trans/language/te/)",
+        "language": "te",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "translated_entries": 1764,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/tet/LC_MESSAGES/vlc.mo",
+      "sha256": "d09f01962b049a167e6616610429332cd16b853cbff94d74959ac6fea25fcf8a",
+      "bytes": 443,
+      "source_path": "po/tet.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "2416dfb67578bd403a25c5a552988a6b31b2eb59cdef51a1146151e6998cdeb2",
+      "header": {
+        "project-id-version": "vlc",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2005-02-01 14:16+0000",
+        "last-translator": "Elizabeth Da Conceicao Baptista <elizabeth@tonle.net>",
+        "language-team": "Tetum",
+        "language": "tet",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit"
+      },
+      "translated_entries": 2,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/th/LC_MESSAGES/vlc.mo",
+      "sha256": "6daa4cc2adf61528baa642a135c0dd0353e77e240f227991f0ad44719e1836e8",
+      "bytes": 329374,
+      "source_path": "po/th.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "9c0753a29d9f233a0f003c8be4c942e8408028a393a29c1cbfef1cd5dd99be90",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-20 03:42+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Thai (http://www.transifex.com/yaron/vlc-trans/language/th/)",
+        "language": "th",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 3321,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/tl/LC_MESSAGES/vlc.mo",
+      "sha256": "e4c859f24d1eeba0fc5d95eba44529aeae544b1cbb3699d148e7da3ec2306a18",
+      "bytes": 420,
+      "source_path": "po/tl.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "69dbfdae9c94f9a2a11e53ceed945c8f6e96193ebd692237559fdbce944b7b85",
+      "header": {
+        "project-id-version": "vlc",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2005-02-01 14:25+0000",
+        "last-translator": "Adi Nugroho <adi@internux.co.id>",
+        "language-team": "Tagalog",
+        "language": "tl",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit"
+      },
+      "translated_entries": 2,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/tr/LC_MESSAGES/vlc.mo",
+      "sha256": "9fac0458874c306d29f20913a015182245b269d43d2977916b850fc947c7a4eb",
+      "bytes": 550138,
+      "source_path": "po/tr.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "e7978ff3e1dd81f1346a937f47eb9a4fffdbf87c30c4d9a6e2a1a18f1dbe428c",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 03:12+0100",
+        "last-translator": "Kaya Zeren <kayazeren@gmail.com>",
+        "language-team": "Turkish (http://www.transifex.com/yaron/vlc-trans/language/tr/)",
+        "language": "tr",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 5541,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/ug/LC_MESSAGES/vlc.mo",
+      "sha256": "65faa4cb9e0e501fdb53e2ac219b3e626155880fb7f8aa36a4b7ce8c98851e87",
+      "bytes": 55238,
+      "source_path": "po/ug.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "26d41a25c013a9812db9abca44677f08e6cb1c3300125bde17c8807687ccfef9",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-02-06 13:43+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Uighur (http://www.transifex.com/yaron/vlc-trans/language/ug/)",
+        "language": "ug",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 930,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/uk/LC_MESSAGES/vlc.mo",
+      "sha256": "f349bdac64ecf4936c4f5e952234d0ad8a95d845e8526985b5eba7c909b7f55c",
+      "bytes": 695948,
+      "source_path": "po/uk.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "80a80249b058c9268bc87b87b09db8010d148244753f6b8d1b60b06356041b54",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 03:16+0100",
+        "last-translator": "\u0410\u043d\u0434\u0440\u0456\u0439 \u0411\u0430\u043d\u0434\u0443\u0440\u0430 <andriykopanytsia@gmail.com>",
+        "language-team": "Ukrainian (http://www.transifex.com/yaron/vlc-trans/language/uk/)",
+        "language": "uk",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
+      },
+      "translated_entries": 5543,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/uz/LC_MESSAGES/vlc.mo",
+      "sha256": "eef5fe7b725a5c435231f1a6c5c8cb407418b84266f192e905a9720da8dbaef5",
+      "bytes": 55022,
+      "source_path": "po/uz.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "fb3fc5f0520c7d5573bbfae7a199239b99baf3d89b94d152d7df9c443c74376a",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2015-12-04 10:01+0000",
+        "last-translator": "Christoph Miebach <christoph.miebach@web.de>",
+        "language-team": "Uzbek (http://www.transifex.com/yaron/vlc-trans/language/uz/)",
+        "language": "uz",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 904,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/vi/LC_MESSAGES/vlc.mo",
+      "sha256": "b469334dc7f9f26b17629cb13f07d1e02cf93b718be701f77b048ba21f2761ca",
+      "bytes": 482326,
+      "source_path": "po/vi.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "5c04f8d98df6e88898a7d94820806870c356f87cf1c380b75bfca40ced14dc59",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2014-06-27 23:01+0000",
+        "last-translator": "Sortale <sortale.zerok@gmail.com>",
+        "language-team": "Vietnamese (http://www.transifex.com/projects/p/vlc-trans/language/vi/)",
+        "language": "vi",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 4457,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/wa/LC_MESSAGES/vlc.mo",
+      "sha256": "8d86111c93635a3b11c48fd87c7d895662dc60cb8ab2488c2160b97250bb92da",
+      "bytes": 257691,
+      "source_path": "po/wa.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "39a75271b59834f57a205075bf8bb3349084001037a316921dd6f69b6569dbb7",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2013-12-08 08:16+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Walloon (http://www.transifex.com/projects/p/vlc-trans/language/wa/)",
+        "language": "wa",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n > 1);"
+      },
+      "translated_entries": 3511,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/zh_CN/LC_MESSAGES/vlc.mo",
+      "sha256": "1b0d955a3defe267c82fbfeab1d545ab0ac5782483734282f842b506f3b4e7e1",
+      "bytes": 492814,
+      "source_path": "po/zh_CN.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "4b8a6fdc49a37258a2a26961ae33e466047e4091e78fb2a0ec04915736973671",
+      "header": {
+        "project-id-version": "vlc 2.2.7",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-11-16 03:18+0100",
+        "last-translator": "Dian Li <xslidian@gmail.com>",
+        "language-team": "Chinese (China) (http://www.transifex.com/yaron/vlc-trans/language/zh_CN/)",
+        "language": "zh_CN",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 5539,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/zh_TW/LC_MESSAGES/vlc.mo",
+      "sha256": "6d68ddf1aa73a3fc45aca9a92eca2c45030647e2883fbce6156eb6936378119a",
+      "bytes": 262112,
+      "source_path": "po/zh_TW.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "83fa709fdda705bd59add8c6f3690b70b2e2471c73d59206e1b08fa867da19e5",
+      "header": {
+        "project-id-version": "VLC - Trans",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2017-09-23 19:54+0000",
+        "last-translator": "Yaron Shahrabani <sh.yaron@gmail.com>",
+        "language-team": "Chinese (Taiwan) (http://www.transifex.com/yaron/vlc-trans/language/zh_TW/)",
+        "language": "zh_TW",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=1; plural=0;"
+      },
+      "translated_entries": 3638,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    },
+    {
+      "package_path": "locale/zu/LC_MESSAGES/vlc.mo",
+      "sha256": "78073dece47759417b8f5d5d8f27622f776d029e4d2779d5e7536f67acc51a0b",
+      "bytes": 52918,
+      "source_path": "po/zu.po",
+      "source_revision": "c871908e000e98be1ab346f9ca3f1fd01c2bbf4e",
+      "source_sha256": "36e3ad06a36810346f1a6ffabae39aeb2e36e2eae311848508e0ab7d700eb576",
+      "header": {
+        "project-id-version": "vlc",
+        "report-msgid-bugs-to": "vlc-devel@videolan.org",
+        "po-revision-date": "2011-03-09 11:32+0200",
+        "last-translator": "sipho <sipho@translate.org.za>",
+        "language-team": "SIpho",
+        "language": "zu",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);",
+        "x-generator": "Pootle 2.1.5"
+      },
+      "translated_entries": 892,
+      "binding": "Generated catalog parsed successfully; source and catalog identities recorded separately, not byte-equivalent formats."
+    }
+  ],
+  "missing_font_license_grants": [],
+  "separate_final_gate": "Preserve all corresponding full font/media notices in the actual delivered package."
+}

@@ -1,4 +1,4 @@
-CLEANFILES = skins2/default.vlt
+CLEANFILES = skins2/default.vlt skins2/default/subX/FreeSans.ttf
 MOSTLYCLEANFILES =
 EXTRA_DIST =
 
@@ -136,7 +136,7 @@ skins2_default_vlt_FILES = \
 	skins2/default/theme.xml \
 	skins2/default/subX/about.png \
 	skins2/default/subX/eq.png \
-	skins2/default/subX/font.otf \
+	skins2/fonts/FreeSans.ttf \
 	skins2/default/subX/main.png \
 	skins2/default/subX/playtreeglyphs.png \
 	skins2/default/subX/pl.png \
@@ -145,7 +145,8 @@ skins2_default_vlt_FILES = \
 	skins2/default/subX/vol_slider.png
 
 skins2/default.vlt: $(skins2_default_vlt_FILES)
-	$(AM_V_at)$(MKDIR_P) "skins2"
+	$(AM_V_at)$(MKDIR_P) "skins2/default/subX"
+	$(AM_V_at)cp "$(srcdir)/skins2/fonts/FreeSans.ttf" "skins2/default/subX/FreeSans.ttf"
 	$(AM_V_at)rm -f -- skins2/default.vlt.tmp
 	$(AM_V_GEN)tarowner="--owner=root --group=root"; \
 	if test "`uname -s`" = "Darwin"; then tarowner=""; fi; \
@@ -153,7 +154,8 @@ skins2/default.vlt: $(skins2_default_vlt_FILES)
 	tar cvvzf skins2/default.vlt.tmp \
 		--format=ustar $$tarsort \
 		$$tarowner --directory="$(srcdir)/skins2" \
-		$$(cd "$(srcdir)/skins2" && find default/ -type f | LC_ALL=C sort)
+		$(filter-out fonts/FreeSans.ttf,$(skins2_default_vlt_FILES:skins2/%=%)) \
+		--directory="$(abs_builddir)/skins2" default/subX/FreeSans.ttf
 	$(AM_V_at)mv -f -- skins2/default.vlt.tmp skins2/default.vlt
 
 #

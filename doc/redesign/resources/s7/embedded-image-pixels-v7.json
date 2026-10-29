@@ -1,0 +1,49 @@
+{
+  "schema": "vlc_redesign.s7_embedded_image_pixels.v1",
+  "cases": [
+    {
+      "case": "control",
+      "exit_code": 0,
+      "passed": true,
+      "observed": {
+        "opened": true,
+        "states": [
+          1,
+          2,
+          5,
+          4
+        ],
+        "stopping_reasons": [
+          1
+        ],
+        "displayed_frames": 148,
+        "white_bitmap_frames": 0,
+        "white_background_frames": 0
+      }
+    },
+    {
+      "case": "embedded",
+      "exit_code": 0,
+      "passed": true,
+      "observed": {
+        "opened": true,
+        "states": [
+          1,
+          2,
+          5,
+          4
+        ],
+        "stopping_reasons": [
+          1
+        ],
+        "displayed_frames": 148,
+        "white_bitmap_frames": 83,
+        "white_background_frames": 0
+      }
+    }
+  ],
+  "codec_plugin_sha256": "3e392317bb3b460b5f0834c948f0cf461403f9fbc60077e66e5483ba5ab0d267",
+  "libvlccore_sha256": "654d5dc9ee995b271fe8b2cac38b4db9938a027e63542bc3d73be842c2d7e07c",
+  "passed": true,
+  "scope": "Native VLC PGS pixels versus synthetic video-only control, actual EOF and release; no Qt or physical display claim."
+}
