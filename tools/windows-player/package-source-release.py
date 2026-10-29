@@ -8,7 +8,7 @@ import gzip
 import hashlib
 import io
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import tarfile
@@ -17,6 +17,13 @@ import tarfile
 def digest(path):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def validate_application_entry(item, prefix):
+    path = PurePosixPath(item.name)
+    assert not path.is_absolute() and '..' not in path.parts, item.name
+    # tarfile removes the trailing slash from Git's directory entry.
+    assert (item.name == prefix and item.isdir()) or item.name.startswith(prefix + '/'), item.name
 
 
 def main():
@@ -69,7 +76,7 @@ def main():
             try:
                 with tarfile.open(fileobj=process.stdout, mode='r|') as application:
                     for item in application:
-                        assert item.name.startswith(name + '/application/') and '..' not in Path(item.name).parts
+                        validate_application_entry(item, name + '/application')
                         assert item.name != name + '/application/share/skins2/default/subX/font.otf'
                         assert '.git' not in Path(item.name).parts
                         relative = item.name.removeprefix(name + '/')
