@@ -1164,7 +1164,8 @@ libqml_module_maininterface_a_QML = \
 	maininterface/qml/MainDisplay.qml \
 	maininterface/qml/SideNavigationPane.qml \
 	maininterface/qml/SideNavigationDelegate.qml \
-	maininterface/qml/NoMedialibHome.qml
+	maininterface/qml/NoMedialibHome.qml \
+	maininterface/qml/OpenFileSplitButton.qml
 
 if UPDATE_CHECK
 libqml_module_maininterface_a_QML += maininterface/qml/UpdatePane.qml
@@ -1487,6 +1488,7 @@ libqml_module_widgets_a_QML = \
 	widgets/qml/SearchBox.qml \
 	widgets/qml/SliderExt.qml \
 	widgets/qml/SortControl.qml \
+	widgets/qml/SplitButton.qml \
 	widgets/qml/SpinBoxExt.qml \
 	widgets/qml/StackViewExt.qml \
 	widgets/qml/PageLoader.qml \
@@ -1999,6 +2001,25 @@ test_vlc_dialog_model_LDADD = $(QT_QTEST_COMMON_ldadd)
 test_vlc_dialog_model_LDFLAGS = $(QT_QTEST_COMMON_ldflags)
 check_PROGRAMS += test_vlc_dialog_model
 TESTS += test_vlc_dialog_model
+
+# test_qt_csd_button_model
+check_PROGRAMS += test_qt_csd_button_model
+TESTS += test_qt_csd_button_model
+
+test_qt_csd_button_model_SOURCES = \
+	tests/vlc_stub_modules.cpp \
+	tests/test_qt_csd_button_model.cpp \
+	util/csdbuttonmodel.hpp \
+	util/csdbuttonmodel.cpp
+nodist_test_qt_csd_button_model_SOURCES = \
+	tests/test_qt_csd_button_model.moc \
+	util/csdbuttonmodel.moc.cpp
+BUILT_SOURCES += tests/test_qt_csd_button_model.moc
+CLEANFILES += tests/test_qt_csd_button_model.moc
+test_qt_csd_button_model_CPPFLAGS = $(QT_QTEST_COMMON_cppflags)
+test_qt_csd_button_model_CXXFLAGS = $(QT_QTEST_COMMON_cxxflags)
+test_qt_csd_button_model_LDADD = $(QT_QTEST_COMMON_ldadd)
+test_qt_csd_button_model_LDFLAGS = $(QT_QTEST_COMMON_ldflags)
 
 
 test_qt_navigation_model_SOURCES = \

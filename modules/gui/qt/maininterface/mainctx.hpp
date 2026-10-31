@@ -81,6 +81,7 @@ class UpdateModel;
 struct vlc_preparser_t;
 class ThreadRunner;
 class LegacyFontSetup;
+class ModelRecoveryAgent;
 
 namespace vlc {
 namespace playlist {
@@ -139,6 +140,7 @@ class MainCtx : public QObject
     Q_PROPERTY(bool hasAcrylicSurface READ hasAcrylicSurface NOTIFY hasAcrylicSurfaceChanged FINAL)
     Q_PROPERTY(bool smoothScroll READ smoothScroll NOTIFY smoothScrollChanged FINAL)
     Q_PROPERTY(QWindow* intfMainWindow READ intfMainWindow CONSTANT FINAL)
+    Q_PROPERTY(bool videoSurfaceCanHaveFractionalPosition READ videoSurfaceCanHaveFractionalPosition CONSTANT FINAL)
     Q_PROPERTY(bool useGlobalShortcuts READ getUseGlobalShortcuts WRITE setUseGlobalShortcuts NOTIFY useGlobalShortcutsChanged FINAL)
     Q_PROPERTY(int maxVolume READ maxVolume NOTIFY maxVolumeChanged FINAL)
     Q_PROPERTY(float safeArea READ safeArea NOTIFY safeAreaChanged FINAL)
@@ -427,6 +429,7 @@ public:
     QWindow *intfMainWindow() const;
 
     bool historyEnabled() const { return var_InheritBool(p_intf, "save-recentplay"); }
+    bool videoSurfaceCanHaveFractionalPosition() const;
 
     Q_INVOKABLE QVariant settingValue(const QString &key, const QVariant &defaultValue) const;
     Q_INVOKABLE bool hasSetting(const QString &key) const;
@@ -581,6 +584,8 @@ protected:
 #endif
 
     ThreadRunner* m_threadRunner = nullptr;
+
+    std::unique_ptr<ModelRecoveryAgent> m_playlistRecoveryAgent;
 
 public slots:
     void toggleToolbarMenu();

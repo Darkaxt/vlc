@@ -13,6 +13,8 @@ case "$mode" in
     diagnostics) flags=-DVLC_PLAYER_DIAGNOSTICS ;;
     normal-mpv) flags=; plugin_scope=mpv ;;
     diagnostics-mpv) flags=-DVLC_PLAYER_DIAGNOSTICS; plugin_scope=mpv ;;
+    normal-mpv-full) flags=; plugin_scope=full ;;
+    diagnostics-mpv-full) flags=-DVLC_PLAYER_DIAGNOSTICS; plugin_scope=full ;;
     *) printf '%s\n' 'Expected normal, diagnostics, normal-mpv or diagnostics-mpv' >&2; exit 2 ;;
 esac
 if test -z "$flags"; then
@@ -22,10 +24,12 @@ test -f "$build_root/config.status"
 test -f "$source_root/modules/gui/qt/maininterface/player_video_backdrop.hpp"
 python3 "$source_root/tools/windows-player/configure-player.py" \
     --source "$source_root" --build "$build_root" --verify-only
-if test "$plugin_scope" = mpv; then
+if test "$plugin_scope" = mpv || test "$plugin_scope" = full; then
     # S8 changes the Qt frontend and hotkey dispatcher. Reuse the verified 1.0
     # package's other plugins only with the exact additive public-ABI contract.
-    python3 "$source_root/tools/windows-player/check-mpv-plugin-abi.py" --source "$source_root"
+    if test "$plugin_scope" = mpv; then
+        python3 "$source_root/tools/windows-player/check-mpv-plugin-abi.py" --source "$source_root"
+    fi
     mpv_flags=-DVLC_MPV_RUNTIME_IDENTITY
     python3 "$source_root/tools/windows-player/stage-built-mpv-runtime.py" \
         --runtime "$runtime" --identity-header "$build_root/modules/gui/qt/mpv_runtime_identity.hpp"
@@ -86,7 +90,7 @@ case "$compile_cache" in
     0) test -n "${VLC_PLAYER_COMPILE_CACHE_REASON:-}" ;;
     *) printf '%s\n' 'VLC_PLAYER_COMPILE_CACHE must be 0 or 1' >&2; exit 2 ;;
 esac
-if test "$plugin_scope" = mpv && test "$compile_cache" = 1; then
+if test "$plugin_scope" != maintained && test "$compile_cache" = 1; then
     # The SDK/header fan-out is expensive on the Windows-mounted build tree.
     # Cache only immutable inputs during compilation, within the same cgroup.
     # Keep the generated build directory writable and preserve every object.
@@ -110,12 +114,25 @@ if test "$compile_cache" = 0; then
 fi
 make -C "$build_root/modules/gui/qt" -j1 \
     PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all
+if test "$plugin_scope" = full; then
+    # All configured modules use this source/header/core cohort after an ABI change.
+    python3 "$source_root/tools/windows-player/cache-toolchain.py" create
+    module_result=0
+    make -C "$build_root/modules" -j1 \
+        PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all || module_result=$?
+    python3 "$source_root/tools/windows-player/cache-toolchain.py" release
+    if test "$module_result" -ne 0; then
+        exit "$module_result"
+    fi
+    python3 "$source_root/tools/windows-player/stage-full-plugins.py" \
+        --source "$source_root" --build "$build_root" --runtime "$runtime"
+fi
 make -C "$build_root/modules" -j1 libhotkeys_plugin.la
 mkdir -p "$runtime/plugins/control"
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/plugins/control/libhotkeys_plugin.dll" \
     "$build_root/modules/.libs/libhotkeys_plugin.dll"
-if test "$plugin_scope" = maintained; then
+if test "$plugin_scope" = maintained || test "$plugin_scope" = full; then
 make -C "$build_root/modules" -j1 libfreetype_plugin.la libequalizer_plugin.la libmedialibrary_plugin.la libstream_out_transcode_plugin.la libwasapi_plugin.la libskins2_plugin.la
 make -C "$build_root/share" -j1 lua/extensions/VLSub.luac skins2/default.vlt
 # Compile against the existing template without updating tracked translator

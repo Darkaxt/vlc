@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--build', type=Path, default=Path('/work/build/win64'))
     parser.add_argument('--runtime', type=Path, default=Path('/scratch/runtime'))
     parser.add_argument('--state', type=Path, default=Path('/scratch/compilation/state.json'))
-    parser.add_argument('--mode', choices=['diagnostics-mpv', 'normal-mpv'], default='diagnostics-mpv',
+    parser.add_argument('--mode', choices=['diagnostics-mpv', 'normal-mpv', 'diagnostics-mpv-full', 'normal-mpv-full'], default='diagnostics-mpv',
         help='Use the same pipeline for integrated acceptance or the final normal player')
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument('--from-step')
@@ -34,7 +34,9 @@ def main():
     parser.add_argument('--release-symbols', type=Path,
         help='Exact separate symbol output for a normal release; strip MPV before its identity header')
     args = parser.parse_args()
-    assert args.mode != 'normal-mpv' or args.release_symbols, 'A normal release requires separate symbol output'
+    assert not args.mode.startswith('normal-') or args.release_symbols, 'A normal release requires separate symbol output'
+    full = args.mode.endswith('-full')
+    notices = Path('/scratch/dependency-notices-upstream-1.1.1')
     cgroup = Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip()
     assert cgroup.startswith('/llm-coordinator/'), 'Use the installed WSL gate'
     tools = args.source / 'tools/windows-player'
@@ -64,12 +66,27 @@ def main():
             else sh('initialize-player-build.sh', args.source, args.build, args.runtime)),
         ('player', sh('build-player.sh', args.mode, args.source, args.build, args.runtime)),
     ]
+    if full:
+        # Source/API changes require the full configured plugin graph. Retain
+        # source-built MPV/SDK prerequisites; update only the required library.
+        steps = [
+            ('upstream-medialibrary', py('build-upstream-medialibrary.py')),
+            ('upstream-runtime', py('prepare-upstream-runtime.py', '--runtime', args.runtime, '--notices', notices)),
+            ('runtime', py('stage-built-mpv-runtime.py', '--prefix', '/work/mpv-runtime/prefix',
+                '--inputs', '/scratch/mpv-source-inputs', '--runtime', args.runtime,
+                *(['--release-symbols', args.release_symbols] if args.release_symbols else []),
+                *(['--replace-buildinfo-sha256', args.replace_mpv_buildinfo_sha256]
+                  if args.replace_mpv_buildinfo_sha256 else []))),
+            ('release-compiler-cache', py('cache-toolchain.py', 'release')),
+            ('configure-player', sh('configure-upstream-player.sh', args.source, args.build)),
+            ('player', sh('build-player.sh', args.mode, args.source, args.build, args.runtime)),
+        ]
     names = [name for name, _ in steps]
     state = json.loads(args.state.read_text()) if args.state.exists() else {
         'schema': 'vlc_redesign.compilation_pipeline.v1', 'attempts': [], 'steps': {}}
     assert state['schema'] == 'vlc_redesign.compilation_pipeline.v1'
     if args.after_interruption:
-        assert args.resume and state.get('status') in ('running', 'failed')
+        assert state.get('status') in ('running', 'failed')
         report_bytes = args.after_interruption.read_bytes()
         report = json.loads(report_bytes)
         assert report['populated'] is False and report['command_started'] is True
@@ -89,9 +106,10 @@ def main():
         assert state['attempts'][-1].get('mode', 'diagnostics-mpv') == args.mode, 'Resume the original build mode'
         start = names.index(state['current_step'])
     else:
+        assert state.get('status') not in ('running', 'preparing'), 'Reconcile the original supervisor before a new continuation'
         assert args.from_step in names, names
         start = names.index(args.from_step)
-    if start > names.index('mpv-setup'):
+    if full or start > names.index('mpv-setup'):
         for artifact in ('/work/build/contrib/x86_64-w64-mingw32/lib/libQt6Network.a',
                          '/work/runtime-crt-only/dllcrt2.o', '/work/mpv-runtime/cross.meson'):
             assert Path(artifact).is_file(), artifact
@@ -101,7 +119,9 @@ def main():
     recipes = ('compilation-pipeline.py', 'build-mpv-runtime.sh', 'build-player.sh',
         'cache-toolchain.py', 'qt-objects.mk', 'rebuild-qt-network.sh', 'rebuild-qt-timers.sh',
         'stage-built-mpv-runtime.py', 'inventory-dependency-notices.py', 'install-ffmpeg-files.py',
-        'initialize-player-build.sh', 'configure-player.py', 'check-mpv-plugin-abi.py', 'release_symbols.py')
+        'initialize-player-build.sh', 'configure-player.py', 'check-mpv-plugin-abi.py', 'release_symbols.py',
+        'build-upstream-medialibrary.py', 'prepare-upstream-runtime.py', 'configure-upstream-player.sh',
+        'stage-full-plugins.py', 'full-plugin-stage.mk')
     identity = {str(path.relative_to(args.source)): hashlib.sha256(path.read_bytes()).hexdigest()
                 for path in [*(tools / name for name in recipes),
                              args.source / 'modules/gui/qt/player/mpv/source.json']}
@@ -129,6 +149,8 @@ def main():
         run_pending.replace(log_root / 'attempt.json')
 
     environment = dict(os.environ, JOBS='1', CMAKE_BUILD_PARALLEL_LEVEL='1', CARGO_BUILD_JOBS='1')
+    if full:
+        environment['VLC_PLAYER_UPSTREAM_PREFIX'] = '/work/upstream-medialibrary-0.14.1/prefix'
     if args.release_symbols:
         environment['VLC_PLAYER_RELEASE_SYMBOLS'] = str(args.release_symbols)
     state.update(status='preparing', current_step=names[start])

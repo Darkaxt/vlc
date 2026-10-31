@@ -51,7 +51,7 @@ class ModelRecoveryAgent
 public:
     // NOTE: settings and model must outlive the instance of this class.
     template<class T>
-    ModelRecoveryAgent(class QSettings *settings, const QString& modelIdentifier, T* model, qt_intf_t *intf)
+    ModelRecoveryAgent(class QSettings *settings, const QString& modelIdentifier, T* model)
         : m_settings(settings), m_key(modelIdentifier + QStringLiteral("/RecoveryFilePath"))
     {
         assert(settings);
@@ -156,8 +156,6 @@ public:
                 QMessageBox::Yes | QMessageBox::No);
             m_recoveryQuestion->setObjectName(QStringLiteral("modelRecoveryQuestion"));
             m_recoveryQuestion->setDefaultButton(QMessageBox::Yes);
-            applyRedesignDialogStyle(m_recoveryQuestion.get(), intf);
-            QVLCDialog::setWindowTransientParent(m_recoveryQuestion.get(), nullptr, intf);
             QObject::connect(m_recoveryQuestion.get(), &QDialog::finished, &m_timer,
                 [this, guardedModel = QPointer<T>(model)](int result) {
                     if (!guardedModel || (result != QMessageBox::Yes && result != QMessageBox::No))
@@ -169,12 +167,20 @@ public:
                         guardedModel->append(QVariant::fromValue(QUrl::fromLocalFile(m_recoveryFileName)));
                     }
                 });
-            // Construct the agent completely before returning to the event
-            // loop. A modal exec() here can resume after its model is gone.
-            m_recoveryQuestion->setModal(true);
-            m_recoveryQuestion->show();
+            // MainCtx prompts from its queued initialization after its window
+            // and model owners are fully constructed; never enter a nested loop.
         }
 
+    }
+
+    void prompt(qt_intf_t *intf)
+    {
+        if (!m_recoveryPending || !m_recoveryQuestion)
+            return;
+        applyRedesignDialogStyle(m_recoveryQuestion.get(), intf);
+        QVLCDialog::setWindowTransientParent(m_recoveryQuestion.get(), nullptr, intf);
+        m_recoveryQuestion->setModal(true);
+        m_recoveryQuestion->show();
     }
 
     ~ModelRecoveryAgent()

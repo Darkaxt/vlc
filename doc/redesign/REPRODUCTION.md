@@ -237,6 +237,25 @@ registration. Verify unrelated bindings and the final installed-profile comparis
 
 ## M1 optimized release packaging
 
+The1.1.1 upstream update pins VLC master at
+`c7834066e27cf07a2a15f1e8aab17c12df97e5d4`. Use the existing retained toolchain
+and `bind-upstream-source.py` with a frozen Git bundle, patch digest, exact old/new
+commits and the original closed supervisor report. It applies exact committed
+blobs/modes, including reviewed upstream source deletions, and preserves unchanged
+source mtimes and all build objects. Never reuse the pre-upstream plugin cohort:
+the public subtitle structure and core exports changed.
+
+Use `diagnostics-mpv-full`, then `normal-mpv-full` in the maintained pipeline.
+`build-upstream-medialibrary.py` verifies upstream's SHA-512 and builds0.14.1
+statically into `/work/upstream-medialibrary-0.14.1/prefix`, using the existing CRT
+and SQLite3.53.4. Configure explicitly binds its flags before the old0.13 SDK
+copy, regenerates Autotools/manifests, and rejects a disabled library plugin.
+The full mode builds the entire configured module graph and stages only those
+current outputs into a fresh runtime; `VLC-PLUGIN-BUILDINFO.json` binds the plugin
+set to the merged application and upstream commits. Existing compatible SDK and
+MPV dependencies remain pinned, with the medialibrary override recorded separately
+in the combined corresponding-source inventory. No global SDK replacement occurs.
+
 Version1.1.1 corrects the1.1.0 symbol bloat without removing plugins or engines.
 Run the existing pipeline in `normal-mpv` mode with an exact `--release-symbols`
 directory. Resume from `runtime` using the exact previous MPV buildinfo hash to

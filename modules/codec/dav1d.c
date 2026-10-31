@@ -233,7 +233,7 @@ static void ExtractCaptions(decoder_t *dec, const Dav1dPicture *img)
     const Dav1dITUTT35 *itu_t35 = img->itut_t35;
     if(itu_t35 && itu_t35->country_code == 0xb5 &&
        itu_t35->payload_size > 9 &&
-       !memcmp(itu_t35->payload, "\x00\x0x31GA94\x03", 7))
+       !memcmp(itu_t35->payload, "\x00\x31GA94\x03", 7))
     {
         cc_Extract(&p_sys->cc, CC_PAYLOAD_GA94, true,
                    &itu_t35->payload[7], itu_t35->payload_size - 7);
@@ -484,6 +484,7 @@ static int OpenDecoder(vlc_object_t *p_this)
 
     dec->fmt_out.video.i_frame_rate = dec->fmt_in->video.i_frame_rate;
     dec->fmt_out.video.i_frame_rate_base = dec->fmt_in->video.i_frame_rate_base;
+    dec->fmt_out.video.orientation = dec->fmt_in->video.orientation;
 
     bool super_res = false;
     if (!sequence_hdr)

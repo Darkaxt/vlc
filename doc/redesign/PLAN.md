@@ -20,8 +20,16 @@ Upstream-required UI conflict/integration fixes preserve the existing Figma
 contract. The latest instruction explicitly cancels shutdown attempts.
 Build128 (7733a7a58c5b49898aca0e5f4fd3000f, original61745) is CLOSED137 following
 the scope-change stop, with an empty group and no OOM. Its outputs are not the
-merged release. Source e40379c and upstream c783406 are the merge parents under
-review. Preserve all completed dependencies/objects; do not perform a cold setup.
+merged release. Fork8fb6748 and upstream c783406 are the pending merge parents;
+e40379c is the last frozen private-build source. All four conflicts are resolved
+in the index, preserving upstream MainCtx recovery ownership and the fork's
+guarded callbacks, pending recovery and styled dialog. A new full-plugin mode
+rebuilds the configured plugin graph after the upstream ABI change, with an
+explicit separately prefixed medialibrary0.14.1 update (publisher SHA-512 checked).
+The SDK SQLite3.53.4 meets its minimum3.33.0. Other compatible SDK/MPV inputs and
+objects remain retained; no dependency freshness claim is made for unchanged SDK
+components. This recipe and merge still require compilation and full affected
+native acceptance. Preserve all completed dependencies/objects; no cold setup.
 
 **S8 MPV and Dolby Vision integration is COMPLETE (31 October 2026).**
 [Modern VLC Fork 1.1.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0)
