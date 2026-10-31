@@ -248,11 +248,16 @@ Do not strip or binary-patch MPV after compiling that binding.
 The normal player driver finishes all required outputs, then runs the same
 symbol splitter over every EXE/DLL, including inherited plugins. Original build
 outputs remain untouched. GNU objcopy keeps separate matching debug files;
-strip-unneeded removes unneeded symbols and debug sections, and GNU debuglink
+strip-all removes COFF symbols and debug sections, and GNU debuglink
 records each sidecar's basename/CRC. The helper requires byte-identical runtime
 sections and stable entry point, image base, imports/exports/exception/TLS/IAT/
 relocation directories across stripping. Only debug sections/link metadata,
-COFF symbols/strings and file-layout bookkeeping may change. A source-built
+COFF symbols/strings and file-layout bookkeeping may change.
+The first strip-unneeded diagnostic retained 658 import-related COFF entries in
+MPV and correctly failed the zero-symbol guard. The corrected policy uses
+[GNU strip-all](https://sourceware.org/binutils/docs/binutils/strip.html), while
+the unchanged runtime-section/directory checks remain mandatory.
+Full debug output remains separate. A source-built
 full debug file is used when its runtime image matches the staged binary.
 
 `RELEASE-SYMBOLS.json` covers every shipped PE and records original/final byte

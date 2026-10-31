@@ -139,7 +139,7 @@ def main():
         manifest['previous_buildinfo_sha256'] = args.replace_buildinfo_sha256
         manifest['previous_files'] = previous['files']
     if args.release_symbols:
-        manifest['release_symbols'] = {'method': 'GNU split debug and strip-unneeded before compile-time binding',
+        manifest['release_symbols'] = {'method': 'GNU split debug and strip-all before compile-time binding',
             'helper_sha256': digest(repo / 'tools/windows-player/release_symbols.py'),
             'original_prefix_files': [{'name': name, 'sha256': digest(args.prefix / 'bin' / name)}
                 for name in pins['runtime']['files']]}

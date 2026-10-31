@@ -107,7 +107,10 @@ def strip_binary(source, symbols, relative, debug_source=None):
     pending = source.with_name(source.name + '.release-pending')
     assert not pending.exists() and not debug.exists(), 'Inspect interrupted exact output before resuming'
     subprocess.run(['x86_64-w64-mingw32-objcopy', '--only-keep-debug', str(debug_source), str(debug)], check=True)
-    subprocess.run(['x86_64-w64-mingw32-strip', '--strip-unneeded', '-o', str(pending), str(source)], check=True)
+    # Fully linked PE images keep loader imports/exports/relocations in their
+    # runtime sections. strip-unneeded retains extra COFF import symbols; remove
+    # that table completely and prove all runtime sections/directories unchanged.
+    subprocess.run(['x86_64-w64-mingw32-strip', '--strip-all', '-o', str(pending), str(source)], check=True)
     subprocess.run(['x86_64-w64-mingw32-objcopy', '--add-gnu-debuglink=' + str(debug), str(pending)], check=True)
     after = pe_image(pending)
     assert after['image'] == before['image'], 'Stripping changed runtime sections/directories: ' + str(source)
@@ -145,7 +148,7 @@ def main():
     manifest_path = args.symbols / 'manifest.json'
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {
         'schema': 'vlc_redesign.release_symbols.v1', 'complete': False,
-        'method': 'GNU objcopy --only-keep-debug; strip --strip-unneeded; objcopy --add-gnu-debuglink',
+        'method': 'GNU objcopy --only-keep-debug; strip --strip-all; objcopy --add-gnu-debuglink',
         'helper_sha256': digest(__file__), 'tools': {name: subprocess.check_output([name, '--version'], text=True).splitlines()[0]
             for name in ('x86_64-w64-mingw32-strip', 'x86_64-w64-mingw32-objcopy')}, 'files': {}}
     assert manifest['helper_sha256'] == digest(__file__) and not manifest['complete']
