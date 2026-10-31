@@ -1,9 +1,6 @@
 # Windows x64 reproduction and recovery
 
-This recipe records the verified Windows x64 delivery of [Modern VLC Fork 1.0.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.0.0), application commit `dd61caec26f8cc65f15d78369d09fb254196c810`. The S8 assembly section below describes the pending MPV integration and does not claim another delivered release.
-Normal build, source binding, independent archive readback, native runtime and completed cleanup evidence are linked in [PLAN.md](PLAN.md). The pinned inputs and original baseline are documented in
-[the baseline recipe](../../tools/windows-baseline/README.md); its historical
-E: examples do not override the current D: build-storage requirement.
+Current delivery is [Modern VLC Fork 1.1.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0), application commit `c8a1cdfd31a97e7ecc0bda772d4148f1f87a6b26`. Its binary/source/checksums and independently downloaded native behavior are verified in [S8 final delivery](resources/s8/final-release.json). The original 1.0.0/S7 procedure below remains the preserved baseline; the S8 section records the source-bound MPV build and current retained binding.
 
 The fork reuses VLC's engine and Qt frontend. It does not replace the installed
 VLC or require MPV. The upstream application pin is
@@ -238,7 +235,49 @@ only the owned temporary distribution, review/inspect the exact cleanup manifest
 issue its separate ticket and apply it. Retire only the resulting empty WSL
 registration. Verify unrelated bindings and the final installed-profile comparison.
 
-## S8 source-bound MPV assembly (acceptance pending)
+## S8 source-bound MPV assembly and verified retained binding
+
+S8 is delivered and verified as 1.1.0. Current reusable inputs are
+`D:/VLC-Redesign/build/windows-x64`: `toolchain/work/src`, the configured
+`toolchain/work/build/win64`, MPV dependency/object/prefix trees, pinned archives,
+`scratch-share/runtime`, merged notices and `scratch-share/compilation/state.json`.
+`build-retention.json` records the continuing weekly consumer, original identities,
+source commit and verified new binding. Gate 126
+`588990fbfc4c47b2a28de2bb65576500` exited 0 with an empty group, no OOM and released
+mounts; the clean source/configuration/runtime check performed no rebuild or initialization.
+
+Use the installed WSL gate and canonical `with-isolated-toolchain.py` with
+`--scratch /mnt/d/VLC-Redesign/build/windows-x64`; never pass `--initialize` there.
+Keep chroot `/work` and `/scratch` bindings. Stage a verified required source delta,
+preserve identical file mtimes and resume the recorded pipeline step. Reconfigure
+only when its relevant inputs change. Flat `/scratch/FILE` command inputs must
+exist at the retained root for the wrapper's checked copy. The retained
+`apply-player-source.py`/`bind-verified-source.py` are frozen reviewed transfer controls;
+inspect their current contract before use. Do not discard object trees or redo cold SDK setup.
+
+Historical commands below show the original assembly at `D:/Temp/vlc-s8-20261029`.
+That exact root and its E: finalization controller are now absent. They are
+provenance, not instructions to recreate scratch or initialize another toolchain.
+Full local qualification and exact original control snapshots are at
+`D:/VLC-Redesign/releases/1.1.0/verification`. Frozen snapshots keep original paths
+and are not installed relocatable launchers. Three bounded hash-bound local DV
+clips live under the retained `dv-keyframes`; never put clips/frames in Git or releases.
+
+Normal MPV acceptance needs actual `Present(S_OK)` evidence. An inactive desktop
+can reach EOF without a successful presentation, so that check alone is insufficient.
+The passing normal procedure first proves the public synthetic saved Qt geometry
+on an owned inactive desktop, bound to the exact Qt DLL, saved screen/DPR and
+monitor rectangles. It then starts that normal executable fully offscreen with
+`SW_SHOWNOACTIVATE`, `--qt-auto-raise=0`, tray/notification/network prompts disabled
+and an empty synthetic portable profile. A passive owned-PID WinEvent observer is
+ready before launch. Require actual MPV picture presentation, EOF/teardown, every
+visible owned window offscreen, no foreground ownership and unchanged input desktop.
+No OS input, window-control/activation call or desktop switch is permitted.
+Re-prove Qt/geometry/display bindings after any relevant change; do not copy an
+old placement proof onto a new binary or weaken the actual-picture criterion.
+The corresponding source/delivery archives and empty original portable package
+were independently checked; principal binaries follow the existing unsigned policy.
+
 
 Use the same pinned toolchain image, CRT and contrib layout. Preserve the 1.0.0
 portable runtime and source archive as baseline inputs; copy only the empty-profile

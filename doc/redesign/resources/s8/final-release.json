@@ -1,0 +1,151 @@
+{
+  "schema": "vlc_redesign.s8_final_delivery.v1",
+  "date": "2026-10-31",
+  "stage": "S8",
+  "stage_status": "COMPLETE",
+  "version": "1.1.0",
+  "source_commit": "c8a1cdfd31a97e7ecc0bda772d4148f1f87a6b26",
+  "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0",
+  "tag": "redesign-v1.1.0",
+  "normal_published_release": true,
+  "assets": {
+    "binary": {
+      "name": "Modern-VLC-Fork-1.1.0-win64-portable.zip",
+      "bytes": 494269952,
+      "sha256": "35f52bf3d55d4c9d6472f3b418de6b5157af4b39744be01d2ca5f2280aa5f4a5"
+    },
+    "source": {
+      "name": "Modern-VLC-Fork-1.1.0-corresponding-source.tar.gz",
+      "bytes": 869286030,
+      "sha256": "bd5759d15e16c14dc0c835efff44c8934b65acf15ee7e8b28d59615ea4108cad"
+    }
+  },
+  "downloaded_checksums_sha256": "c1c08db170ef8ca39f23dcc0f750df502b8c459394827a3788961eae72bcdd8f",
+  "downloaded_native": [
+    {
+      "case": "mpv-dv-p5",
+      "checks": {
+        "all_visible_owned_windows_offscreen": true,
+        "no_observer_errors": true,
+        "never_observed_foreground_owner": true,
+        "input_desktop_preserved": true,
+        "natural_eof": true,
+        "resources_released": true,
+        "qt_event_loop_finished": true,
+        "no_competing_vlc_playback": true,
+        "no_mpv_runtime_errors": true,
+        "no_qml_errors": true,
+        "actual_picture_presented": true
+      },
+      "qt_plugin_sha256": "eab816bf0c122d3ee6865bc7acb38aa96274eb6cb3e9a4c21c24b9ea2d8b995f",
+      "receipt_sha256": "c123dc114699f3038cc16ca002763d256ca862ecd5b85b30687a3d2ad57b83cb",
+      "passed": true
+    },
+    {
+      "case": "vlc",
+      "checks": {
+        "actual_picture": true,
+        "natural_eof": true,
+        "input_released": true,
+        "qt_event_loop_finished": true,
+        "no_plugin_load_errors": true,
+        "no_qml_runtime_errors": true,
+        "native_media_library_started": true
+      },
+      "qt_plugin_sha256": "eab816bf0c122d3ee6865bc7acb38aa96274eb6cb3e9a4c21c24b9ea2d8b995f",
+      "receipt_sha256": "e715842782ef9ddc8007f6f3292113ea0fa908d25d9abbab5f07c834689d5e19",
+      "passed": true
+    }
+  ],
+  "normal_build": {
+    "ticket": 125,
+    "id": "65ec71080bc64b4daabf8bf3c0eff2e0",
+    "exit_code": 0,
+    "group_empty": true,
+    "private_mounts_released": true,
+    "oom": false,
+    "peak_memory_bytes": 1822052352,
+    "qt_plugin_sha256": "eab816bf0c122d3ee6865bc7acb38aa96274eb6cb3e9a4c21c24b9ea2d8b995f"
+  },
+  "runtime_sha256": "7ca5086cd73b6188f2e1181ac28dbc5ab8e757cd881c2255591909f24f612e2a",
+  "output_contract": "D3D11VA copy-back preserves DV metadata; FFmpeg/libplacebo reshape/color conversion to BT709/sRGB full-range SDR. Actual HDR-capable and SDR displays recorded; native Dolby Vision signaling and Profile7 FEL reconstruction are not claimed.",
+  "source_validation": {
+    "all_application_blobs_match_commit": true,
+    "dependency_archives_verified": 116,
+    "source_manifest_and_notices_verified": true,
+    "mpv_buildinfo_matches_binary": true,
+    "private_test_media_and_removed_font_excluded": true
+  },
+  "requirements": {
+    "R67": {
+      "status": "satisfied and verified",
+      "evidence": "native-integrated-verification.json; live paused/playing handover both directions, pending-input queue change, shared identity and missing/incompatible runtime recovery"
+    },
+    "R68": {
+      "status": "satisfied and verified",
+      "evidence": "Same7ca MPV composed P5/P8.1/P8.4/SDR/HDR10 reference comparisons and P5 negative control; normal and independently downloaded actual P5 presentation"
+    },
+    "R69": {
+      "status": "satisfied and verified",
+      "evidence": "Native controls/input/history/privacy/library/audio-session/subtitle/keyboard/fullscreen/error and theme/scaling cases; downloaded VLC regression and MPV EOF/teardown"
+    },
+    "R70": {
+      "status": "satisfied and verified",
+      "evidence": "One normal1.1.0 publication fromc8, complete corresponding source and independently downloaded hashes/native checks; preserved profiles and verified retained build; exact D/E scratch roots absent after inspected cleanup tickets"
+    }
+  },
+  "preservation": {
+    "vlc_nuvio_and_windows_language_unchanged": true,
+    "protected_untracked_agents_unchanged": true,
+    "prior_1_0_0_release_preserved": true,
+    "normal_deliverable_portable_profile_empty": true,
+    "no_desktop_input_switch_or_activation_control": true
+  },
+  "retained_build": {
+    "path": "D:/VLC-Redesign/build/windows-x64",
+    "consumer": "vlc-weekly-upstream-sync-and-release",
+    "verification_ticket": 126,
+    "verification_id": "588990fbfc4c47b2a28de2bb65576500",
+    "source_clean_configuration_and_runtime_verified": true,
+    "group_empty": true,
+    "private_mounts_released": true,
+    "initialization_or_compilation_during_rebinding": false,
+    "private_dv_inputs": "Three bounded hash-bound local clips, excluded from releases and Git"
+  },
+  "weekly": {
+    "id": "vlc-weekly-upstream-sync-and-release",
+    "status": "ACTIVE",
+    "schedule": "Monday09:00 Europe/Bucharest",
+    "retained_binding_readback_verified": true,
+    "quiet_when_unchanged": true
+  },
+  "cleanup": {
+    "final_d_scratch": {
+      "transaction": "1617bd12b4094203b41d4820f15e7db1",
+      "state": "applied",
+      "manifest_sha256": "4dc11f416f1d49d036029aab4285f822f8fb20427dfb7dd424c172795368f31f",
+      "deleted_members": 14312,
+      "deleted_bytes": 6458996106,
+      "errors": [],
+      "exclusions": 0,
+      "exact_root_absent": true
+    },
+    "final_e_controller": {
+      "transaction": "4b612b2205ac1da7a4faf8683812b52f",
+      "state": "applied",
+      "manifest_sha256": "c94cb047ae28f6e7531291ca330e50eeff20da3ade19ab3fb798bc26ae2652ce",
+      "deleted_members": 28,
+      "deleted_bytes": 24038804,
+      "errors": [],
+      "exclusions": 0,
+      "exact_root_absent": true
+    }
+  },
+  "blockers": [],
+  "tracked_deferrals": [],
+  "s9": "NOT STARTED; profiling/selective Rust remains planning scope",
+  "local_evidence": "D:/VLC-Redesign/releases/1.1.0/verification",
+  "signing": "Existing unsigned portable policy; inspected principal binaries report NotSigned",
+  "remaining_acceptance_criteria": [],
+  "closure_scope": "Documentation and evidence only; shipped native source/tag remains c8a1cdfd31a97e7ecc0bda772d4148f1f87a6b26"
+}
