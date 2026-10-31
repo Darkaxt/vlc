@@ -21,8 +21,8 @@ contract. The latest instruction explicitly cancels shutdown attempts.
 Build128 (7733a7a58c5b49898aca0e5f4fd3000f, original61745) is CLOSED137 following
 the scope-change stop, with an empty group and no OOM. Its outputs are not the
 merged release. Fork8fb6748 and upstream c783406 are the parents of merge5a17873578;
-e40379c is the last frozen private-build source. All four conflicts are resolved
-in the index, preserving upstream MainCtx recovery ownership and the fork's
+The merge and the codec continuation are committed; all four conflicts preserve
+upstream MainCtx recovery ownership and the fork's
 guarded callbacks, pending recovery and styled dialog. A new full-plugin mode
 rebuilds the configured plugin graph after the upstream ABI change, with an
 explicit separately prefixed medialibrary0.14.1 update (publisher SHA-512 checked).
@@ -37,13 +37,25 @@ linkage and actual native decode/complete integrated acceptance. Other compatibl
 objects remain retained; no dependency freshness claim is made for unchanged SDK
 components. This recipe and merge still require compilation and full affected
 native acceptance. Preserve all completed dependencies/objects; no cold setup.
-Build129 (88a45302c1084d00b7ca91574152ce50, original80821) remains supervised in
-pipeline run23. Its dependency build passed (1203.8s wall /232.7s CPU), fresh
-runtime/source inventory, MPV staging and reconfiguration passed; Qt is compiling.
-The inventory has120 total archives, of which117 are corresponding-library
-source and3 are separately classified host inputs. The initial runtime log's
-"corresponding_sources:120" label counts all entries; the manifest's distribution
-classes and the final archive checks are authoritative. Synthetic old-version
+Build129 (88a45302c1084d00b7ca91574152ce50, original80821) is CLOSED137 by exact
+owner stop for the corrected codec dependency recipe; its group is empty and no
+OOM occurred. Its medialibrary, configuration, core, launchers and completed Qt
+objects remain reusable. Build130 (ce3fbcc8eead4f2ba918446f12e97008, original10259)
+closed1 after complete player/plugin compilation in run24: the codec audit
+found no maps because Automake's recursive all discarded the extra -f makefile.
+An incremental continuation uses direct all-am, explicit archive/recipe target
+prerequisites and target-specific LDFLAGS consumed by both generic MAD LINK and
+the three per-plugin LINK recipes. Check the four actual generated commands
+before assembly, then inspect their real maps. Keep all completed objects;
+no native or release acceptance has passed. All four codec builds and VLC
+reconfiguration passed. The new dependency paths change CONFIGURE_LINE in global config.h, so
+Make invalidates existing core/frontend objects despite unchanged probe results.
+Do not bypass those dependencies or repeat configuration for the final normal
+variant. Actual plugin linkage and native behavior remain unverified. The notice inventory now has124
+entries:121 corresponding library sources and3 separately classified host
+inputs. A standalone completion after the pipeline's notice writer exited0
+adds the required AOM PATENTS text. Final package/source checks remain required.
+Synthetic old-version
 database setup exited0; its copied1.5GB runtime and obsolete128 sidecars/transfers
 were retired by inspected cleanup tickets. Only the synthetic profile needed
 for the real new-library compatibility check remains. No merged-player behavior

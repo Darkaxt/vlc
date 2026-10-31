@@ -100,6 +100,10 @@ def main():
     for filename in root_files:
         assert (runtime / filename).is_file(), filename
         shutil.copy2(runtime / filename, package / filename)
+    for filename, source_path in {'AUTHORS.txt': 'AUTHORS', 'NEWS.txt': 'NEWS',
+            'README.txt': 'README.md', 'THANKS.txt': 'THANKS'}.items():
+        (package / filename).write_bytes(subprocess.check_output(
+            ['git', '-C', str(repo), 'show', args.source_commit + ':' + source_path]))
     shutil.copy2(runtime / 'RELEASE-SYMBOLS.json', package / 'RELEASE-SYMBOLS.json')
     coherent = runtime / 'VLC-PLUGIN-BUILDINFO.json'
     if coherent.is_file():
@@ -121,6 +125,9 @@ def main():
             linked = next(plugin for plugin in provenance['plugins']
                 if Path(plugin['file']).name == 'lib' + item['library'] + '_plugin.dll')
             assert linked['unstripped_sha256'] == item['unstripped_plugin_sha256']
+        aom_source = next(item for item in dependency_inventory['archives'] if item['archive'] == 'libaom-3.15.2.tar.gz')
+        patent = next(item for item in aom_source['notices'] if item['archive_path'] == 'libaom-3.15.2/PATENTS')
+        assert sha256(args.dependency_notices / patent['file']) == patent['sha256']
         shutil.copy2(runtime / 'VLC-CODEC-BUILDINFO.json', package / 'VLC-CODEC-BUILDINFO.json')
     for folder in ('plugins', 'lua', 'skins', 'hrtfs', 'locale'):
         assert (runtime / folder).is_dir(), folder

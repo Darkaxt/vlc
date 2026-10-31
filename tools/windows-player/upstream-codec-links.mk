@@ -11,9 +11,11 @@ libmad_plugin.la: $(upstream_codec_libdir)/libmad.a $(upstream_codec_recipe)
 # Qt is built explicitly by build-player.sh. Build the flat module graph in
 # this make process: recursive "all" discards the extra -f makefile arguments.
 all-am: $(BUILT_SOURCES)
-libmpg123_plugin_la_LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mpg123.map
-libzvbi_plugin_la_LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/zvbi.map
-libaom_plugin_la_LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/aom.map
-libmad_plugin_la_LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mad.map
+# Every generated LINK variant consumes LDFLAGS. MAD uses generic LINK and
+# ignores libmad_plugin_la_LDFLAGS, unlike the three per-target link recipes.
+libmpg123_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mpg123.map
+libzvbi_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/zvbi.map
+libaom_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/aom.map
+libmad_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mad.map
 # libmad's configure probe uses --with-mad; the link itself also binds the archive.
 MAD_LIBS = $(upstream_codec_libdir)/libmad.a

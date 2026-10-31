@@ -10,12 +10,14 @@ import tarfile
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--notices', type=Path, required=True)
+    parser.add_argument('--sources', type=Path, default=Path('/scratch/mpv-source-inputs'))
+    parser.add_argument('--build-receipt', type=Path, default=Path('/work/upstream-codecs-1.1.1/build-receipt.json'))
     args = parser.parse_args()
-    receipt = json.loads(Path('/work/upstream-codecs-1.1.1/build-receipt.json').read_text())
+    receipt = json.loads(args.build_receipt.read_text())
     manifest_path = args.notices / 'manifest.json'
     manifest = json.loads(manifest_path.read_text())
     for record in receipt['libraries']:
-        archive = Path('/scratch/mpv-source-inputs') / record['archive']
+        archive = args.sources / record['archive']
         with archive.open('rb') as stream:
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()
         assert digest == record['archive_sha256']
@@ -23,7 +25,7 @@ def main():
         notices = []
         with tarfile.open(archive) as tar:
             for item in tar:
-                if not item.isfile() or not re.match(r'(?i)^(license|licence|copying|copyright|notice|authors)([._-]|$)', Path(item.name).name):
+                if not item.isfile() or not re.match(r'(?i)^(license|licence|copying|copyright|notice|authors|patents)([._-]|$)', Path(item.name).name):
                     continue
                 assert '..' not in Path(item.name).parts and not Path(item.name).is_absolute()
                 blob = tar.extractfile(item).read()
@@ -38,9 +40,12 @@ def main():
         assert notices
         entry = {'archive': archive.name, 'sha256': digest, 'bytes': archive.stat().st_size,
             'release_archive_class': 'corresponding-source', 'notices': notices,
-            'notice_coverage': 'Named source license/copyright/notice/authors files; complete archive also delivered.'}
+            'notice_coverage': 'Named source license/patent/copyright/notice/authors files; complete archive also delivered.'}
         if existing:
-            assert existing == entry
+            for key in ('archive', 'sha256', 'bytes', 'release_archive_class'):
+                assert existing[key] == entry[key]
+            assert all(item in notices for item in existing['notices']), 'Preserve verified notice identities'
+            manifest['archives'][manifest['archives'].index(existing)] = entry
         else:
             manifest['archives'].append(entry)
         override = {'library': record['library'], 'version': record['version'],
