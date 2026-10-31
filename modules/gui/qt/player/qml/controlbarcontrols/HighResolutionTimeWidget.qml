@@ -79,7 +79,8 @@ Control {
             id: label
             anchors.fill: parent
 
-            text: paintOnly ? "00:00:00:00" : timeText
+            text: paintOnly ? "00:00:00:00"
+                            : Player.playbackEngine === "mpv" ? qsTr("Timecode (VLC)") : timeText
             color: theme.fg.primary
 
             horizontalAlignment: Text.AlignHCenter
@@ -89,7 +90,8 @@ Control {
             property string timeText
 
             HighResolutionTimeUpdater on timeText {
-                window: (label.visible && Player.isStarted && !highResolutionTimeWidget.paintOnly) ? label.Window.window
+                window: (label.visible && Player.isStarted && Player.playbackEngine !== "mpv"
+                         && !highResolutionTimeWidget.paintOnly) ? label.Window.window
                                                                                                    : null
                 playerController: Player
             }
@@ -107,7 +109,8 @@ Control {
         TextMetrics {
             id: smpteTimecodeMetrics
             font: label.font
-            text: "-00:00:00:00-"
+            text: !highResolutionTimeWidget.paintOnly && Player.playbackEngine === "mpv"
+                  ? qsTr("Timecode (VLC)") : "-00:00:00:00-"
         }
     }
 }

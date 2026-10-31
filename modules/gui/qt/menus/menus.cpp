@@ -57,6 +57,7 @@
 
 #include <QMenu>
 #include <QMenuBar>
+#include <QMap>
 #include <QAction>
 #include <QActionGroup>
 #include <QSignalMapper>
@@ -429,16 +430,41 @@ void VLCMenuBar::AudioMenu( qt_intf_t *p_intf, QMenu * current )
     {
         current->addMenu(new CheckableListMenu(qtr( "Audio &Track" ), THEMIM->getAudioTracks(), QActionGroup::ExclusionPolicy::ExclusiveOptional, current));
 
-        current->addMenu(new CheckableListMenu(qtr( "&Audio Device" ), THEMIM->getAudioDevices(), QActionGroup::ExclusionPolicy::Exclusive, current));
+        auto *audioDevices = new CheckableListMenu(qtr( "&Audio Device" ), THEMIM->getAudioDevices(), QActionGroup::ExclusionPolicy::Exclusive, current);
+        current->addMenu(audioDevices);
+        const auto updateAudioDevices = [player = THEMIM, audioDevices]() {
+            const bool nativeVlc = !player->usesMpv();
+            audioDevices->setTitle(nativeVlc ? qtr("&Audio Device") : qtr("Audio Device (VLC)"));
+            audioDevices->setEnabled(nativeVlc && !player->engineSwitching());
+        };
+        QObject::connect(THEMIM, &PlayerController::playbackEngineChanged,
+                         audioDevices, updateAudioDevices);
+        QObject::connect(THEMIM, &PlayerController::engineSwitchingChanged,
+                         audioDevices, updateAudioDevices);
+        updateAudioDevices();
 
         VLCVarChoiceModel *mix_mode = THEMIM->getAudioMixMode();
+        QMap<QAction *, QString> vlcTools;
+        QAction *mixAction;
         if (mix_mode->rowCount() == 0)
-            current->addMenu( new CheckableListMenu(qtr( "&Stereo Mode" ), THEMIM->getAudioStereoMode(), QActionGroup::ExclusionPolicy::Exclusive, current) );
+            mixAction = current->addMenu( new CheckableListMenu(qtr( "&Stereo Mode" ), THEMIM->getAudioStereoMode(), QActionGroup::ExclusionPolicy::Exclusive, current) );
         else
-            current->addMenu( new CheckableListMenu(qtr( "&Mix Mode" ), mix_mode, QActionGroup::ExclusionPolicy::Exclusive, current) );
+            mixAction = current->addMenu( new CheckableListMenu(qtr( "&Mix Mode" ), mix_mode, QActionGroup::ExclusionPolicy::Exclusive, current) );
+        vlcTools.insert(mixAction, mixAction->text());
         current->addSeparator();
 
-        current->addMenu( new CheckableListMenu(qtr( "&Visualizations" ), THEMIM->getAudioVisualizations(), QActionGroup::ExclusionPolicy::Exclusive, current) );
+        auto *visualizations = current->addMenu( new CheckableListMenu(qtr( "&Visualizations" ), THEMIM->getAudioVisualizations(), QActionGroup::ExclusionPolicy::Exclusive, current) );
+        vlcTools.insert(visualizations, visualizations->text());
+        const auto updateTools = [player = THEMIM, vlcTools] {
+            const bool nativeVlc = !player->usesMpv();
+            for (auto it = vlcTools.cbegin(); it != vlcTools.cend(); ++it) {
+                it.key()->setText(nativeVlc ? it.value() : it.value() + qtr(" (VLC)"));
+                it.key()->setEnabled(nativeVlc && !player->engineSwitching());
+            }
+        };
+        QObject::connect(THEMIM, &PlayerController::playbackEngineChanged, current, updateTools);
+        QObject::connect(THEMIM, &PlayerController::engineSwitchingChanged, current, updateTools);
+        updateTools();
         VolumeEntries( p_intf, current );
     }
 }
@@ -463,17 +489,16 @@ void VLCMenuBar::VideoMenu( qt_intf_t *p_intf, QMenu *current )
 {
     if( current->isEmpty() )
     {
-        current->addMenu(new CheckableListMenu(qtr( "Video &Track" ), THEMIM->getVideoTracks(), QActionGroup::ExclusionPolicy::None, current));
+        auto *videoTracks = current->addMenu(new CheckableListMenu(qtr( "Video &Track" ), THEMIM->getVideoTracks(), QActionGroup::ExclusionPolicy::None, current));
 
         current->addSeparator();
         current->addMenu( new CheckableListMenu(qtr( "&3D Output" ), THEMIM->getVideoStereoMode(), QActionGroup::ExclusionPolicy::Exclusive, current) );
 
         current->addSeparator();
         /* Surface modifiers */
-        current->addAction(new BooleanPropertyAction(qtr( "&Fullscreen"), THEMIM, "fullscreen", current));
+        auto *fullscreen = new BooleanPropertyAction(qtr( "&Fullscreen"), THEMIM, "fullscreen", current);
+        current->addAction(fullscreen);
         QAction* action = new BooleanPropertyAction(qtr( "Always Fit &Window"), THEMIM, "autoscale", current);
-        action->setEnabled( THEMIM->hasVideoOutput() );
-        connect(THEMIM, &PlayerController::hasVideoOutputChanged, action, &QAction::setEnabled);
         current->addAction(action);
         current->addAction(new BooleanPropertyAction(qtr( "Set as Wall&paper"), THEMIM, "wallpaperMode", current));
 
@@ -494,6 +519,22 @@ void VLCMenuBar::VideoMenu( qt_intf_t *p_intf, QMenu *current )
         QAction* snapshotAction = new QAction(qtr( "Take &Snapshot" ), current);
         connect(snapshotAction, &QAction::triggered, THEMIM, &PlayerController::snapshot);
         current->addAction(snapshotAction);
+        QMap<QAction *, QString> vlcTools;
+        for (auto *entry : current->actions())
+            if (!entry->isSeparator() && entry != videoTracks && entry != fullscreen)
+                vlcTools.insert(entry, entry->text());
+        const auto updateTools = [player = THEMIM, vlcTools, autoscale = action] {
+            const bool native = !player->usesMpv();
+            for (auto it = vlcTools.cbegin(); it != vlcTools.cend(); ++it) {
+                it.key()->setText(native ? it.value() : it.value() + qtr(" (VLC)"));
+                it.key()->setEnabled(native && !player->engineSwitching()
+                    && (it.key() != autoscale || player->hasVideoOutput()));
+            }
+        };
+        QObject::connect(THEMIM, &PlayerController::hasVideoOutputChanged, current, updateTools);
+        QObject::connect(THEMIM, &PlayerController::playbackEngineChanged, current, updateTools);
+        QObject::connect(THEMIM, &PlayerController::engineSwitchingChanged, current, updateTools);
+        updateTools();
     }
 }
 
@@ -503,6 +544,33 @@ void VLCMenuBar::VideoMenu( qt_intf_t *p_intf, QMenu *current )
  **/
 void VLCMenuBar::NavigMenu( qt_intf_t *p_intf, QMenu *menu )
 {
+#ifdef _WIN32
+    if (!p_intf->b_isDialogProvider) {
+        // Also reachable from Home/idle and missing-runtime recovery, where
+        // there is no visible in-player settings popup yet.
+        auto *engines = menu->addMenu(qtr("Playback engine"));
+        auto *group = new QActionGroup(engines);
+        group->setExclusive(true);
+        auto *vlc = engines->addAction(qtr("VLC"));
+        auto *mpv = engines->addAction(qtr("MPV / Dolby Vision"));
+        for (auto *action : {vlc, mpv}) { action->setCheckable(true); group->addAction(action); }
+        const auto refresh = [player = THEMIM, engines, vlc, mpv] {
+            vlc->setChecked(!player->usesMpv());
+            mpv->setChecked(player->usesMpv());
+            engines->setEnabled(!player->engineSwitching());
+        };
+        QObject::connect(THEMIM, &PlayerController::playbackEngineChanged, engines, refresh);
+        QObject::connect(THEMIM, &PlayerController::engineSwitchingChanged, engines, refresh);
+        QObject::connect(vlc, &QAction::triggered, engines, [player = THEMIM, refresh] {
+            player->switchPlaybackEngine(QStringLiteral("vlc")); refresh();
+        });
+        QObject::connect(mpv, &QAction::triggered, engines, [player = THEMIM, refresh] {
+            player->switchPlaybackEngine(QStringLiteral("mpv")); refresh();
+        });
+        refresh();
+        menu->addSeparator();
+    }
+#endif
     QAction *action;
     QMenu *submenu;
 
@@ -518,7 +586,7 @@ void VLCMenuBar::NavigMenu( qt_intf_t *p_intf, QMenu *menu )
     {
         MediaLib * mediaLib = mi->getMediaLibrary();
 
-        BookmarkMenu * bookmarks = new BookmarkMenu(mediaLib, p_intf->p_player, menu);
+        BookmarkMenu * bookmarks = new BookmarkMenu(mediaLib, THEMIM, menu);
 
         bookmarks->setTitle(qfut(I_MENU_BOOKMARK));
 

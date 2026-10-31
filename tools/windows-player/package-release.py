@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--destination', type=Path, required=True)
     parser.add_argument('--source-commit', required=True)
     parser.add_argument('--version', required=True)
+    parser.add_argument('--include-mpv', action='store_true')
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     runtime, destination = args.runtime.resolve(), args.destination.resolve()
@@ -47,11 +48,28 @@ def main():
     assert not (runtime / 'portable').exists() or not any((runtime / 'portable').iterdir())
     plugin = runtime / 'plugins/gui/libqt_plugin.dll'
     normal = plugin.read_bytes()
+    mpv = None
+    if args.include_mpv:
+        registry = json.loads(subprocess.check_output(['git', '-C', str(repo), 'show',
+            args.source_commit + ':modules/gui/qt/player/mpv/source.json']))
+        mpv = json.loads((runtime / 'MPV-BUILDINFO.json').read_text())
+        assert mpv['schema'] == 'vlc_redesign.mpv_build.v1'
+        assert [item['name'] for item in mpv['files']] == registry['runtime']['files']
+        assert {item['archive']: item['sha256'] for item in dependency_inventory['mpv_sources']} == \
+               {item['archive']: item['sha256'] for item in mpv['sources']}
+        assert dependency_inventory['baseline_sdk_manifest_sha256'] == mpv['sdk_dependency_notices_manifest_sha256']
+        assert mpv['build_script_sha256'] == sha256(repo / registry['runtime']['build_script'])
+        assert mpv['install_helper_sha256'] == sha256(repo / 'tools/windows-player/install-ffmpeg-files.py')
+        for item in mpv['files']:
+            assert sha256(runtime / item['name']) == item['sha256']
+            assert item['sha256'].encode('ascii') in normal, 'Player is not bound to its packaged MPV payload'
+    else:
+        assert not (runtime / 'libmpv-2.dll').exists(), 'Select --include-mpv for the S8 runtime'
     markers = ['VLC_PLAYER_DIAGNOSTICS_DIR', 'VLC_PLAYER_DIAGNOSTICS_TOKEN',
         'VLC_PLAYER_DIAGNOSTICS_OFFSCREEN', 'VLC_PLAYER_DIAGNOSTICS_PROXY_PORT',
         'redesignSeekRequests', 'offscreen_session_is_capture_only',
         'core_observation_listener_failed_action_not_undone', 'palette_highlight',
-        'PlayerDiagnostics', 'optional_legacy_font']
+        'PlayerDiagnostics', 'optional_legacy_font', 'mpvHistoryReady', 'mpv_history_ready', 'mpv_video_ready']
     for marker in markers:
         assert all(marker.encode(encoding) not in normal for encoding in ('ascii', 'utf-16le')), marker
     core = (runtime / 'libvlccore.dll').read_bytes()
@@ -73,6 +91,8 @@ def main():
     package.mkdir()
     root_files = ['vlc.exe', 'vlc-cache-gen.exe', 'vlc-preparser.exe', 'libvlc.dll', 'libvlccore.dll',
         'vlc.ico', 'AUTHORS.txt', 'COPYING.txt', 'NEWS.txt', 'README.txt', 'THANKS.txt']
+    if mpv:
+        root_files += ['MPV-BUILDINFO.json', *[item['name'] for item in mpv['files']]]
     for filename in root_files:
         assert (runtime / filename).is_file(), filename
         shutil.copy2(runtime / filename, package / filename)
@@ -114,6 +134,15 @@ def main():
         'Source commit: ' + args.source_commit + '\n'
         'Source, build inputs, notices and recovery instructions accompany this release\n'
         'at https://github.com/Darkaxt/vlc/releases .\n', encoding='utf-8')
+    if mpv:
+        with (package / 'README-MODERN-VLC.txt').open('a', encoding='utf-8') as guide:
+            guide.write('\nPlayback settings can switch the open item between VLC and MPV, with a\n'
+                'brief interruption while the new engine restores its playback position.\n'
+                'Preferences separately choose the startup engine; VLC is the default.\n'
+                'MPV converts supported Dolby Vision video to BT.709/sRGB SDR. Native\n'
+                'Dolby Vision display signaling and full Profile 7 FEL are not claimed.\n'
+                'Keep both packaged MPV DLLs beside vlc.exe. MPV color conversion requires\n'
+                'the Vulkan runtime supplied by a compatible graphics driver.\n')
     build = {'schema': 'vlc_redesign.release_identity.v1', 'product': 'Modern VLC Fork',
         'version': args.version, 'source_commit': args.source_commit,
         'upstream_revision': '392bc1d0abdb7396b6c97fef206efa1d23868e19',
@@ -122,6 +151,15 @@ def main():
         'dependency_notices_manifest_sha256': sha256(args.dependency_notices / 'manifest.json'),
         'normal_diagnostic_markers_absent': markers, 'profile': 'Empty portable directory beside vlc.exe',
         'signing': 'This helper performs no Authenticode signing step. Inspect delivered signatures independently; none is asserted here.'}
+    if mpv:
+        build['mpv'] = mpv
+        build['mpv_manifest_sha256'] = sha256(runtime / 'MPV-BUILDINFO.json')
+        with (package / 'README-MODERN-VLC.txt').open('a', encoding='utf-8') as stream:
+            stream.write('\nPlayback settings offer VLC (default) and MPV. The live engine choice can reopen\n'
+                         'the current item in the other engine, preserving position and play/pause state.\n'
+                         'MPV converts supported Dolby Vision/HDR input to BT.709/sRGB SDR. Native Dolby\n'
+                         'Vision signaling and full Profile 7 FEL reconstruction are not claimed.\n'
+                         'Tools marked VLC remain available by switching back to VLC.\n')
     (package / 'BUILDINFO.json').write_text(json.dumps(build, indent=2) + '\n', encoding='utf-8')
     records = []
     for file in sorted(package.rglob('*')):

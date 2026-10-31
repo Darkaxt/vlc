@@ -3,6 +3,7 @@
 # include "config.h"
 #endif
 #include "player_media_tools.hpp"
+#include "mpv_playback.hpp"
 #include "playlist/playlist_controller.hpp"
 #include <vlc_aout.h>
 #include <vlc_configuration.h>
@@ -130,6 +131,7 @@ PlayerMediaTools::PlayerMediaTools(qt_intf_t *intf, PlayerController *player)
     connect(player->getVideoTracks(), &TrackListModel::countChanged, this, &PlayerMediaTools::changed);
     connect(player->getVideoTracks(), &QAbstractItemModel::dataChanged, this, &PlayerMediaTools::changed);
     connect(player, &PlayerController::inputChanged, this, &PlayerMediaTools::inputChanged);
+    connect(player, &PlayerController::playbackEngineChanged, this, [this] { loadTimeline(); emit changed(); });
     connect(player, &PlayerController::subtitleFPSChanged, this, &PlayerMediaTools::loadTimeline);
     connect(player, &PlayerController::statisticsUpdated, this, &PlayerMediaTools::updateStatistics);
     for (auto *tracks : {player->getAudioTracks(), player->getSubtitleTracks()}) {
@@ -137,7 +139,7 @@ PlayerMediaTools::PlayerMediaTools(qt_intf_t *intf, PlayerController *player)
         connect(tracks, &TrackListModel::countChanged, this, &PlayerMediaTools::changed);
     }
     connect(player, &PlayerController::hasVideoOutputChanged, this, [this] {
-        if (!m_player->hasVideoOutput()) return;
+        if (!m_player->hasVideoOutput() || m_player->usesMpv()) return;
         const auto values = m_sessionValues;
         for (auto it = values.begin(); it != values.end(); ++it) setValue(it.key(), it.value().toVariant());
         const auto filters = m_sessionFilters;
@@ -309,6 +311,7 @@ bool PlayerMediaTools::saveMatches()
 bool PlayerMediaTools::isCurrentMedia(const QUrl &media) const
 {
     if (media != m_player->getUrl()) return false;
+    if (m_player->usesMpv()) return m_player->getInput() && !media.isEmpty() && m_player->mpvPlayback()->isMediaLoaded();
     vlc_player_locker lock(m_player->getPlayer());
     const auto input = vlc_player_GetCurrentMedia(m_player->getPlayer());
     char *raw = input ? input_item_GetURI(input) : nullptr;
@@ -395,7 +398,16 @@ void PlayerMediaTools::loadTimeline()
 {
     m_cues.clear();
     bool selected = false, external = false;
-    {
+    if (m_player->usesMpv()) {
+        for (const auto &value : m_player->mpvPlayback()->value(QStringLiteral("track-list")).toList()) {
+            const auto track = value.toMap();
+            if (track.value(QStringLiteral("type")).toString() != QStringLiteral("sub") || !track.value(QStringLiteral("selected")).toBool()) continue;
+            selected = true;
+            const auto file = track.value(QStringLiteral("external-filename")).toString();
+            const QUrl url = QUrl::fromLocalFile(file);
+            external |= !m_subtitle.isEmpty() && (url == m_subtitle || QUrl(file) == m_subtitle);
+        }
+    } else {
         vlc_player_locker lock(m_player->getPlayer());
         const auto *track = vlc_player_GetSelectedTrack(m_player->getPlayer(), SPU_ES);
         selected = track != nullptr;
@@ -441,7 +453,7 @@ QVariantList PlayerMediaTools::options(const QString &section) const
         const bool crop = QByteArray(o.section) == "crop";
         const auto *c = config_FindConfig(o.key); const int type = crop ? VLC_VAR_INTEGER : config_GetType(o.key);
         QVariantMap row{{QStringLiteral("key"), QString::fromUtf8(o.key)}, {QStringLiteral("module"), QString::fromUtf8(o.module)},
-            {QStringLiteral("label"), tr(o.label)}, {QStringLiteral("available"), c != nullptr && type != 0}, {QStringLiteral("value"), value(QString::fromUtf8(o.key))},
+            {QStringLiteral("label"), tr(o.label)}, {QStringLiteral("available"), !m_player->usesMpv() && c != nullptr && type != 0}, {QStringLiteral("value"), value(QString::fromUtf8(o.key))},
             {QStringLiteral("choices"), QVariantList{}}, {QStringLiteral("color"), false}, {QStringLiteral("step"), 1}};
         row[QStringLiteral("kind")] = type == VLC_VAR_BOOL ? QStringLiteral("bool") : type == VLC_VAR_STRING ? QStringLiteral("string") : QStringLiteral("number");
         if (crop) {
@@ -476,6 +488,7 @@ QVariantList PlayerMediaTools::options(const QString &section) const
 }
 bool PlayerMediaTools::setValue(const QString &key, const QVariant &v)
 {
+    if (m_player->usesMpv()) { report(tr("VLC appearance and filter tools require VLC playback. Switch engines in Playback settings.")); return false; }
     const auto *o = findOption(key); if (!o) return false;
     if (QByteArray(o->section) == "crop") {
         QVariantMap metadata;
@@ -531,6 +544,7 @@ bool PlayerMediaTools::setValue(const QString &key, const QVariant &v)
 }
 bool PlayerMediaTools::filterEnabled(const QString &module) const
 {
+    if (m_player->usesMpv()) return false;
     const QByteArray bytes = module.toUtf8(); module_t *mod = module_find(bytes.constData());
     if (!mod) return false;
     const char *chain = module_provides(mod, "audio filter") ? "audio-filter" : module_provides(mod, "sub filter") ? "sub-filter" : "video-filter";
@@ -542,6 +556,7 @@ bool PlayerMediaTools::filterEnabled(const QString &module) const
 }
 void PlayerMediaTools::enableFilter(const QString &module, bool enabled)
 {
+    if (m_player->usesMpv()) { report(tr("This filter requires VLC playback. Switch engines in Playback settings.")); return; }
     const QByteArray bytes = module.toUtf8(); module_t *mod = module_find(bytes.constData());
     if (!mod) { report(tr("This filter is unavailable in this VLC build.")); return; }
     m_sessionFilters[module] = enabled;
@@ -558,6 +573,7 @@ void PlayerMediaTools::enableFilter(const QString &module, bool enabled)
 }
 void PlayerMediaTools::resetSection(const QString &section)
 {
+    if (m_player->usesMpv()) { report(tr("Resetting VLC filters and appearance requires VLC playback.")); return; }
     if (section == QLatin1String("crop")) {
         if (!m_player->getVout()) { report(tr("No active video output for pixel cropping.")); return; }
         for (const auto &o : optionsList) if (section == QLatin1String(o.section)) setValue(QString::fromUtf8(o.key), 0);
@@ -586,7 +602,22 @@ void PlayerMediaTools::savePreset(const QString &name, const QUrl &folder)
     // Capture the real current selection, including language and ordinal. When
     // the next episode orders tracks differently, the language wins; an ordinal
     // is used only within that language (or when no language was supplied).
-    {
+    if (m_player->usesMpv()) {
+        const auto tracks = m_player->mpvPlayback()->value(QStringLiteral("track-list")).toList();
+        for (const bool sub : {false, true}) {
+            QString language; int index = sub ? -2 : -1, ordinal = 0;
+            for (const auto &entry : tracks) {
+                const auto track = entry.toMap();
+                if (track.value(QStringLiteral("type")).toString() != (sub ? QStringLiteral("sub") : QStringLiteral("audio"))) continue;
+                if (track.value(QStringLiteral("selected")).toBool()) {
+                    index = ordinal; language = languageCode(track.value(QStringLiteral("lang")).toString()); break;
+                }
+                ++ordinal;
+            }
+            (sub ? m_preferredSubtitle : m_preferredAudio) = language;
+            (sub ? m_preferredSubtitleIndex : m_preferredAudioIndex) = index;
+        }
+    } else {
         vlc_player_locker lock(m_player->getPlayer());
         for (const auto cat : {AUDIO_ES, SPU_ES}) {
             const auto *selected = vlc_player_GetSelectedTrack(m_player->getPlayer(), cat);
@@ -616,13 +647,17 @@ void PlayerMediaTools::applyPreset(const QString &name)
     if (preset.isEmpty()) return;
     m_manualAudioChoice = m_manualSubtitleChoice = false;
     const auto values = preset.value(QStringLiteral("values")).toObject();
-    for (auto it = values.begin(); it != values.end(); ++it) setValue(it.key(), it.value().toVariant());
+    if (!m_player->usesMpv())
+        for (auto it = values.begin(); it != values.end(); ++it) setValue(it.key(), it.value().toVariant());
     m_player->setSubtitleDelayMS(preset.value(QStringLiteral("delay")).toInt());
-    m_player->setSubtitleFPS(float(preset.value(QStringLiteral("fps")).toDouble()));
-    enableFilter(QStringLiteral("subsdelay"), preset.value(QStringLiteral("durationEnabled")).toBool());
+    if (!m_player->usesMpv()) {
+        m_player->setSubtitleFPS(float(preset.value(QStringLiteral("fps")).toDouble()));
+        enableFilter(QStringLiteral("subsdelay"), preset.value(QStringLiteral("durationEnabled")).toBool());
+    }
     m_preferredAudio = languageCode(preset.value(QStringLiteral("audioLanguage")).toString()); m_preferredSubtitle = languageCode(preset.value(QStringLiteral("subtitleLanguage")).toString());
     m_preferredAudioIndex = preset.value(QStringLiteral("audioIndex")).toInt(-1); m_preferredSubtitleIndex = preset.value(QStringLiteral("subtitleIndex")).toInt(-1);
     m_activePreset = name; restoreTracks(); emit changed();
+    if (m_player->usesMpv()) report(tr("Track and delay preferences applied. This preset's VLC appearance and filters require VLC playback."));
 }
 void PlayerMediaTools::removePreset(const QString &name)
 {
@@ -648,6 +683,30 @@ void PlayerMediaTools::restoreTracks()
     // Never apply the previous input's preset to that newer core media.
     if (m_restoringTracks || !isCurrentMedia(m_player->getUrl())) return;
     m_restoringTracks = true;
+    if (m_player->usesMpv()) {
+        auto *mpv = m_player->mpvPlayback();
+        const auto tracks = mpv->value(QStringLiteral("track-list")).toList();
+        for (const bool sub : {false, true}) {
+            if (sub ? m_manualSubtitleChoice : m_manualAudioChoice) continue;
+            if (sub && m_preferAssociation) continue; // sub-add already selects the exact requested file.
+            const auto language = sub ? m_preferredSubtitle : m_preferredAudio;
+            const int preferred = sub ? m_preferredSubtitleIndex : m_preferredAudioIndex;
+            const QString property = sub ? QStringLiteral("sid") : QStringLiteral("aid");
+            if (sub && preferred == -2) { mpv->set(property, QStringLiteral("no")); continue; }
+            int ordinal = 0; QVariantMap chosen;
+            for (const auto &entry : tracks) {
+                const auto track = entry.toMap();
+                if (track.value(QStringLiteral("type")).toString() != (sub ? QStringLiteral("sub") : QStringLiteral("audio"))) continue;
+                const bool matches = language.isEmpty() || languageCode(track.value(QStringLiteral("lang")).toString()) == language;
+                if (matches && ((!language.isEmpty() && chosen.isEmpty()) || ordinal == preferred)) chosen = track;
+                if (matches && ordinal == preferred) break;
+                ++ordinal;
+            }
+            if (!chosen.isEmpty() && !chosen.value(QStringLiteral("selected")).toBool()) mpv->set(property, chosen.value(QStringLiteral("id")).toString());
+        }
+        m_restoringTracks = false;
+        return;
+    }
     vlc_player_locker lock(m_player->getPlayer());
     for (const auto cat : {AUDIO_ES, SPU_ES}) {
         if (cat == SPU_ES ? m_manualSubtitleChoice : m_manualAudioChoice) continue;
@@ -681,7 +740,7 @@ void PlayerMediaTools::restoreTracks()
 void PlayerMediaTools::inputChanged()
 {
     if (m_writable) m_status.clear(); // Transient results belong to the old input; preserve store-recovery errors.
-    m_statisticsText = tr("Waiting for playback statistics…"); emit statisticsChanged();
+    m_statisticsText = m_player->usesMpv() ? tr("VLC playback statistics require the VLC engine.") : tr("Waiting for playback statistics…"); emit statisticsChanged();
     m_subtitle = QUrl(); m_expectedSubtitlePrefix.clear(); m_awaitingSubtitleTrack = false; m_subtitleLoaded = false;
     m_activePreset.clear(); m_cues.clear(); m_sessionValues = {}; m_sessionFilters.clear();
     m_manualAudioChoice = m_manualSubtitleChoice = m_preferAssociation = false;
@@ -709,7 +768,7 @@ void PlayerMediaTools::inputChanged()
         m_sessionValues[QString::fromUtf8(o.key)] = QJsonValue::fromVariant(global);
     }
     m_player->setSubtitleDelayMS(m_globalSubtitleDelay);
-    m_player->setSubtitleFPS(float(config_GetFloat("sub-fps")));
+    if (!m_player->usesMpv()) m_player->setSubtitleFPS(float(config_GetFloat("sub-fps")));
     const auto media = m_player->getUrl();
     if (media.isLocalFile()) {
         const auto path = QFileInfo(media.toLocalFile()).canonicalFilePath();
@@ -774,6 +833,7 @@ void PlayerMediaTools::cancelSleep()
 }
 bool PlayerMediaTools::subtitleFPSSupported() const
 {
+    if (m_player->usesMpv()) return false;
     if (!m_subtitleLoaded) return false;
     vlc_player_locker lock(m_player->getPlayer());
     const auto *track = vlc_player_GetSelectedTrack(m_player->getPlayer(), SPU_ES);
@@ -795,6 +855,17 @@ double PlayerMediaTools::subtitleTimeScale() const
 QVariantList PlayerMediaTools::trackLanguages(bool subtitle) const
 {
     QVariantList result; QSet<QString> seen;
+    if (m_player->usesMpv()) {
+        for (const auto &entry : m_player->mpvPlayback()->value(QStringLiteral("track-list")).toList()) {
+            const auto track = entry.toMap();
+            if (track.value(QStringLiteral("type")).toString() != (subtitle ? QStringLiteral("sub") : QStringLiteral("audio"))) continue;
+            const auto code = languageCode(track.value(QStringLiteral("lang")).toString());
+            if (code.isEmpty() || seen.contains(code)) continue;
+            const auto *language = vlc_find_iso639(code.toUtf8().constData(), false);
+            seen.insert(code); result.append(QVariantMap{{QStringLiteral("text"), language ? QString::fromUtf8(language->psz_eng_name) : code}, {QStringLiteral("value"), code}});
+        }
+        return result;
+    }
     vlc_player_locker lock(m_player->getPlayer()); const auto cat = subtitle ? SPU_ES : AUDIO_ES;
     for (size_t i = 0; i < vlc_player_GetTrackCount(m_player->getPlayer(), cat); ++i) {
         const auto *track = vlc_player_GetTrackAt(m_player->getPlayer(), cat, i);
@@ -808,12 +879,28 @@ QVariantList PlayerMediaTools::trackLanguages(bool subtitle) const
 }
 QString PlayerMediaTools::selectedLanguage(bool subtitle) const
 {
+    if (m_player->usesMpv()) {
+        for (const auto &entry : m_player->mpvPlayback()->value(QStringLiteral("track-list")).toList()) {
+            const auto track = entry.toMap();
+            if (track.value(QStringLiteral("type")).toString() == (subtitle ? QStringLiteral("sub") : QStringLiteral("audio")) && track.value(QStringLiteral("selected")).toBool())
+                return languageCode(track.value(QStringLiteral("lang")).toString());
+        }
+        return {};
+    }
     vlc_player_locker lock(m_player->getPlayer());
     const auto *track = vlc_player_GetSelectedTrack(m_player->getPlayer(), subtitle ? SPU_ES : AUDIO_ES);
     return track ? languageCode(QString::fromUtf8(track->fmt.psz_language ? track->fmt.psz_language : "")) : QString();
 }
 QVariantMap PlayerMediaTools::videoInfo() const
 {
+    if (m_player->usesMpv()) {
+        const auto params = m_player->mpvPlayback()->value(QStringLiteral("video-params")).toMap();
+        if (params.isEmpty())
+            return {{QStringLiteral("resolution"), tr("No video track")}, {QStringLiteral("hdr"), tr("Unavailable")}};
+        return {{QStringLiteral("width"), params.value(QStringLiteral("w"))}, {QStringLiteral("height"), params.value(QStringLiteral("h"))},
+            {QStringLiteral("resolution"), QStringLiteral("%1 × %2").arg(params.value(QStringLiteral("w")).toInt()).arg(params.value(QStringLiteral("h")).toInt())},
+            {QStringLiteral("hdr"), tr("%1 source → SDR display output").arg(params.value(QStringLiteral("gamma")).toString())}};
+    }
     vlc_player_locker lock(m_player->getPlayer());
     const auto *track = vlc_player_GetSelectedTrack(m_player->getPlayer(), VIDEO_ES);
     if (!track) return {{QStringLiteral("resolution"), tr("No video track")}, {QStringLiteral("hdr"), tr("Unavailable")}};

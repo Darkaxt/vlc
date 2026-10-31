@@ -64,6 +64,20 @@ vlc_player_vout_HoldAll(vlc_player_t *player, size_t *count)
     return vouts;
 }
 
+int
+vlc_player_vout_ReleaseUnused(vlc_player_t *player,
+                             void (*released)(void *, int), void *opaque)
+{
+    vlc_player_assert_locked(player);
+    assert(released);
+    if (player->started || player->deleting || player->release_vout_cb)
+        return VLC_EGENERIC;
+    player->release_vout_cb = released;
+    player->release_vout_data = opaque;
+    vlc_cond_signal(&player->mainloop.wait);
+    return VLC_SUCCESS;
+}
+
 vlc_player_vout_listener_id *
 vlc_player_vout_AddListener(vlc_player_t *player,
                             const struct vlc_player_vout_cbs *cbs,

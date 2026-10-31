@@ -44,6 +44,7 @@
 
 #include <vlc_window.h>
 #include <vlc_modules.h>
+#include <QThread>
 
 
 using namespace vlc;
@@ -236,13 +237,14 @@ void CompositorVideo::commonSetupVoutWindow(vlc_window_t* p_wnd, VoutDestroyCb d
 
 void CompositorVideo::windowDestroy()
 {
-    // Current thread may not be the thread where
-    // m_videoSurfaceProvider belongs to, so do not delete
-    // it here:
-    disconnect(m_videoSurfaceProvider.get(), &VideoSurfaceProvider::surfacePropertiesChanged,
-               this, &CompositorVideo::onSurfacePropertiesChanged);
-
-    m_wnd = nullptr;
+    const auto release = [this] {
+        disconnect(m_videoSurfaceProvider.get(), &VideoSurfaceProvider::surfacePropertiesChanged,
+                   this, &CompositorVideo::onSurfacePropertiesChanged);
+        m_wnd = nullptr;
+        emit videoWindowReleased();
+    };
+    if (QThread::currentThread() == thread()) release();
+    else QMetaObject::invokeMethod(this, release, Qt::BlockingQueuedConnection);
 }
 
 void CompositorVideo::windowResize(unsigned width, unsigned height)

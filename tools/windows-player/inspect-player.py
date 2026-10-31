@@ -48,7 +48,7 @@ def main():
     parser.add_argument('--await-target')
     parser.add_argument('--await-name')
     parser.add_argument('--await-node', type=int, help='Observation node from a fresh rendered snapshot')
-    parser.add_argument('--await-core', choices=['state', 'position', 'time_seconds', 'length_seconds', 'url', 'seekable', 'fullscreen'])
+    parser.add_argument('--await-core', choices=['state', 'position', 'time_seconds', 'length_seconds', 'url', 'seekable', 'rate', 'audio_delay_ms', 'subtitle_delay_ms', 'fullscreen', 'engine', 'engine_switching', 'audio_session_volume', 'audio_session_muted', 'mpv_audio_volume', 'mpv_audio_muted', 'mpv_audio_output', 'mpv_history_ready', 'mpv_video_ready'])
     parser.add_argument('--await-comparison', choices=['equal', 'at_least', 'at_most'], default='equal')
     parser.add_argument('--await-tolerance', type=float, default=0)
     args = parser.parse_args()
@@ -212,7 +212,7 @@ def main():
                 fields.update(await_value=args.await_value, await_tolerance=args.await_tolerance, await_comparison=args.await_comparison)
                 if args.await_core:
                     fields['await_core'] = args.await_core
-                    if args.await_core in ('position', 'time_seconds'):
+                    if args.await_core in ('position', 'time_seconds') or args.await_core.startswith('mpv_audio_'):
                         fields['await_media_url'] = before.get('core', {}).get('url', '')
                 else:
                     fields['await_property'] = args.await_property

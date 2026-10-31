@@ -259,7 +259,7 @@ T.Popup {
                     spacing: PlayerStyle.px(12)
                     Repeater {
                         id: devices
-                        model: popup.currentPage === 1 ? Player.audioDevices : null
+                        model: popup.currentPage === 1 && Player.playbackEngine === "vlc" ? Player.audioDevices : null
                         delegate: Choice {
                             required property var model
                             text: model.display
@@ -276,7 +276,9 @@ T.Popup {
                     Text {
                         visible: popup.currentPage === 1 && devices.count === 0
                         width: parent.width
-                        text: qsTr("No output device available")
+                        text: Player.playbackEngine === "mpv"
+                            ? qsTr("MPV uses the player's Windows audio device. Switch to VLC to choose a different output device.")
+                            : qsTr("No output device available")
                         color: PlayerStyle.trackForeground
                         font.family: PlayerStyle.fontFamily
                         font.pixelSize: PlayerStyle.px(14)

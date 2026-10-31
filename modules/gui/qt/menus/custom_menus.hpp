@@ -164,7 +164,7 @@ class BookmarkMenu : public QMenu
     Q_OBJECT
 
 public:
-    BookmarkMenu(MediaLib * mediaLib, vlc_player_t * player, QWidget * parent = nullptr);
+    BookmarkMenu(MediaLib * mediaLib, PlayerController * player, QWidget * parent = nullptr);
 };
 
 #endif // CUSTOM_MENUS_HPP

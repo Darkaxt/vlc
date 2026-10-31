@@ -138,6 +138,9 @@ public:
     virtual int windowEnable(const vlc_window_cfg_t *) = 0;
     virtual void windowDisable() = 0;
     virtual void windowDestroy();
+    // UI-thread observation; engine handover also waits for listener-held vout
+    // references to release the actual window after the core retires its cache.
+    bool hasVideoWindow() const { return m_wnd != nullptr; }
     virtual void windowResize(unsigned width, unsigned height);
     virtual void windowSetState(unsigned state);
     virtual void windowUnsetFullscreen();
@@ -145,6 +148,9 @@ public:
 
     // The following method should return true if surface updates can be threaded:
     virtual bool canDoThreadedSurfaceUpdates() const { return false; };
+
+signals:
+    void videoWindowReleased();
 
 protected:
     void commonSetupVoutWindow(vlc_window_t* p_wnd, VoutDestroyCb destroyCb);

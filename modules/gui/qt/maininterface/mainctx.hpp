@@ -268,6 +268,7 @@ public:
         emit playerOnboardingRequested();
     }
     void dispatchShortcutFeedback(int key);
+    void dispatchMpvAction(int action);
     inline bool hasMediaLibrary() const { return b_hasMedialibrary; }
     inline MediaLib* getMediaLibrary() const { return m_medialib; }
     inline bool hasGridView() const { return m_gridView; }

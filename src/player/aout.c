@@ -87,11 +87,14 @@ vlc_player_AoutCallback(vlc_object_t *this, const char *var,
 
     if (strcmp(var, "volume") == 0)
     {
-        if (oldval.f_float >= 0.f && oldval.f_float != newval.f_float)
+        /* Publish the first valid level too: asynchronous output initialization
+         * may finish after a listener's initial GetVolume() returned unknown. */
+        if (oldval.f_float != newval.f_float)
         {
             vlc_player_aout_SendEvent(player, on_volume_changed,
                                       (audio_output_t *)this, newval.f_float);
-            vlc_player_osd_Volume(player, false);
+            if (oldval.f_float >= 0.f)
+                vlc_player_osd_Volume(player, false);
         }
     }
     else if (strcmp(var, "mute") == 0)

@@ -1,0 +1,2 @@
+# Maintained installer helper; the root install-* rule covers generated files.
+!install-ffmpeg-files.py

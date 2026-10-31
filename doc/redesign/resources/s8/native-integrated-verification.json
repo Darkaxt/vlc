@@ -1,0 +1,403 @@
+{
+  "schema": "vlc_redesign.s8_native_acceptance.v1",
+  "date": "2026-10-31",
+  "production_sources_match_built_overlay26": {
+    "include/vlc_player.h": "7753f51fb68a7960c7154af3f1eb67ee5733b4874b320a820d8a6ea8bf62efa3",
+    "include/vlc_playlist.h": "50bd37110b2f6d6682da9d6647ea4e57a5c40729a208aee54ae520740653d126",
+    "modules/control/hotkeys.c": "9f32168c267bb2948836c68efb7e294ca5c668baa214b53e30cb49ac0eb90a1f",
+    "modules/gui/qt/Makefile.am": "e18368d5ad8839305e6ad9e08a83f620b3ab2b2381bfa94a8bf28def31595e2b",
+    "modules/gui/qt/dialogs/preferences/preferences.cpp": "077ec2738d171f85259d89758d22d4632b664587eb0bb25ab58c12cecaf085ca",
+    "modules/gui/qt/maininterface/compositor.cpp": "eaf01f20dde74de6db6de1bfcba5ed8d66abccd603e883ffd5245ea7f54dfc6d",
+    "modules/gui/qt/maininterface/compositor.hpp": "a717de20b27a86500eeb899f88d46c304d259f52c70695da65b291e8a1f71658",
+    "modules/gui/qt/maininterface/mainctx.cpp": "9ca8da311123d9f065fd985755e2139a6af4b96298416b86414df36d0450717e",
+    "modules/gui/qt/maininterface/mainctx.hpp": "61a55e17e39c5bf8bd0d92aba76f13fd9441f0e7fadaecca11f5e8c93a1fc116",
+    "modules/gui/qt/maininterface/player_diagnostics.hpp": "67add7fe2d23dbede2dd4df19d87a6a1ecfc913026e40f04332134b813de26aa",
+    "modules/gui/qt/maininterface/qml/MainInterface.qml": "e6da0dbb81c83c53bb91fbc97812ec590bbd640c06d54532f5f6adbe9c818682",
+    "modules/gui/qt/medialibrary/mlbookmarkmodel.cpp": "34503a3ee58b832a6ba7ef7aa61de80ed2ef50979fde737ef404725215ee0388",
+    "modules/gui/qt/menus/custom_menus.cpp": "50253fc60272cd809c780314ea3f83a27f6de2f4442914e63310472b8f9a788f",
+    "modules/gui/qt/menus/custom_menus.hpp": "d5e579b129c105e992088bbed0d99a016445a3003d3cf977073ff3755faeba15",
+    "modules/gui/qt/menus/menus.cpp": "905364d3785ce6a69f0360c07a788b8733aeba07363a034e1f7f105fb747f7b2",
+    "modules/gui/qt/player/input_models.cpp": "85252305fc4f977904466914d0dece712035cffae20c99f3ce7f59983ee594d2",
+    "modules/gui/qt/player/input_models.hpp": "ff4529495cb25e7a3fce7c40bbf347019219d49faa88c163210ae27b3f9ee401",
+    "modules/gui/qt/player/mpv/client.h": "3da9b8c61c3fb4e2d76bd248cebf72f3ee830331411b71a76adbd5e05660cc50",
+    "modules/gui/qt/player/mpv/render.h": "f2550aa29b2e9b20988bd954b4383e9fa05fd9e40d1669fbc6edf2afac603f15",
+    "modules/gui/qt/player/mpv/render_d3d11.h": "7b880453ee3c780b0d0f1c3f8ecaa1d23b289522f4c687e6857c8475f4a3f6fb",
+    "modules/gui/qt/player/mpv/source.json": "4951a6e5a44d03163f3b937e6318d3e582c138be232010bb0cd3739442fc3554",
+    "modules/gui/qt/player/mpv_playback.cpp": "f98ad51745ee1aaea20b4f935f6c938a1b8e8275232fe366c28ec65d81835481",
+    "modules/gui/qt/player/mpv_playback.hpp": "b745dc6e2029010e03b0d0f7d07d3c2c3e4575454753453d18f6c0638f91901d",
+    "modules/gui/qt/player/player_controller.cpp": "e1488d869cd4c9669d081e1dbd8e4a5e4c2c491fd5a42c220979701989bae3a9",
+    "modules/gui/qt/player/player_controller.hpp": "6391a1fb1c77db72a399d2b7a44405f3dd7ee0afa8166d4480af3798c1fa34c6",
+    "modules/gui/qt/player/player_controller_mpv.cpp": "9826340e419cced8834be5fcb9c93438a149e1d218564f93f8ffe12ec5df7453",
+    "modules/gui/qt/player/player_controller_p.hpp": "06f247d5a17a275ef0f6103b9e017d929e44c14657b6c0a9f7e5d05f174fe3d3",
+    "modules/gui/qt/player/player_media_analysis.cpp": "6742629862cea3dfa9a2bdd6216ca26ac7ff7538915f70792eb111d48ad75752",
+    "modules/gui/qt/player/player_media_analysis.hpp": "e3d883c1a95388f12b95f66f98a4fa2672fe20151a2ff404edee1d50e950ff44",
+    "modules/gui/qt/player/player_media_tools.cpp": "79b0273677754cd182d76d02da9e3ee7e7ec7eaac57e450097edefd1aeff0fea",
+    "modules/gui/qt/player/qml/PlayerSettingsPopup.qml": "917d4be210cd726d554e53e6fa393d9b846392d74d2374e17d538445f4aa99a7",
+    "modules/gui/qt/player/qml/PlayerTracksPopup.qml": "7a30a8f52337f899adc6c8b2a90aa47b1c595c35e5ceb103267e773b2ab75980",
+    "modules/gui/qt/player/qml/controlbarcontrols/HighResolutionTimeWidget.qml": "01e9932759154aa775d810b42448367eff5d492c55d7aa5410badee9c0ea07c7",
+    "modules/gui/qt/playlist/playlist_controller.cpp": "099d324be36856b40acd07ca6564a1b12f3f91a6bf8f313fd6d62343cd3faa12",
+    "modules/gui/qt/playlist/playlist_controller.hpp": "554da6b8879381a0edef304f77c109dd3913628eb06d7218a757f8cf3fbf5a89",
+    "modules/gui/qt/qt.cpp": "2b0a5c91a751441abbe538c71de38613e1c7c09594040f0f7830ecff8edae2d7",
+    "modules/gui/qt/qt.hpp": "44f5a26cf58341e00611045678d43639118de5ac085338eae8c970a88b290d69",
+    "src/input/resource.c": "48fe289a1809c1043b3393da0731772f30ded255c9c1cabc15871257372e5008",
+    "src/input/resource.h": "77825ca42a6fc9d747ada4a850a42b745cba7c63746b9d9cb09e86681690e1a1",
+    "src/libvlccore.sym": "0728abfc75db8e89f5a9873bc6cd782e59b35e889be228b2360231ed6953c5c3",
+    "src/player/aout.c": "6d11a3358b5525a8bb56f7c30400add3fcb463f6f41dd22b9b231dc1b3217cd4",
+    "src/player/player.c": "1840f0c3bd8a953500050c5ab25f0365268b83cba93e3f5ff75b6deb2f4cc329",
+    "src/player/player.h": "0394c6fd9d7fad01369c0631068345c1a855948358eaedac6193958e601f5119",
+    "src/player/vout.c": "652c7df8e2ce12171428cea6537beb66f886354381740441b3e3d59b18eb2023"
+  },
+  "cases": [
+    {
+      "case": "native-history-03",
+      "behavior": "Real ML resume/rate, history-disabled preservation, Spanish language and saved SRT",
+      "receipt_sha256": "79b8eeeb4f26c5b550a09d28ca1bbc08412749505229132d4a0cbbf93092a44b",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "first_exit": 0,
+        "first_input_desktop_preserved": true,
+        "restart_exit": 0,
+        "restart_input_desktop_preserved": true,
+        "privacy_exit": 0,
+        "privacy_input_desktop_preserved": true,
+        "after-privacy_exit": 0,
+        "after-privacy_input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-volume-profile-02",
+      "behavior": "Saved volume/mute after restart and original Windows session restored",
+      "receipt_sha256": "4bfb899972804835b3aba9c311df1bb5510d5fbcd54f6869b132c93a271e0821",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "first_exit": 0,
+        "first_input_desktop_preserved": true,
+        "restart_exit": 0,
+        "restart_input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-mpv-library-02",
+      "behavior": "Native MPV controls/tracks, real indexed library and stored-playlist changes with independent queue",
+      "receipt_sha256": "ff1eccf2797f5208c2a99ccdc4c7b89455fec0563c959d90d1722a36692c176a",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-vlc-handover-12",
+      "behavior": "Default VLC, both handover directions paused/playing, idle choice, controls and fullscreen",
+      "receipt_sha256": "3fff89e9e983a57898040870b4fb6d9e119c91acb31f6d83d9982616205a877e",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-input-paths-03",
+      "behavior": "Local/network/audio entry, playlist queues, live pause/resume, EOF/errors and finite all-failed repeat-all",
+      "receipt_sha256": "bea8f8b039e42840825269637f13877f650559291052c9d6b972426c62c969d5",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "http_server_exit": 0
+      },
+      "passed": true
+    },
+    {
+      "case": "native-mpv-light-15-01",
+      "behavior": "Light 150 percent, source geometry, tracks, native preferences and resize",
+      "receipt_sha256": "48864f7b7a2e87411c239a759018ae86d5439bf6dff4374b9e2b5ca9b28e486a",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-mpv-light-2-01",
+      "behavior": "Light 200 percent, source geometry, tracks, native preferences and resize",
+      "receipt_sha256": "9dc882b11049be6df555d0d7df2fd06a57e5978fd0abddb269b1bda34b2589a5",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-mpv-dark-1-01",
+      "behavior": "Dark 100 percent, source geometry, tracks, native preferences and resize",
+      "receipt_sha256": "4503d488eb3a2ece4793f1790e6da21a61446e57b22c61f93b2d9ad76b5e8e8f",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-mpv-dark-15-01",
+      "behavior": "Dark 150 percent, source geometry, tracks, native preferences and resize",
+      "receipt_sha256": "98217d8135103b145d85d4158cc2276b4f576cfb0fd67724d57de4de48e4a3ce",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-mpv-dark-2-01",
+      "behavior": "Dark 200 percent, source geometry, tracks, native preferences and resize",
+      "receipt_sha256": "7441b525015f57fcf90e1bf7e5b85006ab3750e69f42dcb549cfee947a0a1fbc",
+      "qt_plugin_sha256": "f5ee0c444cf5c332ea5c9819064f075c73e54622dbef25a797b876a9bc7bfa61",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-runtime-missing-01",
+      "behavior": "Actionable missing-runtime rejection and usable VLC recovery",
+      "receipt_sha256": "10430adc24a63ccec123cc6d09ece5ed7f7a007e8cb6b7fd019e7141d6a602a5",
+      "qt_plugin_sha256": "2bdadd27d2398e318816c8e31bccd71978dfe34b1d1b6163bf109bf515295854",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-runtime-incompatible-01",
+      "behavior": "Actionable incompatible-runtime rejection and usable VLC recovery",
+      "receipt_sha256": "d234191eff3bdc693dba13f9fde20ef9133bb1328de04321eaa78f3e0b19d4cd",
+      "qt_plugin_sha256": "2bdadd27d2398e318816c8e31bccd71978dfe34b1d1b6163bf109bf515295854",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "case": "native-transition-02",
+      "behavior": "Real held HTTP handover, repeated choices disabled, changed queue/current identity and replacement playback",
+      "receipt_sha256": "eaff137d3e72187e1aa586289dc9d32e2e4078c4fdd637ca3cd21461b377b369",
+      "qt_plugin_sha256": "5290fb7e8ed985bf2930e7384201bc5a688d0408489e740cf729a349724865b3",
+      "closure": {
+        "exit_code": 0,
+        "input_desktop_preserved": true,
+        "http_server_exit": 0
+      },
+      "passed": true
+    },
+    {
+      "case": "native-subtitle-profile-01",
+      "behavior": "Actual external SubRip loaded/selected on first launch and restart, saved association unchanged",
+      "receipt_sha256": "24ad115061554de84bf56b0737301131c35f8b5bec5a020618fcfb68edce9bda",
+      "qt_plugin_sha256": "5290fb7e8ed985bf2930e7384201bc5a688d0408489e740cf729a349724865b3",
+      "closure": {
+        "first_exit": 0,
+        "first_input_desktop_preserved": true,
+        "restart_exit": 0,
+        "restart_input_desktop_preserved": true
+      },
+      "passed": true
+    }
+  ],
+  "colors": [
+    {
+      "profile": "P5",
+      "case": "native-colors-p5-04",
+      "receipt_sha256": "405fdbd79e1b2f3e0a3be4c4fd7b3a4ef38fac065b04a100487d01e7f0d7fc94",
+      "mean_absolute_rgb_error_0_255": [
+        1.9415333624708624,
+        2.0041863344988347,
+        1.9632998251748253
+      ],
+      "native_capture_geometry": {
+        "dwm_frame": [
+          5372,
+          0,
+          7298,
+          1083
+        ],
+        "client_origin": [
+          5375,
+          0
+        ],
+        "client_size": [
+          1920,
+          1080
+        ],
+        "capture_client_origin": [
+          3,
+          0
+        ],
+        "observer_dpi_context": "PER_MONITOR_AWARE_V2"
+      },
+      "composed_sha256": "ccee86c6a137df01749f5cb0944881b0cb7bdd75ae25fd27914e975d109d9d65",
+      "mapping_disabled_rgb_error_0_255": [
+        66.12245847902098,
+        16.194607371794874,
+        9.129148455710956
+      ],
+      "passed": true
+    },
+    {
+      "profile": "P8.1",
+      "case": "native-colors-p81-01",
+      "receipt_sha256": "3c2a1cf0a7c3aa7db2faef2bff885945aafd84b4f04bf8f9eb9590810a13bffe",
+      "mean_absolute_rgb_error_0_255": [
+        1.9323157051282052,
+        1.9992001748251749,
+        1.980222902097902
+      ],
+      "native_capture_geometry": {
+        "dwm_frame": [
+          5372,
+          0,
+          7298,
+          1083
+        ],
+        "client_origin": [
+          5375,
+          0
+        ],
+        "client_size": [
+          1920,
+          1080
+        ],
+        "capture_client_origin": [
+          3,
+          0
+        ],
+        "observer_dpi_context": "PER_MONITOR_AWARE_V2"
+      },
+      "composed_sha256": "56f8ea0def1216d3e178632eada3afa63308c391770324bac4af1d52aef060c3",
+      "mapping_disabled_rgb_error_0_255": null,
+      "passed": true
+    },
+    {
+      "profile": "P8.4",
+      "case": "native-colors-p84-01",
+      "receipt_sha256": "b38a37b75447225a247bd314cf9704286241243d193b0e85fea9c8b59d960ff9",
+      "mean_absolute_rgb_error_0_255": [
+        1.914629224941725,
+        1.9326755536130535,
+        1.9506075174825175
+      ],
+      "native_capture_geometry": {
+        "dwm_frame": [
+          5372,
+          0,
+          7298,
+          1083
+        ],
+        "client_origin": [
+          5375,
+          0
+        ],
+        "client_size": [
+          1920,
+          1080
+        ],
+        "capture_client_origin": [
+          3,
+          0
+        ],
+        "observer_dpi_context": "PER_MONITOR_AWARE_V2"
+      },
+      "composed_sha256": "d39cfe182ac77959490c36d7aa833ec64221cb7047a47849c0fb186a05c56498",
+      "mapping_disabled_rgb_error_0_255": null,
+      "passed": true
+    },
+    {
+      "profile": "SDR",
+      "case": "native-colors-sdr-01",
+      "receipt_sha256": "8a3219596261cb6a15d9a88a059fe0729634746a9c745a5e18ec3d9c643ef72f",
+      "mean_absolute_rgb_error_0_255": [
+        0.3626770104895105,
+        0.24177520396270397,
+        0.19474431818181817
+      ],
+      "native_capture_geometry": {
+        "dwm_frame": [
+          5372,
+          0,
+          7298,
+          1083
+        ],
+        "client_origin": [
+          5375,
+          0
+        ],
+        "client_size": [
+          1920,
+          1080
+        ],
+        "capture_client_origin": [
+          3,
+          0
+        ],
+        "observer_dpi_context": "PER_MONITOR_AWARE_V2"
+      },
+      "composed_sha256": "7c40ecfa4d8454316ad86661e5c0f089ac4f2a401e71c3f7525009c8f6156f2f",
+      "mapping_disabled_rgb_error_0_255": null,
+      "passed": true
+    },
+    {
+      "profile": "HDR10",
+      "case": "native-colors-hdr10-01",
+      "receipt_sha256": "e5c4d8adfdfbf9f63fb42a2a48f4c272099441694c7e7f5f65ff49a122b48f9a",
+      "mean_absolute_rgb_error_0_255": [
+        0.4411356351981352,
+        0.43654720279720277,
+        0.43978146853146854
+      ],
+      "native_capture_geometry": {
+        "dwm_frame": [
+          5372,
+          0,
+          7298,
+          1083
+        ],
+        "client_origin": [
+          5375,
+          0
+        ],
+        "client_size": [
+          1920,
+          1080
+        ],
+        "capture_client_origin": [
+          3,
+          0
+        ],
+        "observer_dpi_context": "PER_MONITOR_AWARE_V2"
+      },
+      "composed_sha256": "30e74dcc43e5ab60e006fd8c19f60b838cbd4c67b53ede92526be987cf233836",
+      "mapping_disabled_rgb_error_0_255": null,
+      "passed": true
+    }
+  ],
+  "visual_review": "Actual rendered UI images inspected in both themes at100/150/200 percent; Figma single-row strip, icons, typography, elision and actions retained. App-rendered UI grabs exclude video; independent WGC color cases cover composed video.",
+  "evidence_reuse": "Ticket124 changes only automatic subtitle extension validation. Transition02 and subtitle-profile01 verify its actual negative/positive paths on5290fb. Other current f5ee acceptance remains applicable. Earlier2bd color and missing/incompatible-runtime paths use unchanged MPV payload and relevant code.",
+  "runtime_sha256": "7ca5086cd73b6188f2e1181ac28dbc5ab8e757cd881c2255591909f24f612e2a",
+  "output_contract": "D3D11VA copy-back preserves DV metadata; FFmpeg/libplacebo reshape/color conversion to BT709/sRGB full-range SDR. Actual HDR-capable and SDR displays recorded; native Dolby Vision signaling and Profile7 FEL reconstruction are not claimed.",
+  "desktop_control": "None. App-owned Qt events on inactive desktops; color capture-only WGC fully offscreen, observer DPI context restored.",
+  "stage_status": "ACTIVE",
+  "remaining": [
+    "Normal build and native package acceptance",
+    "Corresponding-source packaging, commit/sync and one normal published release with independent retrieval",
+    "Protected-state comparison, reusable build binding and exact scratch cleanup"
+  ]
+}

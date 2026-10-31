@@ -53,6 +53,7 @@
 
 #include "playlist/playlist_controller.hpp"
 #include "player/player_controller.hpp"
+#include "player/mpv_playback.hpp"
 
 #include "dialogs/dialogs_provider.hpp"
 #include "dialogs/systray/systray.hpp"
@@ -132,6 +133,16 @@ static int HotkeyFeedbackCB(vlc_object_t *, const char *, vlc_value_t,
     QMetaObject::invokeMethod(ctx, [ctx,key=int(value.i_int)]() {
         // Runs on the Qt owner; no OS input, synchronous core work or timer.
         ctx->dispatchShortcutFeedback(key);
+    }, Qt::QueuedConnection);
+    return VLC_SUCCESS;
+}
+
+static int MpvActionCB(vlc_object_t *, const char *, vlc_value_t,
+                       vlc_value_t value, void *opaque)
+{
+    auto *ctx = static_cast<MainCtx *>(opaque);
+    QMetaObject::invokeMethod(ctx, [ctx, action=int(value.i_int)] {
+        ctx->dispatchMpvAction(action);
     }, Qt::QueuedConnection);
     return VLC_SUCCESS;
 }
@@ -358,6 +369,10 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
     getBookmarks();
     initializeHotkeyFeedback();
     var_AddCallback(libvlc,"key-pressed",HotkeyFeedbackCB,this);
+    var_Create(libvlc, "qt-mpv-action", VLC_VAR_INTEGER);
+    var_Create(libvlc, "qt-mpv-active", VLC_VAR_BOOL);
+    var_AddCallback(libvlc, "qt-mpv-action", MpvActionCB, this);
+    var_SetBool(libvlc, "qt-mpv-active", p_intf->p_mainPlayerController->usesMpv());
 }
 
 void MainCtx::trackPlayerMenu(QMenu *menu)
@@ -399,6 +414,13 @@ MainCtx::~MainCtx()
     if(m_beforePreviewTheme>=0)m_colorScheme->setCurrentIndex(m_beforePreviewTheme);
 
     var_DelCallback(vlc_object_instance(p_intf),"key-pressed",HotkeyFeedbackCB,this);
+    var_SetBool(vlc_object_instance(p_intf), "qt-mpv-active", false);
+    {
+        auto *player = p_intf->p_mainPlayerController->getPlayer();
+        vlc_player_locker lock(player);
+        vlc_player_SetExternalPlayback(player, false);
+    }
+    var_DelCallback(vlc_object_instance(p_intf), "qt-mpv-action", MpvActionCB, this);
     m_threadRunner->destroy();
 
     if ( !p_intf->preferencesResetPending)
@@ -640,6 +662,69 @@ void MainCtx::sendHotkey(Qt::Key key , Qt::KeyboardModifiers modifiers)
 void MainCtx::sendVLCHotkey(int vlcHotkey)
 {
     var_SetInteger(vlc_object_instance(p_intf), "key-pressed", vlcHotkey);
+}
+
+void MainCtx::dispatchMpvAction(int action)
+{
+    auto *player = p_intf->p_mainPlayerController;
+    if (player->engineSwitching()) {
+        if (action == ACTIONID_STOP) p_intf->p_mainPlaylistController->stop();
+        return;
+    }
+    if (!player->usesMpv()) return;
+    auto *mpv = player->mpvPlayback();
+    auto *queue = p_intf->p_mainPlaylistController;
+    const auto add = [mpv](const char *property, double amount) {
+        mpv->command({QStringLiteral("add"), QString::fromUtf8(property), QString::number(amount)});
+    };
+    switch (action) {
+    case ACTIONID_PLAY_CLEAR: queue->clear(); return;
+    case ACTIONID_PREV: queue->prevOrReset(); return;
+    case ACTIONID_NEXT: queue->next(); return;
+    case ACTIONID_LOOP: queue->toggleRepeatMode(); return;
+    case ACTIONID_RANDOM: queue->toggleRandom(); return;
+    case ACTIONID_PLAY_PAUSE: queue->togglePlayPause(); return;
+    case ACTIONID_PLAY: queue->play(); return;
+    case ACTIONID_PAUSE: queue->pause(); return;
+    case ACTIONID_STOP: queue->stop(); return;
+    case ACTIONID_FRAME_NEXT: player->frameNext(); return;
+    case ACTIONID_FRAME_PREVIOUS: player->framePrev(); return;
+    case ACTIONID_RATE_NORMAL: player->normalRate(); return;
+    case ACTIONID_RATE_SLOWER: player->slower(); return;
+    case ACTIONID_RATE_FASTER: player->faster(); return;
+    case ACTIONID_RATE_SLOWER_FINE: player->littleslower(); return;
+    case ACTIONID_RATE_FASTER_FINE: player->littlefaster(); return;
+    case ACTIONID_VOL_DOWN: case ACTIONID_COMBO_VOL_FOV_DOWN: player->setVolumeDown(); return;
+    case ACTIONID_VOL_UP: case ACTIONID_COMBO_VOL_FOV_UP: player->setVolumeUp(); return;
+    case ACTIONID_VOL_MUTE: player->toggleMuted(); return;
+    case ACTIONID_TOGGLE_FULLSCREEN: player->toggleFullscreen(); return;
+    case ACTIONID_LEAVE_FULLSCREEN: player->setFullscreen(false); return;
+    case ACTIONID_AUDIO_TRACK: mpv->command({QStringLiteral("cycle"), QStringLiteral("aid")}); return;
+    case ACTIONID_SUBTITLE_TRACK: mpv->command({QStringLiteral("cycle"), QStringLiteral("sid")}); return;
+    case ACTIONID_SUBTITLE_REVERSE_TRACK: mpv->command({QStringLiteral("cycle"), QStringLiteral("sid"), QStringLiteral("down")}); return;
+    case ACTIONID_SUBTITLE_TOGGLE: mpv->command({QStringLiteral("cycle"), QStringLiteral("sub-visibility")}); return;
+    case ACTIONID_AUDIODELAY_DOWN: add("audio-delay", -.05); return;
+    case ACTIONID_AUDIODELAY_UP: add("audio-delay", .05); return;
+    case ACTIONID_SUBDELAY_DOWN: add("sub-delay", -.05); return;
+    case ACTIONID_SUBDELAY_UP: add("sub-delay", .05); return;
+    case ACTIONID_SUBPOS_DOWN: add("sub-pos", 1); return;
+    case ACTIONID_SUBPOS_UP: add("sub-pos", -1); return;
+    case ACTIONID_SUBTITLE_TEXT_SCALE_NORMAL: mpv->set(QStringLiteral("sub-scale"), 1.); return;
+    case ACTIONID_SUBTITLE_TEXT_SCALE_DOWN: mpv->command({QStringLiteral("multiply"), QStringLiteral("sub-scale"), QStringLiteral("0.9")}); return;
+    case ACTIONID_SUBTITLE_TEXT_SCALE_UP: mpv->command({QStringLiteral("multiply"), QStringLiteral("sub-scale"), QStringLiteral("1.1")}); return;
+    case ACTIONID_CHAPTER_PREV: add("chapter", -1); return;
+    case ACTIONID_CHAPTER_NEXT: add("chapter", 1); return;
+    case ACTIONID_POSITION: return; // The existing time display/feedback shows the position.
+    default: break;
+    }
+    if (action >= ACTIONID_JUMP_BACKWARD_EXTRASHORT && action <= ACTIONID_JUMP_FORWARD_LONG) {
+        static const char *sizes[] = {"extrashort-jump-size", "short-jump-size", "medium-jump-size", "long-jump-size"};
+        const int index = action - ACTIONID_JUMP_BACKWARD_EXTRASHORT;
+        const auto seconds = var_InheritInteger(p_intf, sizes[index / 2]);
+        player->jumpTime(VLCTime(vlc_tick_from_sec((index % 2) ? seconds : -seconds)));
+        return;
+    }
+    emit hotkeyFeedback(qtr("This action requires VLC playback. Switch to VLC in the in-player Playback settings."), QString(), 4000);
 }
 
 QColor MainCtx::getRedesignAccent() const

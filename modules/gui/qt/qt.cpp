@@ -346,6 +346,9 @@ static const char *const compositor_user[] = {
 };
 
 /**********************************************************************/
+static const char *const playback_engine_values[] = {"vlc", "mpv"};
+static const char *const playback_engine_labels[] = {N_("VLC"), N_("MPV (Dolby Vision)")};
+
 vlc_module_begin ()
     set_shortname( "Qt" )
     set_description( N_("Qt interface") )
@@ -487,6 +490,11 @@ vlc_module_begin ()
              N_("Show shortcut feedback for (milliseconds)"), N_("Duration of the on-screen action message."))
 
     add_string( "qt-accent-color", "default", ACCENT_COLOR_TEXT, ACCENT_COLOR_LONGTEXT )
+#ifdef _WIN32
+    add_string("qt-playback-engine", "vlc", N_("Startup playback engine"),
+        N_("Choose the engine used when the application starts. During playback, switch between VLC and MPV on the in-player Playback settings tab without closing the application. VLC preserves its native tools; MPV applies Dolby Vision metadata through libplacebo."))
+        change_string_list(playback_engine_values, playback_engine_labels)
+#endif
 
     cannot_unload_broken_library()
 
@@ -635,6 +643,26 @@ static int OpenInternal( qt_intf_t *p_intf )
     }
 
     p_intf->p_mi = NULL;
+    p_intf->mpvPlayback = false;
+    p_intf->mpvAutostart = false;
+#ifdef _WIN32
+    const auto engine = vlc::wrap_cptr(var_InheritString(p_intf, "qt-playback-engine"));
+    p_intf->mpvPlayback = !p_intf->b_isDialogProvider && engine && !strcmp(engine.get(), "mpv");
+    if (p_intf->mpvPlayback) {
+        auto *instance = vlc_object_instance(p_intf);
+        var_Create(instance, "qt-mpv-action", VLC_VAR_INTEGER);
+        var_Create(instance, "qt-mpv-active", VLC_VAR_BOOL);
+        var_SetBool(instance, "qt-mpv-active", true);
+        p_intf->mpvAutostart = var_InheritBool(instance, "playlist-autostart");
+        // Keep the original setting visible to this interface, while preventing
+        // libvlc_InternalPlay from starting a competing native engine. Initial
+        // CLI items already exist before the interface is created.
+        var_Create(p_intf, "playlist-autostart", VLC_VAR_BOOL);
+        var_SetBool(p_intf, "playlist-autostart", p_intf->mpvAutostart);
+        var_Create(instance, "playlist-autostart", VLC_VAR_BOOL | VLC_VAR_DOINHERIT);
+        var_SetBool(instance, "playlist-autostart", false);
+    }
+#endif
 
     /* set up the playlist to work on */
     p_intf->p_playlist = playlist;
@@ -760,9 +788,19 @@ static void Close( vlc_object_t *p_this )
     if (p_intf)
     {
         //cleanup the interface
-        QMetaObject::invokeMethod( p_intf->p_mi, [p_intf] () {
-            ThreadCleanup(p_intf, CLEANUP_INTF_CLOSED);
-        }, Qt::BlockingQueuedConnection);
+        // Native MPV video teardown needs the still-running UI event loop for
+        // the same window-provider callbacks used by VLC vouts. The core close
+        // thread waits on actual completion; the GUI thread never joins a render
+        // thread that may be waiting for it.
+        vlc_sem_t prepared;
+        vlc_sem_init(&prepared, 0);
+        QMetaObject::invokeMethod(p_intf->p_mi, [p_intf, &prepared] {
+            p_intf->p_mainPlayerController->prepareToClose([p_intf, &prepared] {
+                ThreadCleanup(p_intf, CLEANUP_INTF_CLOSED);
+                vlc_sem_post(&prepared);
+            });
+        }, Qt::QueuedConnection);
+        vlc_sem_wait(&prepared);
 
         bool shutdown = false;
         //mutex scope
@@ -1299,6 +1337,7 @@ static void *Thread( void *obj )
     DialogsProvider::getInstance( p_intf );
     p_intf->p_mainPlayerController = new PlayerController(p_intf);
     p_intf->p_mainPlaylistController = new vlc::playlist::PlaylistController(p_intf->p_playlist);
+    p_intf->p_mainPlaylistController->setPlayerController(p_intf->p_mainPlayerController);
 
     std::optional playlistModelRecoveryAgent = std::unique_ptr<ModelRecoveryAgent>();
     QMetaObject::invokeMethod(&app, [&playlistModelRecoveryAgent, settings = QPointer(p_intf->mainSettings), mpc = QPointer(p_intf->p_mainPlaylistController), p_intf]() {

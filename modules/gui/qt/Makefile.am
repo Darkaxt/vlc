@@ -49,7 +49,7 @@ vlc_qt_check_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt)
 vlc_qt_check_LDADD = $(vlc_qt_libs)
 vlc_qt_check_LDFLAGS = $(AM_LDFLAGS) $(QT_LDFLAGS)
 
-libqt_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt) $(PLAYER_DIAGNOSTICS_CPPFLAGS) \
+libqt_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt) $(PLAYER_DIAGNOSTICS_CPPFLAGS) $(PLAYER_MPV_CPPFLAGS) \
 	-DQT_STRICT_ITERATORS \
 	-DQT_USE_QSTRINGBUILDER \
 	-DQT_NO_CAST_TO_ASCII \
@@ -87,7 +87,7 @@ endif
 
 if HAVE_WIN32
 libqt_plugin_la_CXXFLAGS += $(LIBCOMCXXFLAGS)
-libqt_plugin_la_LIBADD += $(LIBCOM) -lcomctl32 -luuid -ldwmapi
+libqt_plugin_la_LIBADD += $(LIBCOM) -lcomctl32 -luuid -ldwmapi -ld3d11 -ldxgi -ldcomp
 endif
 if UPDATE_CHECK
 libqt_plugin_la_CPPFLAGS += -DUPDATE_CHECK
@@ -293,6 +293,9 @@ libqt_plugin_la_SOURCES = \
 	player/delay_estimator.cpp \
 	player/delay_estimator.hpp \
 	player/player_controller.cpp player/player_controller.hpp player/player_controller_p.hpp \
+	player/player_controller_mpv.cpp \
+	player/mpv_playback.cpp player/mpv_playback.hpp \
+	player/mpv/client.h player/mpv/render.h player/mpv/render_d3d11.h player/mpv/source.json \
 	player/player_media_tools.cpp player/player_media_tools.hpp player/subtitle_data.hpp player/subtitle_archive.hpp \
 	player/subtitle_search.cpp player/subtitle_search.hpp \
 	player/player_media_analysis.cpp player/player_media_analysis.hpp \
@@ -500,6 +503,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	player/delay_estimator.moc.cpp \
 	player/input_models.moc.cpp \
 	player/player_controller.moc.cpp \
+	player/mpv_playback.moc.cpp \
 	player/player_media_tools.moc.cpp \
 	player/subtitle_search.moc.cpp \
 	player/player_media_analysis.moc.cpp \

@@ -18,6 +18,8 @@
 #include "input_models.hpp"
 #include "player/subtitle_data.hpp"
 #include <QCryptographicHash>
+#include <QUrl>
+#include <algorithm>
 
 #include "player/player_controller.hpp"
 
@@ -57,6 +59,7 @@ QVariant TrackListModel::data(const QModelIndex &index, int role) const
     if (row >= m_data.size())
         return QVariant{};
     if (role == Qt::DisplayRole) {
+        if (m_externalSelection) return m_data[row].m_title;
         const QByteArray id = vlc_es_id_GetStrId(m_data[row].m_id.get());
         for (auto it = m_sourceLabels.begin(); it != m_sourceLabels.end(); ++it)
             if (id.startsWith(it.key())) return m_data[row].m_title.contains(it.value(), Qt::CaseInsensitive)
@@ -79,6 +82,10 @@ bool TrackListModel::setData(const QModelIndex &index, const QVariant &value, in
         return false;
     bool select = value.toBool();
     emit selectionRequested();
+    if (m_externalSelection) {
+        m_externalSelection(m_data[row].m_externalId, select);
+        return true;
+    }
     vlc_player_locker lock{ m_player };
 
     if (select)
@@ -144,6 +151,55 @@ void TrackListModel::updateTracks(vlc_player_list_action action, const vlc_playe
     }
 }
 
+void TrackListModel::setExternalSelection(std::function<void(const QString &, bool)> selection)
+{
+    clear();
+    m_externalSelection = std::move(selection);
+}
+
+void TrackListModel::updateExternalTracks(const QVariantList &tracks, const QString &type)
+{
+    assert(m_externalSelection);
+    QList<Data> incoming;
+    for (const auto &value : tracks) {
+        const auto track = value.toMap();
+        if (track.value(QStringLiteral("type")).toString() != type) continue;
+        QStringList labels;
+        const QString title = track.value(QStringLiteral("title")).toString();
+        const QString external = track.value(QStringLiteral("external-filename")).toString();
+        if (!title.isEmpty()) labels.append(title);
+        else if (!external.isEmpty()) labels.append(QUrl::fromUserInput(external).fileName());
+        const QString language = track.value(QStringLiteral("lang")).toString();
+        if (!language.isEmpty()) labels.append(language);
+        const QString codec = track.value(QStringLiteral("codec")).toString();
+        if (!codec.isEmpty()) labels.append(codec);
+        if (labels.isEmpty()) labels.append(tr("Track %1").arg(track.value(QStringLiteral("id")).toLongLong()));
+        incoming.append(Data(labels.join(QStringLiteral(" — ")), track.value(QStringLiteral("id")).toString(),
+            track.value(QStringLiteral("selected")).toBool()));
+    }
+    const bool sameTracks = incoming.size() == m_data.size() &&
+        std::equal(incoming.cbegin(), incoming.cend(), m_data.cbegin(),
+            [](const Data &a, const Data &b) { return a.m_externalId == b.m_externalId; });
+    if (!sameTracks) {
+        const bool countDiffers = incoming.size() != m_data.size();
+        beginResetModel();
+        m_data = std::move(incoming);
+        endResetModel();
+        if (countDiffers) emit countChanged();
+        return;
+    }
+    // MPV reports the whole track list on a selection change. Keep the real
+    // delegates/focus alive and notify their changed roles, like VLC's path.
+    for (int row = 0; row < incoming.size(); ++row) {
+        QList<int> roles;
+        if (incoming[row].m_title != m_data[row].m_title) roles.append(Qt::DisplayRole);
+        if (incoming[row].m_selected != m_data[row].m_selected) roles.append(Qt::CheckStateRole);
+        if (roles.isEmpty()) continue;
+        m_data[row] = incoming[row];
+        emit dataChanged(index(row), index(row), roles);
+    }
+}
+
 void TrackListModel::updateTrackSelection(vlc_es_id_t *trackid, bool selected)
 {
     if (trackid == NULL)
@@ -162,6 +218,7 @@ void TrackListModel::updateTrackSelection(vlc_es_id_t *trackid, bool selected)
 void TrackListModel::clear()
 {
     m_sourceLabels.clear();
+    if (m_data.isEmpty()) return;
     beginRemoveRows({}, 0, m_data.size() - 1);
     m_data.clear();
     endRemoveRows();
@@ -370,6 +427,7 @@ bool ChapterListModel::setData(const QModelIndex &index, const QVariant &value, 
     bool select = value.toBool();
     if (select)
     {
+        if (m_externalChapterSelect) { m_externalChapterSelect(row); return true; }
         vlc_player_locker lock{ m_player };
         vlc_player_SelectChapter(m_player, m_title, row);
     }
@@ -406,7 +464,28 @@ void ChapterListModel::setCurrent(int current)
 void ChapterListModel::resetTitle(const vlc_player_title *newTitle)
 {
     beginResetModel();
+    m_externalChapterSelect = {};
     m_title =newTitle;
+    m_current = -1;
+    endResetModel();
+    emit countChanged();
+}
+
+void ChapterListModel::updateExternalChapters(const QVariantList &chapters, vlc_tick_t duration,
+                                             std::function<void(int)> select)
+{
+    beginResetModel();
+    m_externalChapters.clear(); m_externalChapterNames.clear();
+    m_externalChapterSelect = std::move(select);
+    for (const auto &entry : chapters) {
+        const auto chapter = entry.toMap();
+        m_externalChapterNames.append(chapter.value(QStringLiteral("title"),
+            tr("Chapter %1").arg(m_externalChapters.size() + 1)).toString().toUtf8());
+        m_externalChapters.append({m_externalChapterNames.last().constData(),
+            vlc_tick_t(chapter.value(QStringLiteral("time")).toDouble() * CLOCK_FREQ)});
+    }
+    m_externalTitle = {"", duration, 0, size_t(m_externalChapters.size()), m_externalChapters.constData()};
+    m_title = &m_externalTitle;
     m_current = -1;
     endResetModel();
     emit countChanged();
@@ -416,6 +495,7 @@ void ChapterListModel::selectChapter(int index)
 {
     if (!m_title || index < 0 || static_cast<size_t>(index) >= m_title->chapter_count)
         return;
+    if (m_externalChapterSelect) { m_externalChapterSelect(index); return; }
     {
         vlc_player_locker lock{ m_player };
         vlc_player_SelectChapter(m_player, m_title, index);

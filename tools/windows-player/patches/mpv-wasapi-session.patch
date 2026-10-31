@@ -1,0 +1,109 @@
+Subject: [PATCH] wasapi: allow an explicit audio session and default-device role
+
+Keep upstream defaults. The embedding VLC application supplies its existing
+persisted session GUID and eConsole role so both engines use the same Windows
+volume/mute owner. Device-change notifications follow the selected role.
+
+diff --git a/audio/out/ao_wasapi.h b/audio/out/ao_wasapi.h
+--- a/audio/out/ao_wasapi.h
++++ b/audio/out/ao_wasapi.h
+@@ -90,6 +90,8 @@ typedef struct wasapi_state {
+     // ao options
+     int opt_exclusive;
+     int opt_exclusive_buffer; // exclusive mode buffer duration in us
++    char *opt_session_id;
++    int opt_device_role;
+ 
+     // format info
+     WAVEFORMATEXTENSIBLE format;
+diff --git a/audio/out/ao_wasapi.c b/audio/out/ao_wasapi.c
+--- a/audio/out/ao_wasapi.c
++++ b/audio/out/ao_wasapi.c
+@@ -540,10 +540,17 @@ const struct ao_driver audio_out_wasapi = {
+     .hotplug_init   = hotplug_init,
+     .hotplug_uninit = hotplug_uninit,
+     .priv_size      = sizeof(wasapi_state),
++    .priv_defaults  = &(const struct wasapi_state){
++        .opt_device_role = eMultimedia,
++    },
+     .options_prefix = "wasapi",
+     .options        = (const struct m_option[]) {
++        {"session-id", OPT_STRING(opt_session_id)},
++        {"device-role", OPT_CHOICE(opt_device_role,
++            {"console", eConsole}, {"multimedia", eMultimedia},
++            {"communications", eCommunications})},
+         {"exclusive-buffer", OPT_CHOICE(opt_exclusive_buffer,
+             {"default", 0}, {"min", -1}), M_RANGE(1, 2000000)},
+         {0}
+     },
+ };
+diff --git a/audio/out/ao_wasapi_utils.c b/audio/out/ao_wasapi_utils.c
+--- a/audio/out/ao_wasapi_utils.c
++++ b/audio/out/ao_wasapi_utils.c
+@@ -727,5 +727,18 @@ static HRESULT fix_format(struct ao *ao, bool align_hack)
+ 
+     MP_DBG(state, "IAudioClient::Initialize\n");
++    GUID session_guid;
++    LPCGUID session = NULL;
++    if (state->opt_session_id && state->opt_session_id[0]) {
++        wchar_t *name = mp_from_utf8(NULL, state->opt_session_id);
++        if (!name) {
++            hr = E_OUTOFMEMORY;
++            goto exit_label;
++        }
++        hr = CLSIDFromString(name, &session_guid);
++        talloc_free(name);
++        EXIT_ON_ERROR(hr);
++        session = &session_guid;
++    }
+     hr = IAudioClient_Initialize(state->pAudioClient,
+                                  state->share_mode,
+                                  AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+@@ -734,7 +747,7 @@ static HRESULT fix_format(struct ao *ao, bool align_hack)
+                                  bufferDuration,
+                                  bufferDuration,
+                                  &(state->format.Format),
+-                                 NULL);
++                                 session);
+     EXIT_ON_ERROR(hr);
+ 
+     MP_DBG(state, "IAudioClient::Initialize pRenderClient\n");
+@@ -882,11 +895,11 @@ static struct device_desc *device_desc_for_num(struct enumerator *e, int devno)
+     return d;
+ }
+ 
+-static struct device_desc *default_device_desc(struct enumerator *e)
++static struct device_desc *default_device_desc(struct enumerator *e, ERole role)
+ {
+     IMMDevice *pDevice = NULL;
+     HRESULT hr = IMMDeviceEnumerator_GetDefaultAudioEndpoint(
+-        e->pEnumerator, eRender, eMultimedia, &pDevice);
++        e->pEnumerator, eRender, role, &pDevice);
+     if (FAILED(hr)) {
+         MP_ERR(e, "Error from GetDefaultAudioEndpoint: %s\n",
+                mp_HRESULT_to_str(hr));
+@@ -966,7 +979,8 @@ LPWSTR wasapi_find_deviceID(struct ao *ao)
+ 
+     if (!device.len) {
+         MP_VERBOSE(ao, "No device specified. Selecting default.\n");
+-        d = default_device_desc(enumerator);
++        struct wasapi_state *state = ao->priv;
++        d = default_device_desc(enumerator, state->opt_device_role);
+         deviceID = select_device(ao->log, d);
+         goto exit_label;
+     }
+diff --git a/audio/out/ao_wasapi_changenotify.c b/audio/out/ao_wasapi_changenotify.c
+--- a/audio/out/ao_wasapi_changenotify.c
++++ b/audio/out/ao_wasapi_changenotify.c
+@@ -123,8 +123,9 @@ static HRESULT STDMETHODCALLTYPE sIMMNotificationClient_OnDefaultDeviceChanged(
+     change_notify *change = (change_notify *)This;
+     struct ao *ao = change->ao;
+ 
+-    // don't care about "eCapture" or non-"eMultimedia" roles
+-    if (flow == eCapture || role != eMultimedia) return S_OK;
++    struct wasapi_state *state = ao->priv;
++    // Only the configured playback role can change this default endpoint.
++    if (flow == eCapture || role != state->opt_device_role) return S_OK;
+ 
+     if (change->is_hotplug) {
+         MP_VERBOSE(ao,

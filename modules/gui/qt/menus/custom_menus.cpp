@@ -57,7 +57,13 @@ RendererMenu::RendererMenu( QMenu* parent, qt_intf_t* intf, PlayerController* pl
     , p_intf( intf )
     , m_renderManager(player->getRendererManager())
 {
-    setTitle( qtr("&Renderer") );
+    const auto updateBackend = [this, player] {
+        setTitle(player->usesMpv() ? qtr("Renderer (VLC)") : qtr("&Renderer"));
+        setEnabled(!player->usesMpv() && !player->engineSwitching());
+    };
+    connect(player, &PlayerController::playbackEngineChanged, this, updateBackend);
+    connect(player, &PlayerController::engineSwitchingChanged, this, updateBackend);
+    updateBackend();
 
     QAction *action = new QAction( qtr("<Local>"), this );
     action->setCheckable(true);
@@ -411,7 +417,7 @@ RecentMenu::RecentMenu(MLRecentMediaModel* model, MediaLib* ml,  QWidget* parent
 
 // BookmarkMenu
 
-BookmarkMenu::BookmarkMenu(MediaLib * mediaLib, vlc_player_t * player, QWidget * parent)
+BookmarkMenu::BookmarkMenu(MediaLib * mediaLib, PlayerController * player, QWidget * parent)
     : QMenu(parent)
 {
     addAction(qtr("&Manage"), THEDP, &DialogsProvider::bookmarksDialog )->setShortcut(QKeySequence("Ctrl+B"));

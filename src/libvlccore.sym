@@ -944,6 +944,7 @@ vlc_player_SetCategoryDelay
 vlc_player_SetCurrentMedia
 vlc_player_SetNextMedia
 vlc_player_SetEsIdDelay
+vlc_player_SetExternalPlayback
 vlc_player_SetRecordingEnabled
 vlc_player_SetRenderer
 vlc_player_SetStartPaused
@@ -969,6 +970,7 @@ vlc_player_UpdateViewpoint
 vlc_player_vout_AddListener
 vlc_player_vout_Hold
 vlc_player_vout_HoldAll
+vlc_player_vout_ReleaseUnused
 vlc_player_vout_IsFullscreen
 vlc_player_vout_IsWallpaperModeEnabled
 vlc_player_vout_RemoveListener
@@ -994,6 +996,7 @@ vlc_playlist_Insert
 vlc_playlist_Move
 vlc_playlist_Remove
 vlc_playlist_RequestInsert
+vlc_playlist_Expand
 vlc_playlist_RequestMove
 vlc_playlist_RequestRemove
 vlc_playlist_Shuffle

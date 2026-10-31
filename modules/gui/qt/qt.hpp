@@ -103,6 +103,8 @@ struct qt_intf_t
     vlc_player_t *p_player; /* player */
     vlc::playlist::PlaylistController* p_mainPlaylistController;
     PlayerController* p_mainPlayerController;
+      bool mpvPlayback = false;
+      bool mpvAutostart = false;
     std::unique_ptr<vlc::Compositor>  p_compositor;
 
     int refCount;

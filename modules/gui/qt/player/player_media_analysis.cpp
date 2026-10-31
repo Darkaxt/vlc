@@ -3,6 +3,7 @@
 # include "config.h"
 #endif
 #include "player_media_analysis.hpp"
+#include "mpv_playback.hpp"
 #include "player_media_tools.hpp"
 #include <vlc_block.h>
 #include <vlc_picture.h>
@@ -149,6 +150,7 @@ PlayerMediaAnalysis::PlayerMediaAnalysis(qt_intf_t *intf, PlayerController *play
     configuration.max_thumbnailer_threads = 1; configuration.timeout = 0;
     m_preparser = vlc_preparser_New(VLC_OBJECT(intf), &configuration);
     connect(player, &PlayerController::inputChanged, this, &PlayerMediaAnalysis::inputChanged);
+    connect(player, &PlayerController::playbackEngineChanged, this, &PlayerMediaAnalysis::inputChanged);
     connect(player, &PlayerController::lengthChanged, this, [this] { updateWaveform(); });
     connect(player, &PlayerController::lengthChanged, this, &PlayerMediaAnalysis::previewChanged);
     connect(player, &PlayerController::seekableChanged, this, &PlayerMediaAnalysis::previewChanged);
@@ -161,6 +163,7 @@ PlayerMediaAnalysis::PlayerMediaAnalysis(qt_intf_t *intf, PlayerController *play
 }
 QString PlayerMediaAnalysis::previewStatus() const
 {
+    if (m_player->usesMpv()) return tr("Seek previews require VLC playback. The MPV video keeps its Dolby Vision color processing.");
     if (!previewSupported()) return tr("Seek previews are unavailable for nonseekable inputs or inputs without a known video timeline.");
     return m_previewStatus;
 }
@@ -181,6 +184,7 @@ void PlayerMediaAnalysis::inputChanged()
 }
 void PlayerMediaAnalysis::requestPreview(double position)
 {
+    if (m_player->usesMpv()) { hidePreview(); m_previewSource.clear(); emit previewChanged(); return; }
     if (!std::isfinite(position)) return;
     const double wanted = std::round(std::clamp(position, 0., 1.) * 1000.) / 1000.;
     // Hover points can be re-emitted when the preview renders. One unchanged
@@ -255,7 +259,15 @@ void PlayerMediaAnalysis::startPreview()
 void PlayerMediaAnalysis::updateWaveform(bool invalidate)
 {
     const QUrl url = m_player->getUrl(); int trackIndex = -1;
-    {
+    if (m_player->usesMpv()) {
+        int ordinal = 0;
+        for (const auto &entry : m_player->mpvPlayback()->value(QStringLiteral("track-list")).toList()) {
+            const auto track = entry.toMap();
+            if (track.value(QStringLiteral("type")).toString() != QStringLiteral("audio")) continue;
+            if (track.value(QStringLiteral("selected")).toBool()) { trackIndex = ordinal; break; }
+            ++ordinal;
+        }
+    } else {
         vlc_player_locker lock(m_player->getPlayer()); const auto *selected = vlc_player_GetSelectedTrack(m_player->getPlayer(), AUDIO_ES);
         for (size_t i = 0; selected && i < vlc_player_GetTrackCount(m_player->getPlayer(), AUDIO_ES); ++i)
             if (vlc_player_GetTrackAt(m_player->getPlayer(), AUDIO_ES, i)->es_id == selected->es_id) { trackIndex = int(i); break; }

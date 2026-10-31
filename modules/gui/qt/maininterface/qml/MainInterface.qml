@@ -245,7 +245,7 @@ Item {
         Connections {
             target: Player
             function onPlayingStateChanged() {
-                if (Player.playingState === Player.PLAYING_STATE_STOPPED) {
+                if (Player.playingState === Player.PLAYING_STATE_STOPPED && !Player.engineSwitching) {
                     MainCtx.playerView = false
                 }
             }

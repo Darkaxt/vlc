@@ -31,6 +31,8 @@
 #include <QAbstractListModel>
 #include <QByteArray>
 #include <QList>
+#include <QVariantList>
+#include <functional>
 
 /**
  * @brief The TrackListModel class represent the
@@ -67,6 +69,11 @@ public:
 
     void clear();
 
+    // The optional MPV backend supplies its real observed track list. The QML
+    // model/roles stay unchanged; requested selection is confirmed by an event.
+    void setExternalSelection(std::function<void(const QString &, bool)>);
+    void updateExternalTracks(const QVariantList &, const QString &type);
+
     QHash<int, QByteArray> roleNames() const override;
 
     inline int getCount() const { return m_data.size(); }
@@ -86,6 +93,8 @@ private:
     class Data {
     public:
         Data(const vlc_player_track *track_info);
+        Data(QString title, QString id, bool selected)
+            : m_title(std::move(title)), m_externalId(std::move(id)), m_selected(selected) { }
 
         Data(const Data& data) = default;
         Data& operator =(const Data& data) = default;
@@ -93,6 +102,7 @@ private:
         void update( const vlc_player_track *track_info );
 
         QString m_title;
+        QString m_externalId;
         //vlc_es_id_t *m_id = NULL;
         ::vlc::vlc_shared_data_ptr<vlc_es_id_t, &vlc_es_id_Hold, &vlc_es_id_Release> m_id;
         bool m_selected = false;
@@ -100,6 +110,7 @@ private:
     QList<Data> m_data;
     QHash<QByteArray, QString> m_sourceLabels;
     bool m_multiSelect = false; // this only work for subtitles
+    std::function<void(const QString &, bool)> m_externalSelection;
 };
 
 /**
@@ -189,6 +200,7 @@ public:
     void setCurrent(int current);
 
     void resetTitle(const vlc_player_title* newTitle);
+    void updateExternalChapters(const QVariantList &, vlc_tick_t duration, std::function<void(int)> select);
 
     inline int getCount() const { return (m_title == nullptr) ?  0 : m_title->chapter_count; }
 
@@ -205,6 +217,10 @@ public slots:
 private:
     vlc_player_t* m_player = nullptr;
     const vlc_player_title* m_title = nullptr;
+    vlc_player_title m_externalTitle{};
+    QVector<vlc_player_chapter> m_externalChapters;
+    QVector<QByteArray> m_externalChapterNames;
+    std::function<void(int)> m_externalChapterSelect;
     int m_current = -1;
 };
 

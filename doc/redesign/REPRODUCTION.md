@@ -1,6 +1,6 @@
 # Windows x64 reproduction and recovery
 
-This recipe records the verified Windows x64 delivery of [Modern VLC Fork 1.0.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.0.0), application commit `dd61caec26f8cc65f15d78369d09fb254196c810`.
+This recipe records the verified Windows x64 delivery of [Modern VLC Fork 1.0.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.0.0), application commit `dd61caec26f8cc65f15d78369d09fb254196c810`. The S8 assembly section below describes the pending MPV integration and does not claim another delivered release.
 Normal build, source binding, independent archive readback, native runtime and completed cleanup evidence are linked in [PLAN.md](PLAN.md). The pinned inputs and original baseline are documented in
 [the baseline recipe](../../tools/windows-baseline/README.md); its historical
 E: examples do not override the current D: build-storage requirement.
@@ -230,9 +230,217 @@ before dropping it. A newer version number is not proof that a correction is
 present. Rebuild with a compatible pinned toolchain/contrib pair, repeat affected
 native playback/state/presentation gates, then perform the project's complete
 final delivery verification. Preserve dirty work and never force-push to conceal
-a conflict. S8 is a separate proposed integration and is not part of this recipe.
+a conflict. The verified 1.0.0 procedure above remains the S7 baseline; S8 uses
+the additional assembly contract below.
 
 After all consumers exit and required evidence/deliverables are preserved, stop
 only the owned temporary distribution, review/inspect the exact cleanup manifest,
 issue its separate ticket and apply it. Retire only the resulting empty WSL
 registration. Verify unrelated bindings and the final installed-profile comparison.
+
+## S8 source-bound MPV assembly (acceptance pending)
+
+Use the same pinned toolchain image, CRT and contrib layout. Preserve the 1.0.0
+portable runtime and source archive as baseline inputs; copy only the empty-profile
+runtime into task-owned scratch. Existing installed VLC and its profile are not
+build destinations. `prepare-mpv-review.py` records the initial reference input;
+the shipped S8 engine must instead come from the maintained source build.
+
+`modules/gui/qt/player/mpv/source.json` records the exact core and shader source
+commits/archive hashes, the unchanged C API headers and the native WASAPI-session
+patch. Fetch its core/shader archive groups with `prepare-mpv-sources.py`; preserve
+existing completed inputs rather than fetching them again. The old nightly DLL
+is a diagnostic reference, not corresponding-source proof for the new runtime.
+
+After all S8 source/package integration is assembled, freeze one current overlay
+with `stage-player-source.py --base-ref HEAD`. Apply that archive to the exact
+matching disposable source checkout. Run `assemble-s8.sh` through the installed
+WSL gate and `with-isolated-toolchain.py`, with one compiler job and the prescribed
+VM/workload limits. This single workflow resumes the existing Qt SDK dependency
+graph, builds the private MPV/FFmpeg/libplacebo/shader dependencies, stages both
+runtime DLLs, merges their notices, configures VLC and builds the complete
+diagnostic player. No playback acceptance runs during assembly. A failed command
+retains its build tree: diagnose the actual failure and resume affected targets;
+do not rerun first-time SDK initialization or overwrite partial source trees.
+
+For an existing build, use `apply-player-source.py` with the frozen overlay,
+manifest and exact closed predecessor report. The manifest's resolved base commit
+must match the build checkout; the original workflow must be empty and its
+pipeline stopped. The helper validates the entire archive/member hashes before
+writing, rejects source deletions/reparse escapes/Git metadata, and changes only
+different bytes. Those files get fresh mtimes; identical files retain theirs.
+Blind tar extraction's archive mtimes are unsuitable for incremental Make.
+The compact application receipt records changed and preserved members.
+
+`assemble-s8.sh SOURCE BUILD RUNTIME resume` continues
+`compilation-pipeline.py` at its recorded failed step after the cause is repaired.
+The initial `build` selection starts at the SDK network step; explicit
+`shaders`, `spirv-cross`, `placebo`, `ffmpeg`, `mpv` and `player` selections are
+available when the earliest affected step is known. Preserve the original gate
+session until its actual exit and empty-group result before launching a repair.
+Never replay a still-running or uncertain operation. The pipeline itself does
+not blindly retry: its owner diagnoses the failed command and resumes the same
+state. A compiler failure does not pause the authorized task.
+
+The Qt object phase uses Make keep-going to collect independent frontend
+integration compiler failures in one assembly. Any failed object still fails the
+step; the cache is released and the final Qt link does not run. Diagnose the
+collected failures together after group-empty completion, then resume with the
+affected sources changed. This is compiler diagnostics, not product acceptance.
+`assemble-s8.sh SOURCE BUILD RUNTIME normal` runs the final `normal-mpv` player
+through the same pipeline. Each new run preserves its own `attempt.json`, mode,
+`VLC_PLAYER_COMPILE_CACHE` choice/reason,
+source HEAD, complete recipe identities and step results alongside the full logs.
+
+Durable state is `/scratch/compilation/state.json`, with exact commands, source
+recipe hashes, step status and actual CPU/wall/exit results. Full logs live under
+`/scratch/compilation/run-NNNN/`; `/scratch` is the task's `scratch-share` binding
+on the host. Successful prerequisite objects and libraries stay in the existing
+build tree. This is assembly evidence, not feature acceptance.
+
+After a diagnosed runtime dependency repair, pass
+`--replace-mpv-buildinfo-sha256 SHA256` to the pipeline with the exact previous
+task-owned `MPV-BUILDINFO.json` identity. The runtime step verifies prior and new
+payload identities, copies through checked pending files and atomically publishes
+the new manifest before generating the plugin's compiled hashes. Interrupted
+old/new payload mixtures can resume under that same identity; unknown changed
+or partial files require inspection. An unchanged completed notice inventory is
+reused only after checking its pinned source archives, SDK binding, compiler and
+every retained notice. No refetching or source extraction is needed for unchanged
+inputs. Resume at the earliest actually affected dependency, preserving objects.
+
+The software-frame FFmpeg/libplacebo filter creates a Vulkan device internally;
+build libplacebo with `vk-proc-addr=enabled`. Its exact SDK Vulkan import archive
+is selected through a task-local pkg-config entry, leaving the original SDK
+unchanged. Windows must provide its graphics-driver Vulkan loader in System32;
+the application loads only its two hashed MPV payloads plus system dependencies.
+Do not accept an audio-only or blank reference: decoded/output video parameters
+and absence of native fatal/error messages are required before comparing pixels.
+
+The Windows-mounted toolchain has measured header/metadata I/O overhead. During
+dependency compilation, `cache-toolchain.py` binds byte-verified copies of the
+unchanged MinGW compiler and common headers at their original paths inside the
+owned mount namespace. Its tmpfs ceiling is 512 MiB and remains charged to the
+existing workload cgroup; no VM budget or global setting changes. The recorded
+299,768,706-byte cache reduced the same header-preprocessing probe from 7.15 s
+to 1.54 s wall time, which is not a whole-build speed claim. The pipeline releases
+these mounts and memory before configuring/linking VLC. Namespace exit also
+retires them on failure; compiled objects remain reusable on D:.
+For a resume at MPV, the cache also covers immutable SDK headers, MPV source and
+the installed dependency API directories, totaling 386,838,288 bytes in the
+recorded run. The prefix's whole include directory stays writable so MPV's own
+new headers persist; only its already installed dependency subdirectories are
+cached. All cache mounts are read-only and retain original paths and bytes.
+
+For the player step, `cache-toolchain.py create --qt-build` caches only immutable
+Windows/C++/SDK headers and frozen frontend sources, with a separate 256 MiB
+ceiling inside the same workload. `qt-objects.mk` extends the generated Automake
+prerequisites to compile its full object/resource graph. The driver releases
+that cache before the normal Qt link; the generated build directory stays writable.
+Qt diagnostic/runtime preprocessor flags have a persisted signature: changing
+them invalidates the guarded source units once, while a same-flags repair keeps
+completed objects. A first cold build generates headers through their actual
+`src` targets and prepares the complete Qt `BUILT_SOURCES` graph.
+
+After an externally stopped operation, inspect its original managed result before
+resuming. `compilation-pipeline.py --resume --after-interruption REPORT` accepts
+only an exact matching predecessor cgroup/run, a started command, a nonzero result
+and `populated=false`. It records that report's hash and interruption separately
+from a compiler failure. Inspect the final started object: an absent object is
+rebuilt by Make; uncertain generated output requires exact reviewed cleanup.
+This does not stop WSL, control desktop windows or replay an uncertain success.
+
+The weekly consumer is `vlc-weekly-upstream-sync-and-release`. After native
+acceptance and commit binding, `retain-build-inputs.py --source-commit COMMIT
+--closed-report REPORT` promotes only the toolchain, pinned archives, assembled
+runtime/notices, compilation state and three bounded private DV clips from the S8 task to
+`D:/VLC-Redesign/build/windows-x64`. Pass every relevant successful closed report,
+including the pipeline's latest report; confirm the gate is idle and all native
+runtime consumers have exited before invocation. The build source must already
+be clean and bound to that exact verified commit. Each same-volume move retains
+its recorded directory identity. Its journal permits inspection/resumption of a
+partially completed move without overwriting a pre-existing destination.
+
+The launcher accepts this one retained path only with the matching toolchain
+marker and named consumer receipt; initialization is prohibited there. All chroot
+`/work` and `/scratch` paths stay the same. Verify a gated launch and read-only
+configured-input check at the new binding, inspect its real completion, then
+record that verification and reconcile/discard superseded cleanup inventories.
+The three hash-bound P5/P8.1/P8.4 clips stay local for that weekly acceptance
+consumer and must never enter Git or a source/binary release. Other test
+profiles, full media, captures and spent controls remain temporary and require
+transactional cleanup. Retention lasts only while the
+pinned cohort serves the weekly/build consumer; superseded generated inputs need
+explicit consumer checks and reviewed retirement. This is a scoped build-input
+binding change, not a repository or WSL virtual-disk migration.
+
+`stage-built-mpv-runtime.py` writes `MPV-BUILDINFO.json` from the actual payloads,
+source archives, maintained recipe/patch and matching installed public headers.
+The player build generates `mpv_runtime_identity.hpp` from those payload hashes
+and compiles the hashes into Qt. Loading requires the complete matching app-local
+DLL set; the writable JSON is provenance, not runtime authorization. Native
+mmdevice remains the Windows volume/mute persistence owner. The patched MPV
+runtime joins its existing session/endpoint and supplies only above-unity gain.
+
+Before the MPV build, run `prepare-mpv-sources.py --host-inputs --scratch
+D:/Temp/vlc-s8-20261029` to fetch the hash-pinned Jinja2 3.1.6 source archive.
+The libplacebo phase exposes only its Python package through a task-local
+`PYTHONPATH`, using MarkupSafe 2.1.5 already in the pinned image. No global pip
+installation or Ubuntu change is needed. This host-only shader template tool is
+recorded in the build manifest and notice inventory; it is not a linked Windows
+library or a copied product payload.
+
+MPV's enabled subtitle-encoding detector also requires uchardet, which the
+retained SDK does not contain. Fetch the official 0.0.8 archive with
+`prepare-mpv-sources.py --text-inputs --scratch D:/Temp/vlc-s8-20261029`;
+`source.json` pins the publisher's SHA-256. The MPV phase builds only its static
+library in the private prefix and retains its original source/notices. There are
+ten additional linked-source archives, alongside the 106 unchanged SDK archives.
+Explicit compiler `-B` library prefixes expose these SDK libraries to Meson's
+static system-library detector, with the selected CRT first. This cross-compiler
+ignores `LIBRARY_PATH`; linker-only `-L` arguments do not supply that discovery.
+Treat the retained SDK's broad include directory as an `-isystem` fallback.
+Meson may order its dependency flags before the new prefix; GCC then ignores a
+duplicate SDK `-I` and consistently selects the source-built libplacebo/FFmpeg
+APIs first. Reconfigure existing MPV built-in compiler options without wiping
+its build tree. Compiler-flag changes invalidate affected MPV objects, while
+completed dependency archives remain reusable.
+
+Run the coordinated S8 acceptance matrix only after complete integration. It
+covers both engines, live handovers, the shared queue/history/tracks/subtitles,
+native audio-session persistence, failure paths, Figma/theme/scaling and actual
+P5/P8.1/P8.4/SDR/HDR10 pixels. Color-reference commands must bind to the same newly
+built DLL hash as the integrated player. The selected renderer outputs BT.709/sRGB
+SDR; no native Dolby Vision signaling or full Profile 7 FEL result is implied.
+Use the integrated helper's `--backend-controls` with `--switch-engines` for
+real keyboard rate/delay changes and preservation across both handovers. The
+prior-profile helper reads its startup engine from the synthetic saved `vlcrc`;
+`--external-subtitle FILE` additionally checks the existing fingerprint-bound
+association on both launches. `check-installed-profile.py --include-nuvio`
+captures VLC settings/language plus Nuvio persistent settings and WebView stores.
+Keep these snapshots private; no installed profile is copied into a test runtime.
+For `verify-mpv-colors.py`, generate first-frame references with `--time 0`.
+That pixel-only case uses the existing capture-only offscreen mode because WGC
+rejects inactive-desktop windows. It checks actual native window bounds outside
+the monitors and foreground/input-desktop preservation. Interactive seeking and
+handover remain separate inactive-desktop acceptance; the capture mode accepts
+no such input actions. A blank/non-distinguishing frame cannot satisfy the
+positive/negative pixel comparison.
+
+After acceptance, build `normal-mpv` from the same verified source and runtime;
+retain the common MPV binding and remove diagnostic hooks. Commit verified scope
+and relink the recorded source revision as in S7. Use `package-release.py
+--include-mpv` with the merged notice directory. The packager requires both DLLs,
+their compiled identities and matching source/notice provenance. For
+`package-source-release.py`, supply the new archive directory with `--sources`,
+the merged `--notices` and `--mpv-buildinfo`. The optional `--baseline-source` and
+its expected `--baseline-source-sha256` reuse the unchanged SDK source archives
+directly from the verified S7 source package; each copied archive is separately
+hash-checked with bounded memory. The output includes all required library source,
+the application, maintained patches/build scripts and the MPV build manifest.
+
+Publish only the final verified S8 release through the established channel.
+Independently retrieve its binary/source packages, inspect their identities and
+normal native behavior, compare protected installed state, and retire only spent
+task artifacts through transactional cleanup. Build completion is not stage
+acceptance or final delivery.

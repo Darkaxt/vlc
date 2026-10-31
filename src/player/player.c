@@ -228,14 +228,16 @@ vlc_player_mainloop_Thread(void *data)
     /* Terminate this thread when the player is deleting (vlc_player_Delete()
      * was called) and when all input_thread_t all stopped and released. */
     while (!player->deleting
-        || !vlc_player_destructor_IsEmpty(player))
+        || !vlc_player_destructor_IsEmpty(player) || player->release_vout_cb)
     {
         /* Wait for an input to stop or close. No while loop here since we want
          * to leave this code path when the player is deleting. */
         vlc_tick_t deadline = vlc_player_GetAtoBLoopDeadline(player);
         bool timeout = false;
+        const bool release_ready = player->release_vout_cb &&
+            (player->started || player->deleting || vlc_player_destructor_IsEmpty(player));
         if (vlc_list_is_empty(&player->mainloop.stop_inputs)
-         && vlc_list_is_empty(&player->mainloop.joinable_inputs))
+         && vlc_list_is_empty(&player->mainloop.joinable_inputs) && !release_ready)
         {
             if (deadline == VLC_TICK_MIN)
                 vlc_cond_wait(&player->mainloop.wait, &player->lock);
@@ -261,7 +263,13 @@ vlc_player_mainloop_Thread(void *data)
             !vlc_list_is_empty(&player->mainloop.joinable_inputs);
         vlc_list_foreach(input, &player->mainloop.joinable_inputs, node)
         {
-            vlc_player_UpdateMLStates(player, input);
+            /* Selecting queue media creates an input without starting it.
+             * Such an input has no native playback state to save; in external
+             * playback its initial zero would erase the real engine's history.
+             * Started inputs reach this list through STOPPING, before the
+             * STOPPED transition below. */
+            if (input->state != VLC_PLAYER_STATE_STOPPED)
+                vlc_player_UpdateMLStates(player, input);
 
             keep_sout = var_GetBool(input->thread, "sout-keep");
 
@@ -280,6 +288,20 @@ vlc_player_mainloop_Thread(void *data)
                 input_resource_StopFreeVout(player->resource);
             if (!keep_sout)
                 input_resource_TerminateSout(player->resource);
+            vlc_player_Lock(player);
+        }
+        if (player->release_vout_cb &&
+            (player->started || player->deleting || vlc_player_destructor_IsEmpty(player)))
+        {
+            void (*released)(void *, int) = player->release_vout_cb;
+            void *opaque = player->release_vout_data;
+            const int status = player->started || player->deleting ? VLC_EGENERIC : VLC_SUCCESS;
+            player->release_vout_cb = NULL;
+            player->release_vout_data = NULL;
+            vlc_player_Unlock(player);
+            if (status == VLC_SUCCESS)
+                input_resource_ReleaseUnusedVout(player->resource);
+            released(opaque, status);
             vlc_player_Lock(player);
         }
     }
@@ -1224,10 +1246,26 @@ vlc_player_GetAssociatedSubsFPS(vlc_player_t *player)
     return var_GetFloat(player, "sub-fps");
 }
 
+void
+vlc_player_SetExternalPlayback(vlc_player_t *player, bool enabled)
+{
+    vlc_player_assert_locked(player);
+    player->external_playback = enabled;
+}
+
 int
 vlc_player_Start(vlc_player_t *player)
 {
     vlc_player_assert_locked(player);
+
+    /* The external owner reserves this exact player under its existing lock.
+     * Do not expose its private object layout to interfaces or affect other
+     * analysis/transcode players through an instance-wide playback flag. */
+    if (player->external_playback)
+    {
+        msg_Err(player, "Native playback is unavailable while this player is controlled externally");
+        return VLC_EGENERIC;
+    }
 
     vlc_player_CancelWaitError(player);
 
@@ -2030,6 +2068,8 @@ vlc_player_GetV4l2Object(vlc_player_t *player)
 static void
 vlc_player_InitLocks(vlc_player_t *player, enum vlc_player_lock_type lock_type)
 {
+    player->release_vout_cb = NULL;
+    player->release_vout_data = NULL;
     if (lock_type == VLC_PLAYER_LOCK_REENTRANT)
         vlc_mutex_init_recursive(&player->lock);
     else
@@ -2118,6 +2158,7 @@ vlc_player_New(vlc_object_t *parent, enum vlc_player_lock_type lock_type)
     player->input = NULL;
     player->global_state = VLC_PLAYER_STATE_STOPPED;
     player->started = false;
+    player->external_playback = false;
 
     player->last_eos = VLC_TICK_INVALID;
     player->eos_burst_count = 0;

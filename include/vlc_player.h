@@ -446,6 +446,16 @@ VLC_API int
 vlc_player_Start(vlc_player_t *player);
 
 /**
+ * Reserve this player for an external playback engine.
+ *
+ * The player lock must be held. While reserved, vlc_player_Start() fails before
+ * changing state. Existing inputs must be stopped separately by the owner.
+ * Independent players remain unaffected. New players are not reserved.
+ */
+VLC_API void
+vlc_player_SetExternalPlayback(vlc_player_t *player, bool enabled);
+
+/**
  * Stop the playback of the current media
  *
  * @note This function is asynchronous. In case of success, the user should wait
@@ -2666,6 +2676,24 @@ vlc_player_vout_Hold(vlc_player_t *player);
  */
 VLC_API vout_thread_t **
 vlc_player_vout_HoldAll(vlc_player_t *player, size_t *count);
+
+/**
+ * Release cached video resources after stopping the player.
+ *
+ * The player lock must be held. The caller must keep the player alive and must
+ * not start another input until the callback runs. Completion follows actual
+ * input teardown and cached-vout close on the player worker, without its lock.
+ * Window references held by listeners must also be released before another
+ * engine acquires that window provider. The callback receives VLC_EGENERIC if
+ * the player was restarted or deleted before this request could be processed.
+ *
+ * @return VLC_SUCCESS if queued (one callback follows), VLC_EGENERIC if the
+ * player is started, deleting, or already has a pending request (no callback).
+ */
+VLC_API int
+vlc_player_vout_ReleaseUnused(vlc_player_t *player,
+                             void (*released)(void *opaque, int status),
+                             void *opaque);
 
 /**
  * Add a listener callback for video output events

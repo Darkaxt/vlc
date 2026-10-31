@@ -72,6 +72,10 @@ QVariant MLBookmarkModel::data( const QModelIndex &index, int role ) const
             return QVariant::fromValue( VLCDuration::fromMS( bookmark.i_time ).formatHMS(0) );
         case BookmarkRoles::PositionRole:
         {
+            if (m_player_controller && m_player_controller->usesMpv()) {
+                const auto length = m_player_controller->getLength().toVLCTick();
+                return length > 0 ? QVariant::fromValue<float>(float(VLC_TICK_FROM_MS(bookmark.i_time)) / length) : QVariant{};
+            }
             vlc_player_locker lock{ m_player };
             return !vlc_player_GetLength( m_player ) ? QVariant{} :
                     QVariant::fromValue<float> ((float) VLC_TICK_FROM_MS(bookmark.i_time) / vlc_player_GetLength( m_player ));
@@ -264,8 +268,10 @@ void MLBookmarkModel::add()
     {
         vlc_player_locker lock{m_player};
         vlc::threads::mutex_locker selflock{m_mutex};
-        if (m_revision != m_resolvedRevision || vlc_player_GetCurrentMedia(m_player) != m_currentItem.get()) return;
-        time = vlc_player_GetTime(m_player);
+        const bool mpv = m_player_controller && m_player_controller->usesMpv();
+        if (m_revision != m_resolvedRevision ||
+            (mpv ? m_player_controller->getInput() : vlc_player_GetCurrentMedia(m_player)) != m_currentItem.get()) return;
+        time = mpv ? m_player_controller->getTime().toVLCTick() : vlc_player_GetTime(m_player);
         uri = qfu(m_currentItem->psz_uri);
         revision = m_revision;
     }
@@ -364,6 +370,14 @@ void MLBookmarkModel::select(const QModelIndex &index)
     if (!m_player || !m_bookmarks || !index.isValid() || index.row() < 0 || (size_t)index.row() >= m_bookmarks->i_nb_items)
         return;
     const auto& b = m_bookmarks->p_items[index.row()];
+    if (m_player_controller && m_player_controller->usesMpv()) {
+        {
+            vlc::threads::mutex_locker lock{m_mutex};
+            if (m_revision != m_resolvedRevision || m_player_controller->getInput() != m_currentItem.get()) return;
+        }
+        m_player_controller->setTime(VLCTime(VLC_TICK_FROM_MS(b.i_time)));
+        return;
+    }
     vlc_player_locker lock{ m_player };
     vlc::threads::mutex_locker selflock{m_mutex};
     if (m_revision != m_resolvedRevision || vlc_player_GetCurrentMedia(m_player) != m_currentItem.get()) return;
@@ -406,6 +420,7 @@ void MLBookmarkModel::onPlaybackStateChanged( vlc_player_t *, vlc_player_state s
     auto self = static_cast<MLBookmarkModel*>( data );
 
     QMetaObject::invokeMethod(self, [self, state](){
+        if (self->m_player_controller && self->m_player_controller->usesMpv()) return;
         if (self->m_currentMediaId == 0) return;
         if ( state == VLC_PLAYER_STATE_STARTED )
             self->refresh( MLBOOKMARKMODEL_REFRESH );
@@ -542,6 +557,10 @@ void MLBookmarkModel::setPlayer(PlayerController * player)
     m_player_controller = player;
 
     connect(m_player_controller, &PlayerController::lengthChanged, this, &MLBookmarkModel::playerLengthChanged);
+    connect(m_player_controller, &PlayerController::inputChanged, this, [this](bool active) {
+        if (m_player_controller->usesMpv())
+            onCurrentMediaChanged(nullptr, active ? m_player_controller->getInput() : nullptr, this);
+    });
 
     setPlayer(player->getPlayer());
 }
@@ -584,7 +603,8 @@ void MLBookmarkModel::initModel()
         m_listener = vlc_player_AddListener( m_player, &cbs, this );
         if ( m_listener == nullptr )
             throw std::bad_alloc{};
-        auto currentItem = vlc_player_GetCurrentMedia( m_player );
+        auto currentItem = m_player_controller && m_player_controller->usesMpv()
+            ? m_player_controller->getInput() : vlc_player_GetCurrentMedia( m_player );
         m_currentItem = vlc::wrap_cptr( currentItem ? input_item_Hold( currentItem ) : nullptr,
                                         &input_item_Release );
         if (m_currentItem)

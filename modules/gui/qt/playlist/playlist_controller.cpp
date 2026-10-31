@@ -25,6 +25,8 @@
 #include <vlc_player.h>
 #include <vlc_url.h>
 #include "util/shared_input_item.hpp"
+#include "player/player_controller.hpp"
+#include "player/mpv_playback.hpp"
 #include <algorithm>
 #include <QVariant>
 #include <QDesktopServices>
@@ -421,6 +423,107 @@ PlaylistController::~PlaylistController()
 {
 }
 
+void PlaylistController::setPlayerController(PlayerController *player)
+{
+    assert(!m_playerController);
+    m_playerController = player;
+    connect(player, &PlayerController::mpvPlaybackEnded, this, [this](bool eof, bool failed) {
+        if (!eof && !failed) return;
+        if (getMediaStopAction() == MEDIA_STOPPED_STOP) return;
+        if (eof && getRepeatMode() == PLAYBACK_REPEAT_CURRENT) { play(); return; }
+        Q_D(PlaylistController);
+        {
+            vlc_playlist_locker lock(d->m_playlist);
+            const auto current = vlc_playlist_GetCurrentIndex(d->m_playlist);
+            if (failed && current >= 0)
+                m_mpvFailedItems.insert(vlc_playlist_item_GetId(vlc_playlist_Get(d->m_playlist, current)));
+            // Walk the native cursor, without reopening already failed items.
+            // Repeat-all must not turn an unreadable queue into a retry loop.
+            const auto count = vlc_playlist_Count(d->m_playlist);
+            for (size_t visited = 0; visited < count; ++visited) {
+                if (vlc_playlist_Next(d->m_playlist) != VLC_SUCCESS) break;
+                const auto index = vlc_playlist_GetCurrentIndex(d->m_playlist);
+                const auto id = vlc_playlist_item_GetId(vlc_playlist_Get(d->m_playlist, index));
+                if (!m_mpvFailedItems.contains(id)) { queueMpvStartLocked(); return; }
+            }
+        }
+        m_playerController->mpvQueueFinished(getMediaStopAction() == MEDIA_STOPPED_EXIT);
+    });
+    connect(this, &PlaylistController::currentItemChanged, this, [this, player] {
+        Q_D(PlaylistController);
+        SharedInputItem current;
+        {
+            vlc_playlist_locker lock(d->m_playlist);
+            const auto index = vlc_playlist_GetCurrentIndex(d->m_playlist);
+            if (index >= 0) current = SharedInputItem(vlc_playlist_item_GetMedia(vlc_playlist_Get(d->m_playlist, index)));
+        }
+        if (player->engineSwitching()) {
+            // Queue edits keep their native identity. A changed/removed current
+            // item cancels the captured restart in either handover phase. If
+            // the incoming engine already loaded it, stop that superseded input.
+            if (player->cancelEngineRestart(current.get()) && !player->engineSwitching()) stop();
+            return;
+        }
+        if (!player->usesMpv()) return;
+        // Native automatic expansion may have replaced a local container
+        // before our explicit parser completes. Continue from that real queue
+        // item, and cancel an obsolete parse outside the playlist lock.
+        const bool wasParsing = player->cancelMpvPlaylist(current.get());
+        if (!player->isStarted() && !wasParsing) return;
+        vlc_playlist_locker lock(d->m_playlist);
+        const auto index = vlc_playlist_GetCurrentIndex(d->m_playlist);
+        if (index < 0) { stop(); return; }
+        if (wasParsing || vlc_playlist_item_GetMedia(vlc_playlist_Get(d->m_playlist, index)) != player->getInput())
+            queueMpvStartLocked();
+    });
+    if (player->usesMpv() && player->mpvAutostart()) {
+        const auto revision = m_mpvRequestRevision;
+        QMetaObject::invokeMethod(this, [this, revision] {
+            if (revision != m_mpvRequestRevision) return;
+            Q_D(PlaylistController);
+            vlc_playlist_locker lock(d->m_playlist);
+            queueMpvStartLocked(m_playerController->mpvStartPaused());
+        }, Qt::QueuedConnection);
+    }
+}
+
+bool PlaylistController::queueMpvStartLocked(bool paused)
+{
+    Q_D(PlaylistController);
+    if (m_playerController && m_playerController->engineSwitching()) return true;
+    if (!m_playerController || !m_playerController->usesMpv()) return false;
+    if (!vlc_playlist_Count(d->m_playlist)) return true;
+    ssize_t current = vlc_playlist_GetCurrentIndex(d->m_playlist);
+    if (current < 0) {
+        if (vlc_playlist_GoTo(d->m_playlist, 0) != VLC_SUCCESS) return true;
+        current = 0;
+    }
+    const SharedInputItem item(vlc_playlist_item_GetMedia(vlc_playlist_Get(d->m_playlist, current)));
+    const auto revision = ++m_mpvRequestRevision;
+    // Core callbacks and QML updates must never re-enter a locked playlist.
+    QMetaObject::invokeMethod(this, [this, item, revision, paused] {
+        if (revision == m_mpvRequestRevision && !m_playerController->engineSwitching() && m_playerController->usesMpv())
+            m_playerController->playWithMpv(item.get(), paused);
+    }, Qt::QueuedConnection);
+    return true;
+}
+
+void PlaylistController::expandMpvPlaylist(input_item_t *container, const QVector<SharedInputItem> &children, bool paused)
+{
+    Q_D(PlaylistController);
+    if (!m_playerController->usesMpv() || m_playerController->engineSwitching() || children.isEmpty()) return;
+    vlc_playlist_locker lock(d->m_playlist);
+    const auto index = vlc_playlist_IndexOfMedia(d->m_playlist, container);
+    if (index < 0 || index != vlc_playlist_GetCurrentIndex(d->m_playlist)) return;
+    QVector<input_item_t *> raw;
+    raw.reserve(children.size());
+    for (const auto &child : children) raw.push_back(child.get());
+    // Keep the existing VLC queue and its normal item/identity notifications.
+    // No MPV-owned playlist or independent next/previous cursor is introduced.
+    if (vlc_playlist_Expand(d->m_playlist, index, raw.constData(), raw.size()) == VLC_SUCCESS)
+        queueMpvStartLocked(paused);
+}
+
 PlaylistItem PlaylistController::getCurrentItem() const
 {
     Q_D(const PlaylistController);
@@ -462,11 +565,12 @@ PlaylistController::append(const QVector<Media> &media, bool startPlaying)
         throw std::bad_alloc();
     if (startPlaying)
     {
+        m_mpvFailedItems.clear();
         ssize_t playIndex = (ssize_t)vlc_playlist_Count( d->m_playlist ) - rawMedia.size();
         ret = vlc_playlist_GoTo(d->m_playlist, playIndex);
         if (ret != VLC_SUCCESS)
             return;
-        vlc_playlist_Start(d->m_playlist);
+        if (!queueMpvStartLocked()) vlc_playlist_Start(d->m_playlist);
     }
 }
 
@@ -490,10 +594,11 @@ PlaylistController::insert(size_t index, const QVector<Media> &media, bool start
         throw std::bad_alloc();
     if (startPlaying)
     {
+        m_mpvFailedItems.clear();
         ret = vlc_playlist_GoTo(d->m_playlist, index);
         if (ret != VLC_SUCCESS)
             return;
-        vlc_playlist_Start(d->m_playlist);
+        if (!queueMpvStartLocked()) vlc_playlist_Start(d->m_playlist);
     }
 }
 
@@ -624,13 +729,17 @@ int PlaylistController::currentIndex() const
 
 void PlaylistController::play()
 {
+    if (m_playerController && m_playerController->engineSwitching()) return;
+    m_mpvFailedItems.clear();
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
-    vlc_playlist_Start( d->m_playlist );
+    if (!queueMpvStartLocked()) vlc_playlist_Start( d->m_playlist );
 }
 
 void PlaylistController::pause()
 {
+    if (m_playerController && m_playerController->engineSwitching()) return;
+    if (m_playerController && m_playerController->usesMpv()) { m_playerController->mpvPlayback()->set(QStringLiteral("pause"), true); return; }
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
     vlc_playlist_Pause( d->m_playlist );
@@ -638,6 +747,12 @@ void PlaylistController::pause()
 
 void PlaylistController::stop()
 {
+    if (m_playerController) {
+        m_playerController->cancelMpvPlaylist();
+        m_playerController->cancelEngineRestart();
+        if (m_playerController->engineSwitching()) return; // Outgoing teardown already owns Stop.
+    }
+    if (m_playerController && m_playerController->usesMpv()) { ++m_mpvRequestRevision; m_playerController->mpvPlayback()->command({QStringLiteral("stop")}); return; }
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
     vlc_playlist_Stop( d->m_playlist );
@@ -645,20 +760,29 @@ void PlaylistController::stop()
 
 void PlaylistController::next()
 {
+    if (m_playerController && m_playerController->engineSwitching()) return;
+    m_mpvFailedItems.clear();
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
-    vlc_playlist_Next( d->m_playlist );
+    if (vlc_playlist_Next( d->m_playlist ) == VLC_SUCCESS) queueMpvStartLocked();
 }
 
 void PlaylistController::prev()
 {
+    if (m_playerController && m_playerController->engineSwitching()) return;
+    m_mpvFailedItems.clear();
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
-    vlc_playlist_Prev( d->m_playlist );
+    if (vlc_playlist_Prev( d->m_playlist ) == VLC_SUCCESS) queueMpvStartLocked();
 }
 
 void PlaylistController::prevOrReset()
 {
+    if (m_playerController && m_playerController->usesMpv()) {
+        if (!m_playerController->isStarted() || m_playerController->getTime().toVLCTick() < VLC_TICK_FROM_MS(10)) prev();
+        else m_playerController->setPosition(0.);
+        return;
+    }
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
     bool seek = false;
@@ -678,6 +802,12 @@ void PlaylistController::prevOrReset()
 
 void PlaylistController::togglePlayPause()
 {
+    if (m_playerController && m_playerController->engineSwitching()) return;
+    if (m_playerController && m_playerController->usesMpv()) {
+        if (!m_playerController->isStarted()) play();
+        else m_playerController->mpvPlayback()->set(QStringLiteral("pause"), m_playerController->getPlayingState() != PlayerController::PLAYING_STATE_PAUSED);
+        return;
+    }
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
     vlc_player_t* player = vlc_playlist_GetPlayer( d->m_playlist );
@@ -726,6 +856,7 @@ void PlaylistController::toggleRepeatMode()
 
 void PlaylistController::clear()
 {
+    if (m_playerController && m_playerController->usesMpv()) stop();
     Q_D(PlaylistController);
     vlc_playlist_locker lock{ d->m_playlist };
     vlc_playlist_Clear( d->m_playlist );
@@ -740,7 +871,10 @@ void PlaylistController::goTo(uint index, bool startPlaying)
         return;
     vlc_playlist_GoTo( d->m_playlist, index );
     if (startPlaying)
-        vlc_playlist_Start( d->m_playlist );
+    {
+        m_mpvFailedItems.clear();
+        if (!queueMpvStartLocked()) vlc_playlist_Start( d->m_playlist );
+    }
 }
 
 bool PlaylistController::isRandom() const

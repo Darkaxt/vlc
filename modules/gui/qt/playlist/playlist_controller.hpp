@@ -28,10 +28,14 @@
 #include <QObject>
 #include <QVector>
 #include <QVariantList>
+#include <QSet>
 
 #include "media.hpp"
 #include "playlist_common.hpp"
 #include "playlist_item.hpp"
+#include "util/shared_input_item.hpp"
+
+class PlayerController;
 
 namespace vlc {
 namespace playlist {
@@ -146,6 +150,7 @@ public:
 public:
     PlaylistController(vlc_playlist_t *playlist, QObject *parent = nullptr);
     virtual ~PlaylistController();
+    void expandMpvPlaylist(input_item_t *, const QVector<SharedInputItem> &, bool paused);
 
 
 public:
@@ -164,6 +169,7 @@ public:
 
 public slots:
     PlaylistItem getCurrentItem() const;
+    void setPlayerController(PlayerController *);
 
     void setRandom( bool );
     void setMediaStopAction(MediaStopAction );
@@ -200,6 +206,10 @@ signals:
     void initializedChanged();
 
 private:
+    PlayerController *m_playerController = nullptr;
+    quint64 m_mpvRequestRevision = 0;
+    QSet<quint64> m_mpvFailedItems;
+    bool queueMpvStartLocked(bool paused = false);
     Q_DECLARE_PRIVATE(PlaylistController)
     QScopedPointer<PlaylistControllerPrivate> d_ptr;
 };

@@ -77,7 +77,7 @@ public:
     std::shared_ptr<PlayerPreviewImage> previewImage() const { return m_image; }
     QString previewSource() const { return m_previewSource; }
     QString previewStatus() const;
-    bool previewSupported() const { return m_player->isSeekable() && m_player->getLength().valid() && m_player->getVideoTracks()->getCount() > 0; }
+    bool previewSupported() const { return !m_player->usesMpv() && m_player->isSeekable() && m_player->getLength().valid() && m_player->getVideoTracks()->getCount() > 0; }
     double durationMS() const { return double(m_player->getLength().toVLCTick()) / 1000.; }
     double previewPosition() const { return m_publishedPosition; }
     QVariantList waveform() const { return m_waveform; }

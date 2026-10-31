@@ -20,11 +20,13 @@ def main():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--tests-only', action='store_true')
     group.add_argument('--wasapi-only', action='store_true')
+    parser.add_argument('--base-ref', default=BASELINE,
+                        help='Exact existing build-source base; defaults to the original unmodified baseline')
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
     assert output.drive.upper() == 'D:' and output.parent.parent == Path('D:/Temp')
-    assert output.parent.name.startswith('vlc-s7-') and output.suffix == '.tar'
+    assert output.parent.name.startswith(('vlc-s7-', 'vlc-s8-')) and output.suffix == '.tar'
     assert not output.exists() and not output.with_suffix('.json').exists()
 
     def git(*arguments):
@@ -36,11 +38,11 @@ def main():
         if args.wasapi_only:
             names.append('modules/audio_output/wasapi.c')
     else:
-        removed = git('diff', '--name-only', '--diff-filter=D', BASELINE)
+        removed = git('diff', '--name-only', '--diff-filter=D', args.base_ref)
         assert set(removed) <= {'share/skins2/default/subX/font.otf'}, 'Unreviewed source deletion: ' + repr(removed)
-        names = git('diff', '--name-only', '--diff-filter=d', BASELINE)
+        names = git('diff', '--name-only', '--diff-filter=d', args.base_ref)
         names += git('ls-files', '--others', '--exclude-standard', 'tools/windows-baseline',
-            'tools/windows-player', 'doc/redesign/resources/s7')
+            'tools/windows-player', 'doc/redesign/resources/s7', 'doc/redesign/resources/s8', 'modules/gui/qt/player')
     records = []
     with tarfile.open(output, 'w') as archive:
         for name in sorted(set(names)):
@@ -55,7 +57,7 @@ def main():
                 assert len(flags) == 1 and flags[0].startswith('S '), 'Missing non-sparse source: ' + name
                 blob = subprocess.check_output(['git', '-C', str(repo), 'show', ':' + name])
                 origin = 'Git index outside sparse checkout'
-            if source.suffix.lower() in {'.c', '.h', '.cpp', '.hpp', '.sh', '.py', '.qml', '.js', '.mjs', '.json', '.md', '.txt', '.qrc', '.pro', '.patch', '.am', '.mak'}:
+            if source.suffix.lower() in {'.c', '.h', '.cpp', '.hpp', '.sh', '.py', '.qml', '.js', '.mjs', '.json', '.md', '.txt', '.qrc', '.pro', '.patch', '.am', '.mak', '.mk'}:
                 blob = blob.replace(b'\r\n', b'\n')
             info = tarfile.TarInfo(name)
             info.size, info.mode = len(blob), 0o644
@@ -64,6 +66,8 @@ def main():
     with output.open('rb') as stream:
         archive_digest = hashlib.file_digest(stream, 'sha256').hexdigest()
     manifest = {'schema': 'vlc_redesign.chroot_overlay.v1', 'upstream_baseline': BASELINE,
+        'overlay_base_ref': args.base_ref,
+        'overlay_base_commit': git('rev-parse', args.base_ref)[0],
         'fork_head_before_uncommitted_s7': git('rev-parse', 'HEAD')[0], 'tests_only': args.tests_only,
         'wasapi_only': args.wasapi_only,
         'archive': output.name, 'archive_sha256': archive_digest,
@@ -71,7 +75,7 @@ def main():
     if not narrow and removed:
         patch = output.with_suffix('.deletions.patch')
         assert not patch.exists()
-        blob = subprocess.check_output(['git', '-C', str(repo), 'diff', '--binary', BASELINE, '--', *removed])
+        blob = subprocess.check_output(['git', '-C', str(repo), 'diff', '--binary', args.base_ref, '--', *removed])
         patch.write_bytes(blob)
         manifest['removed_sources'] = removed
         manifest['deletion_patch'] = {'file': patch.name, 'sha256': hashlib.sha256(blob).hexdigest(),

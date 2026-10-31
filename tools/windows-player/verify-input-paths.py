@@ -25,9 +25,11 @@ def main():
     parser.add_argument('--fixtures', type=Path, required=True)
     parser.add_argument('--transport', type=Path, required=True)
     parser.add_argument('--image-fixture', type=Path)
+    parser.add_argument('--engine', choices=('vlc', 'mpv'), default='vlc')
+    parser.add_argument('--cases', nargs='+', help='Select named existing cases for focused native verification')
     args = parser.parse_args()
     source, scratch = args.runtime.resolve(), args.scratch.resolve()
-    assert scratch.drive.upper() == 'D:' and scratch.parent.name.startswith('vlc-s7-') and not scratch.exists()
+    assert scratch.drive.upper() == 'D:' and scratch.parent.name.startswith(('vlc-s7-', 'vlc-s8-')) and not scratch.exists()
     assert args.fixtures.is_dir() and args.transport.is_file()
     plugin = source / 'plugins/gui/libqt_plugin.dll'
     assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
@@ -46,6 +48,7 @@ def main():
         QSG_RHI_DISABLE_SHADER_DISK_CACHE='1', QT_FORCE_STDERR_LOGGING='1',
         QT_SCREEN_SCALE_FACTORS='1;1;1;1;1;1;1;1', QT_SCALE_FACTOR='1')
     result = {'schema': 'vlc_redesign.s7_input_paths.v1', 'cases': [],
+        'engine': args.engine,
         'qt_plugin_sha256': hashlib.sha256(plugin.read_bytes()).hexdigest(),
         'scope': 'Actual native Qt/VLC, muted MMDevice/WASAPI; synthetic fixtures and loopback HTTP; no OS input or physical-output claim.'}
     server_error = (scratch / 'server.stderr').open('wb')
@@ -64,6 +67,16 @@ def main():
         if args.image_fixture:
             assert args.image_fixture.is_file()
             cases.insert(2, ('embedded-image', str(args.image_fixture.resolve())))
+        if args.engine == 'mpv':
+            broken = (scratch / 'intentionally-missing.mp4').as_uri()
+            recovery = scratch / 'error-playlist.m3u8'
+            recovery.write_text('#EXTM3U\n' + broken + '\n' + (args.fixtures / 'clip-a.mp4').resolve().as_uri() + '\n')
+            unreadable = scratch / 'all-failed-repeat.m3u8'
+            unreadable.write_text('#EXTM3U\n' + broken + '\n' + (scratch / 'also-missing.mp4').as_uri() + '\n')
+            cases.extend([('error-playlist', str(recovery)), ('all-failed-repeat', str(unreadable))])
+        if args.cases:
+            assert set(args.cases) <= {name for name, _ in cases}, args.cases
+            cases = [(name, media) for name, media in cases if name in args.cases]
         for name, media in cases:
             directory = scratch / name
             directory.mkdir()
@@ -72,6 +85,7 @@ def main():
             env = dict(environment, VLC_PLAYER_DIAGNOSTICS_DIR=str(directory),
                 VLC_PLAYER_DIAGNOSTICS_TOKEN=token, VLC_PLAYER_DIAGNOSTICS_BUILD=result['qt_plugin_sha256'])
             command = [str(runtime / 'vlc.exe'), '--intf=qt', '--no-one-instance', '--no-media-library',
+                '--qt-playback-engine=' + args.engine,
                 '--no-plugins-cache', '--no-qt-privacy-ask', '--no-qt-updates-notif', '--no-metadata-network-access',
                 '--no-save-recentplay', '--restore-playback-pos=0', '--no-qt-video-autoresize',
                 '--no-video-title-show', '--no-volume-save', '--mmdevice-volume=0',
@@ -79,6 +93,8 @@ def main():
                 '--logfile=' + str(directory / 'native.log')]
             if name != 'nonseekable':
                 command.append('--play-and-exit')
+            if name == 'all-failed-repeat':
+                command.append('--loop')
             if name == 'embedded-image':
                 command.append('--start-paused')
             command.append(media)
@@ -124,6 +140,24 @@ def main():
                         inspect('dismiss-image-popup', 'key', '--key', '0x1000000')
                         inspect('play-image-input', 'click', '--target', 'playButton', '--await-core', 'state', '--await-value', '2')
                         natural_wait = True
+                    elif args.engine == 'mpv' and name not in ('missing', 'all-failed-repeat'):
+                        if name == 'http-playlist':
+                            expected = [base + '/clip-a.mp4', base + '/clip-b.mp4']
+                        elif name == 'local-playlist':
+                            expected = [(args.fixtures / file).resolve().as_uri() for file in ('clip-a.mp4', 'clip-b.mp4')]
+                        elif name == 'error-playlist':
+                            expected = [(args.fixtures / 'clip-a.mp4').resolve().as_uri()]
+                        else:
+                            expected = [Path(media).as_uri()]
+                        entry['observed_inputs'] = []
+                        for index, url in enumerate(expected):
+                            inspect('actual-input-' + str(index), 'snapshot', '--await-core', 'url', '--await-value', json.dumps(url))
+                            observed = inspect('advancing-input-' + str(index), 'snapshot', '--await-core', 'time_seconds',
+                                '--await-comparison', 'at_least', '--await-value', '1')
+                            core = observed['core']
+                            assert core['engine'] == 'mpv' and core['native_vlc']['state'] == 0, core
+                            assert core['current-ao'] == 'wasapi', core
+                            entry['observed_inputs'].append(core)
                 finally:
                     try:
                         if name == 'nonseekable' or not natural_wait:
@@ -137,6 +171,18 @@ def main():
             assert 'QApp exec() finished' in log
             assert not re.search(r'TypeError:|ReferenceError:|Binding loop detected|failed to load component|cannot load plug-in', log + stderr)
             entry['qt_event_loop_finished'] = True
+            if args.engine == 'mpv':
+                failures = log.count('MPV playback failed:')
+                expected_failures = 2 if name == 'all-failed-repeat' else 1 if name in ('missing', 'error-playlist') else 0
+                assert failures == expected_failures, (name, failures, log[-5000:])
+                entry['native_error_events'] = failures
+                if name == 'all-failed-repeat':
+                    entry['repeat_all_exhausted_each_failed_item_once'] = True
+                elif name.endswith('playlist'):
+                    entry['real_queue_inputs_advanced_and_finished'] = True
+                entry['passed'] = True
+                print(json.dumps(entry), flush=True)
+                continue
             if name == 'missing':
                 assert re.search(r'cannot open file|unable to open|cannot access', log, re.I), log[-4000:]
                 entry['expected_missing_input_error'] = True

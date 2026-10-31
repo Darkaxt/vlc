@@ -1021,6 +1021,16 @@ static struct vlc_action const actions[] =
 static void
 handle_action(intf_thread_t *intf, vlc_action_id_t action_id)
 {
+    /* The optional Qt MPV player owns playback actions for this session. The
+     * same dispatch covers configured local and global/media keys, before any
+     * native playlist/player side effect can start a second engine. */
+    libvlc_int_t *instance = vlc_object_instance(intf);
+    if (var_Type(instance, "qt-mpv-active") != 0 &&
+        var_GetBool(instance, "qt-mpv-active") && action_id > ACTIONID_INTF_POPUP_MENU)
+    {
+        var_SetInteger(instance, "qt-mpv-action", action_id);
+        return;
+    }
     size_t action_idx;
     for (action_idx = 0; actions[action_idx].type != NULL_ACTION; ++action_idx)
         if (actions[action_idx].range.first <= action_id &&

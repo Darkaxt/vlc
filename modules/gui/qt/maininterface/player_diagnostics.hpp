@@ -53,6 +53,7 @@
 #include <utility>
 #include "util/accessible_compat_attached.hpp"
 #include "player/player_controller.hpp"
+#include "player/mpv_playback.hpp"
 #include "player/player_media_tools.hpp"
 #include "player/player_media_analysis.hpp"
 #include "maininterface/mainctx.hpp"
@@ -86,41 +87,65 @@ private:
     quint64 m_revision = 0;
     bool m_busy = false;
     vlc_player_t *m_observationPlayer = nullptr;
-    vlc_player_listener_id *m_positionListener = nullptr;
+    vlc_player_listener_id *m_coreListener = nullptr;
     std::function<void()> m_coreObservationCheck;
+    QMetaObject::Connection m_mpvCoreConnection;
 
     void stopCoreObservation()
     {
-        if (m_positionListener) {
+        disconnect(m_mpvCoreConnection);
+        if (m_coreListener) {
             vlc_player_locker lock{m_observationPlayer};
-            vlc_player_RemoveListener(m_observationPlayer,m_positionListener);
+            vlc_player_RemoveListener(m_observationPlayer,m_coreListener);
         }
-        m_positionListener=nullptr;
+        m_coreListener=nullptr;
         m_observationPlayer=nullptr;
         m_coreObservationCheck={};
     }
 
-    bool observeCorePosition(std::function<void()> check)
+    void queueCoreObservation()
     {
-        // The UI publishes a requested seek position before the input commits
-        // its time, and suppresses timer updates while paused/seeking. Observe
-        // the native event that follows input->time/position assignment instead.
+        QMetaObject::invokeMethod(this,[this] {
+            const auto check=m_coreObservationCheck;
+            if(check)check();
+        },Qt::QueuedConnection);
+    }
+
+    bool observeCoreValue(std::function<void()> check)
+    {
+        if (m_player->usesMpv()) {
+            m_coreObservationCheck = std::move(check);
+            m_mpvCoreConnection = connect(m_player->mpvPlayback(), &MpvPlayback::changed, this,
+                [this](const QString &name, const QVariant &) {
+                    if (name != QStringLiteral("time-pos") && name != QStringLiteral("duration")
+                        && name != QStringLiteral("speed") && name != QStringLiteral("audio-delay")
+                        && name != QStringLiteral("sub-delay")) return;
+                    const auto callback = m_coreObservationCheck;
+                    if (callback) callback();
+                });
+            return bool(m_mpvCoreConnection);
+        }
+        // UI properties may publish requested positions/rates/delays before the
+        // input commits them. A paused input need not emit a later UI update.
+        // Observe the corresponding native completion events instead.
         static const vlc_player_cbs callbacks=[] {
             vlc_player_cbs value{};
             value.on_position_changed=[](vlc_player_t *,vlc_tick_t,double,void *data) {
-                auto *owner=static_cast<PlayerDiagnostics *>(data);
-                QMetaObject::invokeMethod(owner,[owner] {
-                    const auto check=owner->m_coreObservationCheck;
-                    if(check)check();
-                },Qt::QueuedConnection);
+                static_cast<PlayerDiagnostics *>(data)->queueCoreObservation();
+            };
+            value.on_rate_changed=[](vlc_player_t *,float,void *data) {
+                static_cast<PlayerDiagnostics *>(data)->queueCoreObservation();
+            };
+            value.on_category_delay_changed=[](vlc_player_t *,enum es_format_category_e,vlc_tick_t,void *data) {
+                static_cast<PlayerDiagnostics *>(data)->queueCoreObservation();
             };
             return value;
         }();
         m_coreObservationCheck=std::move(check);
         m_observationPlayer=m_player->getPlayer();
         vlc_player_locker lock{m_observationPlayer};
-        m_positionListener=vlc_player_AddListener(m_observationPlayer,&callbacks,this);
-        return m_positionListener!=nullptr;
+        m_coreListener=vlc_player_AddListener(m_observationPlayer,&callbacks,this);
+        return m_coreListener!=nullptr;
     }
 
     PlayerDiagnostics(QQuickItem *root, QQmlEngine *engine, PlayerController *player, const QString &directory, const QString &token)
@@ -213,7 +238,10 @@ private:
         if (!m_player) return {};
         auto player = m_player->getPlayer();
         vlc_player_locker lock{player};
-        QJsonObject core{{QStringLiteral("state"), int(vlc_player_GetState(player))},
+        QJsonObject core{{QStringLiteral("engine"), QStringLiteral("vlc")},
+            {QStringLiteral("engine_switching"), m_player->engineSwitching()},
+            {QStringLiteral("observation"), QStringLiteral("native_vlc_player_lock")},
+            {QStringLiteral("state"), int(vlc_player_GetState(player))},
             {QStringLiteral("position"), vlc_player_GetPosition(player)},
             {QStringLiteral("seekable"), vlc_player_CanSeek(player)}};
         for (const auto &entry : {std::pair{"time_seconds", vlc_player_GetTime(player)},
@@ -221,6 +249,8 @@ private:
             core.insert(QString::fromLatin1(entry.first), entry.second == VLC_TICK_INVALID
                 ? QJsonValue(QJsonValue::Null) : QJsonValue(double(entry.second) / CLOCK_FREQ));
         core[QStringLiteral("rate")] = vlc_player_GetRate(player);
+        core[QStringLiteral("audio_session_volume")] = vlc_player_aout_GetVolume(player);
+        core[QStringLiteral("audio_session_muted")] = vlc_player_aout_IsMuted(player);
         core[QStringLiteral("fullscreen")] = m_player->isFullscreen();
         core[QStringLiteral("audio_delay_ms")] = double(vlc_player_GetCategoryDelay(player, AUDIO_ES)) / 1000.;
         core[QStringLiteral("subtitle_delay_ms")] = double(vlc_player_GetCategoryDelay(player, SPU_ES)) / 1000.;
@@ -240,6 +270,50 @@ private:
         auto media = vlc_player_GetCurrentMedia(player);
         auto uri = media ? vlc::wrap_cptr(input_item_GetURI(media)) : vlc::wrap_cptr<char>(nullptr);
         core.insert(QStringLiteral("url"), uri ? QUrl(QString::fromUtf8(uri.get())).toString(QUrl::FullyEncoded) : QString());
+        if (m_player->usesMpv()) {
+            auto *mpv = m_player->mpvPlayback();
+            QJsonObject active{{QStringLiteral("engine"), QStringLiteral("mpv")},
+                {QStringLiteral("observation"), QStringLiteral("native_mpv_events")},
+                {QStringLiteral("native_vlc"), core},
+                {QStringLiteral("audio_session_volume"), core.value(QStringLiteral("audio_session_volume"))},
+                {QStringLiteral("audio_session_muted"), core.value(QStringLiteral("audio_session_muted"))},
+                {QStringLiteral("mpv_audio_volume"), QJsonValue::fromVariant(mpv->value(QStringLiteral("ao-volume")))},
+                {QStringLiteral("mpv_audio_muted"), QJsonValue::fromVariant(mpv->value(QStringLiteral("ao-mute")))},
+                {QStringLiteral("mpv_audio_output"), QJsonValue::fromVariant(mpv->value(QStringLiteral("current-ao")))},
+                {QStringLiteral("mpv_audio_query_error"), QJsonValue::fromVariant(mpv->value(QStringLiteral("audio-session-query-error")))},
+                {QStringLiteral("engine_switching"), m_player->engineSwitching()},
+                {QStringLiteral("mpv_history_ready"), m_player->mpvHistoryReady()},
+                {QStringLiteral("mpv_video_ready"), !mpv->value(QStringLiteral("video-out-params")).toMap().isEmpty()},
+                {QStringLiteral("seekable"), mpv->value(QStringLiteral("seekable")).toBool()},
+                {QStringLiteral("fullscreen"), m_player->isFullscreen()}};
+            const bool idle = mpv->value(QStringLiteral("idle-active")).toBool();
+            active[QStringLiteral("state")] = idle ? VLC_PLAYER_STATE_STOPPED : !mpv->isMediaLoaded()
+                ? VLC_PLAYER_STATE_STARTED : mpv->value(QStringLiteral("pause")).toBool() ? VLC_PLAYER_STATE_PAUSED : VLC_PLAYER_STATE_PLAYING;
+            for (const auto *name : {"time-pos", "duration", "speed", "volume", "mute", "audio-delay", "sub-delay", "vf", "video-params", "video-out-params", "hwdec-current", "current-ao", "audio-params", "audio-out-params"})
+                active[QString::fromUtf8(name)] = QJsonValue::fromVariant(mpv->value(QString::fromUtf8(name)));
+            active[QStringLiteral("time_seconds")] = active.value(QStringLiteral("time-pos"));
+            active[QStringLiteral("length_seconds")] = active.value(QStringLiteral("duration"));
+            active[QStringLiteral("rate")] = active.value(QStringLiteral("speed"));
+            const double duration = mpv->value(QStringLiteral("duration")).toDouble();
+            active[QStringLiteral("position")] = duration > 0. ? mpv->value(QStringLiteral("time-pos")).toDouble() / duration : 0.;
+            active[QStringLiteral("audio_delay_ms")] = mpv->value(QStringLiteral("audio-delay")).toDouble() * 1000.;
+            active[QStringLiteral("subtitle_delay_ms")] = mpv->value(QStringLiteral("sub-delay")).toDouble() * 1000.;
+            const auto path = mpv->value(QStringLiteral("path")).toString();
+            active[QStringLiteral("url")] = (QDir::isAbsolutePath(path) ? QUrl::fromLocalFile(path) : QUrl(path)).toString(QUrl::FullyEncoded);
+            for (const auto &type : {QStringLiteral("video"), QStringLiteral("audio"), QStringLiteral("sub")}) {
+                QJsonArray tracks;
+                for (const auto &entry : mpv->value(QStringLiteral("track-list")).toList()) {
+                    const auto track = entry.toMap();
+                    if (track.value(QStringLiteral("type")) != type) continue;
+                    auto item = QJsonObject::fromVariantMap(track);
+                    item[QStringLiteral("name")] = track.value(QStringLiteral("title")).toString();
+                    item[QStringLiteral("language")] = track.value(QStringLiteral("lang")).toString();
+                    tracks.append(item);
+                }
+                active[type == QStringLiteral("video") ? QStringLiteral("video_tracks") : type == QStringLiteral("audio") ? QStringLiteral("audio_tracks") : QStringLiteral("subtitle_tracks")] = tracks;
+            }
+            return active;
+        }
         return core;
     }
 
@@ -276,6 +350,8 @@ private:
         visit(window ? window->contentItem() : m_root, -1, tree, images);
         QJsonObject result{{QStringLiteral("revision"), qint64(++m_revision)},
             {QStringLiteral("core"), coreSnapshot()},
+            {QStringLiteral("playback_engine"), m_player->playbackEngine()},
+            {QStringLiteral("engine_switching"), m_player->engineSwitching()},
             {QStringLiteral("pointer_trace"), m_pointerTrace},
             {QStringLiteral("seek_requests"), m_player ? QJsonArray::fromVariantList(m_player->property("redesignSeekRequests").toList()) : QJsonArray()},
             {QStringLiteral("video_backdrop"), QJsonValue::fromVariant(m_root->window()->property("playerVideoBackdropState"))},
@@ -566,6 +642,18 @@ private:
                 {QStringLiteral("position"), QStringLiteral("position")}, {QStringLiteral("time_seconds"), QStringLiteral("position")},
                 {QStringLiteral("length_seconds"), QStringLiteral("length")}, {QStringLiteral("url"), QStringLiteral("url")},
                 {QStringLiteral("seekable"), QStringLiteral("seekable")},
+                {QStringLiteral("rate"), QStringLiteral("rate")},
+                {QStringLiteral("audio_delay_ms"), QStringLiteral("audioDelayMS")},
+                {QStringLiteral("subtitle_delay_ms"), QStringLiteral("subtitleDelayMS")},
+                {QStringLiteral("engine"), QStringLiteral("playbackEngine")},
+                {QStringLiteral("engine_switching"), QStringLiteral("engineSwitching")},
+                {QStringLiteral("audio_session_volume"), QStringLiteral("volume")},
+                {QStringLiteral("audio_session_muted"), QStringLiteral("muted")},
+                {QStringLiteral("mpv_audio_volume"), QStringLiteral("volume")},
+                {QStringLiteral("mpv_audio_muted"), QStringLiteral("muted")},
+                {QStringLiteral("mpv_audio_output"), QStringLiteral("playingState")},
+                {QStringLiteral("mpv_history_ready"), QStringLiteral("mpvHistoryReady")},
+                {QStringLiteral("mpv_video_ready"), QStringLiteral("hasVideoOutput")},
                 {QStringLiteral("fullscreen"), QStringLiteral("fullscreen")}};
             if (!m_player || !properties.contains(awaitCore)) error = QStringLiteral("invalid_core_observation");
             else { observed = m_player; awaitProperty = properties.value(awaitCore); }
@@ -833,6 +921,18 @@ private:
         expression->setNotifyOnValueChanged(true);
         const auto check = [this, expression, command, id, render] {
             if (id != m_pendingId || m_waitExpression != expression) return;
+            const auto coreProperty = command.value(QStringLiteral("await_core")).toString();
+            if (coreProperty.startsWith(QStringLiteral("mpv_audio_"))) {
+                const auto core = coreSnapshot();
+                if (!m_player->usesMpv() || ((coreProperty == QStringLiteral("mpv_audio_volume")
+                    || coreProperty == QStringLiteral("mpv_audio_muted"))
+                    && core.value(QStringLiteral("mpv_audio_query_error")).toInt() < 0)) {
+                    respond(id, {{QStringLiteral("id"), id}, {QStringLiteral("status"), QStringLiteral("failed")},
+                        {QStringLiteral("error"), QStringLiteral("native_mpv_audio_observation_failed")},
+                        {QStringLiteral("core"), core}});
+                    return;
+                }
+            }
             const QVariant actual = observationValue(command);
             if (expression->hasError()) {
                 m_waitExpression = nullptr;
@@ -857,8 +957,18 @@ private:
             render();
         };
         connect(expression, &QQmlExpression::valueChanged, this, check);
-        if ((awaitCore==QStringLiteral("position") || awaitCore==QStringLiteral("time_seconds"))
-            && !observeCorePosition(check)) {
+        if (awaitCore.startsWith(QStringLiteral("mpv_audio_")) && m_player->usesMpv()) {
+            auto *mpv = m_player->mpvPlayback();
+            connect(mpv, &MpvPlayback::changed, expression, check);
+            connect(m_player, &PlayerController::playbackEngineChanged, expression, check);
+            if (awaitCore != QStringLiteral("mpv_audio_output")) mpv->requestAudioSessionState();
+        }
+        if (awaitCore == QStringLiteral("mpv_video_ready") && m_player->usesMpv())
+            connect(m_player->mpvPlayback(), &MpvPlayback::changed, expression, check);
+        if ((awaitCore==QStringLiteral("position") || awaitCore==QStringLiteral("time_seconds")
+            || awaitCore==QStringLiteral("rate") || awaitCore==QStringLiteral("audio_delay_ms")
+            || awaitCore==QStringLiteral("subtitle_delay_ms"))
+            && !observeCoreValue(check)) {
             respond(id,{{QStringLiteral("id"),id},{QStringLiteral("status"),QStringLiteral("failed")},
                 {QStringLiteral("error"),QStringLiteral("core_observation_listener_failed_action_not_undone")}});
             return;

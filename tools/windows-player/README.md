@@ -28,8 +28,9 @@ can leave Qt metadata stale even when configuration rebuilds the C++ objects.
 Rebuild the pinned UPnP dependency
 as described below. Then use `build-player.sh normal` or
 `build-player.sh diagnostics` inside the same toolchain; optional arguments set
-source/build/runtime roots. Both modes force the guarded translation units to
-rebuild and strip the repaired plugins into the isolated runtime. Stop its owned
+source/build/runtime roots. A changed preprocessor-flag signature invalidates the
+guarded translation units once; retries with the same flags reuse completed
+objects. Both modes strip the repaired plugins into the isolated runtime. Stop its owned
 consumers first. This creates a local preview without installation/publication.
 
 The pinned Qt 6.8.3 source is available from the [official archive](https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz); verify it against `contrib/src/qt/SHA512SUMS`.

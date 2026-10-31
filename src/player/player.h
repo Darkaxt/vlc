@@ -286,6 +286,7 @@ struct vlc_player_t
 
     enum vlc_player_state global_state;
     bool started;
+    bool external_playback;
 
     /**
      * Playing a tiny stream (either empty, or with unreported errors) in a loop
@@ -298,6 +299,8 @@ struct vlc_player_t
     unsigned repeat;
 
     bool deleting;
+    void (*release_vout_cb)(void *, int);
+    void *release_vout_data;
     struct
     {
         vlc_thread_t thread;

@@ -18,14 +18,19 @@ def main():
     parser.add_argument('--fixtures', required=True, type=Path)
     parser.add_argument('--transport', required=True, type=Path)
     parser.add_argument('--evidence', required=True, type=Path)
+    parser.add_argument('--handover-fixture', type=Path,
+        help='Hold real libmpv HTTP requests until the owner releases the transition case')
     args = parser.parse_args()
     files = {'/clip-a.mp4': args.fixtures / 'clip-a.mp4',
              '/clip-b.mp4': args.fixtures / 'clip-b.mp4', '/live.ts': args.transport}
+    if args.handover_fixture:
+        files['/handover.mp4'] = args.handover_fixture
     assert all(path.is_file() for path in files.values())
     assert args.evidence.parent.is_dir() and not args.evidence.exists()
     requests, clients = [], set()
     lock = threading.Lock()
     stopping = threading.Event()
+    handover_release = threading.Event()
 
     class Handler(BaseHTTPRequestHandler):
         protocol_version = 'HTTP/1.0'
@@ -50,6 +55,12 @@ def main():
             entry = {'path': route, 'range_requested': self.headers.get('Range'), 'bytes_sent': 0}
             with lock:
                 requests.append(entry)
+            if route == '/handover.mp4' and self.headers.get('User-Agent', '').startswith('libmpv'):
+                entry['held_for_transition'] = True
+                print(json.dumps({'state': 'handover_waiting', 'user_agent': self.headers['User-Agent']}), flush=True)
+                handover_release.wait()
+                if stopping.is_set():
+                    return
             if route == '/playlist.m3u8':
                 port = self.server.server_address[1]
                 body = ('#EXTM3U\n#EXTINF:8,S7 first clip\nhttp://127.0.0.1:' + str(port)
@@ -107,10 +118,14 @@ def main():
     print(json.dumps({'state': 'ready', 'base_url': 'http://127.0.0.1:' + str(server.server_address[1])}), flush=True)
     try:
         for line in sys.stdin:
+            if line.strip() == 'release-handover':
+                handover_release.set()
+                print(json.dumps({'state': 'handover_released'}), flush=True)
             if line.strip() == 'stop':
                 break
     finally:
         stopping.set()
+        handover_release.set()
         with lock:
             current = list(clients)
         for client in current:

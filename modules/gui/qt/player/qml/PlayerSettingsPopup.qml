@@ -80,16 +80,18 @@ T.Popup {
         property string text
         property bool checked: false
         property bool available: true
+        property bool requiresVlc: false
+        readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
         signal toggled(bool enabled)
         width: body.width - PlayerStyle.px(40)
         height: PlayerStyle.px(52)
         x: PlayerStyle.px(20)
-        Label { Layout.fillWidth: true; text: parent.text; opacity: parent.available ? 1 : 0.5 }
+        Label { Layout.fillWidth: true; text: parent.displayLabel; opacity: parent.available ? 1 : 0.5 }
         PlayerSettingsSwitch {
             Layout.preferredWidth: PlayerStyle.px(68)
             value: parent.checked
-            enabled: parent.available
-            Accessible.name: parent.text
+            enabled: parent.available && !Player.engineSwitching && (!parent.requiresVlc || Player.playbackEngine === "vlc")
+            Accessible.name: parent.displayLabel
             onClicked: parent.toggled(!parent.checked)
         }
     }
@@ -109,6 +111,7 @@ T.Popup {
             Label { Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(4); text: effect.title }
             PlayerSettingsSwitch {
                 visible: effect.module.length > 0
+                enabled: Player.playbackEngine === "vlc" && !Player.engineSwitching
                 Layout.preferredWidth: PlayerStyle.px(68)
                 value: settingsPopup.filterEnabled(effect.module)
                 Accessible.name: effect.title
@@ -157,14 +160,17 @@ T.Popup {
         id: choiceRow
         property string text
         property var choices
+        property bool requiresVlc: true
+        readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
         width: body.width - PlayerStyle.px(40)
         height: PlayerStyle.px(48)
         x: PlayerStyle.px(20)
-        Label { Layout.fillWidth: true; text: parent.text }
+        Label { Layout.fillWidth: true; text: parent.displayLabel }
         PlayerSettingsChoice {
             id: trackChoice
             Layout.preferredWidth: PlayerStyle.px(140)
-            label: parent.text
+            label: parent.displayLabel
+            enabled: !Player.engineSwitching && (!choiceRow.requiresVlc || Player.playbackEngine === "vlc")
             model: parent.choices
             textRole: "display"
             displayText: currentIndex < 0 ? qsTr("None") : currentText
@@ -313,8 +319,16 @@ T.Popup {
             Column {
                 id: pages
                 width: parent.width
+                Label {
+                    visible: Player.playbackEngine === "mpv"
+                    x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
+                    text: qsTr("VLC effects, appearance, recording and statistics require VLC playback. Switch engines on the Playback tab; track selection and delays work with either engine.")
+                    font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground
+                    topPadding: PlayerStyle.px(12); bottomPadding: PlayerStyle.px(12)
+                }
                 Button {
                     visible: settingsPopup.page !== 0
+                    enabled: Player.playbackEngine === "vlc" && !Player.engineSwitching
                     x: PlayerStyle.px(20)
                     width: parent.width - PlayerStyle.px(40)
                     text: qsTr("Defaults")
@@ -334,8 +348,21 @@ T.Popup {
                 Column {
                     visible: settingsPopup.page === 0
                     width: parent.width
+                    Section { text: qsTr("Playback engine") }
+                    RowLayout {
+                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
+                        Button { Layout.fillWidth: true; text: "VLC"; checked: Player.playbackEngine === "vlc"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("vlc") }
+                        Button { Layout.fillWidth: true; text: "MPV / Dolby Vision"; checked: Player.playbackEngine === "mpv"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("mpv") }
+                    }
+                    Label {
+                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
+                        text: Player.engineSwitching ? qsTr("Switching engines… Playback will resume at the same position.")
+                            : qsTr("Switches this session without closing the player. The startup default is in Preferences.")
+                        font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground
+                        Accessible.role: Accessible.StaticText
+                    }
                     Toggle { text: qsTr("Show Subtitle Timeline on Seekbar"); checked: MediaTools.timelineVisible; onToggled: enabled => MediaTools.timelineVisible = enabled }
-                    Toggle { text: qsTr("Show Statistics"); checked: MediaTools.statisticsVisible; onToggled: enabled => MediaTools.statisticsVisible = enabled }
+                    Toggle { text: qsTr("Show Statistics"); requiresVlc: true; checked: MediaTools.statisticsVisible; onToggled: enabled => MediaTools.statisticsVisible = enabled }
                     Toggle { text: qsTr("Show Audio Waveform"); checked: MediaTools.waveformVisible; onToggled: enabled => MediaTools.waveformVisible = enabled }
                     Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: MediaTools.waveformVisible ? MediaAnalysis.waveformStatus : MediaAnalysis.previewStatus; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
                     Toggle { text: qsTr("Reverse"); checked: Player.rate < 0; available: Player.rewindable; onToggled: enabled => { if (enabled !== (Player.rate < 0)) Player.reverse() } }
@@ -391,18 +418,18 @@ T.Popup {
                     ChoiceRow { text: qsTr("Crop"); choices: Player.crop }
                     ChoiceRow { text: qsTr("Deinterlace"); choices: Player.deinterlace }
                     ChoiceRow { text: qsTr("Deinterlace Mode"); choices: Player.deinterlaceMode }
-                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: qsTr("HDR and resolution describe the source. Output follows VLC's renderer and display; forced conversion and display-mode changes are unavailable here."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
+                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: Player.playbackEngine === "mpv" ? qsTr("HDR and resolution describe the source. MPV converts video, including Dolby Vision, to SDR output.") : qsTr("HDR and resolution describe the source. Output follows VLC's renderer and display; forced conversion and display-mode changes are unavailable here."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
                     Section { text: qsTr("Filters") }
                     Effect { title: qsTr("Essential"); module: "adjust"; section: "essential" }
                     Effect { title: qsTr("Crop"); module: ""; section: "crop" }
                     Effect { title: qsTr("Colors"); module: "colorthres"; section: "colors" }
                     Effect { title: qsTr("Geometry"); module: "transform"; section: "geometry" }
-                    Toggle { text: qsTr("Negate Colors"); checked: settingsPopup.filterEnabled("invert"); onToggled: enabled => MediaTools.enableFilter("invert", enabled) }
+                    Toggle { text: qsTr("Negate Colors"); requiresVlc: true; checked: settingsPopup.filterEnabled("invert"); onToggled: enabled => MediaTools.enableFilter("invert", enabled) }
                 }
                 Column {
                     visible: settingsPopup.page === 2
                     width: parent.width
-                    ChoiceRow { text: qsTr("Audio Track"); choices: Player.audioTracks }
+                    ChoiceRow { text: qsTr("Audio Track"); requiresVlc: false; choices: Player.audioTracks }
                     LanguageRow { }
                     ChoiceRow { text: qsTr("Stereo Mode"); choices: Player.audioStereoMode }
                     Section { text: qsTr("Synchronization") }
@@ -422,7 +449,7 @@ T.Popup {
                         topPadding: PlayerStyle.px(10)
                         bottomPadding: PlayerStyle.px(10)
                         spacing: PlayerStyle.px(5)
-                        ChoiceRow { text: qsTr("Subtitle Track"); choices: Player.subtitleTracks }
+                        ChoiceRow { text: qsTr("Subtitle Track"); requiresVlc: false; choices: Player.subtitleTracks }
                         LanguageRow { subtitle: true }
                     }
                     Section { text: qsTr("Synchronization") }

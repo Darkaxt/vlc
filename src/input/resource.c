@@ -586,6 +586,15 @@ void input_resource_StopFreeVout(input_resource_t *p_resource)
     vlc_mutex_unlock(&p_resource->lock);
 }
 
+void input_resource_ReleaseUnusedVout(input_resource_t *resource)
+{
+    /* Called only after every input has been joined. Keep normal stop/reuse
+     * behavior unchanged; an engine handover explicitly retires the cache. */
+    vlc_mutex_lock(&resource->lock);
+    DestroyVout(resource);
+    vlc_mutex_unlock(&resource->lock);
+}
+
 /* */
 sout_stream_t *input_resource_RequestSout( input_resource_t *p_resource, const char *psz_sout )
 {

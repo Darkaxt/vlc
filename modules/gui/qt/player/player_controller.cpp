@@ -23,6 +23,8 @@
 #include "dialogs/extensions/extensions_manager.hpp"
 #include "player_controller.hpp"
 #include "player_controller_p.hpp"
+#include "mpv_playback.hpp"
+#include "maininterface/mainctx.hpp"
 #include "util/shared_input_item.hpp"
 
 #include <vlc_actions.h>           /* ACTION_ID */
@@ -48,6 +50,7 @@
 #endif
 
 #include <cassert>
+#include <algorithm>
 
 #define POSITION_MIN_UPDATE_INTERVAL VLC_TICK_FROM_MS(15)
 
@@ -66,10 +69,10 @@ PlayerControllerPrivate::~PlayerControllerPrivate()
     assert(m_smpteTimerRequestCount == 0);
 
     vlc_player_locker locker{m_player}; //this also locks the player
-    vlc_player_vout_RemoveListener( m_player, m_player_vout_listener );
-    vlc_player_aout_RemoveListener( m_player, m_player_aout_listener );
-    vlc_player_RemoveListener( m_player, m_player_listener );
-    vlc_player_RemoveTimer( m_player, m_player_timer );
+    if (m_player_vout_listener) vlc_player_vout_RemoveListener( m_player, m_player_vout_listener );
+    if (m_player_aout_listener) vlc_player_aout_RemoveListener( m_player, m_player_aout_listener );
+    if (m_player_listener) vlc_player_RemoveListener( m_player, m_player_listener );
+    if (m_player_timer) vlc_player_RemoveTimer( m_player, m_player_timer );
     if (m_preparser != nullptr)
         vlc_preparser_Delete(m_preparser);
 }
@@ -541,6 +544,7 @@ static void on_player_capabilities_changed(vlc_player_t *, int old_caps, int new
         bool newChangeRate = new_caps & VLC_PLAYER_CAP_CHANGE_RATE;
         if (newChangeRate != oldChangeRate)
             emit q->rateChangableChanged( newChangeRate );
+        emit q->capabilitiesChanged();
     });
 
     //FIXME other events?
@@ -965,8 +969,10 @@ static void on_player_aout_volume_changed(audio_output_t *, float volume, void *
     msg_Dbg( that->p_intf, "on_player_aout_volume_changed");
     that->callAsync([that,volume](){
         that->m_volume = volume;
+        if (that->m_mpv && !that->m_mpvVolumeReady && volume >= 0.f)
+            that->q_func()->setVolume(volume);
         emit that->q_func()->volumeChanged( volume );
-    });
+    }, true); // The Windows audio session remains the owner in both engines.
 }
 
 static void on_player_aout_mute_changed(audio_output_t *, bool muted, void *data)
@@ -976,7 +982,7 @@ static void on_player_aout_mute_changed(audio_output_t *, bool muted, void *data
     that->callAsync([that,muted](){
         that->m_muted = muted;
         emit that->q_func()->soundMuteChanged(muted);
-    });
+    }, true);
 }
 
 static void on_player_corks_changed(vlc_player_t *, unsigned, void *data)
@@ -990,6 +996,8 @@ static void on_player_playback_restore_queried(vlc_player_t *, void *data)
     PlayerControllerPrivate* that = static_cast<PlayerControllerPrivate*>(data);
     msg_Dbg( that->p_intf, "on_playback_restore_queried");
     that->callAsync([that](){
+        // The live handover snapshot already owns this input's resume point.
+        if (that->m_engineSwitching) return;
         that->m_canRestorePlayback = true;
         emit that->q_func()->playbackRestoreQueried();
     });
@@ -1095,8 +1103,10 @@ static void on_player_timer_seek(const struct vlc_player_timer_point *point,
             that->m_time_timer.stop();
         });
     }
-    else
+    else {
         that->seeking = false;
+        that->callAsync([that] { emit that->q_func()->seekFinished(); });
+    }
 }
 static void on_player_timer_smpte_update(const struct vlc_player_timer_smpte_timecode *tc,
                                          void *data)
@@ -1218,6 +1228,8 @@ PlayerControllerPrivate::PlayerControllerPrivate(PlayerController *playercontrol
 {
     {
         vlc_player_locker locker{m_player};
+        m_acceptNativeEvents = !p_intf->mpvPlayback;
+        vlc_player_SetExternalPlayback(m_player, p_intf->mpvPlayback);
         m_player_listener = vlc_player_AddListener( m_player, &player_cbs, this );
         m_player_aout_listener = vlc_player_aout_AddListener( m_player, &player_aout_cbs, this );
         m_player_vout_listener = vlc_player_vout_AddListener( m_player, &player_vout_cbs, this );
@@ -1260,10 +1272,26 @@ PlayerController::PlayerController( qt_intf_t *_p_intf )
 {
     connect( &d_ptr->m_position_timer, &QTimer::timeout, this, &PlayerController::updatePositionFromTimer );
     connect( &d_ptr->m_time_timer, &QTimer::timeout, this, &PlayerController::updateTimeFromTimer );
+    if (_p_intf->mpvPlayback) initializeMpvPlayback();
+    connect(this, &PlayerController::playingStateChanged, this, [this](PlayingState state) {
+        Q_D(PlayerController);
+        if (state == PLAYING_STATE_STOPPED && (d->m_engineRestorePending || d->m_engineSeekPending)) cancelEngineRestart();
+        else restoreEngineHandoff();
+    });
+    connect(this, &PlayerController::seekFinished, this, [this] {
+        Q_D(PlayerController);
+        if (!usesMpv() && d->m_engineSeekPending) finishEngineHandoff();
+    });
+    connect(this, &PlayerController::capabilitiesChanged, this, [this] {
+        Q_D(PlayerController);
+        d->m_engineCapabilitiesKnown = true;
+        restoreEngineHandoff();
+    });
 }
 
 PlayerController::~PlayerController()
 {
+    cancelMpvPlaylist();
 }
 
 // PLAYBACK
@@ -1278,6 +1306,7 @@ vlc_player_t * PlayerController::getPlayer() const
 input_item_t *PlayerController::getInput() const
 {
     Q_D(const PlayerController);
+    if (d->m_mpv) return d->m_currentItem.get();
     vlc_player_locker locker{ d->m_player };
     return vlc_player_GetCurrentMedia( d->m_player );
 }
@@ -1285,6 +1314,7 @@ input_item_t *PlayerController::getInput() const
 bool PlayerController::isStarted() const
 {
     Q_D(const PlayerController);
+    if (d->m_mpv) return d->m_playing_status != PLAYING_STATE_STOPPED;
     vlc_player_locker locker{ d->m_player };
     return vlc_player_IsStarted( d->m_player );
 }
@@ -1297,6 +1327,7 @@ bool PlayerController::hasInput() const
 void PlayerController::reverse()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { requireVlcTool(tr("Reverse playback")); return; }
     msg_Dbg( d->p_intf, "reverse");
     vlc_player_locker lock{ d->m_player };
     if ( vlc_player_CanChangeRate( d->m_player ) )
@@ -1309,28 +1340,32 @@ void PlayerController::reverse()
 void PlayerController::setRate( float new_rate )
 {
     Q_D(PlayerController);
-
-    if (qFuzzyCompare(d->m_rate, new_rate))
-        return;
+    if (d->m_mpv) { d->m_mpv->set(QStringLiteral("speed"), double(new_rate)); return; }
 
     msg_Dbg( d->p_intf, "setRate %f", new_rate);
     vlc_player_locker lock{ d->m_player };
     if ( vlc_player_CanChangeRate( d->m_player ) )
     {
-        vlc_player_ChangeRate( d->m_player, new_rate );
+        // The UI cache can describe the outgoing MPV engine or precede a
+        // paused native hotkey update. Compare against this actual core.
+        if (!qFuzzyCompare(vlc_player_GetRate(d->m_player), new_rate))
+            vlc_player_ChangeRate( d->m_player, new_rate );
 
         // Until the timer notifies the change, we need to still change
         // the rate, because player timer update may take a long time.
         // For position, it is supposed to be interpolated but for rate
         // the new value can be taken as is:
-        d->m_rate = new_rate;
-        emit rateChanged(d->m_rate);
+        if (!qFuzzyCompare(d->m_rate, new_rate)) {
+            d->m_rate = new_rate;
+            emit rateChanged(d->m_rate);
+        }
     }
 }
 
 void PlayerController::slower()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setRate(d->m_rate / 2.f); return; }
     msg_Dbg( d->p_intf, "slower");
     vlc_player_locker lock{ d->m_player };
     if ( vlc_player_CanChangeRate( d->m_player ) )
@@ -1340,6 +1375,7 @@ void PlayerController::slower()
 void PlayerController::faster()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setRate(d->m_rate * 2.f); return; }
     msg_Dbg( d->p_intf, "faster");
     vlc_player_locker lock{ d->m_player };
     if ( vlc_player_CanChangeRate( d->m_player ) )
@@ -1349,6 +1385,7 @@ void PlayerController::faster()
 void PlayerController::littlefaster()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setRate(d->m_rate * 1.1f); return; }
     msg_Dbg( d->p_intf, "littlefaster");
     var_SetInteger( vlc_object_instance(d->p_intf), "key-action", ACTIONID_RATE_FASTER_FINE );
 }
@@ -1356,6 +1393,7 @@ void PlayerController::littlefaster()
 void PlayerController::littleslower()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setRate(d->m_rate / 1.1f); return; }
     msg_Dbg( d->p_intf, "littleslower");
     var_SetInteger( vlc_object_instance(d->p_intf), "key-action", ACTIONID_RATE_SLOWER_FINE );
 }
@@ -1363,6 +1401,7 @@ void PlayerController::littleslower()
 void PlayerController::normalRate()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setRate(1.f); return; }
     msg_Dbg( d->p_intf, "normalRate");
     vlc_player_locker lock{ d->m_player };
     if ( vlc_player_CanChangeRate( d->m_player ) )
@@ -1373,6 +1412,7 @@ void PlayerController::normalRate()
 void PlayerController::setTime(VLCTime new_time)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("seek"), QString::number(double(new_time.toVLCTick()) / CLOCK_FREQ, 'g', 16), QStringLiteral("absolute+exact")}); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1382,6 +1422,7 @@ void PlayerController::setTime(VLCTime new_time)
 void PlayerController::setPosition(double position)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("seek"), QString::number(position * 100., 'g', 16), QStringLiteral("absolute-percent+exact")}); return; }
 #ifdef VLC_PLAYER_DIAGNOSTICS
     const auto recordSeek = [this, position](const char *status) {
         auto requests = property("redesignSeekRequests").toList();
@@ -1416,6 +1457,7 @@ void PlayerController::jumpFwd()
     Q_D(PlayerController);
     msg_Dbg( d->p_intf, "jumpFwd");
     int i_interval = var_InheritInteger( d->p_intf, "short-jump-size" );
+    if (d->m_mpv) { jumpTime(VLCTime(vlc_tick_from_sec(i_interval))); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1427,6 +1469,7 @@ void PlayerController::jumpBwd()
     Q_D(PlayerController);
     msg_Dbg( d->p_intf, "jumpBwd");
     int i_interval = var_InheritInteger( d->p_intf, "short-jump-size" );
+    if (d->m_mpv) { jumpTime(VLCTime(vlc_tick_from_sec(-i_interval))); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1436,6 +1479,7 @@ void PlayerController::jumpBwd()
 void PlayerController::jumpTime(VLCTime i_time)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("seek"), QString::number(double(i_time.toVLCTick()) / CLOCK_FREQ, 'g', 16), QStringLiteral("relative+exact")}); return; }
     msg_Dbg( d->p_intf, "jumpTime");
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
@@ -1446,6 +1490,7 @@ void PlayerController::jumpTime(VLCTime i_time)
 void PlayerController::jumpToPos( double new_pos )
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setPosition(std::clamp(d->m_position + new_pos, 0., 1.)); return; }
     {
         vlc_player_locker lock{ d->m_player };
         if( !d->isCurrentItemSynced() )
@@ -1459,6 +1504,7 @@ void PlayerController::jumpToPos( double new_pos )
 void PlayerController::frameNext()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("frame-step")}); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1468,6 +1514,7 @@ void PlayerController::frameNext()
 void PlayerController::framePrev()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("frame-back-step")}); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1479,6 +1526,7 @@ void PlayerController::framePrev()
 void PlayerController::setAudioDelay(VLCDuration delay)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->set(QStringLiteral("audio-delay"), double(delay.toVLCTick()) / CLOCK_FREQ); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1496,6 +1544,7 @@ void PlayerController::setAudioDelay(VLCDuration delay)
 void PlayerController::setSubtitleDelay(VLCDuration delay)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->set(QStringLiteral("sub-delay"), double(delay.toVLCTick()) / CLOCK_FREQ); return; }
     vlc_player_locker lock{ d->m_player };
     if(!d->isCurrentItemSynced() )
         return;
@@ -1513,6 +1562,7 @@ void PlayerController::setSubtitleDelay(VLCDuration delay)
 void PlayerController::setSecondarySubtitleDelay(VLCDuration delay)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->set(QStringLiteral("secondary-sub-delay"), double(delay.toVLCTick()) / CLOCK_FREQ); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1565,6 +1615,10 @@ void PlayerController::setSecondarySubtitleDelayMS(int ms)
 void PlayerController::setSubtitleFPS(float fps)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) {
+        if (fps != 0.f) requireVlcTool(tr("VLC subtitle FPS adjustment"));
+        return;
+    }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1576,6 +1630,7 @@ void PlayerController::setSubtitleFPS(float fps)
 void PlayerController::sectionPrev()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { chapterPrev(); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1591,6 +1646,7 @@ void PlayerController::sectionPrev()
 void PlayerController::sectionNext()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { chapterNext(); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1666,6 +1722,7 @@ void PlayerController::navigateActivate()
 void PlayerController::chapterNext()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("add"), QStringLiteral("chapter"), QStringLiteral("1")}); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1676,6 +1733,7 @@ void PlayerController::chapterNext()
 void PlayerController::chapterPrev()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { d->m_mpv->command({QStringLiteral("add"), QStringLiteral("chapter"), QStringLiteral("-1")}); return; }
     vlc_player_locker lock{ d->m_player };
     if( !d->isCurrentItemSynced() )
         return;
@@ -1790,6 +1848,13 @@ SharedVOutThread PlayerController::getVout()
 void PlayerController::setFullscreen( bool new_val )
 {
     Q_D(PlayerController);
+    if (d->m_mpv) {
+        d->m_fullscreen = new_val;
+        { vlc_player_locker lock(d->m_player); vlc_player_vout_SetFullscreen(d->m_player, new_val); }
+        if (d->p_intf->p_mi) emit d->p_intf->p_mi->setInterfaceFullScreen(new_val);
+        emit fullscreenChanged(new_val);
+        return;
+    }
     msg_Dbg(d->p_intf, "setFullscreen %s", new_val? "fullscreen" : "windowed");
     vlc_player_locker lock{ d->m_player };
     vlc_player_vout_SetFullscreen( d->m_player, new_val );
@@ -1804,6 +1869,7 @@ void PlayerController::toggleFullscreen()
 void PlayerController::setWallpaperMode( bool new_val )
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { requireVlcTool(tr("Video wallpaper")); return; }
     vlc_player_locker lock{ d->m_player };
     vlc_player_vout_SetWallpaperModeEnabled( d->m_player, new_val );
 }
@@ -1817,6 +1883,7 @@ bool PlayerController::getAutoscale( ) const
 void PlayerController::setAutoscale( bool new_val )
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { requireVlcTool(tr("VLC video autoscale")); return; }
     d->m_autoscale.setValue( new_val );
 }
 
@@ -1832,6 +1899,14 @@ SharedAOut PlayerController::getAout()
 void PlayerController::setVolume(float volume)
 {
     Q_D(PlayerController);
+    if (volume < 0.f) return; // Unknown native state is not a requested level.
+    // WASAPI applies the existing cubic volume curve in the shared Windows
+    // session. MPV supplies only amplification above unity, exactly as VLC's
+    // native output does; attenuating here as well would apply volume twice.
+    if (d->m_mpv) {
+        d->m_mpvVolumeReady = true;
+        d->m_mpv->set(QStringLiteral("volume"), 100. * std::max(1., double(volume) * volume * volume));
+    }
     vlc_player_locker lock{ d->m_player };
     vlc_player_aout_SetVolume( d->m_player, volume );
 }
@@ -1839,6 +1914,7 @@ void PlayerController::setVolume(float volume)
 void PlayerController::setVolumeUp(int steps)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setVolume(std::clamp(d->m_volume + steps * float(var_InheritFloat(d->p_intf, "volume-step")), 0.f, var_InheritInteger(d->p_intf, "qt-max-volume") / 100.f)); return; }
     vlc_player_locker lock{ d->m_player };
     vlc_player_aout_IncrementVolume( d->m_player, steps, NULL );
 }
@@ -1846,6 +1922,7 @@ void PlayerController::setVolumeUp(int steps)
 void PlayerController::setVolumeDown(int steps)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { setVolume(std::max(0.f, d->m_volume - steps * float(var_InheritFloat(d->p_intf, "volume-step")))); return; }
     vlc_player_locker lock{ d->m_player };
     vlc_player_aout_DecrementVolume( d->m_player, steps, NULL );
 }
@@ -1961,6 +2038,7 @@ void PlayerController::openVLsub()
 void PlayerController::updateTimeFromTimer()
 {
     Q_D(PlayerController);
+    if (d->m_mpv || d->m_engineSwitching) return;
 
     vlc_tick_t system_now = vlc_tick_now();
     if (d->interpolateTime(system_now) == VLC_SUCCESS)
@@ -1970,6 +2048,11 @@ void PlayerController::updateTimeFromTimer()
 void PlayerController::restorePlaybackPos()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) {
+        if (d->m_mpvResumePosition > 0.) setPosition(d->m_mpvResumePosition);
+        acknowledgeRestoreCallback();
+        return;
+    }
     vlc_player_locker lock{ d->m_player };
     const bool synced = d->isCurrentItemSynced();
 #ifdef VLC_PLAYER_DIAGNOSTICS
@@ -2015,6 +2098,7 @@ void PlayerController::acknowledgeRestoreCallback()
 void PlayerController::setABloopState(ABLoopState state)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { requireVlcTool(tr("VLC A–B loop")); return; }
     vlc_player_locker lock{ d->m_player };
     vlc_player_SetAtoBLoop( d->m_player, static_cast<vlc_player_abloop>(state));
 }
@@ -2067,6 +2151,7 @@ void PlayerController::toggleVisualization()
 void PlayerController::requestAddSMPTETimer()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { ++d->m_smpteTimerRequestCount; return; }
 
     if ( ++d->m_smpteTimerRequestCount == 1 )
     {
@@ -2077,6 +2162,7 @@ void PlayerController::requestAddSMPTETimer()
 void PlayerController::requestRemoveSMPTETimer()
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { assert(d->m_smpteTimerRequestCount > 0); --d->m_smpteTimerRequestCount; return; }
 
     assert( d->m_smpteTimerRequestCount > 0 );
     if ( --d->m_smpteTimerRequestCount == 0 )
@@ -2088,12 +2174,14 @@ void PlayerController::requestRemoveSMPTETimer()
 void PlayerController::setRecording( bool recording )
 {
     Q_D(PlayerController);
+    if (d->m_mpv) { requireVlcTool(tr("VLC recording")); return; }
     vlc_player_locker lock{ d->m_player };
     vlc_player_SetRecordingEnabled( d->m_player, recording, NULL );
 }
 
 void PlayerController::snapshot()
 {
+    if (usesMpv()) { requireVlcTool(tr("VLC snapshot")); return; }
     SharedVOutThread vout = getVout();
     if (vout)
     {
@@ -2117,6 +2205,7 @@ void PlayerController::snapshot()
 QString PlayerController::highResolutionTime() const
 {
     Q_D(const PlayerController);
+    if (d->m_mpv) return d->m_time.formatHMS(0);
 
     // Sample:
     vlc_player_timer_smpte_timecode sample;
@@ -2273,6 +2362,20 @@ void PlayerController::refreshMediaMeta( input_item_t *p_item )
 bool PlayerController::associateSubtitleFile(const QString &uri)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) {
+        const QUrl requested(uri);
+        const auto normalized = [](const QUrl &url) { return url.adjusted(QUrl::NormalizePathSegments).toString(QUrl::FullyEncoded); };
+        for (const auto &value : d->m_mpv->value(QStringLiteral("track-list")).toList()) {
+            const auto track = value.toMap();
+            const QString filename = track.value(QStringLiteral("external-filename")).toString();
+            if (track.value(QStringLiteral("type")).toString() == QStringLiteral("sub")
+                && !filename.isEmpty() && normalized(QUrl::fromUserInput(filename)) == normalized(requested)) {
+                d->m_mpv->set(QStringLiteral("sid"), track.value(QStringLiteral("id")).toString());
+                return true;
+            }
+        }
+        return AddAssociatedMedia(SPU_ES, uri, true, true, true) == VLC_SUCCESS;
+    }
     const QByteArray prefix = TrackListModel::associatedSourcePrefix(uri.toUtf8());
     bool present = false;
     {
@@ -2299,6 +2402,20 @@ bool PlayerController::associateSubtitleFile(const QString &uri)
 int PlayerController::AddAssociatedMedia(es_format_category_e cat, const QString &uri, bool select, bool notify, bool check_ext)
 {
     Q_D(PlayerController);
+    if (d->m_mpv) {
+        if (!d->m_currentItem || !d->m_mpv->isAvailable() || (cat != SPU_ES && cat != AUDIO_ES)) return VLC_EGENERIC;
+        if (check_ext && cat == SPU_ES) {
+            enum slave_type type;
+            const auto encoded = uri.toUtf8();
+            if (!input_item_slave_GetType(encoded.constData(), &type) || type != SLAVE_TYPE_SPU)
+                return VLC_EGENERIC;
+        }
+        const QUrl url(uri);
+        d->m_mpv->command({cat == SPU_ES ? QStringLiteral("sub-add") : QStringLiteral("audio-add"),
+            url.isLocalFile() ? QDir::toNativeSeparators(url.toLocalFile()) : url.toString(QUrl::FullyEncoded),
+            select ? QStringLiteral("select") : QStringLiteral("auto"), url.fileName()});
+        return VLC_SUCCESS;
+    }
     int result;
     {
         vlc_player_locker lock{ d->m_player };

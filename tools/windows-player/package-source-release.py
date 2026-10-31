@@ -26,6 +26,18 @@ def validate_application_entry(item, prefix):
     assert (item.name == prefix and item.isdir()) or item.name.startswith(prefix + '/'), item.name
 
 
+class SourceReader:
+    """Hash an archive member while tarfile copies it with bounded buffers."""
+    def __init__(self, source):
+        self.source = source
+        self.hash = hashlib.sha256()
+
+    def read(self, size=-1):
+        data = self.source.read(size)
+        self.hash.update(data)
+        return data
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source-commit', required=True)
@@ -34,13 +46,17 @@ def main():
     parser.add_argument('--notices', type=Path, required=True)
     parser.add_argument('--destination', type=Path, required=True)
     parser.add_argument('--scratch', type=Path, required=True)
+    parser.add_argument('--baseline-source', type=Path,
+                        help='Reuse unchanged SDK archives directly from the verified prior source package')
+    parser.add_argument('--baseline-source-sha256')
+    parser.add_argument('--mpv-buildinfo', type=Path)
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     assert re.fullmatch('[0-9a-f]{40}', args.source_commit)
     assert re.fullmatch(r'\d+\.\d+\.\d+', args.version)
     destination, scratch = args.destination.resolve(), args.scratch.resolve()
     assert destination.is_relative_to(Path('D:/VLC-Redesign'))
-    assert scratch.parent.parent == Path('D:/Temp') and scratch.parent.name.startswith('vlc-s7-') and not scratch.exists()
+    assert scratch.parent.parent == Path('D:/Temp') and scratch.parent.name.startswith(('vlc-s7-', 'vlc-s8-')) and not scratch.exists()
     assert subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip() == args.source_commit
     assert not subprocess.check_output(['git', '-C', str(repo), 'ls-tree', args.source_commit,
         '--', 'share/skins2/default/subX/font.otf']).strip(), 'Removed font must not be redistributed'
@@ -48,11 +64,28 @@ def main():
     assert len(dependencies.get('embedded_carriers_reviewed', [])) == 4
     assert dependencies.get('host_only_inputs')
     selected = [item for item in dependencies['archives'] if item['release_archive_class'] == 'corresponding-source']
+    pending = {}
+    if args.baseline_source:
+        assert re.fullmatch('[0-9a-f]{64}', args.baseline_source_sha256 or '')
+        assert digest(args.baseline_source) == args.baseline_source_sha256
+    else:
+        assert args.baseline_source_sha256 is None
+    if args.mpv_buildinfo:
+        mpv = json.loads(args.mpv_buildinfo.read_text())
+        assert {item['archive']: item['sha256'] for item in dependencies['mpv_sources']} == \
+               {item['archive']: item['sha256'] for item in mpv['sources']}
+        assert mpv['sdk_dependency_notices_manifest_sha256'] == dependencies['baseline_sdk_manifest_sha256']
+    else:
+        assert not dependencies.get('mpv_sources'), 'Include MPV build provenance with its sources'
     for item in selected:
+        assert PurePosixPath(item['archive']).name == item['archive']
         source = args.sources / item['archive']
         # The separately pinned CRT source was fetched outside contrib-sources.
-        if item['archive'] == 'mingw-runtime-source.tar.gz':
+        if item['archive'] == 'mingw-runtime-source.tar.gz' and not args.baseline_source:
             source = args.sources.parent / 'downloads' / item['archive']
+        if not source.is_file() and args.baseline_source:
+            pending[item['archive']] = item
+            continue
         assert source.is_file() and digest(source) == item['sha256'], source
         item['resolved_path'] = source
     name = 'Modern-VLC-Fork-' + args.version + '-corresponding-source'
@@ -94,13 +127,36 @@ def main():
                 result = process.wait()
             assert result == 0, (scratch / 'git-archive.stderr').read_text(errors='replace')
         for item in selected:
+            if item['archive'] in pending:
+                continue
             source = item['resolved_path']
             info = tarfile.TarInfo(name + '/dependencies/' + source.name)
             info.size, info.mode, info.mtime = source.stat().st_size, 0o644, 1793232000
             with source.open('rb') as stream:
                 output.addfile(info, stream)
             records.append({'path': 'dependencies/' + source.name, 'bytes': info.size, 'sha256': item['sha256']})
+        if pending:
+            # Copy only exact required library archives, without extracting or
+            # duplicating the old application's tree or its whole dependency set.
+            with tarfile.open(args.baseline_source, mode='r|gz') as baseline:
+                for member in baseline:
+                    parts = PurePosixPath(member.name).parts
+                    if len(parts) != 3 or parts[1] != 'dependencies' or parts[2] not in pending:
+                        continue
+                    item = pending.pop(parts[2])
+                    assert member.isfile() and member.size == item['bytes'], member.name
+                    info = tarfile.TarInfo(name + '/dependencies/' + item['archive'])
+                    info.size, info.mode, info.mtime = member.size, 0o644, 1793232000
+                    with baseline.extractfile(member) as stream:
+                        reader = SourceReader(stream)
+                        output.addfile(info, reader)
+                    assert reader.hash.hexdigest() == item['sha256'], member.name
+                    records.append({'path': 'dependencies/' + item['archive'], 'bytes': info.size,
+                                    'sha256': item['sha256']})
+            assert not pending, 'Required source absent from the baseline package: ' + repr(sorted(pending))
         add_bytes(output, 'dependency-source-and-notice-manifest.json', (args.notices / 'manifest.json').read_bytes())
+        if args.mpv_buildinfo:
+            add_bytes(output, 'MPV-BUILDINFO.json', args.mpv_buildinfo.read_bytes())
         readme = ('Modern VLC Fork ' + args.version + ' corresponding source\n\n'
             'Application commit: ' + args.source_commit + '\n'
             'The application/ tree is git archive of that exact commit, without Git history.\n'
@@ -120,6 +176,8 @@ def main():
         manifest = {'schema': 'vlc_redesign.corresponding_source.v1', 'source_commit': args.source_commit,
             'version': args.version, 'files': records,
             'host_only_inputs': dependencies['host_only_inputs'], 'private_font_payload_included': False}
+        if args.baseline_source:
+            manifest['reused_sdk_source_package_sha256'] = args.baseline_source_sha256
         info = json.dumps(manifest, indent=2).encode() + b'\n'
         add_bytes(output, 'SOURCE-MANIFEST.json', info)
     result = {'archive': str(archive), 'bytes': archive.stat().st_size, 'sha256': digest(archive),

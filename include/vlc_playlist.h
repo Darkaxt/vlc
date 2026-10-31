@@ -626,6 +626,18 @@ vlc_playlist_RequestInsert(vlc_playlist_t *playlist, size_t index,
                            input_item_t *const media[], size_t count);
 
 /**
+ * Expand a container using the native playlist's item replacement semantics.
+ *
+ * The playlist must be locked and index must identify an existing item.
+ * Reuses the same expansion operation as the native preparser, including
+ * current/next media and playlist notifications. An empty list removes the item.
+ * Returns VLC_SUCCESS or an allocation error.
+ */
+VLC_API int
+vlc_playlist_Expand(vlc_playlist_t *playlist, size_t index,
+                    input_item_t *const media[], size_t count);
+
+/**
  * Move a slice of items by value.
  *
  * If the indices are known, use vlc_playlist_Move() instead.

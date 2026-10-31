@@ -30,6 +30,7 @@
 #include <QScopedPointer>
 #include <QUrl>
 #include <QPointer>
+#include <functional>
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQmlProperty>
@@ -101,6 +102,7 @@ private:
 };
 
 class PlayerControllerPrivate;
+class MpvPlayback;
 class PlayerController : public QObject
 {
     Q_OBJECT
@@ -134,6 +136,11 @@ public:
 
     //playback
     Q_PROPERTY(PlayingState playingState READ getPlayingState NOTIFY playingStateChanged FINAL)
+    Q_PROPERTY(QString playbackEngine READ playbackEngine NOTIFY playbackEngineChanged FINAL)
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    Q_PROPERTY(bool mpvHistoryReady READ mpvHistoryReady NOTIFY mpvHistoryReadyChanged FINAL)
+#endif
+    Q_PROPERTY(bool engineSwitching READ engineSwitching NOTIFY engineSwitchingChanged FINAL)
     Q_PROPERTY(bool isStarted READ isStarted NOTIFY playingStateChanged FINAL)
     Q_PROPERTY(QString name READ getName NOTIFY nameChanged FINAL)
     Q_PROPERTY(float buffering READ getBuffering  NOTIFY bufferingChanged FINAL)
@@ -287,6 +294,22 @@ public slots:
 public:
     PlayerController( qt_intf_t * );
     ~PlayerController();
+    bool usesMpv() const;
+    bool engineSwitching() const;
+    Q_INVOKABLE void switchPlaybackEngine(const QString &engine);
+    bool cancelEngineRestart(input_item_t *stillCurrent = nullptr);
+    void requireVlcTool(const QString &tool);
+    QString playbackEngine() const;
+    MpvPlayback *mpvPlayback() const;
+    bool mpvAutostart() const;
+    bool mpvStartPaused() const;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    bool mpvHistoryReady() const;
+#endif
+    void playWithMpv(input_item_t *, bool paused = false);
+    bool cancelMpvPlaylist(input_item_t *stillCurrent = nullptr);
+    void mpvQueueFinished(bool exitAfterQueue = false);
+    void prepareToClose(std::function<void()>);
 
 public:
     using VOutThreadList = QVector<SharedVOutThread>;
@@ -441,6 +464,14 @@ public slots:
     RendererManager* getRendererManager();
 
 signals:
+    void playbackEngineChanged();
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    void mpvHistoryReadyChanged();
+#endif
+    void engineSwitchingChanged();
+    void mpvPlaybackEnded(bool eof, bool failed);
+    void seekFinished();
+    void capabilitiesChanged();
     //playback
     void playingStateChanged( PlayingState state );
     void inputChanged( bool hasInput );
@@ -529,6 +560,15 @@ signals:
 
 private:
     Q_DECLARE_PRIVATE(PlayerController)
+    void initializeMpvPlayback();
+    bool parseMpvPlaylist(input_item_t *, bool paused);
+    void loadMpvItem(input_item_t *, bool paused);
+    void completeEngineSwitch();
+    void finishVlcEngineRelease(int status);
+    void restoreEngineHandoff();
+    void finishEngineHandoff();
+    void restoreMpvHistory();
+    void saveMpvHistory(bool eof = false, std::function<void()> completion = {});
     QScopedPointer<PlayerControllerPrivate> d_ptr;
 };
 

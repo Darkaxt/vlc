@@ -32,6 +32,8 @@
 #include <QPair>
 
 #include <optional>
+#include <atomic>
+#include <memory>
 
 #ifndef QT_HAS_LIBATOMIC
 #warning "libatomic is not available. Read write lock is going to be used instead."
@@ -39,6 +41,7 @@
 #endif
 
 typedef struct vlc_preparser_t vlc_preparser_t;
+struct MpvPlaylistRequest;
 
 class PlayerControllerPrivate {
     Q_DISABLE_COPY(PlayerControllerPrivate)
@@ -75,16 +78,23 @@ public:
 
     ///call function @a fun on object thread
     template <typename Fun>
-    void callAsync(Fun&& fun)
+    void callAsync(Fun&& fun, bool sharedAudio = false)
     {
         Q_Q(PlayerController);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
         // NOTE: Starting with Qt 6.7.0, lambda expression here without a return value
         //       causes compilation issues with some compilers.
         // TODO: Find out if a more recent Qt version does not behave that way.
-        QMetaObject::invokeMethod(q, [fun = std::forward<Fun>(fun)]() -> std::monostate { fun(); return std::monostate{}; }, Qt::QueuedConnection);
+        const auto generation = m_nativeEventGeneration.load();
+        QMetaObject::invokeMethod(q, [this, generation, sharedAudio, fun = std::forward<Fun>(fun)]() -> std::monostate {
+            if (sharedAudio || (m_acceptNativeEvents && generation == m_nativeEventGeneration.load())) fun();
+            return std::monostate{};
+        }, Qt::QueuedConnection);
 #else
-        QMetaObject::invokeMethod(q, std::forward<Fun>(fun), Qt::QueuedConnection, nullptr);
+        const auto generation = m_nativeEventGeneration.load();
+        QMetaObject::invokeMethod(q, [this, generation, sharedAudio, fun = std::forward<Fun>(fun)] {
+            if (sharedAudio || (m_acceptNativeEvents && generation == m_nativeEventGeneration.load())) fun();
+        }, Qt::QueuedConnection);
 #endif
     }
 
@@ -92,6 +102,28 @@ public:
     qt_intf_t           *p_intf;
     vlc_player_t            *m_player;
     vlc_preparser_t         *m_preparser = nullptr;
+    std::unique_ptr<MpvPlayback> m_mpv;
+    std::unique_ptr<MpvPlayback> m_mpvCandidate;
+    std::atomic<quint64> m_nativeEventGeneration{0};
+    bool m_acceptNativeEvents = true;
+    bool m_engineSwitching = false, m_shutdownRequested = false;
+    bool m_engineRestart = false, m_engineRestorePending = false, m_enginePaused = false;
+    bool m_engineCapabilitiesKnown = false;
+    bool m_engineSeekPending = false, m_engineMpvSeekStarted = false;
+    bool m_engineVlcReleased = false;
+    QMetaObject::Connection m_engineWindowConnection;
+    SharedInputItem m_engineItem;
+    VLCTime m_engineTime;
+    float m_engineRate = 1.f, m_engineVolume = 1.f;
+    bool m_engineMuted = false;
+    int m_engineAudioDelay = 0, m_engineSubtitleDelay = 0;
+    quint64 m_mpvMediaRevision = 0;
+    std::shared_ptr<MpvPlaylistRequest> m_mpvPlaylistRequest;
+    quint64 m_mpvPlaylistRevision = 0;
+    bool m_mpvLoaded = false;
+    bool m_mpvVolumeReady = false;
+    bool m_mpvHistoryReady = false;
+    double m_mpvResumePosition = 0.;
 
     //callbacks
     vlc_player_listener_id* m_player_listener = nullptr;
