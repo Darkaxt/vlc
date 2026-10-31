@@ -31,7 +31,10 @@ def main():
         help='Reconcile the original closed, empty-group supervisor report before resuming')
     parser.add_argument('--replace-mpv-buildinfo-sha256',
         help='Identity-bound refresh of the task-owned runtime after a dependency repair')
+    parser.add_argument('--release-symbols', type=Path,
+        help='Exact separate symbol output for a normal release; strip MPV before its identity header')
     args = parser.parse_args()
+    assert args.mode != 'normal-mpv' or args.release_symbols, 'A normal release requires separate symbol output'
     cgroup = Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip()
     assert cgroup.startswith('/llm-coordinator/'), 'Use the installed WSL gate'
     tools = args.source / 'tools/windows-player'
@@ -49,6 +52,7 @@ def main():
         ('mpv', runtime_recipe('mpv')),
         ('runtime', py('stage-built-mpv-runtime.py', '--prefix', '/work/mpv-runtime/prefix',
             '--inputs', '/scratch/mpv-source-inputs', '--runtime', args.runtime,
+            *(['--release-symbols', args.release_symbols] if args.release_symbols else []),
             *(['--replace-buildinfo-sha256', args.replace_mpv_buildinfo_sha256]
               if args.replace_mpv_buildinfo_sha256 else []))),
         ('notices', py('inventory-dependency-notices.py', '--sources', '/scratch/mpv-source-inputs',
@@ -97,7 +101,7 @@ def main():
     recipes = ('compilation-pipeline.py', 'build-mpv-runtime.sh', 'build-player.sh',
         'cache-toolchain.py', 'qt-objects.mk', 'rebuild-qt-network.sh', 'rebuild-qt-timers.sh',
         'stage-built-mpv-runtime.py', 'inventory-dependency-notices.py', 'install-ffmpeg-files.py',
-        'initialize-player-build.sh', 'configure-player.py', 'check-mpv-plugin-abi.py')
+        'initialize-player-build.sh', 'configure-player.py', 'check-mpv-plugin-abi.py', 'release_symbols.py')
     identity = {str(path.relative_to(args.source)): hashlib.sha256(path.read_bytes()).hexdigest()
                 for path in [*(tools / name for name in recipes),
                              args.source / 'modules/gui/qt/player/mpv/source.json']}
@@ -106,6 +110,7 @@ def main():
         'player_compile_cache': os.environ.get('VLC_PLAYER_COMPILE_CACHE', '1'),
         'player_compile_cache_reason': os.environ.get('VLC_PLAYER_COMPILE_CACHE_REASON'),
         'replace_mpv_buildinfo_sha256': args.replace_mpv_buildinfo_sha256,
+        'release_symbols': str(args.release_symbols) if args.release_symbols else None,
         'started_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'cgroup': cgroup,
         'source_head': subprocess.check_output(['git', '-C', str(args.source), 'rev-parse', 'HEAD'], text=True).strip(),
         'steps': {}}
@@ -124,6 +129,8 @@ def main():
         run_pending.replace(log_root / 'attempt.json')
 
     environment = dict(os.environ, JOBS='1', CMAKE_BUILD_PARALLEL_LEVEL='1', CARGO_BUILD_JOBS='1')
+    if args.release_symbols:
+        environment['VLC_PLAYER_RELEASE_SYMBOLS'] = str(args.release_symbols)
     state.update(status='preparing', current_step=names[start])
     save()
     if start < names.index('release-compiler-cache'):

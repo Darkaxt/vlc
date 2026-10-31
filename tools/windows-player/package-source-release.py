@@ -50,6 +50,8 @@ def main():
                         help='Reuse unchanged SDK archives directly from the verified prior source package')
     parser.add_argument('--baseline-source-sha256')
     parser.add_argument('--mpv-buildinfo', type=Path)
+    parser.add_argument('--release-symbols', type=Path,
+                        help='Exact split-symbol provenance manifest for the corresponding stripped release')
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     assert re.fullmatch('[0-9a-f]{40}', args.source_commit)
@@ -75,6 +77,13 @@ def main():
         assert {item['archive']: item['sha256'] for item in dependencies['mpv_sources']} == \
                {item['archive']: item['sha256'] for item in mpv['sources']}
         assert mpv['sdk_dependency_notices_manifest_sha256'] == dependencies['baseline_sdk_manifest_sha256']
+        if mpv.get('release_symbols'):
+            assert args.release_symbols
+            symbols = json.loads(args.release_symbols.read_text())
+            assert symbols['complete'] and symbols['helper_sha256'] == mpv['release_symbols']['helper_sha256']
+            assert symbols['helper_sha256'] == digest(repo / 'tools/windows-player/release_symbols.py')
+            for item in mpv['files']:
+                assert symbols['files'][item['name']]['stripped_sha256'] == item['sha256']
     else:
         assert not dependencies.get('mpv_sources'), 'Include MPV build provenance with its sources'
     for item in selected:
@@ -157,6 +166,8 @@ def main():
         add_bytes(output, 'dependency-source-and-notice-manifest.json', (args.notices / 'manifest.json').read_bytes())
         if args.mpv_buildinfo:
             add_bytes(output, 'MPV-BUILDINFO.json', args.mpv_buildinfo.read_bytes())
+        if args.release_symbols:
+            add_bytes(output, 'RELEASE-SYMBOLS.json', args.release_symbols.read_bytes())
         readme = ('Modern VLC Fork ' + args.version + ' corresponding source\n\n'
             'Application commit: ' + args.source_commit + '\n'
             'The application/ tree is git archive of that exact commit, without Git history.\n'

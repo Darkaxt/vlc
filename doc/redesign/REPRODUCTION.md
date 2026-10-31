@@ -235,6 +235,46 @@ only the owned temporary distribution, review/inspect the exact cleanup manifest
 issue its separate ticket and apply it. Retire only the resulting empty WSL
 registration. Verify unrelated bindings and the final installed-profile comparison.
 
+## M1 optimized release packaging
+
+Version1.1.1 corrects the1.1.0 symbol bloat without removing plugins or engines.
+Run the existing pipeline in `normal-mpv` mode with an exact `--release-symbols`
+directory. Resume from `runtime` using the exact previous MPV buildinfo hash to
+refresh the already-built prefix DLLs; no dependency compilation is needed.
+`stage-built-mpv-runtime.py` calls `release_symbols.py --mpv-only` before writing
+payload hashes, so the generated Qt header binds the actual stripped DLLs.
+Do not strip or binary-patch MPV after compiling that binding.
+
+The normal player driver finishes all required outputs, then runs the same
+symbol splitter over every EXE/DLL, including inherited plugins. Original build
+outputs remain untouched. GNU objcopy keeps separate matching debug files;
+strip-unneeded removes unneeded symbols and debug sections, and GNU debuglink
+records each sidecar's basename/CRC. The helper requires byte-identical runtime
+sections and stable entry point, image base, imports/exports/exception/TLS/IAT/
+relocation directories across stripping. Only debug sections/link metadata,
+COFF symbols/strings and file-layout bookkeeping may change. A source-built
+full debug file is used when its runtime image matches the staged binary.
+
+`RELEASE-SYMBOLS.json` covers every shipped PE and records original/final byte
+hashes, runtime-image hashes, debuglink and separate-symbol hashes. The portable
+packager rejects missing coverage, retained debug sections/symbols, pending
+outputs and mismatched runtime identities. `package-release-symbols.py` verifies
+every sidecar and creates a separate optional symbols ZIP; the portable ZIP
+contains no sidecars. The symbol ZIP can be merged into the matching portable
+tree's `.debug` directories for debugging. Include `--release-symbols` when
+packaging corresponding source so transformation provenance accompanies it.
+
+Normal acceptance uses `verify-normal-presentation.py` and
+`observe-normal-window.py`: explicit package/fixture/scratch/Qt hash, synthetic
+geometry source and placement-proof paths are required. First run `--mode private`
+for placement only, then `--mode offscreen` for actual MPV SDR/DV picture/EOF/
+teardown. The private proof distinguishes only the identified OS input indicator
+from Qt windows; offscreen acceptance checks every visible owned window. Reuse
+unchanged S8 behavior/color evidence only with matching source and unchanged
+runtime-image fingerprints. Publish once after the complete release passes,
+then independently retrieve binary/source/symbol/checksum assets and repeat the
+affected downloaded-package checks. Preserve1.1.0 and protected profiles.
+
 ## S8 source-bound MPV assembly and verified retained binding
 
 S8 is delivered and verified as 1.1.0. Current reusable inputs are

@@ -15,6 +15,9 @@ case "$mode" in
     diagnostics-mpv) flags=-DVLC_PLAYER_DIAGNOSTICS; plugin_scope=mpv ;;
     *) printf '%s\n' 'Expected normal, diagnostics, normal-mpv or diagnostics-mpv' >&2; exit 2 ;;
 esac
+if test -z "$flags"; then
+    test -n "${VLC_PLAYER_RELEASE_SYMBOLS:-}"
+fi
 test -f "$build_root/config.status"
 test -f "$source_root/modules/gui/qt/maininterface/player_video_backdrop.hpp"
 python3 "$source_root/tools/windows-player/configure-player.py" \
@@ -149,5 +152,9 @@ fi
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/plugins/gui/libqt_plugin.dll" \
     "$build_root/modules/gui/qt/.libs/libqt_plugin.dll"
+if test -z "$flags"; then
+    python3 "$source_root/tools/windows-player/release_symbols.py" \
+        --runtime "$runtime" --symbols "$VLC_PLAYER_RELEASE_SYMBOLS" --build "$build_root"
+fi
 sha256sum "$runtime/plugins/gui/libqt_plugin.dll" \
     "$runtime/plugins/control/libhotkeys_plugin.dll"

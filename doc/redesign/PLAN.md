@@ -1,5 +1,22 @@
 # VLC redesign stages and reconciliation
 
+**Current maintenance: M1 Release size correction is ACTIVE.** Version1.1.1 is
+already authorized by the user's31 October request. R71 in SPECIFICATION.md is
+authoritative. This is the only ACTIVE stage; S8 stays COMPLETE, S9 NOT STARTED.
+
+| Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
+|---|---|---|---|---|
+| M1 Release size correction | ACTIVE | Actual1.1.0 inventory identifies1,030,034,432 bytes of debug sections and175,364,273 bytes of COFF symbols/string tables. Existing release and reusable inputs identified. | Implement complete split-symbol packaging/identity wiring and package guard; one incremental normal player build; real normal/native and preservation checks; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup and closure/source sync. All gaps are internal implementable acceptance blockers. | None. |
+
+Use the retained `D:/VLC-Redesign/build/windows-x64` cohort. New native/build QA
+scratch is `D:/Temp/vlc-s8-release-1.1.1-20261031` (sustained-I/O exception);
+disposable controller work uses `E:/Temp/vlc-release-1.1.1-20261031`. Candidate
+symbol output under the retained scratch-share is temporary until verified
+packaging; preserve its exact attribution and clean it after last use. Preserve
+the prior1.1.0 delivery, installed profiles, AGENTS and unrelated WSL state.
+Validate the fully integrated release outcome once; focused diagnostic checks
+must answer an actual implementation question. No Rust or UI work is authorized.
+
 **S8 MPV and Dolby Vision integration is COMPLETE (31 October 2026).**
 [Modern VLC Fork 1.1.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0)
 is a normal published release from application commit
@@ -9,7 +26,7 @@ match the verified archives and pass real normal MPV Dolby Vision and VLC playba
 [Final release and requirement reconciliation](resources/s8/final-release.json)
 supersedes the pre-release status in the original native acceptance snapshot.
 
-S0, D1 and S1-S8 are COMPLETE. No implementation stage is ACTIVE.
+S0, D1 and S1-S8 are COMPLETE. M1 maintenance above is the sole ACTIVE stage.
 S9 remains NOT STARTED and planning scope only. Remaining S8 criteria, blockers
 and tracked deferrals: none. Installed VLC/Nuvio data and Windows language state
 are unchanged; root AGENTS.md and the prior verified 1.0.0 release are preserved.

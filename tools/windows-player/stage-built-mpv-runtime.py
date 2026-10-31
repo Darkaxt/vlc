@@ -9,6 +9,8 @@ import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
+import sys
 
 
 def digest(path):
@@ -22,6 +24,8 @@ def main():
     parser.add_argument('--prefix', type=Path)
     parser.add_argument('--inputs', type=Path)
     parser.add_argument('--identity-header', type=Path)
+    parser.add_argument('--release-symbols', type=Path,
+        help='Split symbols from the staged DLLs before computing their compiled identity')
     parser.add_argument('--replace-buildinfo-sha256',
         help='Explicit identity of the previous task-owned build; permits an atomic payload refresh')
     args = parser.parse_args()
@@ -32,7 +36,7 @@ def main():
     manifest_path = runtime / 'MPV-BUILDINFO.json'
     assert not any((runtime / 'portable').iterdir()), 'Finish profile consumers before assembly'
     if args.identity_header:
-        assert args.prefix is None and args.inputs is None and args.replace_buildinfo_sha256 is None
+        assert args.prefix is None and args.inputs is None and args.replace_buildinfo_sha256 is None and args.release_symbols is None
         manifest = json.loads(manifest_path.read_text())
         assert manifest['schema'] == 'vlc_redesign.mpv_build.v1'
         assert manifest['registry_sha256'] == digest(registry)
@@ -114,6 +118,12 @@ def main():
         assert digest(pending) == actual, 'Inspect the interrupted exact pending payload: ' + str(pending)
         pending.replace(target)
         assert digest(target) == actual
+    if args.release_symbols:
+        subprocess.run([sys.executable, '-B', str(repo / 'tools/windows-player/release_symbols.py'),
+            '--runtime', str(runtime), '--symbols', str(args.release_symbols), '--mpv-only'], check=True)
+        for item in files:
+            target = runtime / item['name']
+            item.update(sha256=digest(target), bytes=target.stat().st_size)
     recipe = repo / pins['runtime']['build_script']
     manifest = {'schema': 'vlc_redesign.mpv_build.v1', 'files': files, 'sources': records,
                 'host_build_tools': pins.get('host_tools', []),
@@ -128,6 +138,11 @@ def main():
     if previous:
         manifest['previous_buildinfo_sha256'] = args.replace_buildinfo_sha256
         manifest['previous_files'] = previous['files']
+    if args.release_symbols:
+        manifest['release_symbols'] = {'method': 'GNU split debug and strip-unneeded before compile-time binding',
+            'helper_sha256': digest(repo / 'tools/windows-player/release_symbols.py'),
+            'original_prefix_files': [{'name': name, 'sha256': digest(args.prefix / 'bin' / name)}
+                for name in pins['runtime']['files']]}
     pending_manifest = manifest_path.with_suffix('.pending.json')
     pending_manifest.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     pending_manifest.replace(manifest_path)
