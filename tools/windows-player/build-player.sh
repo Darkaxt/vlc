@@ -126,7 +126,7 @@ if test "$plugin_scope" = full; then
     python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" --prepare --source "$source_root" --build "$build_root"
     make -C "$build_root/modules" -j1 -f Makefile \
         -f "$source_root/tools/windows-player/upstream-codec-links.mk" \
-        PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all || module_result=$?
+        PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all-am || module_result=$?
     if test "$compile_cache" = 1; then
         python3 "$source_root/tools/windows-player/cache-toolchain.py" release
     fi
