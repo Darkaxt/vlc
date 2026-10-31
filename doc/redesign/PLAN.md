@@ -1,12 +1,12 @@
 # VLC redesign stages and reconciliation
 
-**Current maintenance: M1 Release size correction is ACTIVE.** Version1.1.1 is
-already authorized by the user's31 October request. R71 in SPECIFICATION.md is
+**Current maintenance: M1 Upstream sync and optimized release is ACTIVE.** Version1.1.1 is
+already authorized by the user's31 October new-release and upstream/deployment requests. R71-R72 in SPECIFICATION.md are
 authoritative. This is the only ACTIVE stage; S8 stays COMPLETE, S9 NOT STARTED.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M1 Release size correction | ACTIVE | Actual1.1.0 inventory identifies1,030,034,432 bytes of debug sections and175,364,273 bytes of COFF symbols/string tables. Existing release and reusable inputs identified. | Implement complete split-symbol packaging/identity wiring and package guard; one incremental normal player build; real normal/native and preservation checks; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup and closure/source sync. All gaps are internal implementable acceptance blockers. | None. |
+| M1 Upstream sync and optimized release | ACTIVE | Symbol splitting/compiled binding/complete package guards implemented; independent parser check and real MPV stripping preserve its runtime image. Upstream master fetched at c7834066e27cf07a2a15f1e8aab17c12df97e5d4; actual divergence22 fork /243 incoming commits. Superseded pre-upstream build128 stopped through its owner gate, exit137/group empty/no OOM. | Merge upstream preserving fork behavior; reconcile API/build/dependency changes and rebuild a coherent plugin set; integrated/native/normal/preservation checks on the merged source; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup and closure/source sync. All gaps remain internal implementable acceptance blockers. | None. |
 
 Use the retained `D:/VLC-Redesign/build/windows-x64` cohort. New native/build QA
 scratch is `D:/Temp/vlc-s8-release-1.1.1-20261031` (sustained-I/O exception);
@@ -16,6 +16,12 @@ packaging; preserve its exact attribution and clean it after last use. Preserve
 the prior1.1.0 delivery, installed profiles, AGENTS and unrelated WSL state.
 Validate the fully integrated release outcome once; focused diagnostic checks
 must answer an actual implementation question. No Rust or UI work is authorized.
+Upstream-required UI conflict/integration fixes preserve the existing Figma
+contract. The latest instruction explicitly cancels shutdown attempts.
+Build128 (7733a7a58c5b49898aca0e5f4fd3000f, original61745) is CLOSED137 following
+the scope-change stop, with an empty group and no OOM. Its outputs are not the
+merged release. Source e40379c and upstream c783406 are the merge parents under
+review. Preserve all completed dependencies/objects; do not perform a cold setup.
 
 **S8 MPV and Dolby Vision integration is COMPLETE (31 October 2026).**
 [Modern VLC Fork 1.1.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0)
