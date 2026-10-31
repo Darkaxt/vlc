@@ -6,7 +6,7 @@ authoritative. This is the only ACTIVE stage; S8 stays COMPLETE, S9 NOT STARTED.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M1 Upstream sync and optimized release | ACTIVE | Symbol splitting/compiled binding/complete package guards implemented; independent parser check and real MPV stripping preserve its runtime image. Upstream master fetched at c7834066e27cf07a2a15f1e8aab17c12df97e5d4; actual divergence22 fork /243 incoming commits. Superseded pre-upstream build128 stopped through its owner gate, exit137/group empty/no OOM. | Merge upstream preserving fork behavior; reconcile API/build/dependency changes and rebuild a coherent plugin set; integrated/native/normal/preservation checks on the merged source; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup and closure/source sync. All gaps remain internal implementable acceptance blockers. | None. |
+| M1 Upstream sync and optimized release | ACTIVE | Upstream c7834066e27cf07a2a15f1e8aab17c12df97e5d4 merged locally at5a17873578 (243 incoming commits), four conflicts reconciled. Exact committed source bound to the private build clone; required medialibrary0.14.1 compiled from publisher-checksummed source. Fresh runtime has no inherited plugin DLLs; MPV symbol splitting preserves runtime sections and binds its new hashes. | Finish merged player/coherent plugin compilation; integrated/native suite/color/library/recovery/normal/preservation checks; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup, retained binding/weekly prompt update and final remote source sync. All remaining gaps are internal implementable acceptance blockers. | None. |
 
 Use the retained `D:/VLC-Redesign/build/windows-x64` cohort. New native/build QA
 scratch is `D:/Temp/vlc-s8-release-1.1.1-20261031` (sustained-I/O exception);
@@ -20,16 +20,45 @@ Upstream-required UI conflict/integration fixes preserve the existing Figma
 contract. The latest instruction explicitly cancels shutdown attempts.
 Build128 (7733a7a58c5b49898aca0e5f4fd3000f, original61745) is CLOSED137 following
 the scope-change stop, with an empty group and no OOM. Its outputs are not the
-merged release. Fork8fb6748 and upstream c783406 are the pending merge parents;
+merged release. Fork8fb6748 and upstream c783406 are the parents of merge5a17873578;
 e40379c is the last frozen private-build source. All four conflicts are resolved
 in the index, preserving upstream MainCtx recovery ownership and the fork's
 guarded callbacks, pending recovery and styled dialog. A new full-plugin mode
 rebuilds the configured plugin graph after the upstream ABI change, with an
 explicit separately prefixed medialibrary0.14.1 update (publisher SHA-512 checked).
-The SDK SQLite3.53.4 meets its minimum3.33.0. Other compatible SDK/MPV inputs and
+The SDK SQLite3.53.4 meets its minimum3.33.0. The dependency commit-body review
+additionally requires MPG1231.33.7 and ZVBI0.2.46 security fixes, plus the selected
+MAD0.16.5 and AOM3.15.2 updates. Their publisher SHA-512 checks passed; the separate
+codec prefix, explicit plugin archive bindings, linker-map verification and
+corresponding-source inventory are being integrated before acceptance. The
+initial build129 uses the old codec SDK and cannot be released. This is an
+internal advancement blocker for R72, resolved only by the updated plugin
+linkage and actual native decode/complete integrated acceptance. Other compatible SDK/MPV inputs and
 objects remain retained; no dependency freshness claim is made for unchanged SDK
 components. This recipe and merge still require compilation and full affected
 native acceptance. Preserve all completed dependencies/objects; no cold setup.
+Build129 (88a45302c1084d00b7ca91574152ce50, original80821) remains supervised in
+pipeline run23. Its dependency build passed (1203.8s wall /232.7s CPU), fresh
+runtime/source inventory, MPV staging and reconfiguration passed; Qt is compiling.
+The inventory has120 total archives, of which117 are corresponding-library
+source and3 are separately classified host inputs. The initial runtime log's
+"corresponding_sources:120" label counts all entries; the manifest's distribution
+classes and the final archive checks are authoritative. Synthetic old-version
+database setup exited0; its copied1.5GB runtime and obsolete128 sidecars/transfers
+were retired by inspected cleanup tickets. Only the synthetic profile needed
+for the real new-library compatibility check remains. No merged-player behavior
+or1.1.1 release has passed acceptance yet.
+
+The broad regression gate is the fork's complete Windows acceptance matrix:
+both engines and live/cancelled handovers, native controls/tracks/subtitles,
+library/history/privacy/profile/audio-session preservation, theme/scaling/native
+widgets/language, queued recovery, old-profile compatibility, input/error paths,
+and P5/P8.1/P8.4/SDR/HDR10 pixels, followed by the normal delivered package.
+Also build/run the newly added upstream audio-output, video-blending and CSD
+regression units on Windows. The upstream C suite contains POSIX-only `/tmp`
+assumptions and is not being ported to Windows in this maintenance. The pinned
+SDK lacks optional Qt Quick Test; configure's qmltest probe is not a player build
+failure. Do not claim the entire upstream multi-platform unit suite passed.
 
 **S8 MPV and Dolby Vision integration is COMPLETE (31 October 2026).**
 [Modern VLC Fork 1.1.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0)

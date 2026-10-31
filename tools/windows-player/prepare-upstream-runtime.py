@@ -78,7 +78,8 @@ def main():
         'prefix': '/work/upstream-medialibrary-0.14.1/prefix',
         'replaces': 'SDK medialibrary0.13.0; its archive remains as historical SDK input, not selected for new linkage'}]
     (args.notices / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    print(json.dumps({'fresh_runtime': str(args.runtime), 'corresponding_sources': len(manifest['archives']),
+    print(json.dumps({'fresh_runtime': str(args.runtime), 'inventoried_archives': len(manifest['archives']),
+        'corresponding_sources': sum(item['release_archive_class'] == 'corresponding-source' for item in manifest['archives']),
         'medialibrary': '0.14.1', 'no_baseline_plugin_binaries_copied': True}), flush=True)
 
 

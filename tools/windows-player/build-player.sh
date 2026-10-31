@@ -110,20 +110,30 @@ fi
 # Cache omission changes no build target: the complete normal graph below
 # still compiles any missing/outdated input before linking.
 if test "$compile_cache" = 0; then
-    printf 'Qt compile cache omitted: %s\n' "$VLC_PLAYER_COMPILE_CACHE_REASON"
+    printf 'Player compile caches omitted: %s\n' "$VLC_PLAYER_COMPILE_CACHE_REASON"
 fi
 make -C "$build_root/modules/gui/qt" -j1 \
     PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all
 if test "$plugin_scope" = full; then
     # All configured modules use this source/header/core cohort after an ABI change.
-    python3 "$source_root/tools/windows-player/cache-toolchain.py" create
+    if test "$compile_cache" = 1; then
+        python3 "$source_root/tools/windows-player/cache-toolchain.py" create
+    fi
     module_result=0
-    make -C "$build_root/modules" -j1 \
+    mkdir -p /work/upstream-codecs-1.1.1/link-maps
+    # The separate dependency prefix changes both headers and archive inputs.
+    # Invalidate these four header consumers once for each exact library cohort.
+    python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" --prepare --source "$source_root" --build "$build_root"
+    make -C "$build_root/modules" -j1 -f Makefile \
+        -f "$source_root/tools/windows-player/upstream-codec-links.mk" \
         PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all || module_result=$?
-    python3 "$source_root/tools/windows-player/cache-toolchain.py" release
+    if test "$compile_cache" = 1; then
+        python3 "$source_root/tools/windows-player/cache-toolchain.py" release
+    fi
     if test "$module_result" -ne 0; then
         exit "$module_result"
     fi
+    python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" --source "$source_root" --build "$build_root" --runtime "$runtime"
     python3 "$source_root/tools/windows-player/stage-full-plugins.py" \
         --source "$source_root" --build "$build_root" --runtime "$runtime"
 fi

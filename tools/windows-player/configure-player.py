@@ -16,6 +16,10 @@ parser.add_argument('--verify-only', action='store_true',
 args = parser.parse_args()
 extra_prefix = os.environ.get('VLC_PLAYER_UPSTREAM_PREFIX')
 extra = Path(extra_prefix) if extra_prefix else None
+codec_prefix = os.environ.get('VLC_PLAYER_UPSTREAM_CODEC_PREFIX')
+codecs = Path(codec_prefix) if codec_prefix else None
+codec_modules = {'MPG123': ('libmpg123', '1.33.7', 'libmpg123.a'),
+    'ZVBI': ('zvbi-0.2', '0.2.46', 'libzvbi.a'), 'AOM': ('aom', '3.15.2', 'libaom.a')}
 if extra:
     assert (extra / 'lib/pkgconfig/medialibrary.pc').is_file()
 assert (args.crt / 'dllcrt2.o').is_file()
@@ -34,6 +38,11 @@ if not args.verify_only:
     if extra:
         includes = ['-I' + str(extra / 'include')] + [item for item in includes if item != '-I' + str(extra / 'include')]
         old_flags = ['-L' + str(extra / 'lib')] + [item for item in old_flags if item != '-L' + str(extra / 'lib')]
+    if codecs:
+        includes = ['-I' + str(codecs / 'include')] + [item for item in includes if item != '-I' + str(codecs / 'include')]
+        old_flags = ['-L' + str(codecs / 'lib')] + [item for item in old_flags if item != '-L' + str(codecs / 'lib')]
+        config = [entry for entry in config if not entry.startswith('--with-mad=')]
+        config.append('--with-mad=' + str(codecs))
     config += [f'CC=x86_64-w64-mingw32-gcc -B{args.crt}/',
                f'CXX=x86_64-w64-mingw32-g++ -B{args.crt}/',
                'CPPFLAGS=' + shlex.join(includes),
@@ -55,6 +64,23 @@ if not args.verify_only:
             previous = next((entry.split('=', 1)[1] for entry in config if entry.startswith(variable + '=')), '')
             config = [entry for entry in config if not entry.startswith(variable + '=')]
             config.append(variable + '=-I' + str(extra / 'include') + ' ' + previous)
+    if codecs:
+        env['PKG_CONFIG_PATH'] = str(codecs / 'lib/pkgconfig') + ':' + env['PKG_CONFIG_PATH']
+        env['PKG_CONFIG_LIBDIR'] = env['PKG_CONFIG_PATH']
+        for variable, (module, expected_version, library) in codec_modules.items():
+            version = subprocess.check_output(['pkg-config', '--modversion', module], env=env, text=True).strip()
+            assert version == expected_version, (module, version)
+            for suffix, option in (('_CFLAGS', '--cflags'), ('_LIBS', '--libs')):
+                key = variable + suffix
+                config = [entry for entry in config if not entry.startswith(key + '=')]
+                value = subprocess.check_output(['pkg-config', '--static', option, module], env=env, text=True).strip()
+                if suffix == '_LIBS':
+                    # Bind the actual archive, independent of SDK -L ordering.
+                    flag = '-l' + library.removeprefix('lib').removesuffix('.a')
+                    parts = shlex.split(value)
+                    assert flag in parts, (module, parts)
+                    value = shlex.join([str(codecs / 'lib' / library) if part == flag else part for part in parts])
+                config.append(key + '=' + value)
     subprocess.run([str(args.source / 'configure'), *config], cwd=args.build, env=env, check=True)
 assert re.search(r'^#define ENABLE_NLS 1$', (args.build / 'config.h').read_text(), re.M), 'Production localization was not enabled'
 predeps = re.findall(r'^predep_objects="(.*)"$', (args.build / 'libtool').read_text(encoding='utf-8'), re.M)
@@ -73,5 +99,14 @@ if extra:
                                ('MEDIALIBRARY_LIBS', '-L' + str(extra / 'lib'))):
         values = shlex.split(re.search(r'^' + variable + r' = (.*)$', modules, re.M).group(1))
         assert values[0] == expected, (variable, values)
+if codecs:
+    modules = (args.build / 'modules/Makefile').read_text()
+    for variable, (_, _, library) in codec_modules.items():
+        assert re.search(r'^' + variable + r'_CFLAGS = -I' + re.escape(str(codecs / 'include')),
+            modules, re.M), variable
+        libs = shlex.split(re.search(r'^' + variable + r'_LIBS = (.*)$', modules, re.M).group(1))
+        assert str(codecs / 'lib' / library) in libs, (variable, libs)
+    assert re.search(r'^MAD_CFLAGS = -I' + re.escape(str(codecs / 'include')), modules, re.M)
+    assert re.search(r'^MAD_LIBS = -L' + re.escape(str(codecs / 'lib')) + r' -lmad$', modules, re.M)
 print('Verified the configured CRT, compiler flags and localization.' if args.verify_only else
       'Configured the maintained fork with the selected CRT and target pkg-config paths.')

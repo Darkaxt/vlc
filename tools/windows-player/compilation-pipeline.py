@@ -78,6 +78,10 @@ def main():
                 *(['--replace-buildinfo-sha256', args.replace_mpv_buildinfo_sha256]
                   if args.replace_mpv_buildinfo_sha256 else []))),
             ('release-compiler-cache', py('cache-toolchain.py', 'release')),
+            ('upstream-codec-cache', py('cache-toolchain.py', 'create')),
+            ('upstream-codecs', py('build-upstream-codecs.py')),
+            ('upstream-codec-cache-release', py('cache-toolchain.py', 'release')),
+            ('upstream-codec-notices', py('prepare-upstream-codec-notices.py', '--notices', notices)),
             ('configure-player', sh('configure-upstream-player.sh', args.source, args.build)),
             ('player', sh('build-player.sh', args.mode, args.source, args.build, args.runtime)),
         ]
@@ -121,7 +125,8 @@ def main():
         'stage-built-mpv-runtime.py', 'inventory-dependency-notices.py', 'install-ffmpeg-files.py',
         'initialize-player-build.sh', 'configure-player.py', 'check-mpv-plugin-abi.py', 'release_symbols.py',
         'build-upstream-medialibrary.py', 'prepare-upstream-runtime.py', 'configure-upstream-player.sh',
-        'stage-full-plugins.py', 'full-plugin-stage.mk')
+        'stage-full-plugins.py', 'full-plugin-stage.mk', 'build-upstream-codecs.py',
+        'prepare-upstream-codec-notices.py', 'verify-upstream-codec-links.py', 'upstream-codec-links.mk')
     identity = {str(path.relative_to(args.source)): hashlib.sha256(path.read_bytes()).hexdigest()
                 for path in [*(tools / name for name in recipes),
                              args.source / 'modules/gui/qt/player/mpv/source.json']}
@@ -151,6 +156,7 @@ def main():
     environment = dict(os.environ, JOBS='1', CMAKE_BUILD_PARALLEL_LEVEL='1', CARGO_BUILD_JOBS='1')
     if full:
         environment['VLC_PLAYER_UPSTREAM_PREFIX'] = '/work/upstream-medialibrary-0.14.1/prefix'
+        environment['VLC_PLAYER_UPSTREAM_CODEC_PREFIX'] = '/work/upstream-codecs-1.1.1/prefix'
     if args.release_symbols:
         environment['VLC_PLAYER_RELEASE_SYMBOLS'] = str(args.release_symbols)
     state.update(status='preparing', current_step=names[start])

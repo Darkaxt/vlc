@@ -31,6 +31,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', required=True, type=Path)
+    parser.add_argument('--scratch-root', type=Path, default=Path('D:/Temp/vlc-s8-20261029'))
     parser.add_argument('--scratch', required=True, type=Path)
     parser.add_argument('--fixture', required=True, type=Path)
     parser.add_argument('--reference', required=True, type=Path)
@@ -39,10 +40,13 @@ def main():
     args = parser.parse_args()
     source, fixture, reference, capture = (path.resolve(strict=True) for path in
         (args.runtime, args.fixture, args.reference, args.capture_tool))
-    root = Path('D:/Temp/vlc-s8-20261029')
+    root = args.scratch_root.resolve()
+    assert root.parent == Path('D:/Temp') and root.name.startswith('vlc-s8-')
     scratch = args.scratch.resolve()
     assert scratch.parent == root and not scratch.exists()
-    assert all(path.is_relative_to(root) for path in (source, fixture, reference, capture))
+    assert source.is_relative_to(root) or source.is_relative_to(Path('D:/VLC-Redesign/build/windows-x64/scratch-share'))
+    assert fixture.is_relative_to(root) or fixture.is_relative_to(Path('D:/VLC-Redesign/build/windows-x64/dv-keyframes'))
+    assert all(path.is_relative_to(root) for path in (reference, capture))
     reference_info = json.loads(reference.with_suffix('.json').read_text())
     assert reference_info['passed'] and not reference_info['strip_dovi']
     assert reference_info['input_sha256'] == digest(fixture)

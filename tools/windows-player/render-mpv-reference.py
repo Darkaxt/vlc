@@ -50,6 +50,7 @@ def release(pointer):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library', type=Path, required=True)
+    parser.add_argument('--scratch-root', type=Path, default=Path('D:/Temp/vlc-s8-20261029'))
     parser.add_argument('--expect-sha256', default='04e4d27dc385dc18ddd93fbe69c75e635b864f3c6ec53a9122df54c2f7842f4a')
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True, help='New PNG under this task scratch')
@@ -59,10 +60,12 @@ def main():
     parser.add_argument('--vf', help='Explicit filter under investigation; recorded in the reference result')
     parser.add_argument('--demuxer', help='Explicit demuxer for a bounded media-entry diagnostic')
     args = parser.parse_args()
-    root = Path('D:/Temp/vlc-s8-20261029')
+    root = args.scratch_root.resolve()
+    assert root.parent == Path('D:/Temp') and root.name.startswith('vlc-s8-')
     library, source, output = args.library.resolve(strict=True), args.input.resolve(strict=True), args.output.resolve()
     assert os.name == 'nt' and c.sizeof(c.c_void_p) == 8
-    assert source.is_relative_to(root) and output.is_relative_to(root) and output.suffix == '.png'
+    assert (source.is_relative_to(root) or source.is_relative_to(Path('D:/VLC-Redesign/build/windows-x64/dv-keyframes')))
+    assert output.is_relative_to(root) and output.suffix == '.png'
     assert not output.exists() and not output.with_suffix('.json').exists()
     output.parent.mkdir(parents=True, exist_ok=True)
     with library.open('rb') as stream:

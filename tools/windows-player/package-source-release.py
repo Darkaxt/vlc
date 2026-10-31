@@ -166,6 +166,15 @@ def main():
         add_bytes(output, 'dependency-source-and-notice-manifest.json', (args.notices / 'manifest.json').read_bytes())
         if args.mpv_buildinfo:
             add_bytes(output, 'MPV-BUILDINFO.json', args.mpv_buildinfo.read_bytes())
+            cohort_path = args.mpv_buildinfo.parent / 'VLC-PLUGIN-BUILDINFO.json'
+            if cohort_path.is_file():
+                cohort = json.loads(cohort_path.read_text())
+                assert cohort['schema'] == 'vlc_redesign.full_plugin_build.v1'
+                assert cohort['source_commit'] == args.source_commit
+                add_bytes(output, 'VLC-PLUGIN-BUILDINFO.json', cohort_path.read_bytes())
+                codec_path = cohort_path.with_name('VLC-CODEC-BUILDINFO.json')
+                assert codec_path.is_file()
+                add_bytes(output, 'VLC-CODEC-BUILDINFO.json', codec_path.read_bytes())
         if args.release_symbols:
             add_bytes(output, 'RELEASE-SYMBOLS.json', args.release_symbols.read_bytes())
         readme = ('Modern VLC Fork ' + args.version + ' corresponding source\n\n'
