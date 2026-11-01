@@ -4,7 +4,8 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
-**M2 First-run usability and fork identity is ACTIVE (1 November 2026).**
+**M2 First-run usability and fork identity is COMPLETE (2 November 2026).**
+[Final delivery and requirement reconciliation](resources/m2-verification.json) verifies R52/R65/R73-R82 in normal release1.1.2 and records exact evidence applicability and limits.
 The user's reports and icon reference authorize correcting welcome sizing,
 shortcut assignment, false empty-library indexing, the Windows application icon
 and the second-start automatic-update error. Deliver these together as one normal
@@ -28,7 +29,7 @@ library roots/history, settings, both engines, previous releases and shutdown ca
 The earlier S3/S7 closure records describe the then-verified external-text strip
 and adjustable offset. They do not establish acceptance of embedded text cues or
 the reference's dedicated controls. R82 supersedes that scope limitation for this
-authorized repair; M2 remains ACTIVE until those missing behaviors are verified.
+authorized repair; those missing behaviors are now verified in M2 release1.1.2.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)

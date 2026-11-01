@@ -1,0 +1,626 @@
+{
+  "schema": "vlc_redesign.m2_final_delivery.v1",
+  "stage": "M2 First-run usability and fork identity",
+  "status": "COMPLETE",
+  "verified_date": "2026-11-02",
+  "version": "1.1.2",
+  "source_commit": "409daf4ef173f463d7833464b128513fda04366d",
+  "accepted_native_source": "17540a0c5f9b2d74d63dff38125a17d264c3d67d",
+  "production_tree_sha256": "60206ab02188f934f06bee48e66a44b056b310a9b4a1d45dbd84d908ab6bc2dd",
+  "requirements": {
+    "R52": "satisfied_and_verified",
+    "R65": "satisfied_and_verified",
+    "R73": "satisfied_and_verified",
+    "R74": "satisfied_and_verified",
+    "R75": "satisfied_and_verified",
+    "R76": "satisfied_and_verified",
+    "R77": "satisfied_and_verified",
+    "R78": "satisfied_and_verified",
+    "R79": "satisfied_and_verified",
+    "R80": "satisfied_and_verified",
+    "R81": "satisfied_and_verified",
+    "R82": "satisfied_and_verified"
+  },
+  "release": {
+    "schema": "vlc_redesign.m2_published_delivery.v1",
+    "version": "1.1.2",
+    "source_commit": "409daf4ef173f463d7833464b128513fda04366d",
+    "tag": "redesign-v1.1.2",
+    "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.2",
+    "normal_published_release": true,
+    "latest_verified": true,
+    "downloaded_hashes": {
+      "Modern-VLC-Fork-1.1.2-win64-portable.zip": "b3390b7dd3589efe669ca819b30a5f1a28ba709b96e1a6d6228f8fc437d453f7",
+      "Modern-VLC-Fork-1.1.2-corresponding-source.tar.gz": "b6ccda8ef81c06c85c219d66e0aac48afc178875fb1568eb6a259db9fb0b83e5",
+      "Modern-VLC-Fork-1.1.2-win64-symbols.zip": "fa3743f62a4dbece2086be728cc587fc34fb0f549de31cbea835ebe40b62879a"
+    },
+    "downloaded_checksums_sha256": "2d44281eedafcceecfb2d83ea0c20a10b4712219d736492fae9035142e00b20b",
+    "source_validation_reused_by_identical_hash": {
+      "name": "Modern-VLC-Fork-1.1.2-corresponding-source.tar.gz",
+      "bytes": 879181043,
+      "sha256": "b6ccda8ef81c06c85c219d66e0aac48afc178875fb1568eb6a259db9fb0b83e5",
+      "identity": {
+        "volume": 12296054031865596935,
+        "file_id": 3940649675112993,
+        "mtime_ns": 1793576086214369300,
+        "bytes": 879181043
+      },
+      "every_application_blob_matches_git_commit": true,
+      "all_source_manifest_members_verified": true,
+      "corresponding_dependency_sources": 121,
+      "mpv_buildinfo_matches_binary": true
+    },
+    "symbols_validation_reused_by_identical_hash": {
+      "name": "Modern-VLC-Fork-1.1.2-win64-symbols.zip",
+      "bytes": 844109520,
+      "sha256": "fa3743f62a4dbece2086be728cc587fc34fb0f549de31cbea835ebe40b62879a",
+      "identity": {
+        "volume": 12296054031865596935,
+        "file_id": 5348024558663767,
+        "mtime_ns": 1793576049577200000,
+        "bytes": 844109520
+      },
+      "every_sidecar_matches_runtime": true,
+      "pe_files": 417
+    },
+    "all_downloaded_pe_files_stripped": true,
+    "protected_profiles_unchanged_after_downloaded_native_checks": true,
+    "native": [
+      {
+        "case": "mpv-dv-p5",
+        "checks": {
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "inactive_desktop_owned": true,
+          "presentation_evidence_reused_after_identical_archive_sha256": true
+        },
+        "qt_plugin_sha256": "2fd4f924f546db032a2ba6f34ce0c92ea4acd4ea0ccf5ac4082a25cdfec23395",
+        "receipt_sha256": "2e1b408e487d7e262a232e29fe2b9f8b1e96b17911c4130f40a741fc9abbe595",
+        "passed": true
+      },
+      {
+        "case": "vlc",
+        "checks": {
+          "actual_picture": true,
+          "natural_eof": true,
+          "input_released": true,
+          "qt_event_loop_finished": true,
+          "no_plugin_load_errors": true,
+          "no_qml_runtime_errors": true,
+          "native_media_library_started": true
+        },
+        "qt_plugin_sha256": "2fd4f924f546db032a2ba6f34ce0c92ea4acd4ea0ccf5ac4082a25cdfec23395",
+        "receipt_sha256": "3a69cd33151a51a0f16e4d7b455e205dec43e2920ab0b74109d2b9edd5ad133d",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "normal_package": {
+    "schema": "vlc_redesign.m2_normal_release.v1",
+    "source_commit": "409daf4ef173f463d7833464b128513fda04366d",
+    "version": "1.1.2",
+    "native": [
+      {
+        "case": "vlc",
+        "passed": true,
+        "checks": {
+          "actual_picture": true,
+          "natural_eof": true,
+          "input_released": true,
+          "qt_event_loop_finished": true,
+          "no_plugin_load_errors": true,
+          "no_qml_runtime_errors": true,
+          "native_media_library_started": true
+        }
+      },
+      {
+        "case": "placement",
+        "checks": {
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "all_visible_qt_windows_offscreen": true,
+          "only_known_os_indicator_elsewhere": true
+        },
+        "passed": true,
+        "actual_picture_presented": false,
+        "receipt_sha256": "9225f9819a84ae6050d6ff0b237efa931b06768db27466caa271e6f54234c028"
+      },
+      {
+        "case": "mpv-sdr",
+        "checks": {
+          "all_visible_owned_windows_offscreen": true,
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "actual_picture_presented": true
+        },
+        "passed": true,
+        "actual_picture_presented": true,
+        "receipt_sha256": "fb61b1d0ddc3996c0c8c00920771fc16258ddda42f1da6ae72ee48a533eff58d"
+      },
+      {
+        "case": "mpv-dv-p5",
+        "passed": true,
+        "product_checks": {
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "actual_picture_presented": true
+        },
+        "actual_picture_presented": true,
+        "receipt_sha256": "5c6113441fac35b100be36e3ad9c8875a0a40ea2dbadcdb4eb37cbedf6f28c41",
+        "test_protocol_passed": false,
+        "protocol_failure": "Qt monitor identity changed and rejected saved placement; never foreground and input desktop preserved. No further input-desktop launches. Downloaded MPV lifecycle uses an inactive desktop and presentation evidence is reused only after whole-archive hash equivalence."
+      }
+    ],
+    "all_pe_files_stripped_and_mapped": 417,
+    "mpv_runtime_images_unchanged_from_accepted1_1_1": true,
+    "protected_profiles_unchanged": true,
+    "fresh_integrated_acceptance_receipt_sha256": "bee962cd804ff62aba00760cce239e63e5a3640e2b52fc3ca239d87f5b5f4bbd",
+    "portable_bytes": 360729867,
+    "coherent_plugin_count": 410,
+    "passed": true,
+    "published": false,
+    "normal_presentation_helper_sha256": "a182deb9e65b3e6a8fdbe8955e826bc88d8654fba8c383b179bd45a3217dca5f"
+  },
+  "archives": {
+    "schema": "vlc_redesign.s8_release_archive_verification.v1",
+    "source_commit": "409daf4ef173f463d7833464b128513fda04366d",
+    "version": "1.1.2",
+    "binary": {
+      "name": "Modern-VLC-Fork-1.1.2-win64-portable.zip",
+      "bytes": 141939875,
+      "sha256": "b3390b7dd3589efe669ca819b30a5f1a28ba709b96e1a6d6228f8fc437d453f7",
+      "identity": {
+        "volume": 12296054031865596935,
+        "file_id": 14355223813225741,
+        "mtime_ns": 1793575113964914900,
+        "bytes": 141939875
+      },
+      "every_file_matches_manifest": true,
+      "empty_portable_profile": true
+    },
+    "source": {
+      "name": "Modern-VLC-Fork-1.1.2-corresponding-source.tar.gz",
+      "bytes": 879181043,
+      "sha256": "b6ccda8ef81c06c85c219d66e0aac48afc178875fb1568eb6a259db9fb0b83e5",
+      "identity": {
+        "volume": 12296054031865596935,
+        "file_id": 3940649675112993,
+        "mtime_ns": 1793576086214369300,
+        "bytes": 879181043
+      },
+      "every_application_blob_matches_git_commit": true,
+      "all_source_manifest_members_verified": true,
+      "corresponding_dependency_sources": 121,
+      "mpv_buildinfo_matches_binary": true
+    },
+    "passed": true,
+    "symbols": {
+      "name": "Modern-VLC-Fork-1.1.2-win64-symbols.zip",
+      "bytes": 844109520,
+      "sha256": "fa3743f62a4dbece2086be728cc587fc34fb0f549de31cbea835ebe40b62879a",
+      "identity": {
+        "volume": 12296054031865596935,
+        "file_id": 5348024558663767,
+        "mtime_ns": 1793576049577200000,
+        "bytes": 844109520
+      },
+      "every_sidecar_matches_runtime": true,
+      "pe_files": 417
+    }
+  },
+  "visual_contract": {
+    "long_chord_native_geometry": {
+      "response": "native-06/welcome-1/evidence/3929e49563ac4954871062c9ffa19ddb.json",
+      "binding": "CTRL+ALT+SHIFT+9",
+      "faces": [
+        [
+          815,
+          174,
+          65,
+          42
+        ],
+        [
+          884,
+          174,
+          53,
+          42
+        ],
+        [
+          941,
+          174,
+          69,
+          42
+        ],
+        [
+          1014,
+          174,
+          34,
+          42
+        ]
+      ],
+      "all_visible": true,
+      "rightmost_edge": 1048,
+      "window_width": 1130,
+      "actual_saved_shortcut_dispatch_verified_on_restart": true
+    },
+    "source_commit": "17540a0c5f9b2d74d63dff38125a17d264c3d67d",
+    "qt_plugin_sha256": "85e50d2d3fa5e355f14b244f37ab18171008c48bb4307478412c6dd7f06c4465",
+    "reference_frame": "1902:6770",
+    "original_archive_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+    "reference_image": "C:/Users/darka/AppData/Local/Temp/codex-clipboard-96ea70f4-c684-4e54-a843-420040a4c7b5.png",
+    "scales": [
+      "1",
+      "1.5",
+      "2"
+    ],
+    "captures": [
+      {
+        "scale": "1",
+        "file": "D:\\Temp\\vlc-s8-first-run-1.1.2-20261101\\native-06\\welcome-1\\evidence\\56ce6a9edeb84cca9f1c96250d6373e3.png",
+        "sha256": "e86aababb545f48e2efcd4c6ab0cdc01d50954c359a596d2b8e5dd32629d9d7f",
+        "geometry": {
+          "key_face": {
+            "color": "#1b1b1b",
+            "enabled": true,
+            "focused": false,
+            "height": 42,
+            "id": "onboardingKeyFace_key-play-pause_0",
+            "node": 55,
+            "opacity": 1,
+            "parent": 53,
+            "type": "QQuickRectangle",
+            "visible": true,
+            "width": 93,
+            "x": 322,
+            "y": 174,
+            "z": 0
+          },
+          "lower_edge": {
+            "color": "#405c5c5c",
+            "enabled": true,
+            "focused": false,
+            "height": 42,
+            "id": "onboardingKeyShadow_key-play-pause_0",
+            "node": 54,
+            "opacity": 1,
+            "parent": 53,
+            "type": "QQuickRectangle",
+            "visible": true,
+            "width": 93,
+            "x": 322,
+            "y": 180,
+            "z": 0
+          },
+          "paired_left": {
+            "actions": [
+              "Press",
+              "SetFocus"
+            ],
+            "checked": false,
+            "enabled": true,
+            "focused": false,
+            "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+            "height": 48,
+            "hovered": false,
+            "id": "onboardingShortcut_key-jump-short",
+            "name": "Assign Seek Backward / Forward: Alt+Left",
+            "node": 79,
+            "opacity": 1,
+            "parent": 77,
+            "pressed": false,
+            "role": 43,
+            "text": "",
+            "type": "QQuickButton_QML_148",
+            "visible": true,
+            "width": 80,
+            "x": 322,
+            "y": 256,
+            "z": 0
+          },
+          "paired_right": {
+            "actions": [
+              "Press",
+              "SetFocus"
+            ],
+            "checked": false,
+            "enabled": true,
+            "focused": false,
+            "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+            "height": 48,
+            "hovered": false,
+            "id": "onboardingShortcut_key-jump+short",
+            "name": "Assign Seek Backward / Forward: Alt+Right",
+            "node": 93,
+            "opacity": 1,
+            "parent": 91,
+            "pressed": false,
+            "role": 43,
+            "text": "",
+            "type": "QQuickButton_QML_148",
+            "visible": true,
+            "width": 80,
+            "x": 428,
+            "y": 256,
+            "z": 0
+          },
+          "reference_frame": "1902:6770",
+          "rendered_comparison_required": true
+        }
+      },
+      {
+        "scale": "1.5",
+        "file": "D:\\Temp\\vlc-s8-first-run-1.1.2-20261101\\native-06\\welcome-15\\evidence\\511ed82cfced49b4b0946629a6a0d460.png",
+        "sha256": "30bdbbe603e235af26379c75ddd61afe1da4c24b54717e2e279d2690f8bb25cd",
+        "geometry": {
+          "key_face": {
+            "color": "#1b1b1b",
+            "enabled": true,
+            "focused": false,
+            "height": 42,
+            "id": "onboardingKeyFace_key-play-pause_0",
+            "node": 55,
+            "opacity": 1,
+            "parent": 53,
+            "type": "QQuickRectangle",
+            "visible": true,
+            "width": 92.875,
+            "x": 322,
+            "y": 174,
+            "z": 0
+          },
+          "lower_edge": {
+            "color": "#405c5c5c",
+            "enabled": true,
+            "focused": false,
+            "height": 42,
+            "id": "onboardingKeyShadow_key-play-pause_0",
+            "node": 54,
+            "opacity": 1,
+            "parent": 53,
+            "type": "QQuickRectangle",
+            "visible": true,
+            "width": 92.875,
+            "x": 322,
+            "y": 180,
+            "z": 0
+          },
+          "paired_left": {
+            "actions": [
+              "Press",
+              "SetFocus"
+            ],
+            "checked": false,
+            "enabled": true,
+            "focused": false,
+            "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+            "height": 48,
+            "hovered": false,
+            "id": "onboardingShortcut_key-jump-short",
+            "name": "Assign Seek Backward / Forward: Alt+Left",
+            "node": 79,
+            "opacity": 1,
+            "parent": 77,
+            "pressed": false,
+            "role": 43,
+            "text": "",
+            "type": "QQuickButton_QML_144",
+            "visible": true,
+            "width": 80,
+            "x": 322,
+            "y": 256,
+            "z": 0
+          },
+          "paired_right": {
+            "actions": [
+              "Press",
+              "SetFocus"
+            ],
+            "checked": false,
+            "enabled": true,
+            "focused": false,
+            "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+            "height": 48,
+            "hovered": false,
+            "id": "onboardingShortcut_key-jump+short",
+            "name": "Assign Seek Backward / Forward: Alt+Right",
+            "node": 93,
+            "opacity": 1,
+            "parent": 91,
+            "pressed": false,
+            "role": 43,
+            "text": "",
+            "type": "QQuickButton_QML_144",
+            "visible": true,
+            "width": 80,
+            "x": 428,
+            "y": 256,
+            "z": 0
+          },
+          "reference_frame": "1902:6770",
+          "rendered_comparison_required": true
+        }
+      },
+      {
+        "scale": "2",
+        "file": "D:\\Temp\\vlc-s8-first-run-1.1.2-20261101\\native-06\\welcome-2\\evidence\\3417097a17fb4443923c3685276f705d.png",
+        "sha256": "9bd5f0ca10e1fe91efc1fbacade21782eecde8ecd4653b2b319dcb3ca4ca6dba",
+        "geometry": {
+          "key_face": {
+            "color": "#1b1b1b",
+            "enabled": true,
+            "focused": false,
+            "height": 42,
+            "id": "onboardingKeyFace_key-play-pause_0",
+            "node": 55,
+            "opacity": 1,
+            "parent": 53,
+            "type": "QQuickRectangle",
+            "visible": true,
+            "width": 92.875,
+            "x": 322,
+            "y": 174,
+            "z": 0
+          },
+          "lower_edge": {
+            "color": "#405c5c5c",
+            "enabled": true,
+            "focused": false,
+            "height": 42,
+            "id": "onboardingKeyShadow_key-play-pause_0",
+            "node": 54,
+            "opacity": 1,
+            "parent": 53,
+            "type": "QQuickRectangle",
+            "visible": true,
+            "width": 92.875,
+            "x": 322,
+            "y": 180,
+            "z": 0
+          },
+          "paired_left": {
+            "actions": [
+              "Press",
+              "SetFocus"
+            ],
+            "checked": false,
+            "enabled": true,
+            "focused": false,
+            "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+            "height": 48,
+            "hovered": false,
+            "id": "onboardingShortcut_key-jump-short",
+            "name": "Assign Seek Backward / Forward: Alt+Left",
+            "node": 79,
+            "opacity": 1,
+            "parent": 77,
+            "pressed": false,
+            "role": 43,
+            "text": "",
+            "type": "QQuickButton_QML_58",
+            "visible": true,
+            "width": 80,
+            "x": 322,
+            "y": 256,
+            "z": 0
+          },
+          "paired_right": {
+            "actions": [
+              "Press",
+              "SetFocus"
+            ],
+            "checked": false,
+            "enabled": true,
+            "focused": false,
+            "font": "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+            "height": 48,
+            "hovered": false,
+            "id": "onboardingShortcut_key-jump+short",
+            "name": "Assign Seek Backward / Forward: Alt+Right",
+            "node": 93,
+            "opacity": 1,
+            "parent": 91,
+            "pressed": false,
+            "role": 43,
+            "text": "",
+            "type": "QQuickButton_QML_58",
+            "visible": true,
+            "width": 80,
+            "x": 428,
+            "y": 256,
+            "z": 0
+          },
+          "reference_frame": "1902:6770",
+          "rendered_comparison_required": true
+        }
+      }
+    ],
+    "review": "All three actual native PNGs were viewed. Raised faces, substantial borders and lower edges, horizontal paired directions, separate modifier caps, Inter typography, source row pitch/left-key origins and Back/Finish footer match the reference contract without clipping. Final Skip is absent. Native modifiers and P/N/CTRL+L/CTRL+SHIFT+F/SHIFT+E/E are truthful R41 mappings; paired modifier faces and the column gap adapt to their greater width. This is a source-contract comparison, not a pixel-identical claim.",
+    "passed": true
+  },
+  "native_acceptance": {
+    "scope": "all",
+    "qt_plugin_sha256": "85e50d2d3fa5e355f14b244f37ab18171008c48bb4307478412c6dd7f06c4465",
+    "all_cases_passed": true,
+    "protected_profiles_unchanged": true
+  },
+  "retained_build": {
+    "state": "verified",
+    "report": "D:\\VLC-Redesign\\build\\windows-x64\\gate-retention-1.1.2\\1fd36b99e6214c92a4e0cad58c1a45bf-result.json",
+    "report_sha256": "cb03e6524d88eeef6ff1616ee2cb52142e5cba58f0a3ab098054f2f0041d029b",
+    "native_receipt": "scratch-share/retained-build-verification.json",
+    "group_empty": true,
+    "private_mounts_released": true,
+    "no_rebuild_or_initialization": true
+  },
+  "weekly": {
+    "passed": true,
+    "id": "vlc-weekly-upstream-sync-and-release",
+    "kind": "heartbeat",
+    "status": "ACTIVE",
+    "schedule_unchanged": true,
+    "target_unchanged": true,
+    "prompt_sha256": "6874d367bd6dab55e7db62185c25916906118350107414979ed63ac833764cc6",
+    "updated_at": 1793576679312
+  },
+  "cleanup": {
+    "task": {
+      "transaction_id": "5d3c5c66028e85d9158ff9140c719ddc",
+      "state": "applied",
+      "deleted_bytes": 3592657988
+    },
+    "build": {
+      "transaction_id": "0cc85ce60f38bb823ba635d7ae6d8306",
+      "state": "applied",
+      "deleted_bytes": 3121160336
+    },
+    "font": {
+      "transaction_id": "beadf14c071ff0c605286e09a01803cf",
+      "state": "applied",
+      "deleted_bytes": 40182915
+    }
+  },
+  "qualification": "D:\\VLC-Redesign\\releases\\1.1.2\\verification",
+  "blockers": [],
+  "tracked_deferrals": [],
+  "limits": [
+    "SDR output for MPV Dolby Vision; no new native DV signaling or Profile7 FEL claim.",
+    "Seek previews follow keyframes; MPV preview remains explicitly unavailable.",
+    "Image subtitles retain playback but no text timeline or OCR.",
+    "Normal P5 presentation was observed but its placement protocol failed after a Qt monitor identity change; original failed receipt is retained. No further input-desktop launch was made. Downloaded MPV lifecycle uses an inactive desktop and reuses actual presentation evidence only after identical whole-archive SHA256.",
+    "Unsigned Windows binaries; matching symbols and complete corresponding source are separate assets."
+  ],
+  "refactoring_assessment": "Existing native playback, configuration, media-library, window and subtitle owners retain their responsibilities. Bounded preview/extraction state serves current requirements. No further abstraction or speculative refactor is required."
+}

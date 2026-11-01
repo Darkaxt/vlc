@@ -1,172 +1,49 @@
 # VLC redesign stages and reconciliation
 
-**M2 First-run usability and fork identity is ACTIVE (1 November 2026).**
-R73-R82 plus the R52 onboarding reference correction in SPECIFICATION.md govern
-one cohesive1.1.2 correction and final release; the reordered R65 flow is preserved.
-The user's explicit continuation covers all nine reported fixes plus both
-confirmed subtitle timeline gaps. Saved-library-playlist subtitle association is
-an ambiguous audit candidate, not an added requirement. The read-only audit found
-no further confirmed omission; this is not renewed runtime acceptance.
+**M2 First-run usability and fork identity is COMPLETE (2 November 2026).**
+[Modern VLC Fork 1.1.2](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.2)
+delivers all nine reported repairs, both confirmed subtitle gaps and the R52
+shortcut-design correction. Application source is `409daf4ef173f463d7833464b128513fda04366d`.
+The final closure changes only documentation, evidence and the host verification helper.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M2 First-run usability and fork identity | ACTIVE | R52/R65/R73-R77/R79-R82 pass current-source native verification: reference keycaps/footer and all three scales; editable/persisted shortcuts; blank-root idle and real indexing; flat PE/window icons; fork update privacy/failure/retry/real HTTPS; display-bounded main video and MPV replacement/audio transitions; fast previews; subtitle menu availability and complete selected-text cue/timing/navigation/handover/external/restart workflows in both engines. | R78: final normal build, package/native checks, published release and independent delivery verification, retained/weekly binding and exact cleanup. Internal implementable delivery blocker; M2 remains ACTIVE. | None. |
+| M2 First-run usability and fork identity | COMPLETE | R52/R65/R73-R82: reference keycaps/footer at100/150/200%; editable and persisted shortcuts; blank-root idle and explicit indexing; flat PE/window icons; fork update privacy/failure/retry/HTTPS; display-bounded main video including MPV replacement/audio transitions; fast cached previews; accurate subtitle menu and selected embedded/external text cues, timing/navigation, handover and restart. Normal package, published four-asset release, independent downloads/native verification, protected profiles, retained build/weekly binding and exact cleanup all pass. | None. | None. |
 
-Preserve the existing Figma layout/colors and native shortcut editor. Use actual
-event/state completion, app-owned diagnostics and inactive desktops; no OS input.
-Batch all required wiring before compilation and acceptance. Reuse the retained
-SDK/objects/MPV prefix at D:/VLC-Redesign/build/windows-x64. Active sustained-I/O
-scratch is D:/Temp/vlc-s8-first-run-1.1.2-20261101; disposable controller scripts
-use E:/Temp/vlc-first-run-1.1.2-20261101. Register exact roots before generation.
-M1/S8 stay COMPLETE; S9 NOT STARTED. No additional active implementation stage.
+Native acceptance uses the same production tree as the normal release. The
+4K preview measured 99.6047ms cold and 0.0009ms cached; previews use keyframes.
+The original Figma frame 1902:6770 governs raised 42px key faces, 3px borders,
+6px lower edges, horizontal pairs, Inter typography and the final Back/Finish
+page. True configurable bindings remain authoritative. Optional font setup
+precedes the final shortcut page. Actual [100%](resources/m2/shortcuts-100.png),
+[150%](resources/m2/shortcuts-150.png) and [200%](resources/m2/shortcuts-200.png)
+app captures and the long-chord/small-workarea checks pass.
 
-Implementation checkpoint: all eleven repairs now have connected code paths,
-including the flat PE/Qt icon, real configurable queue/browser shortcuts,
-fork-specific update metadata with quiet background failures, bounded welcome
-and video geometry, event-driven main-video entry, coalesced/cached seek previews,
-subtitle submenu availability and asynchronous selected embedded-text cues with
-timing/navigation controls. No native acceptance has passed yet. The synthetic
-text/image/wide/portrait/4K inputs are ready and the cohesive implementation is
-frozen at intermediate commit6876a272ce26c760236a708ac2cb90e86533488d.
-The first managed diagnostic assembly (ticket143) was intentionally stopped
-during linking after the user required the full integration review before any
-further compilation. Its original session returned exit137 with an empty Linux
-group, no OOM events and a2,106,593,280-byte peak; it is not a successful build.
-Completed objects and the SDK are preserved. The complete-workflow native acceptance helper
-now covers actual PE/window icon data and another launch, welcome/shortcut
-persistence, empty and explicitly indexed libraries, video drop/geometry and
-no-autoresize/fullscreen preservation, subtitle selection/engine handover and
-controls, preview publication/content/invalidation, and automatic/manual update
-checks. This preparation is not acceptance evidence. Freeze the complete reviewed
-repair batch, bind it against the actual closed143 report, then compile and
-inspect these affected workflows before the
-final normal build/release. MPV's executable sections and loader directories
-match accepted1.1.1; its changed debug metadata does not require rebuilding its
-unchanged playback stack. Current application integration still needs testing.
+The normal build completed in managed ticket 154 without OOM, with an empty
+Linux group and released private mounts. Its 417 PE files are stripped with
+matching separate symbols; 410 plugins form one source-bound cohort. All four
+published assets were independently retrieved and checked. Downloaded VLC
+playback and MPV lifecycle pass. Actual normal MPV SDR/P5 presentation is
+verified; P5's separate placement protocol failed after a Qt monitor identity
+change and is preserved as failed evidence. Subsequent downloaded MPV checks
+use an inactive desktop and reuse presentation evidence only after identical
+whole-archive SHA256. No OS input, desktop switch, foreground activation or
+shutdown was performed.
 
-Integration review corrections are connected in source: Qt's displayed version
-uses the fork constant and the manual retry remains explicit; normal/diagnostic
-flag invalidation includes every guarded source consumer; subtitle-file drops
-and the native menu use the existing timeline owner while retaining other native
-associated formats; selected external source identities are retained per media
-across track changes and handovers; remote subtitle playback retains its explicit
-local-timeline limitation. The cue row uses the player overlay rather than the
-layout strip's clipping viewport, has usable narrow-window width, and reserves
-space above the unchanged ordinary control row. PE/window icon verification is
-also wired into the normal-package observer. These source corrections remain
-internal acceptance blockers until the complete native workflows pass. No build
-may be submitted while known wiring or review work remains unfinished.
+`D:/VLC-Redesign/releases/1.1.2` contains the usable portable player and all
+release assets; compact qualification is in its `verification` directory.
+The retained SDK/source/objects/MPV build remains at
+`D:/VLC-Redesign/build/windows-x64`; its read-only source/runtime check and
+existing Monday weekly automation now bind to 1.1.2. Synthetic regression inputs
+have an explicit continuing weekly consumer outside the portable package.
+Exact task/controller/font/build scratch is absent after reviewed cleanup;
+previous releases and installed profiles are preserved.
 
-The71fc2d1 diagnostic player assembly passed in ticket144; its separate checker
-lookup failed because this SDK provides Qt6Core.prl rather than Qt6Core.pc.
-Checker-only ticket147 then compiled the corrected fixture executable and closed
-with exit0, an empty group, no OOM and released private mounts. These are build
-results, not stage acceptance. Native passes01/02 retained their failures and
-closed all owned players normally. The production policy/geometry/text-container
-checks, all nine PE icon sizes and the actual native flat window icon pass;
-the100% welcome/editor actions and quiet second-start/manual update retry also
-work. The4K cold preview measured92.8ms and cached publication0.001ms.
-
-R79 still failed: fresh video promotion was incorrectly wired only in legacy
-MainDisplay, while the actual redesigned library uses PlayerLibraryDisplay.
-R82's cue seek landed at2.125s for a1s cue. The initial Go to Time comparison
-was misleading: its demux log requested zero, while the paused clock reported
-1.125s. The actual cue request is exactly1,000,000 microseconds; changing to
-absolute seeking did not remove the extra second. Current corrections move output/embedding
-ownership into the persistent MainInterface root, use absolute cue timestamps,
-make Previous select the cue preceding the active one, and strip libavcodec ASS
-event metadata from embedded dialogue. Test-driver corrections use real loader
-readiness, the current full/compact viewport, normal replacement-item playback,
-native update-dialog controls, focus reveal and a reader thread bound solely to
-the owned inactive desktop. The input desktop remains unchanged. These source
-corrections and all remaining workflows require fresh integrated acceptance;
-R78 normal packaging/publication/delivery/retention/cleanup remains unresolved.
-
-Ticket148 successfully assembled f008554 with an empty Linux group, no OOM
-and released private mounts. Native03 verifies main-view entry, plain embedded
-text, flat PE/window icons and the full preview workflow. Cue seeking remains an
-acceptance blocker: paused seek PCR updates use wall time while buffering uses
-the frozen pause date, falsely reporting the time spent paused as late PCR and
-forcing another rebuffer. The current source uses the same frozen-date contract
-for paused playback and download rebuffering. The native update success message
-also now includes the fork version. Both corrections require native acceptance.
-Driver-only corrections distinguish QUrl source identity from Loader.Ready and
-measure DWM visible frame bounds alongside raw invisible Windows resize borders.
-The remaining-diagnostic scope investigates welcome/playback/track paths on the
-existing binary without claiming cue-navigation acceptance or release readiness.
-The handover check follows the incoming engine's actual selected track (R82);
-the earlier test incorrectly assumed German selection would be preserved.
-R67 requires preserving playback position and pause, and does not introduce
-cross-engine track identity preservation. Native observations show MPV selecting
-English and the extracted timeline correctly changing to its three English cues.
-
-The b9720eaa diagnostic assembly closed successfully in ticket150 with an empty
-Linux group, released private mounts and no OOM. Native04/05 and the focused MPV
-subtitle pass verify welcome/scaling, shortcut edit/use/restart, blank-root idle
-and explicit indexing, flat native/executable icons, both subtitle backends'
-SRT/ASS/MP4 selection, timing/cue controls, image/no-track limits, external native
-file/remote association, restart, fast preview and actual HTTPS/failure/retry
-update behavior. Cold preview was78.8434ms and cache publication0.0007ms.
-The missing shared-frame declaration include was a compile error corrected before
-ticket150; it is not an accepted runtime failure or an OOM.
-
-R79 still has one internal acceptance blocker: MPV suppresses the replaced
-entry's END_FILE event, so its controller retains hasVideo=true across consecutive
-video inputs. Native05 records the new5760x720 video fully ready at1.083s while
-the library/mini-player remains active. The current correction resets that
-per-input capability in loadMpvItem; the fresh MPV file snapshot can then publish
-the actual incoming video state. Verify this path and an audio-only replacement
-before closing R79. The completed subtitle matrix was checked before another
-compile; no other known implementation gap remains in that matrix. Driver-only
-corrections use the existing fullscreen Space shortcut, a visible track-popup
-viewport and a0.001ms observation tolerance for MPV's binary floating point value
-of49.99999999999999ms. All current-source integrated acceptance, normal packaging,
-publication, independent delivery, retained/weekly binding and cleanup remain
-required; M2 stays ACTIVE.
-
-The user's shortcut-page comparison exposes an R52 acceptance failure: the
-earlier native checks proved editable bindings and sizing, but did not establish
-the reference keycaps, typography, paired-key layout or footer fidelity. Ticket151
-was intentionally stopped before further source edits (exit137, empty group,
-no OOM). The current cohesive correction uses the decoded original frame1902:6770
-(42px faces, 3px border, 12px corners, 6px lower edge, 82px row pitch), horizontal
-directions, separate modifier faces and truthful native mappings. The optional
-legacy-font step now precedes the final Back/Finish shortcut page. Shortcuts,
-font import/fallback and native visual/scaling checks must pass on the completed
-batch together with the pending MPV replacement correction. R52 is an internal
-advancement blocker, resolved only by inspected native geometry and rendered
-comparison; no later stage or release may bypass it. Temporary design decoding
-uses the existing pinned extractor with two small dependencies under the exact
-D scratch root (active dependency-tree I/O); those are expendable after decoding.
-The post-freeze layout review caught a remaining stretch constraint before Qt
-compilation: fill-width caption labels could still push single keys to the far
-right. Ticket152 was stopped (137, empty group, no OOM); captions now use the
-source220px width with explicit key placement and only shrink for longer truthful
-chords. Native acceptance checks the240px label-to-key origin as well as the
-face/lower-edge geometry. This correction remains unverified until rendering.
-
-Current acceptance checkpoint (2 November): ticket153 assembled17540a0c5f9b2d74d63dff38125a17d264c3d67d
-successfully, with an empty Linux group, released private mounts, a2,107,760,640-byte
-peak and no memory-limit/OOM events. Native06 ALL closed0/passed with every owned
-player exit0 and protected installed/Nuvio/prior-release profiles unchanged.
-The original Figma frame and actual dark100/150/200% PNGs were inspected; native
-42px faces,6px lower edges,240px label/key origins, horizontal directions,
-modifier caps and final Back/Finish pass. A reassigned CTRL+ALT+SHIFT+9 chord
-fits and dispatches after restart. The actual light page was also inspected.
-The reordered optional-font workflow passes publisher HTTPS download, finish,
-restart and reopen without losing its verified cache. These are native results,
-not licensing assumptions or a claim that the normal release has shipped.
-Both engines pass the full subtitle matrix and1s→4s→1s cue seeks. MPV's prior
-miniature-player replacement gap and video/audio/video transitions pass. The
-4K cold preview measured99.6047ms, cached publication0.0009ms. Current-native
-receipts are native-06/result.json, onboarding-visual-review.json and the separate
-font download result in the exact task scratch roots. Their required compact
-evidence must be retained before those roots are retired. The spent Native06
-runtime copy has already been removed by reviewed transactionbcd2794a252d02a3ad897c944eda5b3c.
-The source review found no additional architecture/refactoring requirement for
-this correction. Host-only observer corrections do not change production code;
-the final normal source freeze must prove its production tree equals the accepted
-tree before packaging/publication. R78 remains the sole advancement blocker.
+[Final reconciliation](resources/m2-verification.json) records delivery hashes,
+verification applicability, limitations and cleanup. No blocker or tracked
+deferral remains. Existing native owners retain lifecycle and state; no new
+framework or further refactor is required. M1/S8 remain COMPLETE; S9 remains
+NOT STARTED. No implementation stage is ACTIVE.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)

@@ -1,6 +1,6 @@
 # Windows x64 reproduction and recovery
 
-M2 (ACTIVE,1 November2026) prepares1.1.2 from the retained1.1.1 build without
+M2 (COMPLETE,2 November2026) delivers1.1.2 from the retained1.1.1 build without
 initializing a VM or replacing the SDK. `ForkRelease::currentVersion` in
 `modules/gui/qt/dialogs/help/fork_release.hpp` is the compiled fork release version;
 the packaging helper rejects a mismatched version. Upstream VLC's own version
@@ -15,10 +15,9 @@ SRT/ASS/MP4 text, selected stream identity, image limitations and cancellation
 are checked alongside actual UI/control/state behavior before release. Normal
 automatic update failures remain silent; manual checks target the established
 GitHub release channel and offer its release page rather than installing an
-upstream binary. This paragraph describes implementation/reproduction, not an
-acceptance or release claim. Current delivered version remains1.1.1 below.
+upstream binary. The complete M2 workflows and final delivery are verified below.
 
-Current delivery is [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1), application commit `b84e7326e3d3e554120f3866fbe1c1acfa5ec6cc`. Its portable binary, complete corresponding source, matching separate symbols and checksums, including independently downloaded native playback, are verified in [M1 final delivery](resources/m1-verification.json). Current local qualification is `D:/VLC-Redesign/releases/1.1.1/verification`. The existing host reuses `D:/VLC-Redesign/build/windows-x64`; its read-only retained check142 verified source/configuration, SDK, MPV and new dependency prefixes plus the promoted runtime without rebuilding or initializing a VM. Use `normal-mpv-full` for the merged release. Do not repeat cold setup or configuration when the verified inputs remain unchanged. The original1.0.0/S7 procedure below is historical recovery guidance, not the current-host continuation procedure.
+Current delivery is [Modern VLC Fork 1.1.2](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.2), application commit `409daf4ef173f463d7833464b128513fda04366d`. Its portable ZIP, complete corresponding source, matching separate symbols and checksums were independently retrieved and checked. [M2 final delivery](resources/m2-verification.json) records native acceptance, actual UI and normal-runtime evidence, including the separately failed P5 placement protocol and hash-bound presentation reuse. Local delivery and qualification are `D:/VLC-Redesign/releases/1.1.2` and its `verification` directory. The existing build remains `D:/VLC-Redesign/build/windows-x64`; `build-retention.json` and `scratch-share/retained-build-verification.json` bind the delivered source/runtime to the read-only gated verification. Use the installed WSL gate with `verify-retained-build.py` through `with-isolated-toolchain.py`; do not initialize another VM or replace the SDK. The canonical runtime is `scratch-share/runtime`, and the latest pipeline is `scratch-share/compilation/state.json`. Use `normal-mpv-full` for a future complete release. Unchanged MPV/SDK/objects remain reusable. Synthetic repair regressions are in `m2-regression-fixtures` with their continuing weekly retention contract. The Monday weekly automation preserves the same delivery and regression boundary. Prior1.1.1 remains preserved; the original1.0.0/S7 procedure below is historical recovery guidance.
 
 The fork reuses VLC's engine and Qt frontend. It does not replace the installed
 VLC or require MPV. The current upstream application pin is

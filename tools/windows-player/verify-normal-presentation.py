@@ -24,7 +24,7 @@ sys.path.insert(0, str(repo / 'tools/windows-player'))
 from isolated_desktop import IsolatedProcess, input_desktop, u, k
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--mode', choices=['private', 'offscreen'], required=True)
+parser.add_argument('--mode', choices=['private', 'offscreen', 'private-playback'], required=True)
 parser.add_argument('--case', required=True)
 parser.add_argument('--fixture', type=Path, required=True)
 parser.add_argument('--package', type=Path, required=True)
@@ -48,11 +48,16 @@ assert hashlib.sha256((package / 'plugins/gui/libqt_plugin.dll').read_bytes()).h
 
 geometry_source = args.geometry_source
 encoded = next(line.split('=', 1)[1] for line in geometry_source.read_text(encoding='utf-8').splitlines() if line.startswith('geometry='))
+# QSettings quotes the entire INI value when its binary payload has a delimiter.
+if encoded.startswith('"'):
+    assert encoded.endswith('"')
+    encoded = encoded[1:-1]
 assert encoded.startswith('@ByteArray(') and encoded.endswith(')')
 data = bytearray()
 payload = encoded[len('@ByteArray('):-1]
 position = 0
 escapes = {'0': 0, 'a': 7, 'b': 8, 'f': 12, 'n': 10, 'r': 13, 't': 9, 'v': 11, '\\': 92}
+escapes['"'] = 34
 while position < len(payload):
     character = payload[position]
     position += 1
@@ -97,8 +102,11 @@ environment.pop('VLC_PLUGIN_PATH', None)
 environment.update(TEMP=str(scratch / 'tmp'), TMP=str(scratch / 'tmp'), VLC_DATA_PATH=str(runtime),
     VLC_USERDATA_PATH=str(portable), QML_DISK_CACHE_PATH=str(scratch / 'qml'),
     QT_DISABLE_SHADER_DISK_CACHE='1', QSG_RHI_DISABLE_SHADER_DISK_CACHE='1', QT_FORCE_STDERR_LOGGING='1',
-    QSG_INFO='1', QT_SCREEN_SCALE_FACTORS='1;1;1;1;1;1;1;1', QT_SCALE_FACTOR='1',
+    # The saved native fixture was recorded with this process-local DPI policy.
+    # A different DPR makes QVLCTools reject its geometry and center the window.
+    QSG_INFO='1', QT_ENABLE_HIGHDPI_SCALING='0', QT_FONT_DPI='96', QT_SCALE_FACTOR='1',
     QT_IM_MODULES='none', QT_IM_MODULE='none')
+environment.pop('QT_SCREEN_SCALE_FACTORS', None)
 command = [str(runtime / 'vlc.exe'), '--qt-playback-engine=mpv', '--intf=qt', '--no-one-instance',
     '--restore-playback-pos=0', '--no-save-recentplay', '--no-qt-privacy-ask', '--no-qt-updates-notif',
     '--no-metadata-network-access', '--no-qt-video-autoresize', '--no-video-title-show',
@@ -154,7 +162,7 @@ ready_event, bound_event, cancel_event = [k.CreateEventW(None, True, False, name
 assert ready_event and bound_event and cancel_event
 owned_desktop = None
 desktop_name = None
-if args.mode == 'private':
+if args.mode in {'private', 'private-playback'}:
     desktop_name = 'VLC-S2-' + uuid.uuid4().hex
     owned_desktop = u.CreateDesktopW(desktop_name, None, None, 0, 0x1FF, None)
     assert owned_desktop
@@ -170,7 +178,7 @@ observer = player = None
 with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb') as error, \
         (evidence / 'observer.stdout').open('wb') as observer_output, (evidence / 'observer.stderr').open('wb') as observer_error:
     try:
-        if args.mode == 'private':
+        if args.mode in {'private', 'private-playback'}:
             observer = IsolatedProcess(observer_command, cwd=scratch, env=environment,
                 stdout=observer_output, stderr=observer_error, desktop_name=desktop_name)
             observer_handle = observer.handle
@@ -180,7 +188,7 @@ with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb'
             observer_handle = observer._handle
         readiness = (W.HANDLE * 2)(ready_event, observer_handle)
         assert k.WaitForMultipleObjects(2, readiness, False, 0xFFFFFFFF) == 0, 'Observer exited before hook readiness'
-        if args.mode == 'private':
+        if args.mode in {'private', 'private-playback'}:
             player = IsolatedProcess(command, cwd=runtime, env=environment, stdout=output, stderr=error,
                 desktop_name=desktop_name)
         else:
@@ -238,10 +246,18 @@ if args.mode == 'private':
         or event['bounds'][3] <= display[1] or event['bounds'][1] >= display[3]
         for event in player_events for display in monitors)
     checks['only_known_os_indicator_elsewhere'] = all(
-        event['class'] == 'UAC Input Indicator' and event['class_module'].lower() == expected_indicator
+        event['class'] in {'UAC Input Indicator', 'UAC_InputIndicatorOverlayWnd'}
+        and event['class_module'].lower() == expected_indicator
         for event in others)
 if args.mode == 'offscreen':
     checks['actual_picture_presented'] = result['actual_picture_presented']
+if args.mode == 'private-playback':
+    # Inactive desktops do not present a DXGI swapchain to the input desktop.
+    # Verify lifecycle here; a caller must bind separate real presentation evidence
+    # to identical downloaded binary hashes before claiming presentation acceptance.
+    checks.pop('all_visible_owned_windows_offscreen')
+    checks['inactive_desktop_owned'] = bool(desktop_name and desktop_name != desktop_before)
+    result['scope'] = 'Normal playback lifecycle on an owned inactive desktop; no actual-picture claim, OS input or desktop switching'
 result.update(checks=checks, observed_window_bounds=observed_windows, passed=result['exit_code'] == 0 and all(checks.values()))
 (scratch / 'result.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
 if args.mode == 'private' and result['passed']:
