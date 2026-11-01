@@ -99,6 +99,30 @@ R67 requires preserving playback position and pause, and does not introduce
 cross-engine track identity preservation. Native observations show MPV selecting
 English and the extracted timeline correctly changing to its three English cues.
 
+The b9720eaa diagnostic assembly closed successfully in ticket150 with an empty
+Linux group, released private mounts and no OOM. Native04/05 and the focused MPV
+subtitle pass verify welcome/scaling, shortcut edit/use/restart, blank-root idle
+and explicit indexing, flat native/executable icons, both subtitle backends'
+SRT/ASS/MP4 selection, timing/cue controls, image/no-track limits, external native
+file/remote association, restart, fast preview and actual HTTPS/failure/retry
+update behavior. Cold preview was78.8434ms and cache publication0.0007ms.
+The missing shared-frame declaration include was a compile error corrected before
+ticket150; it is not an accepted runtime failure or an OOM.
+
+R79 still has one internal acceptance blocker: MPV suppresses the replaced
+entry's END_FILE event, so its controller retains hasVideo=true across consecutive
+video inputs. Native05 records the new5760x720 video fully ready at1.083s while
+the library/mini-player remains active. The current correction resets that
+per-input capability in loadMpvItem; the fresh MPV file snapshot can then publish
+the actual incoming video state. Verify this path and an audio-only replacement
+before closing R79. The completed subtitle matrix was checked before another
+compile; no other known implementation gap remains in that matrix. Driver-only
+corrections use the existing fullscreen Space shortcut, a visible track-popup
+viewport and a0.001ms observation tolerance for MPV's binary floating point value
+of49.99999999999999ms. All current-source integrated acceptance, normal packaging,
+publication, independent delivery, retained/weekly binding and cleanup remain
+required; M2 stays ACTIVE.
+
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
 is the normal published update from application commit

@@ -31,7 +31,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'preview', 'updates', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-') and not root.exists()
@@ -402,6 +402,16 @@ def playback():
             library=fixed.inspect('intentional-mini-player','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1','--capture')
             assert nodes(library,'libraryReturnToPlayer'),'Intentional library browsing lost the mini player'
             drop_fixture(fixed,'fresh-video-from-library','wide.mkv')
+            if engine=='mpv':
+                fixed.inspect('library-before-audio','click','--name','Back to media','--await-target','viewLoader',
+                    '--await-property','source','--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml'))
+                fixed.inspect('replace-with-audio','drop','--target','mainInterface','--url',(fixtures/'audio-only.mka').as_uri(),
+                    '--await-core','url','--await-value',json.dumps((fixtures/'audio-only.mka').as_uri()))
+                audio=fixed.inspect('audio-input-ready','snapshot','--await-core','mpv_history_ready','--await-value','true')
+                assert audio['core']['audio_tracks'] and not audio['core']['video_tracks'] and not audio['core']['mpv_video_ready']
+                fixed.inspect('audio-library-preserved','snapshot','--await-target','viewLoader','--await-property','source',
+                    '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml'))
+                drop_fixture(fixed,'video-after-audio','portrait.mkv')
             fixed.close(True)
         finally: fixed.close()
     for engine,scale in (('vlc','1.5'),('mpv','2')):
@@ -472,13 +482,16 @@ def drop_fixture(case, label, file):
     # through the real control rather than waiting for an impossible state.
     if ready['core']['state']==2:
         if ready['core']['fullscreen']:
-            case.inspect(label+'-show-controls','move','--target','playerView','--fraction-y','0.97')
+            # Dropping a replacement focuses the player itself. Use its real
+            # Space shortcut when the fullscreen toolbar is auto-hidden.
+            return case.inspect(label+'-pause','key','--key','0x20','--text',' ',
+                '--await-core','state','--await-value','3')
         return case.click(label+'-pause','playButton','--await-core','state','--await-value','3')
     return case.inspect(label+'-paused','snapshot','--await-core','state','--await-value','3')
 
 
-def subtitles(verify_navigation=True):
-    for engine in ('vlc','mpv'):
+def subtitles(verify_navigation=True, engines=('vlc','mpv')):
+    for engine in engines:
         case=Case('timeline-' + engine, engine=engine, media=fixtures/'embedded-text.mkv')
         try:
             case.inspect('paused','snapshot','--await-core','state','--await-value','3')
@@ -496,8 +509,8 @@ def subtitles(verify_navigation=True):
             assert graph['width']>0 and 0<=graph['x'] and graph['x']+graph['width']<=shown['window']['width']
             assert 0<=graph['y'] and graph['y']+graph['height']<=shown['window']['height']
             base=shown['core']['subtitle_delay_ms']
-            case.click('delay-later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50)
-            case.click('delay-earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base)
+            case.click('delay-later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50,'--await-tolerance','0.001')
+            case.click('delay-earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base,'--await-tolerance','0.001')
             # Allow the native paused clock's precision on this12fps fixture;
             # a one-second buffering offset must fail this bound.
             if verify_navigation:
@@ -561,6 +574,7 @@ def subtitles(verify_navigation=True):
             chosen=case.inspect('accept-native-subtitle-file','widget_key','--target','fileNameEdit','--key','0x1000004',
                 '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('2 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.'))
             assert service(chosen)['subtitleLoaded'] and len(service(chosen)['cues'])==2
+            case.inspect('external-track-viewport','resize','--width','960','--height','720')
             available=case.click('reopen-external-track-choice','subtitleButton')
             earlier=[node for node in subtitle_choices(available) if node.get('name')!='None' and not node['selected']]
             assert len(earlier)==1,earlier
@@ -574,8 +588,13 @@ def subtitles(verify_navigation=True):
             case.close(True)
             restarted=Case('timeline-restart-'+engine,engine=engine,media=fixtures/'embedded-text.mkv',reused_profile=case.path/'profile')
             try:
-                restarted.inspect('paused','snapshot','--await-core','state','--await-value','3')
-                restored=cue_result(restarted,'restored-timeline',3)
+                initial=restarted.inspect('paused','snapshot','--await-core','state','--await-value','3')
+                assert service(initial)['timelineVisible'], 'Timeline preference did not survive restart'
+                select_available_subtitle(restarted,'restart-subtitle',initial)
+                observed=restarted.inspect('restart-track-observed')
+                selected=[track for track in observed['core']['subtitle_tracks'] if track['selected']]
+                assert len(selected)==1 and selected[0]['language'] in ('eng','deu'),selected
+                restored=cue_result(restarted,'restored-timeline',2 if selected[0]['language']=='deu' else 3)
                 assert service(restored)['timelineVisible'] and len(nodes(restored,'subtitleDelayLater'))==1
                 restarted.close(True)
             finally: restarted.close()
@@ -728,6 +747,10 @@ try:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
     for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('updates',updates),('seek-policy',seek_policy)]:
+        if args.case=='subtitles-mpv':
+            if name!='subtitles':continue
+            operation=lambda:subtitles(engines=('mpv',))
+        if args.case=='playback-subtitles' and name not in ('playback','subtitles'):continue
         if args.case=='subtitle-tracks-diagnostic':
             if name!='subtitles':continue
             operation=lambda:subtitles(False)
@@ -735,7 +758,7 @@ try:
             if name not in ('welcome','playback','subtitles'):continue
             if name=='subtitles':operation=lambda:subtitles(False)
         if name=='seek-policy' and args.case!='seek-policy':continue
-        if args.case not in ('all','integration-diagnostic','subtitle-tracks-diagnostic',name): continue
+        if args.case not in ('all','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic',name): continue
         try:
             operation()
         except Exception as failure:

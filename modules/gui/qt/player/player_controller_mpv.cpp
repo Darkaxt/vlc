@@ -339,6 +339,13 @@ void PlayerController::loadMpvItem(input_item_t *item, bool paused)
     emit mpvHistoryReadyChanged();
 #endif
     ++d->m_mpvMediaRevision;
+    // A replaced MPV entry suppresses the outgoing END_FILE event. Reset this
+    // input's capability here so the fresh file snapshot publishes a real
+    // false-to-true transition even when both entries contain video.
+    if (d->m_hasVideo) {
+        d->m_hasVideo = false;
+        emit hasVideoOutputChanged(false);
+    }
     d->m_mpvResumePosition = 0.;
     d->m_canRestorePlayback = false;
     emit playbackRestoreQueried();
