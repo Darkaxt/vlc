@@ -270,22 +270,28 @@ T.Popup {
                             {label:qsTr("Previous / Next Frame"),key:"key-frame-previous",pair:"key-frame-next"},{label:qsTr("Show / Hide File Browser"),key:"qt-key-toggle-browser"},
                             {label:qsTr("Cycle Subtitle Track"),key:"key-subtitle-track"},{label:qsTr("Take a Snapshot"),key:"key-snapshot"},
                             {label:qsTr("Cycle Audio Track"),key:"key-audio-track"},{label:qsTr("Record"),key:"key-record"}]
-                        delegate: RowLayout {
+                        delegate: Item {
                             id: shortcutRow
                             required property var modelData
                             Layout.fillWidth: true
                             Layout.preferredWidth: (shortcuts.width-shortcuts.columnSpacing*(shortcuts.columns-1))/shortcuts.columns
                             Layout.minimumWidth: 0
-                            spacing: PlayerStyle.px(20)
+                            implicitHeight: Math.max(PlayerStyle.px(48),shortcutCaption.implicitHeight+PlayerStyle.px(14))
                             Label {
-                                Layout.fillWidth: true
-                                Layout.preferredWidth: PlayerStyle.px(220)
-                                Layout.minimumWidth: 0
+                                id:shortcutCaption
+                                objectName:"onboardingShortcutCaption_"+shortcutRow.modelData.key
+                                width:Math.max(0,Math.min(PlayerStyle.px(220),shortcutRow.width-bindingGroup.implicitWidth-PlayerStyle.px(20)))
+                                y:(parent.height-height-PlayerStyle.px(6))/2
+                                lineHeightMode:Text.FixedHeight
+                                lineHeight:PlayerStyle.px(28)
                                 font.weight: Font.Light
                                 color: PlayerStyle.trackForeground
                                 text: shortcutRow.modelData.label
                             }
                             RowLayout {
+                                id:bindingGroup
+                                x:shortcutCaption.width+PlayerStyle.px(20)
+                                y:(parent.height-height)/2
                                 spacing: PlayerStyle.px(10)
                                 Repeater {
                                     id: shortcutBindings
@@ -319,7 +325,11 @@ T.Popup {
                                                     required property string modelData
                                                     required property int index
                                                     readonly property bool separator:modelData==="/"
-                                                    width:faceLabel.implicitWidth+PlayerStyle.px(separator?12:(shortcutButton.faces.length===1?46:24))
+                                                    readonly property bool modifier:["CTRL","ALT","SHIFT","META","COMMAND"].indexOf(modelData)>=0
+                                                    // Source caps have 23px side padding; paired
+                                                    // native modifier chords use compact faces
+                                                    // so both directions stay horizontal.
+                                                    width:faceLabel.implicitWidth+PlayerStyle.px(separator?12:shortcutBindings.count===2?(shortcutButton.faces.length===1?30:modifier?12:20):shortcutButton.faces.length>2?24:46)
                                                     height:PlayerStyle.px(48)
                                                     Rectangle {
                                                         objectName:"onboardingKeyShadow_"+shortcutButton.option+"_"+parent.index

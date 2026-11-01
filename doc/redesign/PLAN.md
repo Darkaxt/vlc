@@ -137,6 +137,12 @@ advancement blocker, resolved only by inspected native geometry and rendered
 comparison; no later stage or release may bypass it. Temporary design decoding
 uses the existing pinned extractor with two small dependencies under the exact
 D scratch root (active dependency-tree I/O); those are expendable after decoding.
+The post-freeze layout review caught a remaining stretch constraint before Qt
+compilation: fill-width caption labels could still push single keys to the far
+right. Ticket152 was stopped (137, empty group, no OOM); captions now use the
+source220px width with explicit key placement and only shrink for longer truthful
+chords. Native acceptance checks the240px label-to-key origin as well as the
+face/lower-edge geometry. This correction remains unverified until rendering.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
