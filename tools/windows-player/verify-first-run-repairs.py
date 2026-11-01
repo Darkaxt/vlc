@@ -300,7 +300,9 @@ def welcome():
             key_scale=face['height']/42
             assert abs(shadow['y']-face['y']-6*key_scale)<0.1
             caption=nodes(shortcuts,'onboardingShortcutCaption_key-play-pause')[0]
-            if nodes(shortcuts,'playerOnboarding')[0]['width']>=1000*key_scale:
+            # Popup itself is a QObject; only its rendered children are in
+            # the QQuickItem tree. Its 40px window inset determines the width.
+            if shortcuts['window']['width']>=1040*key_scale:
                 assert abs(face['x']-caption['x']-240*key_scale)<0.1, 'The label must not stretch and push keycaps right'
             assert nodes(shortcuts,'onboardingKeyLabel_key-toggle-fullscreen_0')[0]['text']=='F'
             left=nodes(shortcuts,'onboardingShortcut_key-jump-short')[0]

@@ -1,7 +1,8 @@
 # VLC redesign stages and reconciliation
 
 **M2 First-run usability and fork identity is ACTIVE (1 November 2026).**
-R73-R82 in SPECIFICATION.md govern one cohesive1.1.2 correction and final release.
+R73-R82 plus the R52 onboarding reference correction in SPECIFICATION.md govern
+one cohesive1.1.2 correction and final release; the reordered R65 flow is preserved.
 The user's explicit continuation covers all nine reported fixes plus both
 confirmed subtitle timeline gaps. Saved-library-playlist subtitle association is
 an ambiguous audit candidate, not an added requirement. The read-only audit found
@@ -9,7 +10,7 @@ no further confirmed omission; this is not renewed runtime acceptance.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M2 First-run usability and fork identity | ACTIVE | Root causes traced:600x420 default is smaller than the welcome design; welcome tiles are passive and include invalid fullscreen/browser identities; MediaLib initializes idle=false without a busy event; Qt/executable still select upstream artwork; automatic CheckFailed falls through to the legacy update dialog and the model uses upstream update infrastructure. Playback defects trace to height-only sizing before chrome compensation, a one-signal video/embedding condition, precise per-hover thumbnail requests and an unconditional subtitle submenu. The existing timeline supports associated external files and drag/keyboard offset only. | R73-R77/R79-R82 complete implementation and integrated native verification; R78 final release/readback, retained/weekly binding and exact cleanup. Internal implementable acceptance blockers; none justify parking. | None. |
+| M2 First-run usability and fork identity | ACTIVE | R52/R65/R73-R77/R79-R82 pass current-source native verification: reference keycaps/footer and all three scales; editable/persisted shortcuts; blank-root idle and real indexing; flat PE/window icons; fork update privacy/failure/retry/real HTTPS; display-bounded main video and MPV replacement/audio transitions; fast previews; subtitle menu availability and complete selected-text cue/timing/navigation/handover/external/restart workflows in both engines. | R78: final normal build, package/native checks, published release and independent delivery verification, retained/weekly binding and exact cleanup. Internal implementable delivery blocker; M2 remains ACTIVE. | None. |
 
 Preserve the existing Figma layout/colors and native shortcut editor. Use actual
 event/state completion, app-owned diagnostics and inactive desktops; no OS input.
@@ -143,6 +144,29 @@ right. Ticket152 was stopped (137, empty group, no OOM); captions now use the
 source220px width with explicit key placement and only shrink for longer truthful
 chords. Native acceptance checks the240px label-to-key origin as well as the
 face/lower-edge geometry. This correction remains unverified until rendering.
+
+Current acceptance checkpoint (2 November): ticket153 assembled17540a0c5f9b2d74d63dff38125a17d264c3d67d
+successfully, with an empty Linux group, released private mounts, a2,107,760,640-byte
+peak and no memory-limit/OOM events. Native06 ALL closed0/passed with every owned
+player exit0 and protected installed/Nuvio/prior-release profiles unchanged.
+The original Figma frame and actual dark100/150/200% PNGs were inspected; native
+42px faces,6px lower edges,240px label/key origins, horizontal directions,
+modifier caps and final Back/Finish pass. A reassigned CTRL+ALT+SHIFT+9 chord
+fits and dispatches after restart. The actual light page was also inspected.
+The reordered optional-font workflow passes publisher HTTPS download, finish,
+restart and reopen without losing its verified cache. These are native results,
+not licensing assumptions or a claim that the normal release has shipped.
+Both engines pass the full subtitle matrix and1s→4s→1s cue seeks. MPV's prior
+miniature-player replacement gap and video/audio/video transitions pass. The
+4K cold preview measured99.6047ms, cached publication0.0009ms. Current-native
+receipts are native-06/result.json, onboarding-visual-review.json and the separate
+font download result in the exact task scratch roots. Their required compact
+evidence must be retained before those roots are retired. The spent Native06
+runtime copy has already been removed by reviewed transactionbcd2794a252d02a3ad897c944eda5b3c.
+The source review found no additional architecture/refactoring requirement for
+this correction. Host-only observer corrections do not change production code;
+the final normal source freeze must prove its production tree equals the accepted
+tree before packaging/publication. R78 remains the sole advancement blocker.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)

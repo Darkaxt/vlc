@@ -191,6 +191,7 @@ def main():
                     downloaded = inspect('download-or-use-cache', 'click', '--target', 'onboardingNext',
                         '--await-target', 'onboardingFontStatus', '--await-property', 'busy', '--await-value', 'false')
                     assert downloaded['optional_legacy_font']['available'], downloaded['optional_legacy_font']
+                inspect('shortcut-reference', 'snapshot', '--capture')
                 inspect('finish-shortcuts', 'click', '--target', 'onboardingNext')
                 # With the folder blank, completion is synchronous in MainCtx.
                 # Observe the next actual frame and state; the closed Loader
