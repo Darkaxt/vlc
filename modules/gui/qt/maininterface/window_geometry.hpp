@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <cmath>
 
+class QWindow;
+QMargins windowFrameMargins(QWindow *window);
+
 // Both the video and non-video interface area must fit before native frames
 // are added. Input/output coordinates are Qt logical pixels, on one screen.
 inline QRect fitVideoWindow(const QSizeF &video, const QSize &chrome, const QRect &screen,

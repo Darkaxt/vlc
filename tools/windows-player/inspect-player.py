@@ -206,7 +206,11 @@ def main():
                     if len(nodes) != 1:
                         raise RuntimeError('Expected one native widget window target; matched ' + str(len(nodes)))
                     fields['node'] = nodes[0]['node']
-            if args.await_property or args.await_core:
+            source_observation = args.await_property == 'source'
+            if source_observation:
+                if args.op not in ('snapshot', 'click') or not args.await_target or not isinstance(args.await_value, str):
+                    parser.error('Source readiness requires snapshot/click, --await-target and a JSON URL string')
+            if (args.await_property or args.await_core) and not source_observation:
                 if args.await_value is None:
                     parser.error('--await-property requires a JSON --await-value')
                 fields.update(await_value=args.await_value, await_tolerance=args.await_tolerance, await_comparison=args.await_comparison)
@@ -231,6 +235,22 @@ def main():
                 elif 'node' not in fields:
                     parser.error('This operation requires --await-target')
             output, result = request(args.op, **fields)
+            if source_observation:
+                # QUrl/QML URL variants are not equal to JSON QString variants.
+                # Verify the URL published at the action's rendered boundary,
+                # then await the real loader notification and verify it again.
+                def source_loader(state):
+                    matches = [node for node in state['tree'] if node['id'] == args.await_target]
+                    if len(matches) != 1 or not matches[0]['type'].startswith('QQuickLoader'):
+                        raise RuntimeError('Expected one rendered QML source loader')
+                    if matches[0].get('source') != args.await_value:
+                        raise RuntimeError('Rendered loader source differs from the expected URL: ' + repr(matches[0].get('source')))
+                    return matches[0]
+                loader = source_loader(result)
+                output, result = request('snapshot', revision=result['revision'], await_node=loader['node'],
+                    await_property='status', await_value=1, capture=args.capture)
+                source_loader(result)
+                print('Loader URL verified at rendered boundaries; real Loader.Ready observed:', args.await_value)
         print(json.dumps({k: result[k] for k in ['status', 'revision', 'before_revision', 'player_ready', 'library_ready', 'library', 'missing_required_items', 'images', 'qml_errors', 'window', 'core', 'capture_saved'] if k in result}, indent=2))
         print('Response:', output)
         print('Owned VLC has OS foreground window:', json.dumps({'before': foreground_before, 'after': owns_foreground()}))

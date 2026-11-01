@@ -550,8 +550,7 @@ void PlayerMediaTools::seekSubtitleCue(bool forward)
         if (forward && position > now + 1) target = std::min(target, position);
         if (!forward && position < before - 1) target = std::max(target, position);
     }
-    // Container percentage seeking can land after the cue even with precise
-    // decoding. Cue starts are media timestamps, like VLC's Go to Time action.
+    // Cue starts are absolute media timestamps, like VLC's Go to Time action.
     if (target >= 0 && target <= duration) m_player->setTime(VLCTime(VLC_TICK_FROM_MS(qRound64(target))));
 }
 QVariant PlayerMediaTools::value(const QString &key) const

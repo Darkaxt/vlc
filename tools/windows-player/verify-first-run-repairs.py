@@ -31,7 +31,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'preview', 'updates', 'seek-policy', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'preview', 'updates', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-') and not root.exists()
@@ -257,16 +257,23 @@ def assert_window_on_desktop(case, snapshot):
     u.MonitorFromWindow.restype = W.HANDLE
     u.GetWindowRect.argtypes = [W.HWND, ctypes.POINTER(W.RECT)]
     u.GetMonitorInfoW.argtypes = [W.HANDLE, ctypes.POINTER(MonitorInfo)]
-    rect, monitor = W.RECT(), MonitorInfo()
+    rect, visible, monitor = W.RECT(), W.RECT(), MonitorInfo()
     monitor.size = ctypes.sizeof(monitor)
     try:
         assert u.GetWindowRect(hwnd, ctypes.byref(rect))
+        dwm=ctypes.WinDLL('dwmapi',use_last_error=True)
+        dwm.DwmGetWindowAttribute.argtypes=[W.HWND,W.DWORD,ctypes.c_void_p,W.DWORD]
+        dwm.DwmGetWindowAttribute.restype=ctypes.c_long
+        assert dwm.DwmGetWindowAttribute(hwnd,9,ctypes.byref(visible),ctypes.sizeof(visible))==0
         handle = u.MonitorFromWindow(hwnd, 2)
         assert u.GetMonitorInfoW(handle, ctypes.byref(monitor))
-        assert rect.left >= monitor.work.left and rect.top >= monitor.work.top and rect.right <= monitor.work.right and rect.bottom <= monitor.work.bottom, (list((rect.left,rect.top,rect.right,rect.bottom)), list((monitor.work.left,monitor.work.top,monitor.work.right,monitor.work.bottom)))
+        # GetWindowRect includes Windows' invisible resize borders. The DWM
+        # extended frame is the visible frame/chrome required to fit the screen.
+        assert visible.left >= monitor.work.left and visible.top >= monitor.work.top and visible.right <= monitor.work.right and visible.bottom <= monitor.work.bottom, (list((visible.left,visible.top,visible.right,visible.bottom)), list((monitor.work.left,monitor.work.top,monitor.work.right,monitor.work.bottom)))
     finally:
         if original: u.SetThreadDpiAwarenessContext(original)
     case.record.setdefault('window_checks', []).append({'qt': window, 'physical': [rect.left,rect.top,rect.right,rect.bottom],
+        'visible_physical':[visible.left,visible.top,visible.right,visible.bottom],
         'work': [monitor.work.left,monitor.work.top,monitor.work.right,monitor.work.bottom]})
 
 def welcome():
@@ -330,8 +337,8 @@ def welcome():
                     restarted.inspect('saved-fullscreen-shortcut','key','--key','0x39','--modifiers','0xe000000','--text','9',
                         '--await-core','fullscreen','--await-value','true')
                     restarted.inspect('leave-fullscreen','key','--key','0x1000000','--await-core','fullscreen','--await-value','false')
-                    restarted.inspect('saved-browser-shortcut','key','--key','0x38','--modifiers','0xe000000','--text','8',
-                        '--await-target','compactLibrary','--await-property','ready','--await-value','true','--capture')
+                    restarted.inspect('saved-browser-shortcut','key','--key','0x38','--modifiers','0xe000000','--text','8')
+                    restarted.inspect('browser-ready','snapshot','--await-target','compactLibrary','--await-property','ready','--await-value','true','--capture')
                     closed=restarted.inspect('close-browser-shortcut','key','--key','0x38','--modifiers','0xe000000','--text','8')
                     assert not any(node['id']=='compactLibrary' and node['visible'] for node in closed['tree'])
                     restarted.inspect('queue-shortcut','key','--key','0x4c','--modifiers','0x4000000','--text','l',
@@ -369,7 +376,12 @@ def playback():
                 case.inspect('library-ready', 'snapshot', '--await-target','fullLibrary','--await-property','ready','--await-value','true')
                 drop_fixture(case,'drop-video',name)
                 result=case.inspect('main-player-visible','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
-                assert_window(case,result)
+                try:assert_window(case,result)
+                except AssertionError as failure:
+                    if args.case!='integration-diagnostic':raise
+                    case.record['known_geometry_failure']=repr(failure)
+                    case.close(False)
+                    continue
                 case.record['source']=name
                 case.close(True)
             finally: case.close()
@@ -399,7 +411,12 @@ def playback():
             case.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
             drop_fixture(case,'scaled-video','wide.mkv')
             result=case.inspect('scaled-main-view','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
-            assert_window(case,result)
+            try:assert_window(case,result)
+            except AssertionError as failure:
+                if args.case!='integration-diagnostic':raise
+                case.record['known_geometry_failure']=repr(failure)
+                case.close(False)
+                continue
             case.close(True)
         finally: case.close()
 
@@ -421,13 +438,27 @@ def subtitle_choices(snapshot):
             node=tree[node['parent']]
             if node['id']=='subtitleTracksBody': return True
         return False
-    return [node for node in snapshot['tree'] if node['visible'] and node['enabled'] and node.get('actions') and 'selected' in node and inside(node)]
+    return [node for node in snapshot['tree'] if node['visible'] and node['enabled'] and node.get('actions') and node.get('role') in (44,45) and 'selected' in node and inside(node)]
 
 
 def cue_result(case, label, count):
     result=case.inspect(label,'snapshot','--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps(str(count)+' embedded source cues; positions follow the selected track and subtitle delay.'))
     assert len(service(result)['cues'])==count
     return result
+
+
+def select_available_subtitle(case, label, snapshot):
+    tracks=snapshot['core']['subtitle_tracks']
+    assert tracks,'Fixture has no native subtitle track'
+    if any(track['selected'] for track in tracks):return snapshot
+    case.inspect(label+'-track-viewport','resize','--width','960','--height','720')
+    choices=case.click(label+'-track-choice','subtitleButton')
+    rows=[node for node in subtitle_choices(choices) if node.get('name')!='None']
+    assert len(rows)==len(tracks),rows
+    selected=case.inspect(label+'-select-track','click','--name',rows[0]['name'],
+        '--await-property','selected','--await-value','true')
+    case.inspect(label+'-close-track-choice','key','--key','0x1000000')
+    return selected
 
 
 def drop_fixture(case, label, file):
@@ -440,11 +471,13 @@ def drop_fixture(case, label, file):
     # --start-paused applies only to the first input. Pause replacement items
     # through the real control rather than waiting for an impossible state.
     if ready['core']['state']==2:
+        if ready['core']['fullscreen']:
+            case.inspect(label+'-show-controls','move','--target','playerView','--fraction-y','0.97')
         return case.click(label+'-pause','playButton','--await-core','state','--await-value','3')
     return case.inspect(label+'-paused','snapshot','--await-core','state','--await-value','3')
 
 
-def subtitles():
+def subtitles(verify_navigation=True):
     for engine in ('vlc','mpv'):
         case=Case('timeline-' + engine, engine=engine, media=fixtures/'embedded-text.mkv')
         try:
@@ -465,11 +498,15 @@ def subtitles():
             base=shown['core']['subtitle_delay_ms']
             case.click('delay-later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50)
             case.click('delay-earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base)
-            # The native absolute-time probe reports 1.125s for the 1s cue on
-            # this 12fps fixture. Bound the native paused-clock/frame precision.
-            case.click('next-cue','nextSubtitleCue','--await-core','time_seconds','--await-value','1','--await-tolerance','0.2')
-            case.click('next-cue-again','nextSubtitleCue','--await-core','time_seconds','--await-value','4','--await-tolerance','0.2')
-            case.click('previous-cue','previousSubtitleCue','--await-core','time_seconds','--await-value','1','--await-tolerance','0.2')
+            # Allow the native paused clock's precision on this12fps fixture;
+            # a one-second buffering offset must fail this bound.
+            if verify_navigation:
+                case.click('next-cue','nextSubtitleCue','--await-core','time_seconds','--await-value','1','--await-tolerance','0.2')
+                case.click('next-cue-again','nextSubtitleCue','--await-core','time_seconds','--await-value','4','--await-tolerance','0.2')
+                case.click('previous-cue','previousSubtitleCue','--await-core','time_seconds','--await-value','1','--await-tolerance','0.2')
+            # The narrow case above proves the cue row fits. Use a full popup
+            # viewport for the separate multi-track and native file workflows.
+            case.inspect('track-selection-viewport','resize','--width','960','--height','720')
             subtitle_menu(case,'embedded-track-menu',True)
             tracks=case.click('open-track-choice','subtitleButton')
             alternate=[node for node in subtitle_choices(tracks) if node.get('name')!='None' and not node['selected']]
@@ -487,15 +524,23 @@ def subtitles():
                 case.inspect('choose-engine-'+target,'click','--name','MPV / Dolby Vision' if target=='mpv' else 'VLC')
                 settled=case.inspect('engine-settled-'+target,'snapshot','--await-core','engine_switching','--await-value','false')
                 assert settled['core']['engine']==target and settled['core']['state']==3
-                handover=cue_result(case,'handover-cues-'+target,2)
-                assert service(handover)['cues'][0]['start']==2000
+                # Track ids/default selections belong to each backend. R82
+                # requires the timeline to follow the incoming selected track,
+                # while R67 preserves position and pause across the switch.
+                selected=[track for track in settled['core']['subtitle_tracks'] if track['selected']]
+                assert len(selected)==1 and selected[0]['language'] in ('eng','deu'),selected
+                german=selected[0]['language']=='deu'
+                handover=cue_result(case,'handover-cues-'+target,2 if german else 3)
+                assert service(handover)['cues'][0]['start']==(2000 if german else 1000)
                 case.inspect('dismiss-engine-tools-'+target,'key','--key','0x1000000')
                 subtitle_menu(case,'handover-menu-'+target,True)
             for file in ('embedded-ass.mkv','embedded-text.mp4'):
-                drop_fixture(case,'open-'+file,file)
+                opened=drop_fixture(case,'open-'+file,file)
+                select_available_subtitle(case,'open-'+file,opened)
                 decoded=cue_result(case,'native-cues-'+file,3)
                 assert service(decoded)['cues'][0]['start']==1000
-            drop_fixture(case,'open-image','embedded-image.mkv')
+            opened=drop_fixture(case,'open-image','embedded-image.mkv')
+            select_available_subtitle(case,'open-image',opened)
             image=case.inspect('image-limit','snapshot','--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('Image subtitles keep playing normally; a text cue timeline is unavailable.'))
             assert not service(image)['cues'] and image['core']['subtitle_tracks']
             drop_fixture(case,'open-no-track','control.mkv')
@@ -586,6 +631,13 @@ def seek_policy():
     case=Case('absolute-time-seek-probe',media=fixtures/'embedded-text.mkv')
     try:
         case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        case.click('open-playback-tools','toolsButton')
+        case.inspect('enable-timeline','click','--name','Show Subtitle Timeline on Seekbar',
+            '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('3 embedded source cues; positions follow the selected track and subtitle delay.'))
+        case.inspect('close-settings','key','--key','0x1000000')
+        base=case.inspect('before-delay')['core']['subtitle_delay_ms']
+        case.click('delay-later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50)
+        case.click('delay-earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base)
         case.key('open-goto-time',0x54,modifiers=0x4000000,text='t')
         snapshot=case.inspect('time-editor')
         editors=[widget for widget in snapshot['widgets'] if widget['type']=='QTimeEdit']
@@ -593,7 +645,8 @@ def seek_policy():
         node=editors[0]['node']
         case.inspect('focus-time-editor','widget_click','--node',node)
         case.inspect('select-seconds','widget_key','--node',node,'--key','0x1000011')
-        case.inspect('one-second','widget_key','--node',node,'--key','0x1000013')
+        edited=case.inspect('one-second','widget_key','--node',node,'--key','0x1000013')
+        assert any(widget['type']=='QTimeEdit' and widget.get('text')=='00H:00m:01s' for widget in edited['widgets']), 'Go to Time diagnostic did not enter one second'
         case.inspect('absolute-time-result','widget_click','--widget-text','Go','--await-core','time_seconds','--await-value','1','--await-tolerance','0.2')
         case.close(True)
     finally:case.close()
@@ -641,7 +694,7 @@ def updates():
                     retried=case.inspect('manual-retry','widget_click','--widget-text','Recheck version','--await-service','forkUpdateModel','--await-property','updateStatus','--await-value','2','--capture')
                 assert retried['update']['status']==2
                 labels=[node.get('text','') for node in retried['tree'] if node['visible'] and 'You have the latest version' in node.get('text','')]
-                labels += [widget.get('text','') for widget in retried['widgets'] if 'latest version' in widget.get('text','')]
+                labels += [widget.get('text','') for widget in retried['widgets'] if 'latest available Modern VLC Fork release' in widget.get('text','')]
                 case.record['manual_current_version_labels']=labels
                 assert labels and all('1.1.2' in text for text in labels), 'Update result does not show the fork version'
             case.close(True)
@@ -675,8 +728,14 @@ try:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
     for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('updates',updates),('seek-policy',seek_policy)]:
+        if args.case=='subtitle-tracks-diagnostic':
+            if name!='subtitles':continue
+            operation=lambda:subtitles(False)
+        if args.case=='integration-diagnostic':
+            if name not in ('welcome','playback','subtitles'):continue
+            if name=='subtitles':operation=lambda:subtitles(False)
         if name=='seek-policy' and args.case!='seek-policy':continue
-        if args.case not in ('all',name): continue
+        if args.case not in ('all','integration-diagnostic','subtitle-tracks-diagnostic',name): continue
         try:
             operation()
         except Exception as failure:

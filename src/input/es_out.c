@@ -3723,9 +3723,11 @@ static int EsOutVaControlLocked(es_out_sys_t *p_sys, input_source_t *source,
         const bool b_low_delay = priv->b_low_delay;
         bool b_extra_buffering_allowed = !b_low_delay && EsOutIsExtraBufferingAllowed(p_sys);
         bool buffering = EsOutIsBuffering(p_sys) || p_sys->p_next_frame_es != NULL;
-        /* Do not account the download stall as clock lateness. The input
-         * clock will shift this frozen system date when rebuffering ends. */
-        const vlc_tick_t system_now = p_sys->b_rebuffering
+        /* Paused seeks reset the clock reference while the pause date stays
+         * frozen. Feeding wall time here counts time spent paused as lateness
+         * and forces a second rebuffer that advances the paused position.
+         * Download rebuffering uses the same frozen-date contract. */
+        const vlc_tick_t system_now = EsOutIsPaused(p_sys)
                                     ? p_sys->i_pause_date : vlc_tick_now();
         vlc_tick_t i_late = input_clock_Update(
                             p_pgrm->p_input_clock,

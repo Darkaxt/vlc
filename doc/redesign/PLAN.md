@@ -68,8 +68,10 @@ work. The4K cold preview measured92.8ms and cached publication0.001ms.
 
 R79 still failed: fresh video promotion was incorrectly wired only in legacy
 MainDisplay, while the actual redesigned library uses PlayerLibraryDisplay.
-R82's percentage-based cue seek landed at2.125s for a1s cue; the same player's
-Go to Time action landed at1.125s. Current corrections move output/embedding
+R82's cue seek landed at2.125s for a1s cue. The initial Go to Time comparison
+was misleading: its demux log requested zero, while the paused clock reported
+1.125s. The actual cue request is exactly1,000,000 microseconds; changing to
+absolute seeking did not remove the extra second. Current corrections move output/embedding
 ownership into the persistent MainInterface root, use absolute cue timestamps,
 make Previous select the cue preceding the active one, and strip libavcodec ASS
 event metadata from embedded dialogue. Test-driver corrections use real loader
@@ -78,6 +80,24 @@ native update-dialog controls, focus reveal and a reader thread bound solely to
 the owned inactive desktop. The input desktop remains unchanged. These source
 corrections and all remaining workflows require fresh integrated acceptance;
 R78 normal packaging/publication/delivery/retention/cleanup remains unresolved.
+
+Ticket148 successfully assembled f008554 with an empty Linux group, no OOM
+and released private mounts. Native03 verifies main-view entry, plain embedded
+text, flat PE/window icons and the full preview workflow. Cue seeking remains an
+acceptance blocker: paused seek PCR updates use wall time while buffering uses
+the frozen pause date, falsely reporting the time spent paused as late PCR and
+forcing another rebuffer. The current source uses the same frozen-date contract
+for paused playback and download rebuffering. The native update success message
+also now includes the fork version. Both corrections require native acceptance.
+Driver-only corrections distinguish QUrl source identity from Loader.Ready and
+measure DWM visible frame bounds alongside raw invisible Windows resize borders.
+The remaining-diagnostic scope investigates welcome/playback/track paths on the
+existing binary without claiming cue-navigation acceptance or release readiness.
+The handover check follows the incoming engine's actual selected track (R82);
+the earlier test incorrectly assumed German selection would be preserved.
+R67 requires preserving playback position and pause, and does not introduce
+cross-engine track identity preservation. Native observations show MPV selecting
+English and the extracted timeline correctly changing to its three English cues.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)

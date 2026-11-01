@@ -116,7 +116,7 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
         int scaledHeight = std::ceil( intfScaleFactor * height );
 
         const auto screen = m_window->screen();
-        const auto frame = m_window->frameMargins();
+        const auto frame = windowFrameMargins(m_window);
         const QSize available = screen ? screen->availableGeometry().size()
             - QSize(frame.left() + frame.right(), frame.top() + frame.bottom())
             : QSize(scaledWidth, scaledHeight);

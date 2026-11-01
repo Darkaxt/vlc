@@ -473,7 +473,8 @@ void UpdateDialog::updateUI( )
     {
         ui.stackedWidget->setCurrentWidget( ui.updateDialogPage );
         ui.updateDialogLabel->setText(
-            qtr( "You have the latest available Modern VLC Fork release." ) );
+            qtr( "You have the latest available Modern VLC Fork release (%1)." )
+                .arg(QString::fromLatin1(ForkRelease::currentVersion)) );
         break;
     }
     case UpdateModel::CheckFailed:

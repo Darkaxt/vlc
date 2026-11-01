@@ -21,9 +21,33 @@
 
 #include <QApplication>
 #include <QScreen>
+#ifdef Q_OS_WIN
+# include <qt_windows.h>
+#endif
 
 #include <vlc_window.h>
 #include "compositor.hpp"
+
+QMargins windowFrameMargins(QWindow *window)
+{
+    QMargins frame = window->frameMargins();
+#ifdef Q_OS_WIN
+    // Custom decorations hide these margins from Qt, although the native root
+    // retains its external resize frame. Both welcome and video sizing need it.
+    const qreal factor = window->devicePixelRatio();
+    const HWND root = GetAncestor(reinterpret_cast<HWND>(window->winId()), GA_ROOT);
+    RECT outer, client;
+    POINT origin{0, 0};
+    if (root && GetWindowRect(root, &outer) && GetClientRect(root, &client)
+        && ClientToScreen(root, &origin)) {
+        frame = QMargins(std::max(frame.left(), int(std::ceil((origin.x-outer.left)/factor))),
+            std::max(frame.top(), int(std::ceil((origin.y-outer.top)/factor))),
+            std::max(frame.right(), int(std::ceil((outer.right-origin.x-client.right)/factor))),
+            std::max(frame.bottom(), int(std::ceil((outer.bottom-origin.y-client.bottom)/factor))));
+    }
+#endif
+    return frame;
+}
 
 VideoWindowHandler::VideoWindowHandler(qt_intf_t* intf, QObject *parent)
     : QObject(parent)
@@ -127,7 +151,7 @@ void VideoWindowHandler::setVideoSize(unsigned int w, unsigned int h, Qt::Window
         }
     }
     const auto geometry = fitVideoWindow(QSizeF(w / factor, h / factor), chrome,
-        m_window->screen()->availableGeometry(), m_window->frameMargins(),
+        m_window->screen()->availableGeometry(), windowFrameMargins(m_window),
         m_window->minimumSize(), m_window->maximumSize(), m_window->position());
     m_window->setGeometry(geometry);
 }
