@@ -179,6 +179,7 @@ void PlayerMediaAnalysis::inputChanged()
     ++m_generation; ++m_waveGeneration; m_wantPreview = false;
     if (m_request) { m_requestCancelled = true; vlc_preparser_Cancel(m_preparser, m_request); }
     { QMutexLocker lock(&m_image->mutex); m_image->image = {}; }
+    m_previewCache.clear();
     m_previewSource.clear(); m_previewStatus = tr("Hover the seek bar for a preview of this input."); emit previewChanged();
     m_waveInput = QUrl(); m_waveAudioTrack = -1; m_waveform.clear(); updateWaveform(true);
 }
@@ -196,7 +197,15 @@ void PlayerMediaAnalysis::requestPreview(double position)
         if (m_request) { m_requestCancelled = true; vlc_preparser_Cancel(m_preparser, m_request); }
         m_previewSource.clear(); m_previewStatus = tr("Seek previews are unavailable for nonseekable inputs or inputs without a known video timeline."); emit previewChanged(); return;
     }
-    if (m_request) { m_requestCancelled = true; vlc_preparser_Cancel(m_preparser, m_request); return; }
+    QElapsedTimer clock;
+    clock.start();
+    if (const auto image = m_previewCache.object(qRound(wanted * 1000.))) {
+        publishPreview(*image, wanted, clock.nsecsElapsed() / 1000000.);
+        return;
+    }
+    // Keep the current decoder alive and replace only the desired next point.
+    // Cancelling on every pointer event starves long-GOP inputs indefinitely.
+    if (m_request) return;
     startPreview();
 }
 void PlayerMediaAnalysis::hidePreview()
@@ -206,11 +215,18 @@ void PlayerMediaAnalysis::hidePreview()
 void PlayerMediaAnalysis::startPreview()
 {
     if (!m_preparser || !m_wantPreview || m_request) return;
+    if (const auto image = m_previewCache.object(qRound(m_wantedPosition * 1000.))) {
+        QElapsedTimer clock;
+        clock.start();
+        publishPreview(*image, m_wantedPosition, clock.nsecsElapsed() / 1000000.);
+        return;
+    }
     m_requestCancelled = false;
-    struct Context { PlayerMediaAnalysis *self; quint64 generation; double position; };
-    auto *context = new Context{this, m_generation, m_wantedPosition};
+    struct Context { PlayerMediaAnalysis *self; quint64 generation; double position; QElapsedTimer clock; };
+    auto *context = new Context{this, m_generation, m_wantedPosition, {}};
+    context->clock.start();
     vlc_thumbnailer_arg argument{}; argument.seek.type = vlc_thumbnailer_arg::seek::VLC_THUMBNAILER_SEEK_POS;
-    argument.seek.pos = m_wantedPosition; argument.seek.speed = vlc_thumbnailer_arg::seek::VLC_THUMBNAILER_SEEK_PRECISE;
+    argument.seek.pos = m_wantedPosition; argument.seek.speed = vlc_thumbnailer_arg::seek::VLC_THUMBNAILER_SEEK_FAST;
     static const vlc_thumbnailer_cbs callbacks{[](vlc_preparser_req *request, int status, picture_t *picture, void *opaque) {
         std::unique_ptr<Context> ctx(static_cast<Context *>(opaque)); auto *self = ctx->self;
         QImage image;
@@ -220,19 +236,21 @@ void PlayerMediaAnalysis::startPreview()
                 image = QImage::fromData(encoded->p_buffer, qsizetype(encoded->i_buffer), "PNG"); block_Release(encoded); video_format_Clean(&format);
             }
         }
-        QMetaObject::invokeMethod(self, [self, request, generation = ctx->generation, position = ctx->position, image] {
+        const auto elapsedMS = ctx->clock.nsecsElapsed() / 1000000.;
+        QMetaObject::invokeMethod(self, [self, request, generation = ctx->generation, position = ctx->position, image, elapsedMS] {
             if (self->m_request != request) return;
             const bool cancelled = self->m_requestCancelled;
             self->m_request = nullptr; self->m_requestCancelled = false; vlc_preparser_req_Release(request);
-            if (!cancelled && generation == self->m_generation && self->m_wantPreview && position == self->m_wantedPosition) {
-                if (image.isNull()) { self->m_previewSource.clear(); self->m_previewStatus = tr("VLC could not decode a seek preview for this input."); }
-                else {
-                    { QMutexLocker lock(&self->m_image->mutex); self->m_image->image = image; }
-                    self->m_publishedPosition = position;
-                    self->m_previewSource = QStringLiteral("image://redesignPreview/frame/%1").arg(++self->m_imageRevision);
-                    self->m_previewStatus.clear();
+            if (!cancelled && generation == self->m_generation) {
+                if (!image.isNull()) self->m_previewCache.insert(qRound(position * 1000.), new QImage(image));
+                if (self->m_wantPreview && position == self->m_wantedPosition) {
+                    if (image.isNull()) {
+                        self->m_previewStatus = tr("VLC could not decode a seek preview for this input.");
+                        emit self->previewChanged();
+                    } else self->publishPreview(image, position, elapsedMS);
+                } else if (self->m_wantPreview && self->m_previewSource.isEmpty() && !image.isNull()) {
+                    self->publishPreview(image, position, elapsedMS);
                 }
-                emit self->previewChanged();
             }
             if (self->m_wantPreview && (cancelled || generation != self->m_generation || position != self->m_wantedPosition)) self->startPreview();
         }, Qt::QueuedConnection);
@@ -254,7 +272,18 @@ void PlayerMediaAnalysis::startPreview()
         vlc_preparser_req_Release(m_request); m_request = nullptr; delete context;
         m_previewStatus = tr("Seek preview could not be started."); emit previewChanged(); return;
     }
-    m_previewStatus = tr("Decoding seek preview…"); emit previewChanged();
+    if (m_previewSource.isEmpty()) m_previewStatus = tr("Decoding seek preview…");
+    emit previewChanged();
+}
+
+void PlayerMediaAnalysis::publishPreview(const QImage &image, double position, double elapsedMS)
+{
+    { QMutexLocker lock(&m_image->mutex); m_image->image = image; }
+    m_publishedPosition = position;
+    m_previewLatencyMS = elapsedMS;
+    m_previewSource = QStringLiteral("image://redesignPreview/frame/%1").arg(++m_imageRevision);
+    m_previewStatus.clear();
+    emit previewChanged();
 }
 void PlayerMediaAnalysis::updateWaveform(bool invalidate)
 {

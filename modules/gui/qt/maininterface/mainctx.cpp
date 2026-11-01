@@ -870,11 +870,21 @@ QString MainCtx::shortcutLabel(const QString &option) const
 {
     const auto *parameter=config_FindConfig(qtu(option));
     if(!parameter||parameter->i_type!=CONFIG_ITEM_KEY)return qtr("Unassigned");
-    char *raw=var_InheritString(p_intf,qtu(option));
+    char *raw=config_GetPsz(qtu(option));
     const QString text=qfu(raw);free(raw);
     QStringList result;
     for(const auto &key:text.split('\t',Qt::SkipEmptyParts))result.push_back(key);
     return result.isEmpty()?qtr("Unassigned"):result.join(QStringLiteral(" / "));
+}
+
+QStringList MainCtx::queueShortcutSequences() const
+{
+    char *raw=var_InheritString(p_intf,"qt-key-toggle-queue");
+    QStringList result;
+    for(const auto &key:qfu(raw).split('\t',Qt::SkipEmptyParts))
+        if(m_queueKeys.contains(vlc_str2keycode(qtu(key))))result.append(key);
+    free(raw);
+    return result;
 }
 
 void MainCtx::completeRedesignOnboarding(bool finish,const QVariantMap &values,const QString &error,bool folderAdded)
@@ -988,9 +998,29 @@ void MainCtx::initializeHotkeyFeedback()
         if(!m_shortcutActions.contains(code))m_bookmarkKeys.insert(code);
     }
     free(add);
+    char *browser=var_InheritString(p_intf,"qt-key-toggle-browser");
+    for(const auto &key:qfu(browser).split('\t',Qt::SkipEmptyParts)) {
+        const int code=vlc_str2keycode(qtu(key));
+        if(!m_shortcutActions.contains(code)&&!m_bookmarkKeys.contains(code))m_browserKeys.insert(code);
+    }
+    free(browser);
+    char *queue=var_InheritString(p_intf,"qt-key-toggle-queue");
+    for(const auto &key:qfu(queue).split('\t',Qt::SkipEmptyParts)) {
+        const int code=vlc_str2keycode(qtu(key));
+        if(!m_shortcutActions.contains(code)&&!m_bookmarkKeys.contains(code)&&!m_browserKeys.contains(code))m_queueKeys.insert(code);
+    }
+    free(queue);
 }
 void MainCtx::dispatchShortcutFeedback(int key)
 {
+    if(m_queueKeys.contains(key)) {
+        m_playqueuePanel->setVisible(!m_playqueuePanel->isVisible());
+        return;
+    }
+    if(m_browserKeys.contains(key)) {
+        emit toggleFileBrowserRequested();
+        return;
+    }
     if(m_bookmarkKeys.contains(key)) {
         auto *model=getBookmarks();
         if(model && model->available() && p_intf->p_mainPlayerController->isSeekable()) {
@@ -1749,6 +1779,7 @@ UpdateModel* MainCtx::getUpdateModel() const
                 case UpdateModel::UpToDate:
                 case UpdateModel::Unchecked:
                 case UpdateModel::Checking:
+                case UpdateModel::CheckFailed:
                     break;
                 case UpdateModel::NeedUpdate:
                     qWarning() << "Need update";

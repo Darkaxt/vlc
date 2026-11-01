@@ -3,6 +3,8 @@
 #define VLC_QT_PLAYER_MEDIA_ANALYSIS_HPP
 #include "player_controller.hpp"
 #include <QImage>
+#include <QCache>
+#include <QElapsedTimer>
 #include <QMutex>
 #include <QQuickImageProvider>
 #include <QQuickPaintedItem>
@@ -66,6 +68,7 @@ class PlayerMediaAnalysis : public QObject
     Q_PROPERTY(QString previewSource READ previewSource NOTIFY previewChanged FINAL)
     Q_PROPERTY(QString previewStatus READ previewStatus NOTIFY previewChanged FINAL)
     Q_PROPERTY(double previewPosition READ previewPosition NOTIFY previewChanged FINAL)
+    Q_PROPERTY(double previewLatencyMS READ previewLatencyMS NOTIFY previewChanged FINAL)
     Q_PROPERTY(QVariantList waveform READ waveform NOTIFY waveformChanged FINAL)
     Q_PROPERTY(QString waveformStatus READ waveformStatus NOTIFY waveformChanged FINAL)
     Q_PROPERTY(bool waveformBusy READ waveformBusy NOTIFY waveformChanged FINAL)
@@ -80,6 +83,7 @@ public:
     bool previewSupported() const { return !m_player->usesMpv() && m_player->isSeekable() && m_player->getLength().valid() && m_player->getVideoTracks()->getCount() > 0; }
     double durationMS() const { return double(m_player->getLength().toVLCTick()) / 1000.; }
     double previewPosition() const { return m_publishedPosition; }
+    double previewLatencyMS() const { return m_previewLatencyMS; }
     QVariantList waveform() const { return m_waveform; }
     QString waveformStatus() const { return m_waveformStatus; }
     bool waveformBusy() const { return m_worker != nullptr; }
@@ -92,17 +96,20 @@ private:
     void inputChanged();
     void updateWaveform(bool invalidate = false);
     void startPreview();
+    void publishPreview(const QImage &, double position, double elapsedMS);
     qt_intf_t *m_intf;
     PlayerController *m_player;
     PlayerMediaTools *m_tools;
     vlc_preparser_t *m_preparser = nullptr;
     vlc_preparser_req *m_request = nullptr;
     std::shared_ptr<PlayerPreviewImage> m_image = std::make_shared<PlayerPreviewImage>();
+    QCache<int, QImage> m_previewCache{32}; // At most32 decoded320x180 frames; no disk cache.
     WaveformWorker *m_worker = nullptr;
     QVariantList m_waveform;
     QString m_previewSource, m_previewStatus, m_waveformStatus;
     quint64 m_generation = 0, m_waveGeneration = 0, m_imageRevision = 0;
     double m_wantedPosition = 0, m_publishedPosition = 0;
+    double m_previewLatencyMS = 0;
     bool m_wantPreview = false, m_wantWaveform = false, m_requestCancelled = false;
     QUrl m_waveInput;
     int m_waveAudioTrack = -1;

@@ -6,14 +6,21 @@ import QtQuick.Templates as T
 import QtQuick.Controls.impl
 import VLC.MainInterface
 import VLC.Util
+import VLC.Dialogs
 
 T.Popup {
     id: dialog
+    objectName: "playerOnboarding"
     property Item previewItem: null
     property int page: 0
     property int theme: 0
     property string accent: "default"
     property bool fontFinishing: false
+    property int shortcutRevision: 0
+    Connections {
+        target: DialogsProvider
+        function onPrefsDialogVisibleChanged() { dialog.shortcutRevision++ }
+    }
     function cancelFont() {
         fontFinishing=false
         MainCtx.legacyFont.cancel()
@@ -239,29 +246,52 @@ T.Popup {
                     columnSpacing: PlayerStyle.px(100)
                     rowSpacing: PlayerStyle.px(38)
                     Repeater {
-                        model: [{label:qsTr("Play / Pause"),key:"key-play-pause"},{label:qsTr("Toggle Fullscreen"),key:"key-fullscreen"},
+                        model: [{label:qsTr("Play / Pause"),key:"key-play-pause"},{label:qsTr("Toggle Fullscreen"),key:"key-toggle-fullscreen"},
                             {label:qsTr("Seek Backward / Forward"),key:"key-jump-short",pair:"key-jump+short"},{label:qsTr("Increase / Decrease Volume"),key:"key-vol-up",pair:"key-vol-down"},
-                            {label:qsTr("Previous / Next Item"),key:"key-prev",pair:"key-next"},{label:qsTr("Show / Hide Queue"),key:"key-toggle-playlist"},
-                            {label:qsTr("Previous / Next Frame"),key:"key-frame-previous",pair:"key-frame-next"},{label:qsTr("Show / Hide File Browser"),key:"redesign-browser"},
+                            {label:qsTr("Previous / Next Item"),key:"key-prev",pair:"key-next"},{label:qsTr("Show / Hide Queue"),key:"qt-key-toggle-queue"},
+                            {label:qsTr("Previous / Next Frame"),key:"key-frame-previous",pair:"key-frame-next"},{label:qsTr("Show / Hide File Browser"),key:"qt-key-toggle-browser"},
                             {label:qsTr("Cycle Subtitle Track"),key:"key-subtitle-track"},{label:qsTr("Take a Snapshot"),key:"key-snapshot"},
                             {label:qsTr("Cycle Audio Track"),key:"key-audio-track"},{label:qsTr("Record"),key:"key-record"}]
                         delegate: RowLayout {
+                            id: shortcutRow
                             required property var modelData
                             Layout.fillWidth: true
                             spacing: PlayerStyle.px(24)
                             Label { Layout.fillWidth: true; text: modelData.label }
-                            Rectangle {
-                                implicitWidth: Math.min(PlayerStyle.px(180),keyLabel.implicitWidth+PlayerStyle.px(28))
-                                implicitHeight: PlayerStyle.px(44)
-                                radius: PlayerStyle.px(12)
-                                color: PlayerStyle.chrome; border.width: PlayerStyle.px(3); border.color: PlayerStyle.hover
-                                Label {
-                                    id: keyLabel
-                                    anchors.fill: parent; anchors.margins: PlayerStyle.px(6)
-                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-                                    elide: Text.ElideRight; wrapMode: Text.NoWrap
-                                    text: MainCtx.shortcutLabel(modelData.key)+(modelData.pair?" / "+MainCtx.shortcutLabel(modelData.pair):"")
-                                    Accessible.name: text
+                            ColumnLayout {
+                                spacing: PlayerStyle.px(2)
+                                Repeater {
+                                    id: shortcutBindings
+                                    model: modelData.pair ? [modelData.key,modelData.pair] : [modelData.key]
+                                    delegate: T.Button {
+                                        id: shortcutButton
+                                        required property string modelData
+                                        implicitWidth: Math.min(PlayerStyle.px(180),keyLabel.implicitWidth+PlayerStyle.px(28))
+                                        implicitHeight: PlayerStyle.px(shortcutBindings.count===2?21:44)
+                                        activeFocusOnTab: true
+                                        Accessible.name: qsTr("Assign %1: %2").arg(shortcutRow.modelData.label).arg(keyLabel.text)
+                                        AccessibleCompat.id: "onboardingShortcut_"+modelData
+                                        onActiveFocusChanged: if(activeFocus)body.reveal(shortcutButton)
+                                        onClicked: DialogsProvider.editShortcut(modelData)
+                                        contentItem: Label {
+                                            id: keyLabel
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            elide: Text.ElideRight
+                                            wrapMode: Text.NoWrap
+                                            font.pixelSize: PlayerStyle.px(14)
+                                            text: {
+                                                dialog.shortcutRevision
+                                                return MainCtx.shortcutLabel(shortcutButton.modelData)
+                                            }
+                                        }
+                                        background: Rectangle {
+                                            radius: PlayerStyle.px(8)
+                                            color: shortcutButton.hovered ? PlayerStyle.hover : PlayerStyle.chrome
+                                            border.width: PlayerStyle.px(shortcutButton.visualFocus?2:1)
+                                            border.color: shortcutButton.visualFocus ? PlayerStyle.accent : PlayerStyle.hover
+                                        }
+                                    }
                                 }
                             }
                         }

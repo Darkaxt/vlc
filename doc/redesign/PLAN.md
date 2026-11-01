@@ -1,5 +1,35 @@
 # VLC redesign stages and reconciliation
 
+**M2 First-run usability and fork identity is ACTIVE (1 November 2026).**
+R73-R82 in SPECIFICATION.md govern one cohesive1.1.2 correction and final release.
+The user's explicit continuation covers all nine reported fixes plus both
+confirmed subtitle timeline gaps. Saved-library-playlist subtitle association is
+an ambiguous audit candidate, not an added requirement. The read-only audit found
+no further confirmed omission; this is not renewed runtime acceptance.
+
+| Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
+|---|---|---|---|---|
+| M2 First-run usability and fork identity | ACTIVE | Root causes traced:600x420 default is smaller than the welcome design; welcome tiles are passive and include invalid fullscreen/browser identities; MediaLib initializes idle=false without a busy event; Qt/executable still select upstream artwork; automatic CheckFailed falls through to the legacy update dialog and the model uses upstream update infrastructure. Playback defects trace to height-only sizing before chrome compensation, a one-signal video/embedding condition, precise per-hover thumbnail requests and an unconditional subtitle submenu. The existing timeline supports associated external files and drag/keyboard offset only. | R73-R77/R79-R82 complete implementation and integrated native verification; R78 final release/readback, retained/weekly binding and exact cleanup. Internal implementable acceptance blockers; none justify parking. | None. |
+
+Preserve the existing Figma layout/colors and native shortcut editor. Use actual
+event/state completion, app-owned diagnostics and inactive desktops; no OS input.
+Batch all required wiring before compilation and acceptance. Reuse the retained
+SDK/objects/MPV prefix at D:/VLC-Redesign/build/windows-x64. Active sustained-I/O
+scratch is D:/Temp/vlc-s8-first-run-1.1.2-20261101; disposable controller scripts
+use E:/Temp/vlc-first-run-1.1.2-20261101. Register exact roots before generation.
+M1/S8 stay COMPLETE; S9 NOT STARTED. No additional active implementation stage.
+
+Implementation checkpoint: all eleven repairs now have connected code paths,
+including the flat PE/Qt icon, real configurable queue/browser shortcuts,
+fork-specific update metadata with quiet background failures, bounded welcome
+and video geometry, event-driven main-video entry, coalesced/cached seek previews,
+subtitle submenu availability and asynchronous selected embedded-text cues with
+timing/navigation controls. No native acceptance has passed yet. Generate the
+synthetic text/image/wide/portrait/4K inputs, freeze the cohesive implementation
+as an intermediate source commit, and compile one diagnostic candidate through
+the existing managed toolchain. Reconcile the original process/group result,
+then validate complete affected workflows before the final normal build/release.
+
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
 is the normal published update from application commit

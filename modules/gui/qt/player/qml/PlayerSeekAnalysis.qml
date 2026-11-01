@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
 import QtQuick.Templates as T
+import VLC.Util
 import VLC.Player
 
 Item {
@@ -26,35 +27,119 @@ Item {
         color: PlayerStyle.accent
         samples: MediaAnalysis.waveform
     }
+    component CueButton: T.Button {
+        implicitWidth: PlayerStyle.px(24)
+        implicitHeight: PlayerStyle.px(24)
+        padding: 0
+        activeFocusOnTab: true
+        contentItem: Text {
+            text: parent.text
+            color: PlayerStyle.accentForeground
+            font.family: PlayerStyle.fontFamily
+            font.pixelSize: PlayerStyle.px(20)
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+        background: Rectangle {
+            color: parent.hovered ? Qt.lighter(PlayerStyle.accent,1.15) : PlayerStyle.accent
+            radius: PlayerStyle.px(4)
+            border.color: PlayerStyle.trackForeground
+            border.width: parent.visualFocus ? PlayerStyle.px(2) : 0
+        }
+    }
     Item {
+        id: cueTimeline
         objectName: "subtitleCueStrip"
         width: parent.width
-        height: PlayerStyle.px(8)
+        height: PlayerStyle.px(24)
         visible: MediaTools.timelineVisible && MediaTools.cues.length > 0
-        PlayerAnalysisStrip {
-            anchors.fill: parent
-            color: PlayerStyle.accent
-            cues: MediaTools.cues
-            durationMS: MediaAnalysis.durationMS
-            timeScale: MediaTools.subtitleTimeScale
-            delayMS: Player.subtitleDelayMS
+        // Leave the ordinary playback slider intact. A customized top-area
+        // seek control places its timeline below instead of outside the window.
+        y: {
+            visible
+            analysis.overlayParent.height
+            analysis.width
+            const point = analysis.mapToItem(analysis.overlayParent,0,0)
+            return point.y < PlayerStyle.px(60) ? analysis.height+PlayerStyle.px(6) : -height-PlayerStyle.px(6)
         }
-        MouseArea {
-            id: offset
-            anchors.fill: parent
-            property real startX: 0
-            property int startDelay: 0
-            onPressed: mouse => { startX = mouse.x; startDelay = Player.subtitleDelayMS }
-            onPositionChanged: mouse => { if (pressed && width > 0) Player.subtitleDelayMS = Math.round(startDelay + (mouse.x - startX) / width * MediaAnalysis.durationMS) }
-            cursorShape: Qt.SizeHorCursor
+        CueButton {
+            id: previousCue
+            text: "‹"
+            Accessible.name: qsTr("Previous subtitle cue")
+            AccessibleCompat.id: "previousSubtitleCue"
+            onClicked: MediaTools.seekSubtitleCue(false)
         }
-        Accessible.name: qsTr("Subtitle timeline offset")
-        Accessible.description: qsTr("Drag the cue strip to adjust the subtitle delay. Current delay: %1 milliseconds.").arg(Player.subtitleDelayMS)
-        activeFocusOnTab: true
-        readonly property bool visualFocus: activeFocus
-        Rectangle { anchors.fill: parent; color: "transparent"; border.color: PlayerStyle.trackForeground; border.width: parent.visualFocus ? 1 : 0 }
-        Keys.onLeftPressed: Player.subtitleDelayMS -= 50
-        Keys.onRightPressed: Player.subtitleDelayMS += 50
+        CueButton {
+            id: earlierCue
+            anchors.left: previousCue.right
+            anchors.leftMargin: PlayerStyle.px(2)
+            text: "−"
+            Accessible.name: qsTr("Show subtitles 50 milliseconds earlier")
+            AccessibleCompat.id: "subtitleDelayEarlier"
+            onClicked: Player.subtitleDelayMS = Math.max(-600000,Player.subtitleDelayMS-50)
+        }
+        Rectangle {
+            id: cueGraph
+            anchors.left: earlierCue.right
+            anchors.right: laterCue.left
+            anchors.leftMargin: PlayerStyle.px(2)
+            anchors.rightMargin: PlayerStyle.px(2)
+            height: parent.height
+            color: PlayerStyle.timeline
+            clip: true
+            PlayerAnalysisStrip {
+                anchors.fill: parent
+                color: PlayerStyle.accent
+                opacity: 0.45
+                cues: MediaTools.cues
+                durationMS: MediaAnalysis.durationMS
+                timeScale: MediaTools.subtitleTimeScale
+                delayMS: Player.subtitleDelayMS
+            }
+            Rectangle {
+                width: PlayerStyle.px(3)
+                height: parent.height
+                x: Math.min(parent.width-width,Math.max(0,Player.position*parent.width))
+                radius: width/2
+                color: PlayerStyle.accent
+            }
+            MouseArea {
+                id: offset
+                anchors.fill: parent
+                property real startX: 0
+                property int startDelay: 0
+                onPressed: mouse => { startX = mouse.x; startDelay = Player.subtitleDelayMS }
+                onPositionChanged: mouse => {
+                    if(pressed && width>0)
+                        Player.subtitleDelayMS = Math.max(-600000,Math.min(600000,Math.round(startDelay+(mouse.x-startX)/width*MediaAnalysis.durationMS)))
+                }
+                cursorShape: Qt.SizeHorCursor
+            }
+            Accessible.name: qsTr("Subtitle timeline offset")
+            Accessible.description: qsTr("Drag to adjust subtitle timing. Current delay: %1 milliseconds.").arg(Player.subtitleDelayMS)
+            AccessibleCompat.id: "subtitleTimelineOffset"
+            activeFocusOnTab: true
+            Rectangle { anchors.fill: parent; color: "transparent"; border.color: PlayerStyle.trackForeground; border.width: parent.activeFocus?1:0 }
+            Keys.onLeftPressed: Player.subtitleDelayMS = Math.max(-600000,Player.subtitleDelayMS-50)
+            Keys.onRightPressed: Player.subtitleDelayMS = Math.min(600000,Player.subtitleDelayMS+50)
+        }
+        CueButton {
+            id: laterCue
+            anchors.right: nextCue.left
+            anchors.rightMargin: PlayerStyle.px(2)
+            text: "+"
+            Accessible.name: qsTr("Show subtitles 50 milliseconds later")
+            AccessibleCompat.id: "subtitleDelayLater"
+            onClicked: Player.subtitleDelayMS = Math.min(600000,Player.subtitleDelayMS+50)
+        }
+        CueButton {
+            id: nextCue
+            anchors.right: parent.right
+            text: "›"
+            Accessible.name: qsTr("Next subtitle cue")
+            AccessibleCompat.id: "nextSubtitleCue"
+            onClicked: MediaTools.seekSubtitleCue(true)
+        }
     }
     HoverHandler {
         id: hover

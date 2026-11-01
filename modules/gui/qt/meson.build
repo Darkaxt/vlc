@@ -23,6 +23,13 @@ qt6_dep = dependency('qt6',
 
 if qt6_dep.found()
     qt_extra_deps += dependency('libarchive', version: '>=3.1.0')
+    qt_subtitle_demux = dependency('libavformat', required: false)
+    qt_subtitle_codec = dependency('libavcodec', required: false)
+    qt_subtitle_util = dependency('libavutil', required: false)
+    if qt_subtitle_demux.found() and qt_subtitle_codec.found() and qt_subtitle_util.found()
+        qt_extra_deps += [qt_subtitle_demux, qt_subtitle_codec, qt_subtitle_util]
+        qt_extra_flags += '-DVLC_QT_EMBEDDED_SUBTITLES'
+    endif
 endif
 
 # Qt module doesn't provide the framework path to moc executable, so we

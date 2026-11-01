@@ -35,6 +35,9 @@ def main():
     runtime, destination = args.runtime.resolve(), args.destination.resolve()
     assert re.fullmatch(r'[0-9a-f]{40}', args.source_commit)
     assert re.fullmatch(r'\d+\.\d+\.\d+', args.version)
+    fork_version = subprocess.check_output(['git', '-C', str(repo), 'show',
+        args.source_commit + ':modules/gui/qt/dialogs/help/fork_release.hpp'], text=True)
+    assert 'currentVersion[] = "' + args.version + '";' in fork_version, 'The compiled update version must match the release'
     assert destination.drive.upper() == 'D:' and destination.is_relative_to(Path('D:/VLC-Redesign'))
     assert not destination.exists() and args.dependency_notices.is_dir()
     assert (args.dependency_notices / 'manifest.json').is_file()

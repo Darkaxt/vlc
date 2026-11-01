@@ -422,6 +422,7 @@ class KeySelectorControl : public ConfigControl
 public:
     KeySelectorControl( QWidget * );
     void resetToDefaults() { reset_all(ANY_COL); }
+    void editShortcut(const QString &option);
     void insertInto( QGridLayout*, int row = 0 ) override;
     void doApply() override;
     void storeValue() override {}

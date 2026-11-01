@@ -1364,7 +1364,7 @@ public:
                     static_cast<KeyTableItem *>(view->topLevelItem(index.row()))->global.config_name;
                 if (editable)
                     painter->drawPixmap(QPointF(box.right() - 29, box.y() + 4.5), edit);
-                QString key = index.data().toString();
+                QString key = editable ? index.data().toString() : qtr("Not available");
                 if (key.size() == 1) key = key.toUpper();
                 painter->setPen(foreground);
                 painter->drawText(box.adjusted(8, 0, -8, 0), Qt::AlignCenter,
@@ -1465,7 +1465,7 @@ KeySelectorControl::KeySelectorControl( QWidget *p ) : ConfigControl( nullptr )
     QWidget *parent, *rootWidget = p;
     while( (parent = rootWidget->parentWidget()) != NULL )
         rootWidget = parent;
-    existingkeys.unite(QSet<QString>{"Ctrl+O","Ctrl+Shift+O","Ctrl+F","Ctrl+D","Ctrl+N","Ctrl+C","Ctrl+V","Ctrl+Y","Ctrl+R","Ctrl+S","Ctrl+Q","Ctrl+E","Ctrl+I","Ctrl+J","Ctrl+Shift+W","Ctrl+M","Ctrl+P","Ctrl+L","Ctrl+H","Ctrl+T","Ctrl+B","Ctrl+Shift+H","Alt+D"});
+    existingkeys.unite(QSet<QString>{"Ctrl+O","Ctrl+Shift+O","Ctrl+F","Ctrl+D","Ctrl+N","Ctrl+C","Ctrl+V","Ctrl+Y","Ctrl+R","Ctrl+S","Ctrl+Q","Ctrl+E","Ctrl+I","Ctrl+J","Ctrl+Shift+W","Ctrl+M","Ctrl+P","Ctrl+H","Ctrl+T","Ctrl+B","Ctrl+Shift+H","Alt+D"});
     buildAppHotkeysList( rootWidget );
 
     finish();
@@ -1572,7 +1572,8 @@ void KeySelectorControl::finish()
 
     // The redesign's direct bookmark command is Qt-owned, with the same
     // conflict editor and persistence path as VLC's existing core shortcuts.
-    if (auto *config = config_FindConfig("qt-key-add-bookmark")) {
+    for (const auto *name : {"qt-key-add-bookmark", "qt-key-toggle-browser", "qt-key-toggle-queue"})
+    if (auto *config = config_FindConfig(name)) {
         auto *item = new KeyTableItem;
         item->normal.config_name = config->psz_name;
         item->normal.default_keys = qfu(config->orig.psz);
@@ -1635,6 +1636,20 @@ void KeySelectorControl::changeVisibility( bool visible )
 {
     table->setVisible( visible );
     if ( label ) label->setVisible( visible );
+}
+
+void KeySelectorControl::editShortcut(const QString &option)
+{
+    actionSearch->clear();
+    for (QTreeWidgetItemIterator iter(table); *iter; ++iter) {
+        if ((*iter)->type() != QTreeWidgetItem::UserType) continue;
+        auto *item = static_cast<KeyTableItem *>(*iter);
+        if (qfu(item->normal.config_name) != option) continue;
+        table->setCurrentItem(item, HOTKEY_COL);
+        table->scrollToItem(item);
+        selectKey(item, HOTKEY_COL);
+        return;
+    }
 }
 
 void KeySelectorControl::filter()

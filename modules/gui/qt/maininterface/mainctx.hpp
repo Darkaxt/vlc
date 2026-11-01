@@ -260,6 +260,7 @@ public:
     Q_INVOKABLE void finishRedesignOnboarding(bool finish, const QVariantMap &values, const QString &folder);
     Q_INVOKABLE QString chooseOnboardingFolder(const QString &current);
     Q_INVOKABLE QString shortcutLabel(const QString &option) const;
+    Q_INVOKABLE QStringList queueShortcutSequences() const;
     QObject *legacyFont() const;
     bool onboardingRequested() const { return m_onboardingRequested; }
     Q_INVOKABLE void requestPlayerOnboarding() {
@@ -523,6 +524,8 @@ protected:
     void feedbackForHotkey(int vlcKey);
     QHash<int, QString> m_shortcutActions;
     QSet<int> m_bookmarkKeys;
+    QSet<int> m_browserKeys;
+    QSet<int> m_queueKeys;
     ColorSchemeModel*    m_colorScheme = nullptr;
     bool                 m_windowTitlebar = true;
     // NOTE: Ideally this should be a QVLCBool.
@@ -685,6 +688,7 @@ signals:
     void playerOnboardingFinished(const QString &error);
     void hidePlayerChromeRequested();
     void hotkeyFeedback(const QString &action, const QString &shortcut, int duration);
+    void toggleFileBrowserRequested();
     void useGlobalShortcutsChanged( bool );
 
     void maxVolumeChanged();

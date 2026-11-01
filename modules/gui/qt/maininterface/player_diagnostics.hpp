@@ -57,6 +57,9 @@
 #include "player/player_media_tools.hpp"
 #include "player/player_media_analysis.hpp"
 #include "maininterface/mainctx.hpp"
+#ifdef UPDATE_CHECK
+#include "dialogs/help/help.hpp"
+#endif
 
 class PlayerDiagnostics final : public QObject
 {
@@ -363,6 +366,19 @@ private:
             {QStringLiteral("qml_errors"), m_errors}, {QStringLiteral("truncated"), m_items.size() >= 8000},
             {QStringLiteral("coverage"), QStringLiteral("Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation.")}};
         if(auto *engine=qmlEngine(m_root)){
+            auto *window=m_root->window();
+            const auto screen=window?window->screen():nullptr;
+            if(window) {
+                const auto available=screen?screen->availableGeometry():QRect();
+                const auto frame=window->frameGeometry();
+                result[QStringLiteral("window")]=QJsonObject{
+                    {QStringLiteral("width"),window->width()},{QStringLiteral("height"),window->height()},
+                    {QStringLiteral("x"),window->x()},{QStringLiteral("y"),window->y()},
+                    {QStringLiteral("minimum_width"),window->minimumWidth()},{QStringLiteral("minimum_height"),window->minimumHeight()},
+                    {QStringLiteral("dpr"),window->devicePixelRatio()},
+                    {QStringLiteral("frame_width"),frame.width()},{QStringLiteral("frame_height"),frame.height()},
+                    {QStringLiteral("available_width"),available.width()},{QStringLiteral("available_height"),available.height()}};
+            }
             const int type=qmlTypeId("VLC.Player",1,0,"PlayerCustomization");
             if(type>=0)if(auto *owner=engine->singletonInstance<QObject *>(type)){
                 QJsonObject state;
@@ -375,6 +391,11 @@ private:
             }
             const int contextType=qmlTypeId("VLC.MainInterface",1,0,"MainCtx");
             if(contextType>=0)if(auto *context=engine->singletonInstance<MainCtx *>(contextType)){
+#ifdef UPDATE_CHECK
+                if(auto *update=context->getUpdateModel())
+                    result[QStringLiteral("update")]=QJsonObject{{QStringLiteral("status"),int(update->updateStatus())},
+                        {QStringLiteral("explicit"),update->explicitCheck()},{QStringLiteral("url"),update->getUrl()}};
+#endif
                 if(auto *font=context->legacyFont()){
                     QJsonObject state;
                     for(const char *key:{"busy","available","status","received","total","location"})
@@ -395,7 +416,7 @@ private:
         if (m_player) {
             QJsonObject services;
             for (const auto &entry : {std::pair{"redesignMediaTools", QStringList{QStringLiteral("status"), QStringLiteral("matches"), QStringLiteral("cues"), QStringLiteral("timelineStatus"), QStringLiteral("subtitleLoaded"), QStringLiteral("subtitleTimeScale"), QStringLiteral("subtitleFPSSupported"), QStringLiteral("statisticsVisible"), QStringLiteral("statisticsText"), QStringLiteral("presets"), QStringLiteral("activePreset"), QStringLiteral("timelineVisible"), QStringLiteral("waveformVisible"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("videoInfo")}},
-                    std::pair{"redesignMediaAnalysis", QStringList{QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("waveform"), QStringLiteral("waveformStatus"), QStringLiteral("waveformBusy")}},
+                    std::pair{"redesignMediaAnalysis", QStringList{QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("previewLatencyMS"), QStringLiteral("waveform"), QStringLiteral("waveformStatus"), QStringLiteral("waveformBusy")}},
                     std::pair{"redesignSubtitleSearch", QStringList{QStringLiteral("provider"), QStringLiteral("configured"), QStringLiteral("busy"), QStringLiteral("status"), QStringLiteral("results"), QStringLiteral("archiveFiles")}}}) {
                 if (const auto service = m_player->findChild<QObject *>(QString::fromLatin1(entry.first))) {
                     QJsonObject values;
@@ -661,11 +682,20 @@ private:
         else if (!command.value(QStringLiteral("await_service")).toString().isEmpty()) {
             const QString name = command.value(QStringLiteral("await_service")).toString();
             const QMap<QString, QStringList> allowed{
-                {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
+                {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("timelineStatus"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
                 {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("waveformStatus")}},
-                {QStringLiteral("redesignSubtitleSearch"), {QStringLiteral("busy"), QStringLiteral("status")}}};
+                {QStringLiteral("redesignSubtitleSearch"), {QStringLiteral("busy"), QStringLiteral("status")}},
+                {QStringLiteral("forkUpdateModel"), {QStringLiteral("updateStatus")}}};
             if (m_player && allowed.value(name).contains(awaitProperty))
                 observed = m_player->findChild<QObject *>(name);
+#ifdef UPDATE_CHECK
+            if(name==QStringLiteral("forkUpdateModel")&&awaitProperty==QStringLiteral("updateStatus")) {
+                auto *engine=qmlEngine(m_root);
+                const int type=qmlTypeId("VLC.MainInterface",1,0,"MainCtx");
+                if(engine&&type>=0)if(auto *context=engine->singletonInstance<MainCtx *>(type))
+                    observed=context->getUpdateModel();
+            }
+#endif
             if (!observed) error = QStringLiteral("invalid_service_observation_rejected_before_dispatch");
         }
         else if (!awaitProperty.isEmpty()) {

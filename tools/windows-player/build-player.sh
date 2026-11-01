@@ -49,7 +49,8 @@ x86_64-w64-mingw32-strip --strip-debug \
 make -C "$build_root/lib" -j1 libvlc.la
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/libvlc.dll" "$build_root/lib/.libs/libvlc.dll"
-make -C "$build_root/bin" -j1 vlc.exe vlc-cache-gen.exe vlc-preparser.exe
+make -C "$build_root/bin" -j1 -f Makefile -f "$source_root/tools/windows-player/windows-icon.mk" vlc.exe vlc-cache-gen.exe vlc-preparser.exe
+cp "$source_root/share/icons/vlc.ico" "$runtime/vlc.ico"
 # The shared Windows module resource belongs to the parent modules graph.
 # Building Qt directly does not run that parent's BUILT_SOURCES target.
 make -C "$build_root/modules" -j1 module.rc.lo

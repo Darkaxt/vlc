@@ -68,6 +68,11 @@ libqt_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(CPPFLAGS_qt) $(PLAYER_DIAGNOSTICS_CP
 
 libqt_plugin_la_CXXFLAGS = $(AM_CXXFLAGS) $(QT_CFLAGS) $(CXXFLAGS_qt) -fPIC
 libqt_plugin_la_LIBADD = $(vlc_qt_libs)
+if HAVE_AVFORMAT
+libqt_plugin_la_CPPFLAGS += $(AVFORMAT_CFLAGS) -DVLC_QT_EMBEDDED_SUBTITLES
+libqt_plugin_la_LIBADD += $(AVFORMAT_LIBS)
+endif
+EXTRA_DIST += dialogs/help/fork_release.hpp maininterface/window_geometry.hpp player/embedded_subtitles.hpp
 if HAVE_LIBATOMIC
 libqt_plugin_la_CXXFLAGS += -DQT_HAS_LIBATOMIC
 libqt_plugin_la_LIBADD += -latomic

@@ -64,6 +64,8 @@ private:
 
     bool m_videoFullScreen = false;
     bool m_autoresize = false;
+    QSize m_requestedVideoSize;
+    QMetaObject::Connection m_interfaceModeConnection;
 
     QScreen* m_lastWinScreen = nullptr;
 

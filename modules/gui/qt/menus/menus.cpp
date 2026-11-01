@@ -319,7 +319,8 @@ void VLCMenuBar::ViewMenu(qt_intf_t *p_intf, QMenu *menu)
             ColorizedSvgIcon::colorizedIconForWidget( ":/menu/ic_playlist.svg", menu ),
 #endif
             qtr( "Play &Queue" ));
-    action->setShortcut(QString( "Ctrl+L" ));
+    const auto queueKeys = mi->queueShortcutSequences();
+    if (!queueKeys.isEmpty()) action->setShortcut(QKeySequence(queueKeys.front()));
     action->setCheckable( true );
     connect( action, &QAction::triggered, mi->getPlayqueuePanel(), &SidePanelCtx::setVisible );
     action->setChecked( mi->getPlayqueuePanel()->isVisible() );
@@ -476,7 +477,15 @@ void VLCMenuBar::SubtitleMenu( qt_intf_t *p_intf, QMenu *current, bool b_popup )
     {
         addDPStaticEntry( current, qtr( "Add &Subtitle File..." ), "",
                 &DialogsProvider::loadSubtitlesFile);
-        current->addMenu(new CheckableListMenu(qtr( "Sub &Track" ), THEMIM->getSubtitleTracks(), QActionGroup::ExclusionPolicy::ExclusiveOptional, current));
+        auto *tracks = THEMIM->getSubtitleTracks();
+        auto *trackMenu = new CheckableListMenu(qtr( "Sub &Track" ), tracks, QActionGroup::ExclusionPolicy::ExclusiveOptional, current);
+        current->addMenu(trackMenu);
+        const auto updateTracks = [tracks, trackMenu, player = THEMIM]() {
+            trackMenu->setEnabled(tracks->getCount() > 0 && !player->engineSwitching());
+        };
+        QObject::connect(tracks, &TrackListModel::countChanged, trackMenu, updateTracks);
+        QObject::connect(THEMIM, &PlayerController::engineSwitchingChanged, trackMenu, updateTracks);
+        updateTracks();
         current->addSeparator();
     }
 }
@@ -844,7 +853,8 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
         auto *tools=more->addMenu(qtr("Tools"));ToolsMenu(p_intf,tools);
         auto *view=more->addMenu(qtr("Interface"));ViewMenu(p_intf,view);
         menu->addSeparator();
-        auto *queue=menu->addAction(qtr("Queue\tCtrl+L"));queue->setCheckable(true);
+        const auto queueKeys=p_intf->p_mi->queueShortcutSequences();
+        auto *queue=menu->addAction(qtr("Queue")+(queueKeys.isEmpty()?QString():QStringLiteral("\t")+queueKeys.front()));queue->setCheckable(true);
         queue->setChecked(p_intf->p_mi->getPlayqueuePanel()->isVisible());
         connect(queue,&QAction::triggered,p_intf->p_mi->getPlayqueuePanel(),&SidePanelCtx::setVisible);
         PopupMenuStaticEntries(menu);

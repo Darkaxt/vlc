@@ -183,7 +183,7 @@ T.Pane {
                 visible: (UpdateModel.updateStatus === UpdateModel.NeedUpdate)
 
                 iconTxt: VLCIcons.ic_fluent_arrow_download_24_regular
-                text: qsTr("Download")
+                text: qsTr("Open release page")
                 showText: !rowLayout.collapseText
 
                 Binding on focus {

@@ -1,5 +1,23 @@
 # Windows x64 reproduction and recovery
 
+M2 (ACTIVE,1 November2026) prepares1.1.2 from the retained1.1.1 build without
+initializing a VM or replacing the SDK. `ForkRelease::currentVersion` in
+`modules/gui/qt/dialogs/help/fork_release.hpp` is the compiled fork release version;
+the packaging helper rejects a mismatched version. Upstream VLC's own version
+continues to identify its core. Windows artwork is generated from the preserved
+Figma cone by `generate-app-icon.py`; the shared windres icon has an explicit
+dependency through `windows-icon.mk`, and Qt consumes the matching PNG.
+The native `first-run-policies-check` uses the exact production release parser,
+window geometry and embedded-text extraction helpers with the pinned SDK/CRT.
+Embedded text is demuxed/decoded on one cancellable worker for local media only;
+video/audio are discarded, with no output device, network access or disk cache.
+SRT/ASS/MP4 text, selected stream identity, image limitations and cancellation
+are checked alongside actual UI/control/state behavior before release. Normal
+automatic update failures remain silent; manual checks target the established
+GitHub release channel and offer its release page rather than installing an
+upstream binary. This paragraph describes implementation/reproduction, not an
+acceptance or release claim. Current delivered version remains1.1.1 below.
+
 Current delivery is [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1), application commit `b84e7326e3d3e554120f3866fbe1c1acfa5ec6cc`. Its portable binary, complete corresponding source, matching separate symbols and checksums, including independently downloaded native playback, are verified in [M1 final delivery](resources/m1-verification.json). Current local qualification is `D:/VLC-Redesign/releases/1.1.1/verification`. The existing host reuses `D:/VLC-Redesign/build/windows-x64`; its read-only retained check142 verified source/configuration, SDK, MPV and new dependency prefixes plus the promoted runtime without rebuilding or initializing a VM. Use `normal-mpv-full` for the merged release. Do not repeat cold setup or configuration when the verified inputs remain unchanged. The original1.0.0/S7 procedure below is historical recovery guidance, not the current-host continuation procedure.
 
 The fork reuses VLC's engine and Qt frontend. It does not replace the installed

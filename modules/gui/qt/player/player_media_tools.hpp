@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QVariantList>
 
+class EmbeddedSubtitleWorker;
+
 class PlayerMediaTools : public QObject
 {
     Q_OBJECT
@@ -30,6 +32,7 @@ class PlayerMediaTools : public QObject
 public:
     static QString languageCode(const QString &language);
     explicit PlayerMediaTools(qt_intf_t *intf, PlayerController *player);
+    ~PlayerMediaTools() override;
     QString status() const { return m_status; }
     QVariantList matches() const { return m_matches; }
     QVariantList associations() const;
@@ -73,6 +76,7 @@ public:
     Q_INVOKABLE QVariantMap preferredTrack(bool subtitle) const;
     Q_INVOKABLE void armSleep(int minutes);
     Q_INVOKABLE void cancelSleep();
+    Q_INVOKABLE void seekSubtitleCue(bool forward);
     Q_INVOKABLE QVariantMap metadata() const;
     Q_INVOKABLE QVariantList trackLanguages(bool subtitle) const;
     Q_INVOKABLE QString selectedLanguage(bool subtitle) const;
@@ -105,6 +109,10 @@ private:
     int m_globalSubtitleDelay = 0;
     QVariantList m_matches, m_cues;
     QString m_statePath, m_status, m_timelineStatus, m_activePreset, m_sleepStatus;
+    EmbeddedSubtitleWorker *m_timelineWorker = nullptr;
+    QString m_timelineKey;
+    quint64 m_timelineGeneration = 0;
+    bool m_timelineLoaded = false;
     QUrl m_subtitle;
     QByteArray m_expectedSubtitlePrefix;
     bool m_awaitingSubtitleTrack = false, m_subtitleLoaded = false;

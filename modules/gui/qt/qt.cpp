@@ -481,6 +481,10 @@ vlc_module_begin ()
 
     add_string_inner(CONFIG_ITEM_KEY, "qt-key-add-bookmark", N_("Add bookmark at current position"),
             N_("Save a bookmark in VLC's media library. Existing conflicting core mappings retain priority until explicitly reassigned in Keyboard Shortcuts."), "Ctrl+Shift+b")
+    add_string_inner(CONFIG_ITEM_KEY, "qt-key-toggle-browser", N_("Show / Hide File Browser"),
+            N_("Toggle the media browser beside the playing video. Shortcut changes take effect after restarting VLC."), "Ctrl+Shift+f")
+    add_string_inner(CONFIG_ITEM_KEY, "qt-key-toggle-queue", N_("Show / Hide Queue"),
+            N_("Toggle the playback queue. Shortcut changes take effect after restarting VLC."), "Ctrl+l")
     add_bool("qt-shortcut-feedback", true, N_("Show feedback for shortcuts"),
              N_("Show an on-screen action message when a mapped playback shortcut is pressed."))
     add_bool("qt-shortcut-feedback-key", true, N_("Include the shortcut in feedback"),
@@ -1322,10 +1326,15 @@ static void *Thread( void *obj )
     app.setApplicationDisplayName( qtr("VLC media player") );
     app.setApplicationVersion( QString::fromUtf8(VERSION_MESSAGE) );
 
+#ifdef _WIN32
+    // Match the flat cone in the redesigned interface and the PE resource.
+    app.setWindowIcon( QIcon( ":/redesign/icons/app.png" ) );
+#else
     if( QDate::currentDate().dayOfYear() >= QT_XMAS_JOKE_DAY && var_InheritBool( p_intf, "qt-icon-change" ) )
         app.setWindowIcon( QIcon::fromTheme( "vlc-xmas", QIcon( ":/logo/vlc128-xmas.png" ) ) );
     else
         app.setWindowIcon( QIcon::fromTheme( "vlc", QIcon( ":/logo/vlc256.png" ) ) );
+#endif
 
     app.setDesktopFileName( PACKAGE );
 

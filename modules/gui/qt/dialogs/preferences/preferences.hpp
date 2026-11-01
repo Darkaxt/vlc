@@ -43,6 +43,7 @@ class PrefsDialog : public QVLCDialog
     PrefsDialog(QWindow *, qt_intf_t *);
     ~PrefsDialog() override;
     void showShortcuts();
+    void editShortcut(const QString &option);
 
   protected:
     bool eventFilter(QObject *, QEvent *) override;

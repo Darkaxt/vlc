@@ -17,6 +17,7 @@
  *****************************************************************************/
 #include "video_window_handler.hpp"
 #include "mainctx.hpp"
+#include "window_geometry.hpp"
 
 #include <QApplication>
 #include <QScreen>
@@ -86,7 +87,7 @@ void VideoWindowHandler::requestVideoState(  unsigned i_arg )
 
 void VideoWindowHandler::setVideoSize(unsigned int w, unsigned int h, Qt::WindowStates currentStates)
 {
-    if (!m_window)
+    if (!m_window || w == 0 || h == 0)
         return;
     Qt::WindowStates states = m_window->windowStates();
 
@@ -102,87 +103,33 @@ void VideoWindowHandler::setVideoSize(unsigned int w, unsigned int h, Qt::Window
     if (currentStates != states)
         return;
 
-    if ((states & (Qt::WindowFullScreen | Qt::WindowMaximized)) == 0)
-    {
-        /* Resize video widget to video size, or keep it at the same
-         * size. Call setSize() either way so that vlc_window_ReportSize
-         * will always get called.
-         * If the video size is too large for the screen, resize it
-         * to the screen size.
-         */
-        if (m_autoresize)
-        {
-            QRect screen = m_window->screen()->availableGeometry();
-            qreal factor = m_window->devicePixelRatio();
-            if( (float)h / factor > screen.height() )
-            {
-                w = screen.width();
-                h = screen.height();
-            }
-            else
-            {
-                {
-                    // Convert the size in logical pixels
-                    w = qRound( (float)w / factor );
-                    h = qRound( (float)h / factor );
-                    msg_Dbg( m_intf, "Logical video size: %ux%u", w, h );
-                }
-
-                {
-                    // Video window is anchored to the interface window, this is
-                    // expected because video window is "embedded". It is not the
-                    // other way around, where the window would adjust its size
-                    // depending on the size of the video window. However here,
-                    // with auto resize, the size is solely for the video window.
-                    // So, with the current approach, we need to compensate non-
-                    // video area for setting the window size to make the video
-                    // window have the expected size. If in the future we change
-                    // the approach, we can get rid of this workaround and rather
-                    // set the size of video surface item in the Qt Quick scene.
-                    // Currently this is mostly a case with pinned controls in
-                    // the player page, where the controls do not overlay the
-                    // video window/surface.
-
-                    assert(m_intf);
-                    assert(m_intf->p_compositor); // this slot should not be executed otherwise
-                    const auto quickWindow = m_intf->p_compositor->quickWindow();
-                    assert(quickWindow);
-                    const auto contentItem = quickWindow->contentItem();
-                    assert(contentItem);
-
-                    // I initially wanted to probe the QML video surface item, but
-                    // we can not do that because it is not available when this slot
-                    // is executed. In fact, due to late `MainCtx.hasEmbededVideo`
-                    // adjustment, it still remains "false" with a video input and
-                    // player state is in playing state. Worse, `hasVideoOutput`
-                    // is also "false" in the same situation (player reports playing
-                    // state). Relying on a delay there would be fragile, but we can
-                    // simply probe the loader instead, where the video surface item
-                    // is expected to fill it (so has the same size).
-                    if (const auto playerSpecializationLoader = contentItem->findChild<QQuickItem*>(QStringLiteral("playerSpecializationLoader")))
-                    {
-                        // Capture the current sizes to calculate the compensation, we
-                        // can do this because the compensation is not expected to change
-                        // with the change in the window size:
-                        const auto pslSize = playerSpecializationLoader->size().toSize(); // QML items have logical size too
-                        const auto windowSize = m_window->size();
-
-                        const auto dW = (windowSize.width() - pslSize.width());
-                        const auto dH = (windowSize.height() - pslSize.height());
-                        assert(dW >= 0 && dH >= 0); // psl can not be bigger than the window
-
-                        msg_Dbg( m_intf, "Autoresize interface window size compensation: %ix%i", dW, dH );
-
-                        w += dW;
-                        h += dH;
-                    }
-                }
-            }
-
-            m_window->resize(std::clamp<int>(w, m_window->minimumWidth(), m_window->maximumWidth()),
-                             std::clamp<int>(h, m_window->minimumHeight(), m_window->maximumHeight()));
+    m_requestedVideoSize = QSize(w, h);
+    if (!m_interfaceModeConnection && m_intf->p_mi) {
+        m_interfaceModeConnection = connect(m_intf->p_mi, &MainCtx::mainInterfaceModesChanged,
+            this, [this] {
+                if (m_window && m_intf->p_mi->isPlayerView() && m_requestedVideoSize.isValid())
+                    emit askVideoToResize(m_requestedVideoSize.width(), m_requestedVideoSize.height(), m_window->windowStates());
+            });
+    }
+    if (!m_autoresize || (states & (Qt::WindowFullScreen | Qt::WindowMaximized))
+        || !m_window->screen()) return;
+    // A library miniature is not the main video's size owner. Its pending
+    // native request is handled when the actual main player mode is entered.
+    if (m_intf->p_mi && !m_intf->p_mi->isPlayerView()) return;
+    const qreal factor = m_window->devicePixelRatio();
+    QSize chrome;
+    if (m_intf->p_compositor) {
+        const auto quick = m_intf->p_compositor->quickWindow();
+        const auto content = quick ? quick->contentItem() : nullptr;
+        if (content) {
+            if (const auto loader = content->findChild<QQuickItem*>(QStringLiteral("playerSpecializationLoader")))
+                chrome = (m_window->size() - loader->size().toSize()).expandedTo(QSize(0, 0));
         }
     }
+    const auto geometry = fitVideoWindow(QSizeF(w / factor, h / factor), chrome,
+        m_window->screen()->availableGeometry(), m_window->frameMargins(),
+        m_window->minimumSize(), m_window->maximumSize(), m_window->position());
+    m_window->setGeometry(geometry);
 }
 
 void VideoWindowHandler::setVideoFullScreen( bool fs )

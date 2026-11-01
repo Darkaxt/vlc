@@ -1027,6 +1027,11 @@ FocusScope {
         }
     }
 
+    Connections {
+        target: MainCtx
+        function onToggleFileBrowserRequested() { topBar.browseRequested() }
+    }
+
     Rectangle {
         id: shortcutFeedback
         objectName: "shortcutFeedback"

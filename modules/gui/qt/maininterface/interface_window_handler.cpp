@@ -94,7 +94,7 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
 
     const auto updateMinimumSize = [this]()
     {
-        if (m_mainCtx->isMinimalView())
+        if (m_mainCtx->isMinimalView() && !m_mainCtx->onboardingRequested())
         {
             m_window->setMinimumSize({128, 16});
             return;
@@ -115,11 +115,36 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
         int scaledWidth = std::ceil( intfScaleFactor * width );
         int scaledHeight = std::ceil( intfScaleFactor * height );
 
+        const auto screen = m_window->screen();
+        const auto frame = m_window->frameMargins();
+        const QSize available = screen ? screen->availableGeometry().size()
+            - QSize(frame.left() + frame.right(), frame.top() + frame.bottom())
+            : QSize(scaledWidth, scaledHeight);
+
+        if (m_mainCtx->onboardingRequested())
+        {
+            // The popup is1090x759 with a20px surround on each side. Its
+            // responsive scroll layout remains available on smaller screens.
+            scaledWidth = std::min(std::max(scaledWidth, int(std::ceil(intfScaleFactor * (1130 + margin)))), available.width());
+            scaledHeight = std::min(std::max(scaledHeight, int(std::ceil(intfScaleFactor * (799 + margin)))), available.height());
+        }
+        scaledWidth = std::max(1, std::min(scaledWidth, available.width()));
+        scaledHeight = std::max(1, std::min(scaledHeight, available.height()));
         m_window->setMinimumSize( QSize(scaledWidth, scaledHeight) );
+        if (m_mainCtx->onboardingRequested()) {
+            const QSize size=m_window->size().expandedTo(m_window->minimumSize()).boundedTo(available);
+            const QRect area=screen?screen->availableGeometry().marginsRemoved(frame):QRect(m_window->position(),available);
+            const QPoint position(std::clamp(m_window->x(),area.left(),area.right()+1-size.width()),
+                                  std::clamp(m_window->y(),area.top(),area.bottom()+1-size.height()));
+            m_window->setGeometry(QRect(position,size));
+        }
     };
     connect( m_mainCtx, &MainCtx::intfScaleFactorChanged, this, updateMinimumSize );
     connect( m_mainCtx, &MainCtx::windowExtendedMarginChanged, this, updateMinimumSize );
     connect( m_mainCtx, &MainCtx::mainInterfaceModesChanged, this, updateMinimumSize );
+    connect( m_mainCtx, &MainCtx::onboardingRequestedChanged, this, updateMinimumSize );
+    connect( m_window, &QWindow::screenChanged, this, updateMinimumSize );
+    connect( m_window, &QWindow::visibilityChanged, this, updateMinimumSize );
     m_mainCtx->updateIntfScaleFactor();
     updateMinimumSize();
 

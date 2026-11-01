@@ -87,6 +87,7 @@
         <file alias="subtitles.svg">pixmaps/redesign/subtitles.svg</file>
         <file alias="tools.svg">pixmaps/redesign/tools.svg</file>
         <file alias="vlc.svg">pixmaps/redesign/vlc.svg</file>
+        <file alias="app.png">pixmaps/redesign/app.png</file>
         <file alias="volume.svg">pixmaps/redesign/volume.svg</file>
     </qresource>
     <qresource prefix="/logo">

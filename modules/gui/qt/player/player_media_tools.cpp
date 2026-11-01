@@ -4,6 +4,7 @@
 #endif
 #include "player_media_tools.hpp"
 #include "mpv_playback.hpp"
+#include "embedded_subtitles.hpp"
 #include "playlist/playlist_controller.hpp"
 #include <vlc_aout.h>
 #include <vlc_configuration.h>
@@ -160,6 +161,16 @@ PlayerMediaTools::PlayerMediaTools(qt_intf_t *intf, PlayerController *player)
     });
     inputChanged();
 }
+PlayerMediaTools::~PlayerMediaTools()
+{
+    if (m_timelineWorker) {
+        m_timelineWorker->cancel();
+        m_timelineWorker->wait();
+        delete m_timelineWorker;
+        m_timelineWorker = nullptr;
+    }
+}
+
 void PlayerMediaTools::report(const QString &text) { m_status = text; emit changed(); }
 QString PlayerMediaTools::languageCode(const QString &language)
 {
@@ -396,29 +407,62 @@ QUrl PlayerMediaTools::browsePresetFolder()
 }
 void PlayerMediaTools::loadTimeline()
 {
-    m_cues.clear();
     bool selected = false, external = false;
+    int ordinal = -1, ffIndex = -1;
+    QString trackId;
+    QUrl subtitleFile = m_subtitle;
     if (m_player->usesMpv()) {
+        int index = 0;
         for (const auto &value : m_player->mpvPlayback()->value(QStringLiteral("track-list")).toList()) {
             const auto track = value.toMap();
-            if (track.value(QStringLiteral("type")).toString() != QStringLiteral("sub") || !track.value(QStringLiteral("selected")).toBool()) continue;
-            selected = true;
-            const auto file = track.value(QStringLiteral("external-filename")).toString();
-            const QUrl url = QUrl::fromLocalFile(file);
-            external |= !m_subtitle.isEmpty() && (url == m_subtitle || QUrl(file) == m_subtitle);
+            if (track.value(QStringLiteral("type")).toString() != QStringLiteral("sub")) continue;
+            const bool outside = track.value(QStringLiteral("external")).toBool();
+            if (track.value(QStringLiteral("selected")).toBool()) {
+                selected = true;
+                trackId = QString::number(track.value(QStringLiteral("id")).toInt());
+                external = outside;
+                if (outside) {
+                    const auto file = track.value(QStringLiteral("external-filename")).toString();
+                    subtitleFile = QUrl(file).isLocalFile() ? QUrl(file) : QUrl::fromLocalFile(file);
+                } else {
+                    ordinal = index;
+                    ffIndex = track.contains(QStringLiteral("ff-index")) ? track.value(QStringLiteral("ff-index")).toInt() : -1;
+                }
+                break;
+            }
+            if (!outside) ++index;
         }
     } else {
         vlc_player_locker lock(m_player->getPlayer());
         const auto *track = vlc_player_GetSelectedTrack(m_player->getPlayer(), SPU_ES);
         selected = track != nullptr;
-        external = track && !m_expectedSubtitlePrefix.isEmpty() && QByteArray(vlc_es_id_GetStrId(track->es_id)).startsWith(m_expectedSubtitlePrefix);
+        if (track) {
+            trackId = QString::fromUtf8(vlc_es_id_GetStrId(track->es_id));
+            external = !m_expectedSubtitlePrefix.isEmpty() && trackId.toUtf8().startsWith(m_expectedSubtitlePrefix);
+            for (size_t i = 0; i < vlc_player_GetTrackCount(m_player->getPlayer(), SPU_ES); ++i)
+                if (vlc_player_GetTrackAt(m_player->getPlayer(), SPU_ES, i)->es_id == track->es_id) { ordinal = int(i); break; }
+        }
     }
     m_subtitleLoaded = external;
-    if (external && m_awaitingSubtitleTrack) { m_awaitingSubtitleTrack = false; report(tr("Subtitle track loaded and selected.")); }
-    if (!selected) m_timelineStatus = tr("No subtitle track selected.");
-    else if (!external) m_timelineStatus = tr("Cue timeline is available for added SRT, WebVTT, ASS and SSA files. Embedded and image subtitles keep playing normally.");
-    else {
-        QFile file(m_subtitle.toLocalFile()); const auto ext = QFileInfo(file).suffix().toLower();
+    if (external && m_awaitingSubtitleTrack) {
+        m_awaitingSubtitleTrack = false;
+        report(tr("Subtitle track loaded and selected."));
+    }
+    const QString key = m_player->getUrl().toString(QUrl::FullyEncoded) + QLatin1Char('|')
+        + (m_player->usesMpv() ? QStringLiteral("mpv") : QStringLiteral("vlc")) + QLatin1Char('|')
+        + trackId + QLatin1Char('|') + (external ? subtitleFile.toString() : QString());
+    if (key != m_timelineKey) {
+        ++m_timelineGeneration;
+        if (m_timelineWorker) m_timelineWorker->cancel();
+        m_timelineKey = key;
+        m_timelineLoaded = false;
+        m_cues.clear();
+    }
+    if (!selected) {
+        m_timelineStatus = tr("No subtitle track selected.");
+    } else if (external) {
+        m_cues.clear();
+        QFile file(subtitleFile.toLocalFile()); const auto ext = QFileInfo(file).suffix().toLower();
         if (!QStringList{QStringLiteral("srt"), QStringLiteral("vtt"), QStringLiteral("ass"), QStringLiteral("ssa")}.contains(ext))
             m_timelineStatus = tr("This subtitle type has no text cue timeline; playback is unchanged.");
         else if (!file.open(QIODevice::ReadOnly) || file.size() > 8 * 1024 * 1024)
@@ -431,8 +475,52 @@ void PlayerMediaTools::loadTimeline()
                 m_cues.append(QVariantMap{{QStringLiteral("start"), cue.start}, {QStringLiteral("end"), cue.end}, {QStringLiteral("text"), cue.text}});
             m_timelineStatus = m_cues.isEmpty() ? tr("No supported text cues found; subtitle playback is unchanged.") : (m_cues.size() >= 100000 ? tr("First 100000 source cues; the cue timeline is capped. Subtitle playback is unchanged.") : tr("%1 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.").arg(m_cues.size()));
         }
+    } else if (!m_player->getUrl().isLocalFile()) {
+        m_timelineStatus = tr("Embedded text timelines require a local media file. Subtitle playback is unchanged.");
+    } else if (!m_timelineVisible) {
+        if (m_timelineWorker) m_timelineWorker->cancel();
+        m_timelineStatus = tr("Enable Show Subtitle Timeline on Seekbar to read the selected embedded text track.");
+    } else if (!m_timelineLoaded) {
+        m_timelineStatus = tr("Reading the selected embedded subtitle timeline…");
+        if (!m_timelineWorker) {
+            const auto generation = m_timelineGeneration;
+            auto *worker = new EmbeddedSubtitleWorker(m_player->getUrl().toLocalFile(), ordinal, ffIndex, this);
+            m_timelineWorker = worker;
+            connect(worker, &QThread::finished, this, [this, worker, generation] {
+                const auto result = worker->result;
+                m_timelineWorker = nullptr;
+                worker->deleteLater();
+                if (generation != m_timelineGeneration || result.cancelled) {
+                    loadTimeline();
+                    return;
+                }
+                m_timelineLoaded = true;
+                m_cues = result.cues;
+                m_timelineStatus = !result.error.isEmpty() ? result.error
+                    : m_cues.isEmpty() ? tr("No text cues found in the selected embedded track.")
+                    : tr("%1 embedded source cues; positions follow the selected track and subtitle delay.").arg(m_cues.size());
+                emit cuesChanged();
+            });
+            worker->start();
+        }
     }
     emit cuesChanged();
+}
+
+void PlayerMediaTools::seekSubtitleCue(bool forward)
+{
+    const double duration = double(m_player->getLength().toVLCTick()) / 1000.;
+    if (m_cues.isEmpty() || !m_player->isSeekable() || duration <= 0) return;
+    const double now = m_player->getPosition() * duration;
+    const double scale = subtitleTimeScale();
+    const int delay = m_player->getSubtitleDelayMS();
+    double target = forward ? duration + 1 : -1;
+    for (const auto &value : m_cues) {
+        const double position = value.toMap().value(QStringLiteral("start")).toDouble() * scale + delay;
+        if (forward && position > now + 1) target = std::min(target, position);
+        if (!forward && position < now - 1) target = std::max(target, position);
+    }
+    if (target >= 0 && target <= duration) m_player->setPosition(std::clamp(target / duration, 0., 1.));
 }
 QVariant PlayerMediaTools::value(const QString &key) const
 {
@@ -739,6 +827,10 @@ void PlayerMediaTools::restoreTracks()
 }
 void PlayerMediaTools::inputChanged()
 {
+    ++m_timelineGeneration;
+    if (m_timelineWorker) m_timelineWorker->cancel();
+    m_timelineKey.clear();
+    m_timelineLoaded = false;
     if (m_writable) m_status.clear(); // Transient results belong to the old input; preserve store-recovery errors.
     m_statisticsText = m_player->usesMpv() ? tr("VLC playback statistics require the VLC engine.") : tr("Waiting for playback statistics…"); emit statisticsChanged();
     m_subtitle = QUrl(); m_expectedSubtitlePrefix.clear(); m_awaitingSubtitleTrack = false; m_subtitleLoaded = false;
@@ -797,7 +889,7 @@ void PlayerMediaTools::inputChanged()
 void PlayerMediaTools::setTimelineVisible(bool enabled)
 {
     auto state = m_state; state[QStringLiteral("timelineVisible")] = enabled;
-    if (writeState(state)) { m_timelineVisible = enabled; emit changed(); emit analysisTogglesChanged(); }
+    if (writeState(state)) { m_timelineVisible = enabled; loadTimeline(); emit changed(); emit analysisTogglesChanged(); }
 }
 void PlayerMediaTools::setWaveformVisible(bool enabled)
 {

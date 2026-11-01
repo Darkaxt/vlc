@@ -34,7 +34,13 @@
 #include <vlc_intf_strings.h>
 
 #ifdef UPDATE_CHECK
-# include <vlc_update.h>
+# include "fork_release.hpp"
+# include <QNetworkAccessManager>
+# include <QNetworkReply>
+# include <QNetworkRequest>
+# include <QPointer>
+# include <QDesktopServices>
+# include <memory>
 #endif
 
 #include <QTextBrowser>
@@ -185,131 +191,100 @@ class UpdateModelPrivate
 {
 public:
     Q_DECLARE_PUBLIC(UpdateModel)
-    UpdateModelPrivate(UpdateModel * pub)
-        : q_ptr(pub)
-    {
-    }
-
-    update_t* m_update = nullptr;
-
-    const update_release_t* m_release = nullptr;
+    explicit UpdateModelPrivate(UpdateModel *pub) : network(pub), q_ptr(pub) {}
+    QNetworkAccessManager network;
+    QPointer<QNetworkReply> reply;
+    ForkRelease::Release release;
     UpdateModel::Status m_status = UpdateModel::Unchecked;
     bool m_explicitCheck = false;
-
-    UpdateModel* q_ptr = nullptr;
+    UpdateModel *q_ptr = nullptr;
 };
 
-static void UpdateCallback(void *data, bool b_ret)
-{
-    auto that = (UpdateModelPrivate*)data;
-    QMetaObject::invokeMethod(that->q_func(), [that, b_ret](){
-        if (!b_ret)
-        {
-            that->m_status = UpdateModel::CheckFailed;
-            that->m_release = nullptr;
-        }
-        else
-        {
-            bool needUpdate = update_NeedUpgrade( that->m_update );
-            if (!needUpdate)
-            {
-#if defined(UPDATE_MOCK) && !defined(NDEBUG)
-               static const update_release_t updateReleaseMock = {
-                   9,
-                   0,
-                   99,
-                   999,
-                   "",
-                   // Lorem ipsum with some "Security" to see if red coloring works:
-                   "Lorem ipsum dolor sit amet, security consectetur adipiscing elit. Sed vitae ante lobortis," \
-                   "condimentum sem et, auctor libero. Aliquam eget mi justo. <br /> <br /> Class aptent taciti sociosqu" \
-                   "ad litora Security torquent per conubia nostra, per inceptos himenaeos. Nulla id pretium ante. Nam" \
-                   "eu blandit lacus. Proin faucibus in risus quis condimentum. <br /> <br /> Pellentesque a tellus vitae" \
-                   "massa tristique cursus. Phasellus fermentum euismod mauris, at ultricies ipsum volutpat eu." \
-                   "Praesent arcu lacus, laoreet at lacinia quis, rhoncus at lectus. " \
-                   // Repeat:
-                   "Lorem ipsum dolor sit amet, security consectetur adipiscing elit. Sed vitae ante lobortis," \
-                   "condimentum sem et, auctor libero. Aliquam eget mi justo. <br /> <br /> Class aptent taciti sociosqu" \
-                   "ad litora Security torquent per conubia nostra, per inceptos himenaeos. Nulla id pretium ante. Nam" \
-                   "eu blandit lacus. Proin faucibus in risus quis condimentum. <br /> <br /> Pellentesque a tellus vitae" \
-                   "massa tristique cursus. Phasellus fermentum euismod mauris, at ultricies ipsum volutpat eu." \
-                   "Praesent arcu lacus, laoreet at lacinia quis, rhoncus at lectus. " \
-                   // Repeat:
-                   "Lorem ipsum dolor sit amet, security consectetur adipiscing elit. Sed vitae ante lobortis," \
-                   "condimentum sem et, auctor libero. Aliquam eget mi justo. <br /> <br /> Class aptent taciti sociosqu" \
-                   "ad litora Security torquent per conubia nostra, per inceptos himenaeos. Nulla id pretium ante. Nam" \
-                   "eu blandit lacus. Proin faucibus in risus quis condimentum. <br /> <br /> Pellentesque a tellus vitae" \
-                   "massa tristique cursus. Phasellus fermentum euismod mauris, at ultricies ipsum volutpat eu." \
-                   "Praesent arcu lacus, laoreet at lacinia quis, rhoncus at lectus. " \
-               };
-
-               that->m_release = &updateReleaseMock;
-               that->m_status = UpdateModel::NeedUpdate;
-#else
-               that->m_status = UpdateModel::UpToDate;
-               that->m_release = nullptr;
-#endif
-            }
-            else
-            {
-                that->m_status = UpdateModel::NeedUpdate;
-                that->m_release = update_GetRelease(that->m_update);
-            }
-        }
-        emit that->q_func()->updateStatusChanged();
-    });
-}
-
-UpdateModel::UpdateModel(qt_intf_t * p_intf)
+UpdateModel::UpdateModel(qt_intf_t *p_intf)
     : d_ptr(new UpdateModelPrivate(this))
 {
-    Q_D(UpdateModel);
-    d->m_update = update_New( p_intf );
+    Q_UNUSED(p_intf)
 }
 
 UpdateModel::~UpdateModel()
 {
     Q_D(UpdateModel);
-    update_Delete( d->m_update );
+    if (d->reply) {
+        d->reply->disconnect(this);
+        d->reply->abort();
+    }
 }
 
 void UpdateModel::checkUpdate(bool explicitCheck)
 {
     Q_D(UpdateModel);
-    if (d->m_status == Checking)
+    // A manual check can adopt the original in-flight request.
+    if (explicitCheck && !d->m_explicitCheck) {
+        d->m_explicitCheck = true;
+        emit explicitCheckChanged();
+    }
+    if (d->reply) {
+        d->m_status = Checking;
+        emit updateStatusChanged();
         return;
-
-    if (d->m_explicitCheck != explicitCheck)
-    {
+    }
+    if (d->m_explicitCheck != explicitCheck) {
         d->m_explicitCheck = explicitCheck;
         emit explicitCheckChanged();
     }
-
-    d->m_release = nullptr;
+    d->release = {};
     d->m_status = Checking;
     emit updateStatusChanged();
-    update_Check( d->m_update, UpdateCallback, d );
+    QUrl url(QString::fromLatin1(ForkRelease::endpoint));
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    // Controlled network cases use an actual test-only loopback HTTP peer.
+    // Normal binaries have no endpoint override.
+    const QUrl peer(QString::fromUtf8(qgetenv("VLC_PLAYER_DIAGNOSTICS_UPDATE_URL")));
+    if (!qgetenv("VLC_PLAYER_DIAGNOSTICS_DIR").isEmpty() && peer.scheme() == QStringLiteral("http")
+        && peer.host() == QStringLiteral("127.0.0.1") && peer.port() > 0
+        && peer.path() == QStringLiteral("/releases/latest")) url = peer;
+#endif
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+    request.setRawHeader("Accept", "application/vnd.github+json");
+    request.setRawHeader("X-GitHub-Api-Version", "2022-11-28");
+    request.setRawHeader("User-Agent", QByteArray("Modern-VLC-Fork/") + ForkRelease::currentVersion);
+    auto *reply = d->network.get(request);
+    d->reply = reply;
+    reply->setReadBufferSize(1024 * 1024 + 1);
+    auto bytes = std::make_shared<QByteArray>();
+    connect(reply, &QNetworkReply::readyRead, this, [reply, bytes] {
+        bytes->append(reply->readAll());
+        if (bytes->size() > 1024 * 1024) reply->abort();
+    });
+    connect(reply, &QNetworkReply::finished, this, [this, reply, bytes] {
+        Q_D(UpdateModel);
+        bytes->append(reply->readAll());
+        d->reply = nullptr;
+        if (reply->error() == QNetworkReply::NoError
+            && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
+            d->release = ForkRelease::parse(*bytes);
+        d->m_status = !d->release.valid ? CheckFailed
+            : d->release.version > QVersionNumber::fromString(QString::fromLatin1(ForkRelease::currentVersion))
+                ? NeedUpdate : UpToDate;
+        reply->deleteLater();
+        emit updateStatusChanged();
+    });
 }
 
 bool UpdateModel::download(QString destDir)
 {
+    Q_UNUSED(destDir)
     Q_D(UpdateModel);
-    if (d->m_status != NeedUpdate)
-        return false;
-    update_Download( d->m_update, qtu( destDir ) );
-    return true;
+    // The portable fork is updated through its verified release page. Never
+    // download/install a VideoLAN binary over this fork or alter a live profile.
+    return d->m_status == NeedUpdate && d->release.valid
+        && QDesktopServices::openUrl(d->release.page);
 }
 
 bool UpdateModel::download()
 {
-    QString dest_dir = QDir::tempPath();
-    if (Q_UNLIKELY(dest_dir.isEmpty()))
-        return false;
-
-    dest_dir = toNativeSepNoSlash( std::move(dest_dir) ) + DIR_SEP;
-    qDebug() << "Downloading to folder:" << qtu( dest_dir );
-
-    return download(dest_dir);
+    return download(QString());
 }
 
 void UpdateModel::resetStatus()
@@ -330,38 +305,31 @@ UpdateModel::Status UpdateModel::updateStatus() const
 int UpdateModel::getMajor() const
 {
     Q_D(const UpdateModel);
-    if (!d->m_release) return 0;
-    return d->m_release->i_major;
+    return d->release.version.majorVersion();
 }
 int UpdateModel::getMinor() const
 {
     Q_D(const UpdateModel);
-    if (!d->m_release) return 0;
-    return d->m_release->i_minor;
+    return d->release.version.minorVersion();
 }
 int UpdateModel::getRevision() const
 {
     Q_D(const UpdateModel);
-    if (!d->m_release) return 0;
-    return d->m_release->i_revision;
+    return d->release.version.microVersion();
 }
 int UpdateModel::getExtra() const
 {
-    Q_D(const UpdateModel);
-    if (!d->m_release) return 0;
-    return d->m_release->i_extra;
+    return 0;
 }
 QString UpdateModel::getDescription() const
 {
     Q_D(const UpdateModel);
-    if (!d->m_release) return 0;
-    return qfu( d->m_release->psz_desc );
+    return d->release.description;
 }
 QString UpdateModel::getUrl() const
 {
     Q_D(const UpdateModel);
-    if (!d->m_release) return 0;
-    return qfu( d->m_release->psz_desc );
+    return d->release.page.toString();
 }
 
 double UpdateModel::getProgress() const
@@ -398,12 +366,12 @@ UpdateDialog::UpdateDialog( qt_intf_t *_p_intf ) : QVLCFrame( _p_intf )
     QPushButton *recheckButton = new QPushButton( qtr("&Recheck version"), this );
     ui.updateDialogButtonBox->addButton( recheckButton, QDialogButtonBox::ActionRole );
 
-    ui.updateNotifyButtonBox->addButton( new QPushButton( qtr("&Yes"), this ),
+    ui.updateNotifyButtonBox->addButton( new QPushButton( qtr("&Open release page"), this ),
                                          QDialogButtonBox::AcceptRole );
     ui.updateNotifyButtonBox->addButton( new QPushButton( qtr("&No"), this ),
                                          QDialogButtonBox::RejectRole );
 
-    setWindowTitle( qtr( "VLC media player updates" ) );
+    setWindowTitle( qtr( "Modern VLC Fork updates" ) );
     setWindowRole( "vlc-update" );
 
     BUTTONACT( recheckButton, &UpdateDialog::checkOrDownload );
@@ -459,7 +427,7 @@ void UpdateDialog::checkOrDownload()
     case UpdateModel::CheckFailed:
     {
         ui.stackedWidget->setCurrentWidget( ui.updateRequestPage );
-        m_model->checkUpdate();
+        m_model->checkUpdate(true);
         break;
     }
     case UpdateModel::NeedUpdate:
@@ -482,14 +450,14 @@ void UpdateDialog::updateUI( )
         ui.stackedWidget->setCurrentWidget( ui.updateNotifyPage );
         int extra = m_model->getExtra();
         QString message = QString(
-                              qtr( "A new version of VLC (%1.%2.%3%4) is available." ) )
+                              qtr( "A new version of Modern VLC Fork (%1.%2.%3%4) is available." ) )
                               .arg( m_model->getMajor() )
                               .arg( m_model->getMinor() )
                               .arg( m_model->getRevision()  )
                               .arg( extra == 0 ? QStringLiteral("") : QStringLiteral(".") + QString::number( extra ) );
 
         ui.updateNotifyLabel->setText( message );
-        message = m_model->getDescription().replace( "\n", "<br/>" );
+        message = m_model->getDescription().toHtmlEscaped().replace( "\n", "<br/>" );
 
         /* Try to highlight releases featuring security changes */
         int i_index = message.indexOf( "security", Qt::CaseInsensitive );
@@ -505,14 +473,14 @@ void UpdateDialog::updateUI( )
     {
         ui.stackedWidget->setCurrentWidget( ui.updateDialogPage );
         ui.updateDialogLabel->setText(
-            qtr( "You have the latest version of VLC media player." ) );
+            qtr( "You have the latest available Modern VLC Fork release." ) );
         break;
     }
     case UpdateModel::CheckFailed:
     {
         ui.stackedWidget->setCurrentWidget( ui.updateDialogPage );
         ui.updateDialogLabel->setText(
-            qtr( "An error occurred while checking for updates..." ) );
+            qtr( "Could not check the Modern VLC Fork releases. Check your connection and choose Recheck version." ) );
         break;
     }
     case UpdateModel::Checking:

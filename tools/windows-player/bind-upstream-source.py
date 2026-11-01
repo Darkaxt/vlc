@@ -11,6 +11,7 @@ def main():
     parser.add_argument('--manifest', required=True, type=Path)
     parser.add_argument('--bundle', required=True, type=Path)
     parser.add_argument('--closed-report', required=True, type=Path)
+    parser.add_argument('--pipeline-state', type=Path, default=Path('/scratch/compilation/state.json'))
     args = parser.parse_args()
     group = Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip()
     assert group.startswith('/llm-coordinator/') and Path('/.vlc-s8-toolchain.json').is_file()
@@ -21,7 +22,7 @@ def main():
     assert manifest['schema'] == 'vlc_redesign.upstream_source_binding.v1'
     closed = json.loads(args.closed_report.read_text())
     assert closed['populated'] is False and closed['command_started'] is True
-    state = json.loads(Path('/scratch/compilation/state.json').read_text())
+    state = json.loads(args.pipeline_state.read_text())
     assert state['attempts'][-1]['cgroup'] == '/llm-coordinator/' + closed['id']
     assert git('rev-parse', 'HEAD').decode().strip() == manifest['previous_commit']
     assert not git('status', '--porcelain'), 'Preserve unexpected private-clone changes'

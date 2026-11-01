@@ -180,7 +180,9 @@ private:
     qt_intf_t* m_intf;
     vlc::playlist::PlaylistController* m_playlistController = nullptr;
 
-    bool m_idle = false;
+    // No background task exists until the library reports one. An empty lazy
+    // library need not emit an initial idle transition at all.
+    bool m_idle = true;
     bool m_discoveryPending = false;
     int m_parsingProgress = 0;
     QString m_discoveryEntryPoint;
