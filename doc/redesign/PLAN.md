@@ -56,6 +56,29 @@ also wired into the normal-package observer. These source corrections remain
 internal acceptance blockers until the complete native workflows pass. No build
 may be submitted while known wiring or review work remains unfinished.
 
+The71fc2d1 diagnostic player assembly passed in ticket144; its separate checker
+lookup failed because this SDK provides Qt6Core.prl rather than Qt6Core.pc.
+Checker-only ticket147 then compiled the corrected fixture executable and closed
+with exit0, an empty group, no OOM and released private mounts. These are build
+results, not stage acceptance. Native passes01/02 retained their failures and
+closed all owned players normally. The production policy/geometry/text-container
+checks, all nine PE icon sizes and the actual native flat window icon pass;
+the100% welcome/editor actions and quiet second-start/manual update retry also
+work. The4K cold preview measured92.8ms and cached publication0.001ms.
+
+R79 still failed: fresh video promotion was incorrectly wired only in legacy
+MainDisplay, while the actual redesigned library uses PlayerLibraryDisplay.
+R82's percentage-based cue seek landed at2.125s for a1s cue; the same player's
+Go to Time action landed at1.125s. Current corrections move output/embedding
+ownership into the persistent MainInterface root, use absolute cue timestamps,
+make Previous select the cue preceding the active one, and strip libavcodec ASS
+event metadata from embedded dialogue. Test-driver corrections use real loader
+readiness, the current full/compact viewport, normal replacement-item playback,
+native update-dialog controls, focus reveal and a reader thread bound solely to
+the owned inactive desktop. The input desktop remains unchanged. These source
+corrections and all remaining workflows require fresh integrated acceptance;
+R78 normal packaging/publication/delivery/retention/cleanup remains unresolved.
+
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
 is the normal published update from application commit

@@ -16,14 +16,18 @@ static void require(bool value, const char *message)
 
 static QJsonObject release(const QString &version)
 {
-    const auto tag=QStringLiteral("redesign-v")+version;
-    const auto base=QStringLiteral("Modern-VLC-Fork-")+version;
+    const QString tag=QStringLiteral("redesign-v")+version;
+    const QString base=QStringLiteral("Modern-VLC-Fork-")+version;
     QJsonArray assets;
     for(const auto &name:QStringList{base+QStringLiteral("-win64-portable.zip"),base+QStringLiteral("-corresponding-source.tar.gz"),
         base+QStringLiteral("-win64-symbols.zip"),QStringLiteral("SHA256SUMS.txt")})
+    {
+        const QString download=QStringLiteral("https://github.com/Darkaxt/vlc/releases/download/")+tag+QLatin1Char('/')+name;
         assets.append(QJsonObject{{QStringLiteral("name"),name},{QStringLiteral("state"),QStringLiteral("uploaded")},
-            {QStringLiteral("size"),1024},{QStringLiteral("browser_download_url"),QStringLiteral("https://github.com/Darkaxt/vlc/releases/download/")+tag+QLatin1Char('/')+name}});
-    return {{QStringLiteral("tag_name"),tag},{QStringLiteral("html_url"),QStringLiteral("https://github.com/Darkaxt/vlc/releases/tag/")+tag},
+            {QStringLiteral("size"),1024},{QStringLiteral("browser_download_url"),download}});
+    }
+    const QString page=QStringLiteral("https://github.com/Darkaxt/vlc/releases/tag/")+tag;
+    return {{QStringLiteral("tag_name"),tag},{QStringLiteral("html_url"),page},
         {QStringLiteral("draft"),false},{QStringLiteral("prerelease"),false},{QStringLiteral("assets"),assets},{QStringLiteral("body"),QStringLiteral("Test release")}};
 }
 
@@ -54,13 +58,14 @@ int main(int argc,char **argv)
                 require(screen.contains(fit.marginsAdded(frame)),"Video/chrome/frame overflowed the current screen");
                 ++geometryCases;
             }
-    const auto directory=QString::fromLocal8Bit(argv[1])+QLatin1Char('/');
+    const QString directory=QString::fromLocal8Bit(argv[1])+QLatin1Char('/');
     const std::atomic_bool running{false};
     QJsonArray decoded;
     for(const auto &name:{QStringLiteral("embedded-text.mkv"),QStringLiteral("embedded-ass.mkv"),QStringLiteral("embedded-text.mp4")}) {
         const auto result=readEmbeddedSubtitles(directory+name,0,-1,running);
         require(result.error.isEmpty()&&!result.cancelled,"Embedded text extraction failed");
         require(result.cues.size()==3,"Unexpected subtitle cue count");
+        require(result.cues.front().toMap()[QStringLiteral("text")].toString()==QStringLiteral("English first"),"Embedded dialogue contains decoder metadata or styling");
         require(std::abs(result.cues.front().toMap()[QStringLiteral("start")].toLongLong()-1000)<=5,"Embedded cue start is not media-relative");
         require(std::abs(result.cues.front().toMap()[QStringLiteral("end")].toLongLong()-2500)<=5,"Embedded cue end is incorrect");
         decoded.append(QJsonObject{{QStringLiteral("file"),name},{QStringLiteral("cues"),QJsonArray::fromVariantList(result.cues)}});

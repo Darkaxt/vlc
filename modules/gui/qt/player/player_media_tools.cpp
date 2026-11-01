@@ -534,13 +534,25 @@ void PlayerMediaTools::seekSubtitleCue(bool forward)
     const double now = m_player->getPosition() * duration;
     const double scale = subtitleTimeScale();
     const int delay = m_player->getSubtitleDelayMS();
+    double activeStart = -1;
+    if (!forward) {
+        for (const auto &value : m_cues) {
+            const auto cue = value.toMap();
+            const double start = cue.value(QStringLiteral("start")).toDouble() * scale + delay;
+            const double end = cue.value(QStringLiteral("end")).toDouble() * scale + delay;
+            if (start <= now && now < end) activeStart = std::max(activeStart, start);
+        }
+    }
+    const double before = activeStart >= 0 ? activeStart : now;
     double target = forward ? duration + 1 : -1;
     for (const auto &value : m_cues) {
         const double position = value.toMap().value(QStringLiteral("start")).toDouble() * scale + delay;
         if (forward && position > now + 1) target = std::min(target, position);
-        if (!forward && position < now - 1) target = std::max(target, position);
+        if (!forward && position < before - 1) target = std::max(target, position);
     }
-    if (target >= 0 && target <= duration) m_player->setPosition(std::clamp(target / duration, 0., 1.));
+    // Container percentage seeking can land after the cue even with precise
+    // decoding. Cue starts are media timestamps, like VLC's Go to Time action.
+    if (target >= 0 && target <= duration) m_player->setTime(VLCTime(VLC_TICK_FROM_MS(qRound64(target))));
 }
 QVariant PlayerMediaTools::value(const QString &key) const
 {

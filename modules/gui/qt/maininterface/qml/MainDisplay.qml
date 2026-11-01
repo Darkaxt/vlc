@@ -55,7 +55,6 @@ FocusScope {
     }
 
     property bool _showMiniPlayer: false
-    property bool _awaitingMainVideo: false
 
     property bool _showCSD: MainCtx.clientSideDecoration
         && !(MainCtx.intfMainWindow.visibility === Window.FullScreen)
@@ -1073,27 +1072,7 @@ FocusScope {
     Connections {
         target: Player
         function onHasVideoOutputChanged() {
-            _awaitingMainVideo = Player.hasVideoOutput && !MainCtx.hasEmbededVideo
-            if (Player.hasVideoOutput && MainCtx.hasEmbededVideo) {
-                MainCtx.playerView = true
-            } else {
-                _showMiniPlayer = false;
-            }
-        }
-    }
-
-    Connections {
-        target: MainCtx
-        // Video output and embedding are separate asynchronous transitions.
-        // Observe both; the first signal may precede the embedded surface.
-        function onHasEmbededVideoChanged() {
-            if (_awaitingMainVideo && Player.hasVideoOutput && MainCtx.hasEmbededVideo) {
-                _awaitingMainVideo = false
-                MainCtx.playerView = true
-            }
-        }
-        function onToggleFileBrowserRequested() {
-            MainCtx.playerView = true
+            if (!Player.hasVideoOutput) _showMiniPlayer = false
         }
     }
 

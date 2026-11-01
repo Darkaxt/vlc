@@ -692,7 +692,7 @@ private:
         else if (!awaitProperty.isEmpty()) {
             const int index = command.value(QStringLiteral("await_node")).toInt(command.value(QStringLiteral("node")).toInt(-1));
             const QStringList allowed{QStringLiteral("selected"), QStringLiteral("description"), QStringLiteral("visible"),
-                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving"), QStringLiteral("ready"), QStringLiteral("itemCount"), QStringLiteral("indexing"), QStringLiteral("busy"), QStringLiteral("status")};
+                QStringLiteral("checked"), QStringLiteral("text"), QStringLiteral("value"), QStringLiteral("width"), QStringLiteral("height"), QStringLiteral("contentY"), QStringLiteral("moving"), QStringLiteral("ready"), QStringLiteral("itemCount"), QStringLiteral("indexing"), QStringLiteral("busy"), QStringLiteral("status"), QStringLiteral("source")};
             if (!allowed.contains(awaitProperty) || index < 0 || index >= m_items.size() || !m_items[index]
                 || m_items[index]->metaObject()->indexOfProperty(awaitProperty.toUtf8().constData()) < 0)
                 error = QStringLiteral("invalid_observation_rejected_before_dispatch");

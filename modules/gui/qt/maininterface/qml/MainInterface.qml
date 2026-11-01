@@ -46,6 +46,35 @@ Item {
     Accessible.name: qsTr("Main interface")
     AccessibleCompat.id: "mainInterface"
 
+    // This root survives both redesigned/legacy library views and the player.
+    // Promote a fresh video only after its output and embedding are available;
+    // returning to a library for the same playing output keeps the mini player.
+    property bool _awaitingMainVideo: false
+    function showFreshVideo() {
+        if (_awaitingMainVideo && Player.hasVideoOutput && MainCtx.hasEmbededVideo) {
+            _awaitingMainVideo = false
+            MainCtx.playerView = true
+        }
+    }
+    Component.onCompleted: {
+        _awaitingMainVideo = Player.hasVideoOutput
+        showFreshVideo()
+    }
+    Connections {
+        target: Player
+        function onHasVideoOutputChanged() {
+            root._awaitingMainVideo = Player.hasVideoOutput
+            root.showFreshVideo()
+        }
+    }
+    Connections {
+        target: MainCtx
+        function onHasEmbededVideoChanged() { root.showFreshVideo() }
+        function onToggleFileBrowserRequested() {
+            if (Player.isStarted && !MainCtx.playerView) MainCtx.playerView = true
+        }
+    }
+
     property bool _extendedFrameVisible: MainCtx.windowSuportExtendedFrame
                                       && MainCtx.clientSideDecoration
                                       && (MainCtx.intfMainWindow.visibility === Window.Windowed)

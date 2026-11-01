@@ -3,6 +3,7 @@
 #define VLC_QT_EMBEDDED_SUBTITLES_HPP
 #include <QDateTime>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QThread>
 #include <QVariantList>
 #include <atomic>
@@ -110,7 +111,17 @@ inline EmbeddedSubtitleResult readEmbeddedSubtitles(const QString &path, int ord
                 for (unsigned r = 0; r < subtitle.num_rects; ++r) {
                     const auto *rect = subtitle.rects[r];
                     if (rect->text) text += QString::fromUtf8(rect->text);
-                    else if (rect->ass) text += QString::fromUtf8(rect->ass);
+                    else if (rect->ass) {
+                        // libavcodec's ASS events have eight metadata fields
+                        // before Text, including empty fields. Preserve commas
+                        // inside the actual dialogue and remove styling tags.
+                        QString dialogue=QString::fromUtf8(rect->ass).section(QLatin1Char(','),8);
+                        dialogue.remove(QRegularExpression(QStringLiteral("\\{[^}]*\\}")));
+                        dialogue.replace(QStringLiteral("\\N"),QStringLiteral("\n"));
+                        dialogue.replace(QStringLiteral("\\n"),QStringLiteral("\n"));
+                        dialogue.replace(QStringLiteral("\\h"),QString(QChar(0x00a0)));
+                        text += dialogue;
+                    }
                 }
                 textBytes += text.toUtf8().size();
                 if (textBytes > 8 * 1024 * 1024 || result.cues.size() >= 100000) {

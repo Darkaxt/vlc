@@ -42,7 +42,7 @@ def main():
     parser.add_argument('--widget-text', help='Exact native widget text, ignoring mnemonic ampersands')
     parser.add_argument('--widget-name', help='Exact accessible name of one native widget')
     parser.add_argument('--url', action='append', default=[])
-    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'ready', 'itemCount', 'indexing', 'busy', 'waveformBusy', 'subtitleLoaded', 'timelineStatus', 'updateStatus', 'sleepMinutes', 'previewSource', 'previewStatus', 'previewPosition', 'waveformStatus', 'sleepStatus', 'status'])
+    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'ready', 'itemCount', 'indexing', 'busy', 'waveformBusy', 'subtitleLoaded', 'timelineStatus', 'updateStatus', 'sleepMinutes', 'previewSource', 'previewStatus', 'previewPosition', 'waveformStatus', 'sleepStatus', 'status', 'source'])
     parser.add_argument('--await-value', type=json.loads)
     parser.add_argument('--await-service', choices=['redesignMediaTools', 'redesignMediaAnalysis', 'redesignSubtitleSearch', 'forkUpdateModel'])
     parser.add_argument('--await-target')
