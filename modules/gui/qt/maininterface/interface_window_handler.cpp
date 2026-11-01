@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 #include "interface_window_handler.hpp"
+#include "window_geometry.hpp"
 #include "mainctx.hpp"
 #include "compositor.hpp"
 #include <player/player_controller.hpp>
