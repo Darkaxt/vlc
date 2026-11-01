@@ -71,6 +71,8 @@ if test -f "$qt_flags_file"; then
 fi
 if test "$prior_qt_flags" != "$requested_qt_flags"; then
     touch "$source_root/modules/gui/qt/maininterface/mainui.cpp" \
+        "$source_root/modules/gui/qt/qt.cpp" \
+        "$source_root/modules/gui/qt/dialogs/help/help.cpp" \
         "$source_root/modules/gui/qt/player/player_controller.cpp" \
         "$source_root/modules/gui/qt/player/player_controller_mpv.cpp" \
         "$source_root/modules/gui/qt/player/mpv_playback.cpp" \

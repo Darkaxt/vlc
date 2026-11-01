@@ -39,7 +39,7 @@ destination = repo / 'share/icons/vlc.ico'
 destination.parent.mkdir(parents=True, exist_ok=True)
 sizes = [(n, n) for n in (16, 20, 24, 32, 40, 48, 64, 128, 256)]
 image.save(destination, format='ICO', sizes=sizes)
-image.save(repo / 'modules/gui/qt/pixmaps/redesign/app.png', format='PNG')
+shutil.copyfile(png,repo / 'modules/gui/qt/pixmaps/redesign/app.png')
 icon = Image.open(destination)
 assert icon.ico.sizes() == set(sizes)
 for size in sizes:

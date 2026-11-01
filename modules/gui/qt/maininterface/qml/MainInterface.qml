@@ -292,7 +292,7 @@ Item {
                 if (urls.length > 0) {
                     /* D&D of a subtitles file, add it on the fly */
                     if (Player.isStarted && urls.length == 1) {
-                        if (Player.associateSubtitleFile(urls[0])) {
+                        if (MediaTools.addSubtitle(urls[0])) {
                             drop.accept()
                             return
                         }

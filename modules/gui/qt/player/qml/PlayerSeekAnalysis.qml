@@ -49,10 +49,25 @@ Item {
     }
     Item {
         id: cueTimeline
+        // Layout strips scroll and clip their delegates. Like the preview,
+        // this separate row belongs to the player's overlay coordinate space.
+        parent: analysis.overlayParent
+        z: 3
         objectName: "subtitleCueStrip"
-        width: parent.width
+        // A compact seek target can be only60px wide. Four24px buttons plus
+        // gaps cannot share that width; expand this separate row within the
+        // player while retaining the source alignment at larger sizes.
+        width: Math.min(Math.max(analysis.width,PlayerStyle.px(240)),
+                        Math.max(0,analysis.overlayParent.width-PlayerStyle.px(40)))
+        x: {
+            analysis.overlayParent.width
+            const point=analysis.mapToItem(analysis.overlayParent,0,0)
+            const left=Math.max(PlayerStyle.px(20),Math.min(analysis.overlayParent.width-width-PlayerStyle.px(20),
+                                                          point.x+(analysis.width-width)/2))
+            return left
+        }
         height: PlayerStyle.px(24)
-        visible: MediaTools.timelineVisible && MediaTools.cues.length > 0
+        visible: analysis.visible && MediaTools.timelineVisible && MediaTools.cues.length > 0
         // Leave the ordinary playback slider intact. A customized top-area
         // seek control places its timeline below instead of outside the window.
         y: {
@@ -60,7 +75,7 @@ Item {
             analysis.overlayParent.height
             analysis.width
             const point = analysis.mapToItem(analysis.overlayParent,0,0)
-            return point.y < PlayerStyle.px(60) ? analysis.height+PlayerStyle.px(6) : -height-PlayerStyle.px(6)
+            return point.y < PlayerStyle.px(60) ? point.y+analysis.height+PlayerStyle.px(6) : point.y-height-PlayerStyle.px(6)
         }
         CueButton {
             id: previousCue

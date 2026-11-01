@@ -9,6 +9,7 @@
 #include <vlc_aout.h>
 #include <vlc_configuration.h>
 #include <vlc_iso_lang.h>
+#include <vlc_input_item.h>
 #include <vlc_modules.h>
 #include <vlc_variables.h>
 #include <vlc_vout.h>
@@ -331,14 +332,20 @@ bool PlayerMediaTools::isCurrentMedia(const QUrl &media) const
 }
 bool PlayerMediaTools::addSubtitle(const QUrl &subtitle)
 {
+    // The same entry point handles a native subtitle chooser and an arbitrary
+    // media drop. Classify before reporting errors or mutating playback.
+    enum slave_type type;
+    const auto uri=subtitle.toString(QUrl::FullyEncoded).toUtf8();
+    if(!input_item_slave_GetType(uri.constData(),&type)||type!=SLAVE_TYPE_SPU)return false;
     if (!isCurrentMedia(m_player->getUrl())) { report(tr("The playing input changed; choose the subtitle again for the intended media.")); return false; }
-    if (!subtitle.isLocalFile() || mediaKey(subtitle).isEmpty()) { report(tr("The subtitle file is missing or unavailable.")); return false; }
+    if (subtitle.isLocalFile() && mediaKey(subtitle).isEmpty()) { report(tr("The subtitle file is missing or unavailable.")); return false; }
     if (!m_player->associateSubtitleFile(subtitle.toString(QUrl::FullyEncoded))) { report(tr("VLC could not add this subtitle to the current input.")); return false; }
     m_subtitle = subtitle; m_preferAssociation = true; m_manualSubtitleChoice = false;
     // Pinned input.c InputSourceNew hashes the exact associated URL; es_out.c
     // prefixes its stable SPU ids with that source hash. Match that identity,
     // never an arbitrary newly selected track or an embedded track's ordinal.
     m_expectedSubtitlePrefix = TrackListModel::associatedSourcePrefix(subtitle.toString(QUrl::FullyEncoded).toUtf8());
+    m_subtitleSources[m_expectedSubtitlePrefix]=subtitle;
     m_awaitingSubtitleTrack = true;
     loadTimeline();
     if (!m_subtitleLoaded) report(tr("Subtitle requested. VLC has not selected this file's track yet."));
@@ -423,7 +430,9 @@ void PlayerMediaTools::loadTimeline()
                 external = outside;
                 if (outside) {
                     const auto file = track.value(QStringLiteral("external-filename")).toString();
-                    subtitleFile = QUrl(file).isLocalFile() ? QUrl(file) : QUrl::fromLocalFile(file);
+                    subtitleFile = QUrl::fromUserInput(file);
+                    if(!subtitleFile.isEmpty())
+                        m_subtitleSources[TrackListModel::associatedSourcePrefix(subtitleFile.toString(QUrl::FullyEncoded).toUtf8())]=subtitleFile;
                 } else {
                     ordinal = index;
                     ffIndex = track.contains(QStringLiteral("ff-index")) ? track.value(QStringLiteral("ff-index")).toInt() : -1;
@@ -438,13 +447,22 @@ void PlayerMediaTools::loadTimeline()
         selected = track != nullptr;
         if (track) {
             trackId = QString::fromUtf8(vlc_es_id_GetStrId(track->es_id));
-            external = !m_expectedSubtitlePrefix.isEmpty() && trackId.toUtf8().startsWith(m_expectedSubtitlePrefix);
+            for(auto source=m_subtitleSources.cbegin();source!=m_subtitleSources.cend();++source)
+                if(trackId.toUtf8().startsWith(source.key())) {
+                    external=true;
+                    subtitleFile=source.value();
+                    break;
+                }
             for (size_t i = 0; i < vlc_player_GetTrackCount(m_player->getPlayer(), SPU_ES); ++i)
                 if (vlc_player_GetTrackAt(m_player->getPlayer(), SPU_ES, i)->es_id == track->es_id) { ordinal = int(i); break; }
         }
     }
     m_subtitleLoaded = external;
-    if (external && m_awaitingSubtitleTrack) {
+    const QString selectedFile=subtitleFile.isLocalFile()?mediaKey(subtitleFile):QString();
+    const bool selectedRequested=subtitleFile.isLocalFile()&&m_subtitle.isLocalFile()
+        ? !selectedFile.isEmpty()&&selectedFile==mediaKey(m_subtitle)
+        : subtitleFile.adjusted(QUrl::NormalizePathSegments)==m_subtitle.adjusted(QUrl::NormalizePathSegments);
+    if (external && m_awaitingSubtitleTrack && selectedRequested) {
         m_awaitingSubtitleTrack = false;
         report(tr("Subtitle track loaded and selected."));
     }
@@ -463,7 +481,9 @@ void PlayerMediaTools::loadTimeline()
     } else if (external) {
         m_cues.clear();
         QFile file(subtitleFile.toLocalFile()); const auto ext = QFileInfo(file).suffix().toLower();
-        if (!QStringList{QStringLiteral("srt"), QStringLiteral("vtt"), QStringLiteral("ass"), QStringLiteral("ssa")}.contains(ext))
+        if(!subtitleFile.isLocalFile())
+            m_timelineStatus=tr("Text cue timelines require a local subtitle file; subtitle playback is unchanged.");
+        else if (!QStringList{QStringLiteral("srt"), QStringLiteral("vtt"), QStringLiteral("ass"), QStringLiteral("ssa")}.contains(ext))
             m_timelineStatus = tr("This subtitle type has no text cue timeline; playback is unchanged.");
         else if (!file.open(QIODevice::ReadOnly) || file.size() > 8 * 1024 * 1024)
             m_timelineStatus = tr("Cue file is missing, unreadable or exceeds 8 MiB; subtitle playback is unchanged.");
@@ -827,6 +847,13 @@ void PlayerMediaTools::restoreTracks()
 }
 void PlayerMediaTools::inputChanged()
 {
+    // Track/source identity belongs to this media, not to one backend. Keep
+    // it across a handover so returning to VLC can identify every retained
+    // external track; cue results themselves are always invalidated below.
+    if(!m_player->getUrl().isEmpty() && m_subtitleSourceMedia!=m_player->getUrl()) {
+        m_subtitleSourceMedia=m_player->getUrl();
+        m_subtitleSources.clear();
+    }
     ++m_timelineGeneration;
     if (m_timelineWorker) m_timelineWorker->cancel();
     m_timelineKey.clear();

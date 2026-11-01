@@ -32,6 +32,8 @@
 
 #include "qt.hpp"
 #include "dialogs_provider.hpp"
+#include "player/player_media_tools.hpp"
+#include <vlc_input_item.h>
 #include "player/player_controller.hpp" /* Load Subtitles */
 #include "playlist/playlist_controller.hpp"
 #include "menus/menus.hpp"
@@ -1008,8 +1010,15 @@ void  DialogsProvider::loadMediaFile( const es_format_category_e category, const
 
     foreach( const QString &qsUrl, qsl )
     {
-
-        if ( THEMIM->AddAssociatedMedia( category, qsUrl, true, true, false ) )
+        enum slave_type type;
+        const bool subtitle=category==SPU_ES&&input_item_slave_GetType(qtu(qsUrl),&type)&&type==SLAVE_TYPE_SPU;
+        // Track supported subtitle files through the existing timeline owner.
+        // Preserve the native chooser's wider no-extension-check path for
+        // other associated formats and dialog-provider-only interfaces.
+        auto *tools=subtitle?THEMIM->findChild<PlayerMediaTools *>(QStringLiteral("redesignMediaTools"),Qt::FindDirectChildrenOnly):nullptr;
+        const bool loaded=tools?tools->addSubtitle(QUrl(qsUrl))
+            :THEMIM->AddAssociatedMedia(category,qsUrl,true,true,false)==VLC_SUCCESS;
+        if (!loaded)
             msg_Warn( p_intf, "unable to load media from '%s', category(%d)", qtu( qsUrl ), category );
     }
 }

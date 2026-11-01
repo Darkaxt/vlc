@@ -106,6 +106,8 @@ private:
     QJsonObject m_state;
     QJsonObject m_sessionValues;
     QMap<QString, bool> m_sessionFilters;
+    QUrl m_subtitleSourceMedia;
+    QMap<QByteArray,QUrl> m_subtitleSources;
     int m_globalSubtitleDelay = 0;
     QVariantList m_matches, m_cues;
     QString m_statePath, m_status, m_timelineStatus, m_activePreset, m_sleepStatus;

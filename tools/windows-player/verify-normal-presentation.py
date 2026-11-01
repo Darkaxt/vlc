@@ -32,6 +32,7 @@ parser.add_argument('--scratch-root', type=Path, required=True)
 parser.add_argument('--geometry-source', type=Path, required=True)
 parser.add_argument('--placement-proof', type=Path, required=True)
 parser.add_argument('--qt-sha256', required=True)
+parser.add_argument('--verify-app-icon',action='store_true',help='Read the packaged PE icon and the actual owned native window icon')
 args = parser.parse_args()
 root = args.scratch_root.resolve()
 assert root.parent == Path('D:/Temp') and root.name.startswith('vlc-s8-')
@@ -161,6 +162,10 @@ observer_command = [sys.executable, '-B', str(repo / 'tools/windows-player/obser
     '--binding', str(scratch / 'target.json'), '--result', str(scratch / 'window-events.json'),
     '--ready-event', event_names[0], '--bound-event', event_names[1], '--cancel-event', event_names[2],
     '--executable', str(runtime / 'vlc.exe')]
+if args.verify_app_icon:
+    from app_icon_checks import executable_icon
+    result['executable_app_icon']=executable_icon(runtime/'vlc.exe',repo/'share/icons/vlc.ico')
+    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/app.png')]
 observer = player = None
 with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb') as error, \
         (evidence / 'observer.stdout').open('wb') as observer_output, (evidence / 'observer.stderr').open('wb') as observer_error:
@@ -216,6 +221,8 @@ checks = {'all_visible_owned_windows_offscreen': offscreen, 'no_observer_errors'
     'no_competing_vlc_playback': not re.search(r'using (?:video |audio |spu )?decoder module|Received first picture', log),
     'no_mpv_runtime_errors': not any(re.search(r'\berror:\s+mpv/', line) for line in log.splitlines()),
     'no_qml_errors': not re.search(r'TypeError:|ReferenceError:|Binding loop detected|Cannot assign to non-existent property', log + stderr)}
+if args.verify_app_icon:
+    checks['native_flat_app_icon']=bool(window_events['native_window_icons'])
 result['actual_picture_presented'] = 'MPV picture presented' in log
 if args.mode == 'private':
     # Placement proof is confined to an inactive desktop. Qt windows must be

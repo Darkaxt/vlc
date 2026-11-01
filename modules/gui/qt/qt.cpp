@@ -98,6 +98,7 @@ extern "C" char **environ;
 #include "style/defaultthemeproviders.hpp"
 #include "dialogs/extensions/extensions_manager.hpp" /* Extensions manager */
 #include "dialogs/help/help.hpp"     /* Launch Update */
+#include "dialogs/help/fork_release.hpp"
 #include "util/dismiss_popup_event_filter.hpp"
 #include "maininterface/compositor.hpp"
 #include "util/vlctick.hpp"
@@ -959,6 +960,12 @@ static void *Thread( void *obj )
     QQuickWindow::setDefaultAlphaBuffer(true);
 
     /* Start the QApplication here */
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    // Keep test file selection on the existing app-owned Qt event path. The
+    // normal build retains the platform's standard native file chooser.
+    if (!qgetenv("VLC_PLAYER_DIAGNOSTICS_DIR").isEmpty())
+        QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
+#endif
     QApplication app( argc, argv );
     app.setProperty("initialStyle", app.style()->name());
 
@@ -1324,7 +1331,7 @@ static void *Thread( void *obj )
 #endif
 
     app.setApplicationDisplayName( qtr("VLC media player") );
-    app.setApplicationVersion( QString::fromUtf8(VERSION_MESSAGE) );
+    app.setApplicationVersion( QString::fromLatin1(ForkRelease::currentVersion) );
 
 #ifdef _WIN32
     // Match the flat cone in the redesigned interface and the PE resource.

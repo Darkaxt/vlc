@@ -73,7 +73,7 @@ def main():
     else:
         assert not (runtime / 'libmpv-2.dll').exists(), 'Select --include-mpv for the S8 runtime'
     markers = ['VLC_PLAYER_DIAGNOSTICS_DIR', 'VLC_PLAYER_DIAGNOSTICS_TOKEN',
-        'VLC_PLAYER_DIAGNOSTICS_OFFSCREEN', 'VLC_PLAYER_DIAGNOSTICS_PROXY_PORT',
+        'VLC_PLAYER_DIAGNOSTICS_OFFSCREEN', 'VLC_PLAYER_DIAGNOSTICS_PROXY_PORT', 'VLC_PLAYER_DIAGNOSTICS_UPDATE_URL',
         'redesignSeekRequests', 'offscreen_session_is_capture_only',
         'core_observation_listener_failed_action_not_undone', 'palette_highlight',
         'PlayerDiagnostics', 'optional_legacy_font', 'mpvHistoryReady', 'mpv_history_ready', 'mpv_video_ready']

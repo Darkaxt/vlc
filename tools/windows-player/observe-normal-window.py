@@ -12,7 +12,11 @@ p.add_argument('--ready-event', required=True)
 p.add_argument('--bound-event', required=True)
 p.add_argument('--cancel-event', required=True)
 p.add_argument('--executable', type=Path, required=True)
+p.add_argument('--expected-icon',type=Path,help='Verify the owned Qt main window icon against this maintained PNG')
 a = p.parse_args()
+if a.expected_icon:
+    from app_icon_checks import window_icon
+    assert a.expected_icon.is_file()
 u = ctypes.WinDLL('user32', use_last_error=True)
 k = ctypes.WinDLL('kernel32', use_last_error=True)
 k.OpenEventW.argtypes = [W.DWORD, W.BOOL, W.LPCWSTR]
@@ -37,6 +41,10 @@ u.GetWindowLongPtrW.argtypes = [W.HWND, ctypes.c_int]
 u.GetWindowLongPtrW.restype = ctypes.c_ssize_t
 u.GetClassLongPtrW.argtypes = [W.HWND, ctypes.c_int]
 u.GetClassLongPtrW.restype = ctypes.c_size_t
+u.GetAncestor.argtypes=[W.HWND,W.UINT]
+u.GetAncestor.restype=W.HWND
+u.GetWindow.argtypes=[W.HWND,W.UINT]
+u.GetWindow.restype=W.HWND
 u.GetLayeredWindowAttributes.argtypes = [W.HWND, ctypes.POINTER(W.DWORD), ctypes.POINTER(W.BYTE), ctypes.POINTER(W.DWORD)]
 u.GetForegroundWindow.restype = W.HWND
 u.SetThreadDpiAwarenessContext.argtypes = [W.HANDLE]
@@ -51,6 +59,7 @@ ready, bound, cancel = [k.OpenEventW(0x100002, False, name)
     for name in (a.ready_event, a.bound_event, a.cancel_event)]
 assert ready and bound and cancel
 records, errors = [], []
+icons={}
 process = None
 target = None
 hooks = []
@@ -103,6 +112,12 @@ def event(hook, kind, window, object_id, child_id, thread, timestamp):
             'layered_flags': layered_flags.value if layered else None,
             'visible': bool(u.IsWindowVisible(window)), 'foreground_owner': u.GetForegroundWindow() == window,
             'bounds': [rectangle.left, rectangle.top, rectangle.right, rectangle.bottom]}
+        if (a.expected_icon and record['visible'] and class_name.value.startswith('Qt')
+                and rectangle.right-rectangle.left>=320 and rectangle.bottom-rectangle.top>=200
+                and u.GetAncestor(window,2)==window and not u.GetWindow(window,4)
+                and str(window) not in icons):
+            icons[str(window)]=window_icon(window,pid.value,a.expected_icon,
+                a.result.parent/('native-icon-'+format(window,'x')+'.png'))
         if record not in records:
             records.append(record)
     except Exception as failure:
@@ -115,7 +130,7 @@ def messages():
         u.DispatchMessageW(ctypes.byref(message))
 
 result = {'schema': 'vlc_redesign.owned_window_events.v1', 'events': records,
-    'errors': errors, 'passive_observation_only': True}
+    'errors': errors, 'passive_observation_only': True,'native_window_icons':icons}
 try:
     hooks = [u.SetWinEventHook(first, last, None, event, 0, 0, 2)
         for first, last in ((3, 3), (0x8002, 0x800B))]

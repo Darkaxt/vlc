@@ -24,11 +24,37 @@ including the flat PE/Qt icon, real configurable queue/browser shortcuts,
 fork-specific update metadata with quiet background failures, bounded welcome
 and video geometry, event-driven main-video entry, coalesced/cached seek previews,
 subtitle submenu availability and asynchronous selected embedded-text cues with
-timing/navigation controls. No native acceptance has passed yet. Generate the
-synthetic text/image/wide/portrait/4K inputs, freeze the cohesive implementation
-as an intermediate source commit, and compile one diagnostic candidate through
-the existing managed toolchain. Reconcile the original process/group result,
-then validate complete affected workflows before the final normal build/release.
+timing/navigation controls. No native acceptance has passed yet. The synthetic
+text/image/wide/portrait/4K inputs are ready and the cohesive implementation is
+frozen at intermediate commit6876a272ce26c760236a708ac2cb90e86533488d.
+The first managed diagnostic assembly (ticket143) was intentionally stopped
+during linking after the user required the full integration review before any
+further compilation. Its original session returned exit137 with an empty Linux
+group, no OOM events and a2,106,593,280-byte peak; it is not a successful build.
+Completed objects and the SDK are preserved. The complete-workflow native acceptance helper
+now covers actual PE/window icon data and another launch, welcome/shortcut
+persistence, empty and explicitly indexed libraries, video drop/geometry and
+no-autoresize/fullscreen preservation, subtitle selection/engine handover and
+controls, preview publication/content/invalidation, and automatic/manual update
+checks. This preparation is not acceptance evidence. Freeze the complete reviewed
+repair batch, bind it against the actual closed143 report, then compile and
+inspect these affected workflows before the
+final normal build/release. MPV's executable sections and loader directories
+match accepted1.1.1; its changed debug metadata does not require rebuilding its
+unchanged playback stack. Current application integration still needs testing.
+
+Integration review corrections are connected in source: Qt's displayed version
+uses the fork constant and the manual retry remains explicit; normal/diagnostic
+flag invalidation includes every guarded source consumer; subtitle-file drops
+and the native menu use the existing timeline owner while retaining other native
+associated formats; selected external source identities are retained per media
+across track changes and handovers; remote subtitle playback retains its explicit
+local-timeline limitation. The cue row uses the player overlay rather than the
+layout strip's clipping viewport, has usable narrow-window width, and reserves
+space above the unchanged ordinary control row. PE/window icon verification is
+also wired into the normal-package observer. These source corrections remain
+internal acceptance blockers until the complete native workflows pass. No build
+may be submitted while known wiring or review work remains unfinished.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)

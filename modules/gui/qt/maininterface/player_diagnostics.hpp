@@ -366,19 +366,6 @@ private:
             {QStringLiteral("qml_errors"), m_errors}, {QStringLiteral("truncated"), m_items.size() >= 8000},
             {QStringLiteral("coverage"), QStringLiteral("Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation.")}};
         if(auto *engine=qmlEngine(m_root)){
-            auto *window=m_root->window();
-            const auto screen=window?window->screen():nullptr;
-            if(window) {
-                const auto available=screen?screen->availableGeometry():QRect();
-                const auto frame=window->frameGeometry();
-                result[QStringLiteral("window")]=QJsonObject{
-                    {QStringLiteral("width"),window->width()},{QStringLiteral("height"),window->height()},
-                    {QStringLiteral("x"),window->x()},{QStringLiteral("y"),window->y()},
-                    {QStringLiteral("minimum_width"),window->minimumWidth()},{QStringLiteral("minimum_height"),window->minimumHeight()},
-                    {QStringLiteral("dpr"),window->devicePixelRatio()},
-                    {QStringLiteral("frame_width"),frame.width()},{QStringLiteral("frame_height"),frame.height()},
-                    {QStringLiteral("available_width"),available.width()},{QStringLiteral("available_height"),available.height()}};
-            }
             const int type=qmlTypeId("VLC.Player",1,0,"PlayerCustomization");
             if(type>=0)if(auto *owner=engine->singletonInstance<QObject *>(type)){
                 QJsonObject state;
@@ -444,11 +431,15 @@ private:
             result.insert(QStringLiteral("media_tools"), services);
         }
         if (window) {
+            const auto available=window->screen()?window->screen()->availableGeometry():QRect();
+            const auto frame=window->frameGeometry();
             result.insert(QStringLiteral("window"), QJsonObject{{QStringLiteral("width"), window->width()},
                 {QStringLiteral("x"), window->x()}, {QStringLiteral("y"), window->y()},
                 {QStringLiteral("native_id_hex"), QString::number(qulonglong(window->winId()), 16)},
                 {QStringLiteral("height"), window->height()}, {QStringLiteral("dpr"), window->devicePixelRatio()},
                 {QStringLiteral("minimum_width"), window->minimumWidth()}, {QStringLiteral("minimum_height"), window->minimumHeight()},
+                {QStringLiteral("frame_width"),frame.width()},{QStringLiteral("frame_height"),frame.height()},
+                {QStringLiteral("available_width"),available.width()},{QStringLiteral("available_height"),available.height()},
                 {QStringLiteral("visible"), window->isVisible()}, {QStringLiteral("active"), window->isActive()},
                 {QStringLiteral("flags"), QString::number(quint64(window->flags()), 16)},
                 {QStringLiteral("visibility"), int(window->visibility())}});
@@ -683,7 +674,7 @@ private:
             const QString name = command.value(QStringLiteral("await_service")).toString();
             const QMap<QString, QStringList> allowed{
                 {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("timelineStatus"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
-                {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("waveformStatus")}},
+                {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("waveformStatus")}},
                 {QStringLiteral("redesignSubtitleSearch"), {QStringLiteral("busy"), QStringLiteral("status")}},
                 {QStringLiteral("forkUpdateModel"), {QStringLiteral("updateStatus")}}};
             if (m_player && allowed.value(name).contains(awaitProperty))
