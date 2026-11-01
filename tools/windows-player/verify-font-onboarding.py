@@ -143,15 +143,16 @@ def main():
                     assert not snapshot['customization']['onboardingVisible']
                     inspect('reopen-menu', 'click', '--target', 'topBarMenuButton')
                     inspect('reopen-setup', 'widget_click', '--menu-action', 'Welcome / Appearance Setup…')
-                    for page in range(3):
+                    for page in range(2):
                         inspect('reopen-next-' + str(page), 'click', '--target', 'onboardingNext')
                     cached = inspect('reopened-cache', 'snapshot', '--capture')
                     assert cached['optional_legacy_font']['available'] and not cached['optional_legacy_font']['busy']
                     assert 'No download is needed' in cached['optional_legacy_font']['status']
+                    inspect('cached-to-shortcuts', 'click', '--target', 'onboardingNext')
                     finished = inspect('finish-reopened', 'click', '--target', 'onboardingNext')
                     assert not finished['customization']['onboardingVisible']
                     return
-                for page in range(3):
+                for page in range(2):
                     inspect('next-' + str(page), 'click', '--target', 'onboardingNext')
                 inspect('font-page', 'snapshot', '--capture')
                 if args.mode in ('fallback', 'corrupt'):
@@ -190,6 +191,7 @@ def main():
                     downloaded = inspect('download-or-use-cache', 'click', '--target', 'onboardingNext',
                         '--await-target', 'onboardingFontStatus', '--await-property', 'busy', '--await-value', 'false')
                     assert downloaded['optional_legacy_font']['available'], downloaded['optional_legacy_font']
+                inspect('finish-shortcuts', 'click', '--target', 'onboardingNext')
                 # With the folder blank, completion is synchronous in MainCtx.
                 # Observe the next actual frame and state; the closed Loader
                 # has destroyed its old Next item, so it cannot be awaited.

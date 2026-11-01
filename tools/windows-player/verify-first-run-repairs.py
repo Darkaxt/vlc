@@ -290,7 +290,24 @@ def welcome():
                 assert control[0]['x'] >= 0 and control[0]['y'] >= 0 and control[0]['x']+control[0]['width'] <= initial['window']['width']+1 and control[0]['y']+control[0]['height'] <= initial['window']['height']+1
             case.inspect('reveal-optional-folder','focus','--target','onboardingFolder','--capture')
             case.click('theme-page', 'onboardingNext')
-            shortcuts = case.click('shortcut-page', 'onboardingNext', '--capture')
+            case.click('font-page', 'onboardingNext')
+            case.inspect('reveal-font-choice','focus','--target','onboardingFontFallback')
+            shortcuts = case.click('shortcut-page', 'onboardingFontFallback', '--capture')
+            assert nodes(shortcuts,'onboardingNext')[0]['text']=='Finish'
+            assert not any(n['visible'] for n in nodes(shortcuts,'onboardingSkip'))
+            face=nodes(shortcuts,'onboardingKeyFace_key-play-pause_0')[0]
+            shadow=nodes(shortcuts,'onboardingKeyShadow_key-play-pause_0')[0]
+            key_scale=face['height']/42
+            assert abs(shadow['y']-face['y']-6*key_scale)<0.1
+            assert nodes(shortcuts,'onboardingKeyLabel_key-toggle-fullscreen_0')[0]['text']=='F'
+            left=nodes(shortcuts,'onboardingShortcut_key-jump-short')[0]
+            right=nodes(shortcuts,'onboardingShortcut_key-jump+short')[0]
+            assert abs(left['y']-right['y'])<0.1 and right['x']>left['x']+left['width']
+            assert nodes(shortcuts,'onboardingKeyLabel_key-jump-short_1')[0]['text']=='←'
+            assert nodes(shortcuts,'onboardingKeyLabel_key-snapshot_0')[0]['text']=='SHIFT'
+            assert nodes(shortcuts,'onboardingKeyLabel_key-snapshot_1')[0]['text']=='S'
+            case.record['shortcut_visual_contract']={'key_face':face,'lower_edge':shadow,'paired_left':left,'paired_right':right,
+                'reference_frame':'1902:6770','rendered_comparison_required':True}
             for option in ('key-toggle-fullscreen','qt-key-toggle-browser','qt-key-toggle-queue'):
                 assert len(nodes(shortcuts, 'onboardingShortcut_' + option)) == 1
                 revealed=case.inspect('reveal-shortcut-'+option,'focus','--target','onboardingShortcut_'+option,'--capture')
@@ -316,9 +333,7 @@ def welcome():
                 assert any(widget['id'] == 'keyConflictWarning' and widget.get('text') for widget in conflict['widgets'])
                 case.native('cancel-conflict', 'cancelShortcut')
                 case.native('cancel-draft', 'preferencesCancel')
-            case.click('font-page', 'onboardingNext')
-            case.inspect('reveal-font-choice','focus','--target','onboardingFontFallback')
-            case.click('finish-without-root', 'onboardingFontFallback')
+            case.click('finish-without-root', 'onboardingNext')
             case.close(True)
             profile = case.path / 'profile'
             for dbfile in profile.rglob('*.db'):
@@ -681,9 +696,10 @@ def updates():
             try:
                 initial=first.inspect('first-welcome')
                 assert initial['customization']['onboardingVisible']
-                for page in ('theme','shortcuts','font'): first.click('next-'+page,'onboardingNext')
+                for page in ('theme','font'): first.click('next-'+page,'onboardingNext')
                 first.inspect('reveal-free-font','focus','--target','onboardingFontFallback')
-                first.click('finish-first-start','onboardingFontFallback')
+                first.click('shortcut-page','onboardingFontFallback')
+                first.click('finish-first-start','onboardingNext')
                 first.close(True)
                 assert len(Peer.calls)==calls_before, 'Privacy setup did not defer the automatic request'
                 reused=first.path/'profile'

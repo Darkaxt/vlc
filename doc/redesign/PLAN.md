@@ -123,6 +123,21 @@ of49.99999999999999ms. All current-source integrated acceptance, normal packagin
 publication, independent delivery, retained/weekly binding and cleanup remain
 required; M2 stays ACTIVE.
 
+The user's shortcut-page comparison exposes an R52 acceptance failure: the
+earlier native checks proved editable bindings and sizing, but did not establish
+the reference keycaps, typography, paired-key layout or footer fidelity. Ticket151
+was intentionally stopped before further source edits (exit137, empty group,
+no OOM). The current cohesive correction uses the decoded original frame1902:6770
+(42px faces, 3px border, 12px corners, 6px lower edge, 82px row pitch), horizontal
+directions, separate modifier faces and truthful native mappings. The optional
+legacy-font step now precedes the final Back/Finish shortcut page. Shortcuts,
+font import/fallback and native visual/scaling checks must pass on the completed
+batch together with the pending MPV replacement correction. R52 is an internal
+advancement blocker, resolved only by inspected native geometry and rendered
+comparison; no later stage or release may bypass it. Temporary design decoding
+uses the existing pinned extractor with two small dependencies under the exact
+D scratch root (active dependency-tree I/O); those are expendable after decoding.
+
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
 is the normal published update from application commit

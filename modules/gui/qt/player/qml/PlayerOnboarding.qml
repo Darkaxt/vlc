@@ -28,13 +28,31 @@ T.Popup {
     function finishSetup() {
         PlayerCustomization.closeOnboarding(true,theme,accent,folder.text.trim())
     }
+    function showShortcuts() { page=2; body.contentY=0 }
+    // config labels are authoritative. Only their presentation changes here.
+    function keyFaces(label) {
+        const arrows={Left:"←",Right:"→",Up:"↑",Down:"↓"}
+        const faces=[]
+        const alternatives=label.split(" / ")
+        for(let a=0;a<alternatives.length;a++) {
+            if(a)faces.push("/")
+            let chord=alternatives[a]
+            let modifier
+            while((modifier=/^(Ctrl|Alt|Shift|Meta|Command)\+/.exec(chord))) {
+                faces.push(modifier[1].toUpperCase())
+                chord=chord.slice(modifier[0].length)
+            }
+            faces.push(arrows[chord]||(chord.length===1?chord.toUpperCase():chord))
+        }
+        return faces
+    }
     Connections {
         id:fontEvents
         target:MainCtx.legacyFont
         function onChanged() {
             if(dialog.fontFinishing&&!fontEvents.target.busy){
                 dialog.fontFinishing=false
-                if(fontEvents.target.available)dialog.finishSetup()
+                if(fontEvents.target.available)dialog.showShortcuts()
             }
         }
     }
@@ -124,7 +142,7 @@ T.Popup {
                     y: PlayerStyle.px(dialog.page===0?286:dialog.page===1?173:60)
                     text: dialog.page===0?qsTr("Welcome to VLC!"):dialog.page===1?qsTr("Select your preferred theme and color."):dialog.page===2?qsTr("Learn the basic keyboard shortcuts."):qsTr("Get the original classic-skin font.")
                     font.pixelSize: PlayerStyle.px(dialog.page===0?32:24)
-                    font.weight: Font.Light
+                    font.weight: dialog.page===0?Font.Light:Font.Normal
                     color: dialog.page===0&&PlayerStyle.dark?"#eaeaea":PlayerStyle.trackForeground
                     lineHeightMode: Text.FixedHeight
                     lineHeight: PlayerStyle.px(dialog.page===0?39:42)
@@ -242,9 +260,9 @@ T.Popup {
                     visible: dialog.page===2
                     x: PlayerStyle.px(62); y: PlayerStyle.px(154)
                     width: parent.width-PlayerStyle.px(124)
-                    columns: dialog.width>=PlayerStyle.px(800)?2:1
-                    columnSpacing: PlayerStyle.px(100)
-                    rowSpacing: PlayerStyle.px(38)
+                    columns: dialog.width>=PlayerStyle.px(1000)?2:1
+                    columnSpacing: PlayerStyle.px(60)
+                    rowSpacing: PlayerStyle.px(34)
                     Repeater {
                         model: [{label:qsTr("Play / Pause"),key:"key-play-pause"},{label:qsTr("Toggle Fullscreen"),key:"key-toggle-fullscreen"},
                             {label:qsTr("Seek Backward / Forward"),key:"key-jump-short",pair:"key-jump+short"},{label:qsTr("Increase / Decrease Volume"),key:"key-vol-up",pair:"key-vol-down"},
@@ -256,41 +274,87 @@ T.Popup {
                             id: shortcutRow
                             required property var modelData
                             Layout.fillWidth: true
-                            spacing: PlayerStyle.px(24)
-                            Label { Layout.fillWidth: true; text: modelData.label }
-                            ColumnLayout {
-                                spacing: PlayerStyle.px(2)
+                            Layout.preferredWidth: (shortcuts.width-shortcuts.columnSpacing*(shortcuts.columns-1))/shortcuts.columns
+                            Layout.minimumWidth: 0
+                            spacing: PlayerStyle.px(20)
+                            Label {
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: PlayerStyle.px(220)
+                                Layout.minimumWidth: 0
+                                font.weight: Font.Light
+                                color: PlayerStyle.trackForeground
+                                text: shortcutRow.modelData.label
+                            }
+                            RowLayout {
+                                spacing: PlayerStyle.px(10)
                                 Repeater {
                                     id: shortcutBindings
                                     model: modelData.pair ? [modelData.key,modelData.pair] : [modelData.key]
-                                    delegate: T.Button {
+                                    delegate: RowLayout {
+                                    id: bindingRow
+                                    required property string modelData
+                                    required property int index
+                                    spacing: PlayerStyle.px(10)
+                                    Label { visible:index>0; text:"/";font.weight:Font.Light;color:PlayerStyle.trackForeground }
+                                    T.Button {
                                         id: shortcutButton
-                                        required property string modelData
-                                        implicitWidth: Math.min(PlayerStyle.px(180),keyLabel.implicitWidth+PlayerStyle.px(28))
-                                        implicitHeight: PlayerStyle.px(shortcutBindings.count===2?21:44)
+                                        readonly property string option: bindingRow.modelData
+                                        readonly property string bindingLabel: {dialog.shortcutRevision;return MainCtx.shortcutLabel(option)}
+                                        readonly property var faces: dialog.keyFaces(bindingLabel)
+                                        implicitWidth: keyFacesRow.implicitWidth
+                                        implicitHeight: PlayerStyle.px(48)
+                                        padding: 0
                                         activeFocusOnTab: true
-                                        Accessible.name: qsTr("Assign %1: %2").arg(shortcutRow.modelData.label).arg(keyLabel.text)
-                                        AccessibleCompat.id: "onboardingShortcut_"+modelData
+                                        hoverEnabled: true
+                                        Accessible.name: qsTr("Assign %1: %2").arg(shortcutRow.modelData.label).arg(bindingLabel)
+                                        AccessibleCompat.id: "onboardingShortcut_"+option
                                         onActiveFocusChanged: if(activeFocus)body.reveal(shortcutButton)
-                                        onClicked: DialogsProvider.editShortcut(modelData)
-                                        contentItem: Label {
-                                            id: keyLabel
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                            elide: Text.ElideRight
-                                            wrapMode: Text.NoWrap
-                                            font.pixelSize: PlayerStyle.px(14)
-                                            text: {
-                                                dialog.shortcutRevision
-                                                return MainCtx.shortcutLabel(shortcutButton.modelData)
+                                        onClicked: DialogsProvider.editShortcut(option)
+                                        contentItem: Row {
+                                            id:keyFacesRow
+                                            spacing:PlayerStyle.px(4)
+                                            Repeater {
+                                                model:shortcutButton.faces
+                                                delegate:Item {
+                                                    required property string modelData
+                                                    required property int index
+                                                    readonly property bool separator:modelData==="/"
+                                                    width:faceLabel.implicitWidth+PlayerStyle.px(separator?12:(shortcutButton.faces.length===1?46:24))
+                                                    height:PlayerStyle.px(48)
+                                                    Rectangle {
+                                                        objectName:"onboardingKeyShadow_"+shortcutButton.option+"_"+parent.index
+                                                        visible:!parent.separator
+                                                        y:PlayerStyle.px(6);width:parent.width;height:PlayerStyle.px(42)
+                                                        radius:PlayerStyle.px(12)
+                                                        color:PlayerStyle.dark?"#405c5c5c":"#40808080"
+                                                    }
+                                                    Rectangle {
+                                                        objectName:"onboardingKeyFace_"+shortcutButton.option+"_"+parent.index
+                                                        visible:!parent.separator
+                                                        y:shortcutButton.down?PlayerStyle.px(4):0
+                                                        width:parent.width;height:PlayerStyle.px(42)
+                                                        radius:PlayerStyle.px(12)
+                                                        color:shortcutButton.hovered?PlayerStyle.hover:PlayerStyle.chrome
+                                                        border.width:PlayerStyle.px(3)
+                                                        border.color:shortcutButton.visualFocus?PlayerStyle.accent:PlayerStyle.dark?"#373737":"#aaaaaa"
+                                                    }
+                                                    Label {
+                                                        id:faceLabel
+                                                        objectName:"onboardingKeyLabel_"+shortcutButton.option+"_"+parent.index
+                                                        anchors.horizontalCenter:parent.horizontalCenter
+                                                        y:PlayerStyle.px(shortcutButton.down?11:7)
+                                                        height:PlayerStyle.px(28)
+                                                        font.weight:Font.Light
+                                                        wrapMode:Text.NoWrap
+                                                        verticalAlignment:Text.AlignVCenter
+                                                        color:PlayerStyle.dark?"#eaeaea":"#2e2e2e"
+                                                        text:parent.modelData
+                                                    }
+                                                }
                                             }
                                         }
-                                        background: Rectangle {
-                                            radius: PlayerStyle.px(8)
-                                            color: shortcutButton.hovered ? PlayerStyle.hover : PlayerStyle.chrome
-                                            border.width: PlayerStyle.px(shortcutButton.visualFocus?2:1)
-                                            border.color: shortcutButton.visualFocus ? PlayerStyle.accent : PlayerStyle.hover
-                                        }
+                                        background: Item {}
+                                    }
                                     }
                                 }
                             }
@@ -333,7 +397,7 @@ T.Popup {
                         visible:!MainCtx.legacyFont.available
                         text:qsTr("Use FreeSans")
                         AccessibleCompat.id:"onboardingFontFallback"
-                        onClicked:{dialog.cancelFont();dialog.finishSetup()}
+                        onClicked:{dialog.cancelFont();dialog.showShortcuts()}
                         onActiveFocusChanged:if(activeFocus)body.reveal(this)
                     }
                 }
@@ -382,23 +446,25 @@ T.Popup {
                 }
                 }
                 }
-                Label { visible: dialog.page===2; Layout.fillWidth: true; text: qsTr("Find the full list in the menu.") }
+                Label { visible: dialog.page===2; Layout.fillWidth: true; color:PlayerStyle.sectionForeground;text: qsTr("Find the full list in the menu.") }
                 Item { visible:dialog.page===0||dialog.page===3;Layout.fillWidth: true }
-                SetupButton { visible: dialog.page>0; enabled:!MainCtx.legacyFont.busy;text: qsTr("Back"); onClicked: { dialog.page--; body.contentY=0 } }
+                SetupButton { visible: dialog.page>0; enabled:!MainCtx.legacyFont.busy;text: qsTr("Back"); onClicked: { dialog.page=dialog.page===2?3:dialog.page===3?1:0;body.contentY=0 } }
                 SetupButton {
-                    text: dialog.page===3?(MainCtx.legacyFont.available?qsTr("Finish"):qsTr("Download and finish")):qsTr("Next")
+                    text: dialog.page===2?qsTr("Finish"):dialog.page===3?(MainCtx.legacyFont.available?qsTr("Continue"):qsTr("Download and continue")):qsTr("Next")
                     enabled:!MainCtx.legacyFont.busy
                     primary: true
                     AccessibleCompat.id: "onboardingNext"
                     onClicked: {
-                        if(dialog.page<3){dialog.page++;body.contentY=0}
-                        else if(MainCtx.legacyFont.available)dialog.finishSetup()
+                        if(dialog.page===2)dialog.finishSetup()
+                        else if(dialog.page<2){dialog.page=dialog.page===0?1:3;body.contentY=0}
+                        else if(MainCtx.legacyFont.available)dialog.showShortcuts()
                         else{dialog.fontFinishing=true;MainCtx.legacyFont.download()}
                     }
                 }
             }
         }
         Row {
+            visible:dialog.page!==2
             x:PlayerStyle.px(62);anchors.bottom:parent.bottom;anchors.bottomMargin:PlayerStyle.px(12);spacing:PlayerStyle.px(12)
             PlayerSetupButton { text: qsTr("Skip"); fontWeight:Font.Normal; implicitHeight:PlayerStyle.px(24);AccessibleCompat.id: "onboardingSkip"; onClicked: {dialog.cancelFont();PlayerCustomization.closeOnboarding(false,dialog.theme,dialog.accent,"")} }
             PlayerSetupButton { visible:dialog.page===1;text:qsTr("System accent");fontWeight:Font.Normal;implicitHeight:PlayerStyle.px(24);onClicked:{dialog.accent="system";MainCtx.previewAppearance(dialog.theme,dialog.accent)} }
