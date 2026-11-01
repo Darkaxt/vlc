@@ -86,6 +86,7 @@ def main():
         '--qt-playback-engine=mpv', '--start-paused', '--no-media-library', '--no-plugins-cache',
         '--restore-playback-pos=0', '--no-save-recentplay', '--no-qt-privacy-ask',
         '--no-qt-updates-notif', '--no-metadata-network-access', '--no-qt-video-autoresize',
+        '--qt-auto-raise=0', '--no-qt-system-tray', '--qt-notification=0',
         '--no-video-title-show', '--no-volume-save', '--mmdevice-volume=0',
         '--verbose=2', '--file-logging', '--log-verbose=2', '--logfile=' + str(evidence / 'native-ui.log'), str(fixture)]
     (evidence / 'launch-argv.json').write_text(json.dumps(command, indent=2) + '\n')

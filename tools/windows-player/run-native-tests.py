@@ -16,29 +16,104 @@ def main():
     parser.add_argument('--receipt', required=True, type=Path)
     parser.add_argument('--runtime', required=True, type=Path)
     parser.add_argument('--scratch', required=True, type=Path)
+    parser.add_argument('--compiler-runtime', required=True, type=Path)
+    parser.add_argument('--resume-loader-failure', action='store_true')
+    parser.add_argument('--resume-builtin-failure', action='store_true')
+    parser.add_argument('--builtin-plugin-receipt', required=True, type=Path)
     args = parser.parse_args()
     build = json.loads(args.receipt.read_text())
     assert build['schema'] == 'vlc_redesign.native_test_build.v1'
+    def sha_file(path):
+        with path.open('rb') as stream:
+            return hashlib.file_digest(stream, 'sha256').hexdigest()
+    assert build['native_build_helper_sha256'] == sha_file(Path(__file__).with_name('build-native-tests.py'))
+    assert build['platform_header_sha256'] == sha_file(Path(__file__).with_name('native-test-platform.h'))
+    assert build['make_fragment_sha256'] == sha_file(Path(__file__).with_name('native-tests.mk'))
+    assert build['qt_platform_source_sha256'] == sha_file(Path(__file__).with_name('native-test-qt-platform.cpp'))
+    assert build['native_input_state_sha256'] == sha_file(Path('D:/VLC-Redesign/build/windows-x64/toolchain/work/build/win64/native-test-inputs.json'))
+    assert build['source_commit'] == json.loads((args.runtime / 'VLC-PLUGIN-BUILDINFO.json').read_text())['source_commit']
     root = args.scratch.resolve()
     assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
-    assert root.as_posix() == build['windows_layout'] and not root.exists()
-    root.mkdir()
+    assert root.as_posix() == build['windows_layout']
     tools_root = Path('D:/VLC-Redesign/build/windows-x64/toolchain')
+    adapter = json.loads(args.builtin_plugin_receipt.read_text())
+    assert adapter['source_commit'] == build['source_commit']
+    assert adapter['source_sha256'] == sha_file(Path(__file__).with_name('native-test-builtin-plugin.c'))
+    assert adapter['builder_sha256'] == sha_file(Path(__file__).with_name('build-native-builtin-plugin.py'))
+    assert adapter['plugin_header_sha256'] == sha_file(tools_root / 'work/src/include/vlc_plugin.h')
+    adapter_binary = args.receipt.parent / Path(adapter['file']).name
+    assert sha_file(adapter_binary) == adapter['sha256']
+    compiler_runtime = args.compiler_runtime.resolve(strict=True)
+    assert compiler_runtime == tools_root / 'usr/lib/gcc/x86_64-w64-mingw32/14-posix/libssp-0.dll'
+    resuming = args.resume_loader_failure or args.resume_builtin_failure
+    assert not (args.resume_loader_failure and args.resume_builtin_failure)
+    if resuming:
+        previous = json.loads((root / 'result.json').read_text())
+        assert previous['source_commit'] == build['source_commit'] and not previous['passed']
+        assert len(previous['cases']) == 1
+        assert previous['cases'][0]['exit_code'] == (0xC0000135 if args.resume_loader_failure else 3)
+        failure_name = 'loader-failure' if args.resume_loader_failure else 'builtin-failure'
+        if args.resume_loader_failure:
+            assert not any((root / 'bin/portable').iterdir())
+        else:
+            assert 'Assertion failed: resampling > 0' in (root / 'logs/test-test_src_audio_output_dec.exe.stderr').read_text()
+        saved = root / ('result-' + failure_name + '.json')
+        assert not saved.exists()
+        saved.write_bytes((root / 'result.json').read_bytes())
+        for log in (root / 'logs').iterdir():
+            if not log.name.endswith(('.loader-failure', '.builtin-failure')):
+                log.rename(log.with_name(log.name + '.' + failure_name))
+    else:
+        assert not root.exists()
+        root.mkdir()
     source = tools_root / 'work/src'
     for relative in ('test', 'share', 'modules/gui/qt/tests'):
-        shutil.copytree(source / relative, root / 'source' / relative)
-    shutil.copytree(args.runtime / 'plugins', root / 'modules')
-    for folder in ('bin', 'portable', 'tmp', 'appdata', 'localappdata', 'logs'):
-        (root / folder).mkdir()
+        if not resuming:
+            shutil.copytree(source / relative, root / 'source' / relative)
+    if not resuming:
+        shutil.copytree(args.runtime / 'plugins', root / 'modules')
+    for folder in ('bin', 'tmp', 'appdata', 'localappdata', 'logs'):
+        (root / folder).mkdir(exist_ok=resuming)
+    adapter_target = root / 'modules/native-tests/libnative_test_builtin_plugin.dll'
+    assert not adapter_target.exists()
+    adapter_target.parent.mkdir()
+    shutil.copyfile(adapter_binary, adapter_target)
+    assert sha_file(adapter_target) == adapter['sha256']
+    # Windows config_GetAppDir checks portable beside the actual test EXE.
+    # APPDATA alone does not override SHGetKnownFolderPath for configuration.
+    portable = root / 'bin/portable'
+    portable.mkdir(exist_ok=resuming)
+    runtime_dlls = {}
+    for binary in args.runtime.glob('*.dll'):
+        target = root / 'bin' / binary.name
+        shutil.copyfile(binary, target)
+        runtime_dlls[binary.name] = sha_file(binary)
+        assert sha_file(target) == runtime_dlls[binary.name]
+    shutil.copyfile(compiler_runtime, root / 'bin' / compiler_runtime.name)
+    compiler_runtime_hash = sha_file(compiler_runtime)
+    assert sha_file(root / 'bin' / compiler_runtime.name) == compiler_runtime_hash
     environment = {key: value for key, value in os.environ.items() if not key.startswith('VLC_PLAYER_DIAGNOSTICS')}
     environment.update(PATH=str(args.runtime.resolve()) + os.pathsep + environment['PATH'],
-        VLC_DATA_PATH=str(root / 'source/share'), VLC_USERDATA_PATH=str(root / 'portable'),
+        VLC_DATA_PATH=str(root / 'source/share'), VLC_USERDATA_PATH=str(portable),
         VLC_PLUGIN_PATH=str(root / 'modules'), VLC_LIB_PATH=str(root / 'modules'),
         APPDATA=str(root / 'appdata'), LOCALAPPDATA=str(root / 'localappdata'),
         TEMP=str(root / 'tmp'), TMP=str(root / 'tmp'), VLC_TEST_TIMEOUT='0',
         QML_DISK_CACHE_PATH=str(root / 'tmp/qml'), QT_DISABLE_SHADER_DISK_CACHE='1',
         QSG_RHI_DISABLE_SHADER_DISK_CACHE='1', QT_FORCE_STDERR_LOGGING='1')
+    environment['QT_QPA_PLATFORM'] = 'offscreen'
     result = {'schema': 'vlc_redesign.native_suite.v1', 'source_commit': build['source_commit'],
+        'native_build_helper_sha256': build['native_build_helper_sha256'],
+        'platform_header_sha256': build['platform_header_sha256'],
+        'make_fragment_sha256': build['make_fragment_sha256'],
+        'qt_platform_source_sha256': build['qt_platform_source_sha256'],
+        'native_input_state_sha256': build['native_input_state_sha256'],
+        'qt_platform': build['qt_platform'],
+        'runtime_dlls_sha256': runtime_dlls,
+        'compiler_runtime': {'file': str(compiler_runtime), 'sha256': compiler_runtime_hash},
+        'builtin_adapter': adapter,
+        'portable_profile_beside_test_executables': str(portable),
+        'runner_sha256': sha_file(Path(__file__)),
+        'native_timeout_contract': build['native_timeout_contract'],
         'passed': False, 'cases': [], 'scope': build['scope'] + ' Native processes on owned inactive desktops; isolated fixture/data/profile paths; no OS input.'}
     try:
         for suite in build['suites']:
@@ -48,7 +123,8 @@ def main():
                 with path.open('rb') as stream:
                     assert hashlib.file_digest(stream, 'sha256').hexdigest() == entry['sha256']
                 target = root / 'bin' / entry['name']
-                assert not target.exists()
+                if target.exists():
+                    assert resuming and sha_file(target) == entry['sha256']
                 shutil.copyfile(path, target)
                 executables[entry['name']] = target
             for name in suite['cases']:

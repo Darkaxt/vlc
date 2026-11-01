@@ -75,9 +75,17 @@ def main():
         else:
             data = output.read_bytes()
             size = 160 * 96 * 3 // 2
-            assert len(data) % size == 0
-            hashes = {hashlib.sha256(data[offset:offset + size]).hexdigest() for offset in range(0, len(data), size)}
-            result.update(decoded_frames=len(data) // size, different_frames=len(hashes))
+            # VLC's yuv output always writes a format line and FRAME markers,
+            # including when the optional YUV4MPEG2 identifier is disabled.
+            header, separator, body = data.partition(b'\n')
+            assert separator and header.startswith(b'I420 W160 H96 ')
+            stride = len(b'FRAME\n') + size
+            assert len(body) % stride == 0
+            hashes = set()
+            for offset in range(0, len(body), stride):
+                assert body[offset:offset + 6] == b'FRAME\n'
+                hashes.add(hashlib.sha256(body[offset + 6:offset + stride]).hexdigest())
+            result.update(decoded_frames=len(body) // stride, different_frames=len(hashes))
             assert result['decoded_frames'] >= 24 and len(hashes) >= 20
         result.update(decoded_output_sha256=sha(output), passed=True)
         cases.append(result)

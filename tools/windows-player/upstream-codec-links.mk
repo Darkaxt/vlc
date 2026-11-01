@@ -19,3 +19,10 @@ libaom_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/aom.map
 libmad_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mad.map
 # libmad's configure probe uses --with-mad; the link itself also binds the archive.
 MAD_LIBS = $(upstream_codec_libdir)/libmad.a
+
+# Preserve the baseline's static GCC exception-runtime correction when the full
+# module cohort is rebuilt. Explicit -lgcc_s defeats global -static-libgcc.
+SRT_LIBS := $(subst -lgcc_s,-lgcc_eh,$(SRT_LIBS))
+LIBS_x265 := $(subst -lgcc_s,-lgcc_eh,$(LIBS_x265))
+LIBS_gme := $(subst -lgcc_s,-lgcc_eh,$(LIBS_gme))
+libaccess_srt_plugin.la libaccess_output_srt_plugin.la libx265_plugin.la libgme_plugin.la: $(upstream_codec_recipe)

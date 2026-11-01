@@ -62,7 +62,13 @@ def main():
         assert code == 0 and 'EOF reached' in log and 'QApp exec() finished' in log
         assert 'using medialibrary module "medialibrary"' in log and 'Received first picture' in log
         current = database_state(runtime / 'portable')
-        assert current == baseline, (baseline, current)
+        result['after'] = current
+        # The pinned0.14.1 migration38->39 updates only db_model_version.
+        # Preserve media/file identities, history and every other setting.
+        assert len(baseline['settings']) == len(current['settings']) == 1
+        assert baseline['settings'][0][0] == 38 and current['settings'][0][0] == 39
+        assert current['settings'][0][1:] == baseline['settings'][0][1:]
+        assert current['media'] == baseline['media'] and current['files'] == baseline['files']
         assert hashlib.sha256((args.profile / 'ml/ml.db').read_bytes()).hexdigest() == original
         result.update(after=current, original_seed_unchanged=True,
             schema_change_required=current['settings'][0][0] != baseline['settings'][0][0], passed=True)

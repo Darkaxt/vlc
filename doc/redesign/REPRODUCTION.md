@@ -255,17 +255,65 @@ current outputs into a fresh runtime; `VLC-PLUGIN-BUILDINFO.json` binds the plug
 set to the merged application and upstream commits. Existing compatible SDK and
 MPV dependencies remain pinned, with the medialibrary override recorded separately
 in the combined corresponding-source inventory. No global SDK replacement occurs.
+The codec override similarly builds MPG1231.33.7, ZVBI0.2.46, MAD0.16.5 and
+AOM3.15.2 into `/work/upstream-codecs-1.1.1/prefix`, using the upstream SHA-512
+rules and exact patches. Configuration binds their actual archive paths before
+the old SDK. `upstream-codec-links.mk` runs with direct `all-am` after the
+separate Qt build so recursive Automake does not discard its extra makefile.
+Real linker maps bind all four updated archives and reject old SDK members.
+The same fragment retains the baseline SRT input/output, x265 and GME static
+GCC exception-runtime correction; explicit `-lgcc_s` must not reintroduce a
+missing `libgcc_s_seh-1.dll`. Preserve all configured security linker flags.
+The source inventory contains121 corresponding archives plus3 host-only inputs;
+the AOM PATENTS text is included in the binary notice materials.
+
+After the complete diagnostic assembly and native acceptance, the normal
+variant resumes from `player` with the existing configuration, objects and
+MPV identity. Do not rerun configure merely to change diagnostic guards:
+CONFIGURE_LINE is in global config.h and a changed dependency path invalidates
+the frontend even when the feature probes are unchanged. Cache omission uses
+`VLC_PLAYER_COMPILE_CACHE=0` with an explicit reason; the complete target graph
+still runs and validates every dependency.
+
+The selected upstream native regressions use `build-native-tests.py` with
+`native-tests.mk`, `--platform-header native-test-platform.h` and
+`--qt-platform-source native-test-qt-platform.cpp` from this tools directory.
+Pass the exact Windows `--windows-layout` later used by `run-native-tests.py`.
+The input signature forces only the selected test objects when those macros,
+configured makefiles or test recipes change, including on coarse timestamps.
+The two C units link the existing VLC libcompat. Windows requires
+VLC_TEST_TIMEOUT=0; a nonzero POSIX alarm request fails explicitly. The CSD
+model unit imports the existing static SDK offscreen platform. These adapters
+change no production target or upstream assertion. Build the separate
+`native-test-builtin-plugin.c` with `build-native-builtin-plugin.py` in the
+same admitted toolchain. Windows core omits ELF weak-builtin discovery; this
+test-only DLL registers the existing exported EXE table and preserves the
+upstream mocks and their state. Pass its receipt through
+`--builtin-plugin-receipt`, and the pinned compiler's x64 POSIX `libssp-0.dll`
+through `--compiler-runtime`, to `run-native-tests.py`. Both are hash checked
+and staged only in the isolated test layout. Run the actual three
+recorded executables on owned inactive desktops, checking real exit results;
+optional Qt Quick Test and the entire POSIX-oriented upstream suite are not
+claimed by these selected regressions.
+
+Native library migration acceptance expects the pinned medialibrary0.14.1
+schema38-to39 transition while preserving every other stored setting,
+media/file identity and history value. Codec acceptance parses VLC's native
+YUV format and per-frame headers before comparing decoded AV1 frame payloads.
+Offscreen pixel checks explicitly disable VLC's auto-raise option, retaining
+the foreground-ownership rejection and actual WGC image comparison.
 
 Version1.1.1 corrects the1.1.0 symbol bloat without removing plugins or engines.
-Run the existing pipeline in `normal-mpv` mode with an exact `--release-symbols`
-directory. Resume from `runtime` using the exact previous MPV buildinfo hash to
-refresh the already-built prefix DLLs; no dependency compilation is needed.
+Use `normal-mpv-full` with the exact `--release-symbols` directory for the
+merged release. Its MPV prelude reuses the existing verified raw prefix;
+the upstream-required medialibrary/codec overrides are the separate inputs
+described above.
 `stage-built-mpv-runtime.py` calls `release_symbols.py --mpv-only` before writing
 payload hashes, so the generated Qt header binds the actual stripped DLLs.
 Do not strip or binary-patch MPV after compiling that binding.
 
 The normal player driver finishes all required outputs, then runs the same
-symbol splitter over every EXE/DLL, including inherited plugins. Original build
+symbol splitter over every EXE/DLL in the completed cohort. Original build
 outputs remain untouched. GNU objcopy keeps separate matching debug files;
 strip-all removes COFF symbols and debug sections, and GNU debuglink
 records each sidecar's basename/CRC. The helper requires byte-identical runtime

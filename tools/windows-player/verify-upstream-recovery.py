@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import uuid
+from urllib.parse import unquote
 
 sys.dont_write_bytecode = True
 from isolated_desktop import IsolatedProcess
@@ -81,15 +82,32 @@ def main():
                         snapshot = inspect('queued-prompt', 'snapshot', '--capture')
                         dialogs = [widget for widget in snapshot['widgets'] if widget['id'] == 'modelRecoveryQuestion']
                         assert len(dialogs) == 1 and dialogs[0]['font_family'].startswith('Inter'), dialogs
-                        assert snapshot['player_ready'] and recovery.read_bytes() == expected_bytes
+                        # An idle queue has no audio/subtitle selector. Check the
+                        # visible idle interface and dialog, not media controls
+                        # whose dimensions depend on an opened input.
+                        assert snapshot['window']['visible']
+                        assert set(snapshot['missing_required_items']) <= {'subtitleButton', 'audioButton'}
+                        assert snapshot['images']['pending'] == snapshot['images']['failed'] == 0
+                        assert dialogs[0]['enabled'] and dialogs[0]['width'] > 0 and dialogs[0]['height'] > 0
+                        assert recovery.read_bytes() == expected_bytes
                         if action != 'unanswered':
                             after = inspect('answer-' + action.lower(), 'widget_click', '--widget-text', action, '--capture')
                             assert not any(widget['id'] == 'modelRecoveryQuestion' for widget in after['widgets'])
                             if action == 'Yes':
-                                restored = inspect('play-restored-queue', 'click', '--target', 'playButton',
-                                    '--await-core', 'url', '--await-value', json.dumps(args.fixture.resolve().as_uri()))
+                                # Recovery appends the saved playlist without
+                                # selecting an input. Activate that real queue
+                                # row, as a user does, before observing playback.
+                                queue = inspect('show-restored-queue', 'click', '--target', 'playqueueToggle', '--capture')
+                                recovered_url = recovery.resolve().as_uri()
+                                assert len([node for node in queue['tree'] if node['id'] == 'delegate'
+                                    and node['visible'] and node.get('url') == recovered_url]) == 1
+                                inspect('select-restored-queue', 'click', '--item-url', recovered_url)
+                                restored = inspect('play-restored-queue', 'key', '--key', '0x01000004',
+                                    '--await-core', 'state', '--await-value', '2')
                                 assert restored['core']['engine'] == 'vlc'
-                                inspect('restored-paused-input', 'snapshot', '--await-core', 'state', '--await-value', '3')
+                                assert unquote(restored['core']['url']) == unquote(args.fixture.resolve().as_uri())
+                                inspect('restored-paused-input', 'click', '--target', 'playButton',
+                                    '--await-core', 'state', '--await-value', '3')
                     finally:
                         try:
                             inspect('quit', 'quit')

@@ -6,7 +6,18 @@ authoritative. This is the only ACTIVE stage; S8 stays COMPLETE, S9 NOT STARTED.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M1 Upstream sync and optimized release | ACTIVE | Upstream c7834066e27cf07a2a15f1e8aab17c12df97e5d4 merged locally at5a17873578 (243 incoming commits), four conflicts reconciled. Exact committed source bound to the private build clone; required medialibrary0.14.1 compiled from publisher-checksummed source. Fresh runtime has no inherited plugin DLLs; MPV symbol splitting preserves runtime sections and binds its new hashes. | Finish merged player/coherent plugin compilation; integrated/native suite/color/library/recovery/normal/preservation checks; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup, retained binding/weekly prompt update and final remote source sync. All remaining gaps are internal implementable acceptance blockers. | None. |
+| M1 Upstream sync and optimized release | ACTIVE | Upstream c7834066e27cf07a2a15f1e8aab17c12df97e5d4 merged locally (243 incoming commits), four conflicts reconciled. Coherent410-plugin assembly and all four codec archive/map audits pass. All assigned integrated workflows, three selected native upstream regressions, P5/P8.1/P8.4/SDR/HDR10 pixel comparisons and native visual review pass. Real medialibrary schema38-to39 migration preserves media/history/settings. Installed VLC/Nuvio profiles are unchanged. Corresponding sources/notices include medialibrary0.14.1 and four updated codecs. | Final normal variant and package acceptance; normal1.1.1 source/binary/symbol/checksum publication and independent readback; exact scratch cleanup, retained binding/weekly prompt update and final remote source sync. These remain internal implementable delivery blockers. | None. |
+
+**Current acceptance checkpoint (1 November):** the merged production tree at
+adb5a019d797b40f6113fa34b5218b4503659913 passed the complete affected Windows
+acceptance matrix below. Freeze the verified test/build recipes without
+changing that production tree, bind the resulting source commit and assemble
+`normal-mpv-full` from the player step. Retain configuration and all valid
+objects; do not rerun configure. Native test-only adapters provide the explicit
+zero-alarm contract, libcompat, static Qt offscreen registration and Windows
+discovery of the unchanged EXE builtin mocks. No production assertion or
+upstream test assertion was changed. The final normal package still requires
+its own delivery acceptance before publication.
 
 Use the retained `D:/VLC-Redesign/build/windows-x64` cohort. New native/build QA
 scratch is `D:/Temp/vlc-s8-release-1.1.1-20261031` (sustained-I/O exception);
@@ -18,6 +29,9 @@ Validate the fully integrated release outcome once; focused diagnostic checks
 must answer an actual implementation question. No Rust or UI work is authorized.
 Upstream-required UI conflict/integration fixes preserve the existing Figma
 contract. The latest instruction explicitly cancels shutdown attempts.
+The following compilation notes describe the resolved pre-acceptance history;
+the current status and remaining work are recorded above.
+
 Build128 (7733a7a58c5b49898aca0e5f4fd3000f, original61745) is CLOSED137 following
 the scope-change stop, with an empty group and no OOM. Its outputs are not the
 merged release. Fork8fb6748 and upstream c783406 are the parents of merge5a17873578;
@@ -51,15 +65,25 @@ no native or release acceptance has passed. All four codec builds and VLC
 reconfiguration passed. The new dependency paths change CONFIGURE_LINE in global config.h, so
 Make invalidates existing core/frontend objects despite unchanged probe results.
 Do not bypass those dependencies or repeat configuration for the final normal
-variant. Actual plugin linkage and native behavior remain unverified. The notice inventory now has124
+variant. Build132 (cc1191184250404894cb3e3d8269d29f, original3069) subsequently
+closed0: the410 configured plugins staged successfully, all four actual codec
+map/archive checks passed, no OOM occurred, the group was empty and private
+mounts released with namespace exit0. The nine RTP payload DLLs use upstream's
+access/rtp install subdirectory; their exact module identities are retained.
+The notice inventory now has124
 entries:121 corresponding library sources and3 separately classified host
 inputs. A standalone completion after the pipeline's notice writer exited0
 adds the required AOM PATENTS text. Final package/source checks remain required.
 Synthetic old-version
 database setup exited0; its copied1.5GB runtime and obsolete128 sidecars/transfers
 were retired by inspected cleanup tickets. Only the synthetic profile needed
-for the real new-library compatibility check remains. No merged-player behavior
-or1.1.1 release has passed acceptance yet.
+for the real new-library compatibility check remains. Initial merged-player
+handover/control/library/prior-profile/localization workflows passed; remaining
+acceptance and1.1.1 delivery are incomplete. The selected upstream native test
+harness needs a test-only Windows alarm contract (timeout0 required), VLC's
+existing libcompat linkage and tagged configured-program output. Its recipe
+records actual helper/header/make-fragment hashes and collects independent
+compiler errors in one pass; it changes no production target or test assertions.
 
 The broad regression gate is the fork's complete Windows acceptance matrix:
 both engines and live/cancelled handovers, native controls/tracks/subtitles,
