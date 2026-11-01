@@ -4,12 +4,19 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
-**M1 Upstream sync and optimized release is ACTIVE (31 October 2026).** The user's
-new-release request and subsequent explicit instruction to sync upstream commits
-and deploy the update authorize version1.1.1 with upstream integration and corrected
-release symbol bloat. R71-R72 govern this maintenance outcome; S8 remains delivered
-and COMPLETE, S9 remains NOT STARTED. Preserve all plugins, both engines, existing
-capabilities, profiles, previous releases and the verified retained build cohort.
+**M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
+[Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
+is the normal published release from `b84e7326e3d3e554120f3866fbe1c1acfa5ec6cc`,
+including 243 incoming commits through upstream
+`c7834066e27cf07a2a15f1e8aab17c12df97e5d4`. R71-R72 are satisfied and verified:
+coherent plugins and both engines, affected integrated/native/color workflows,
+optimized normal package, matching symbols, complete corresponding source,
+independently downloaded artifacts/playback, unchanged protected profiles,
+retained build/weekly binding and exact scratch cleanup. No M1 criterion,
+blocker or tracked deferral remains. [Final reconciliation](resources/m1-verification.json)
+records the delivered identities and acceptance limits. Local delivery is
+`D:/VLC-Redesign/releases/1.1.1`; previous releases remain preserved.
+S8 stays COMPLETE, S9 NOT STARTED; no implementation stage is ACTIVE.
 
 | Requirement | Required behavior and acceptance | Owner |
 |---|---|---|

@@ -1,0 +1,201 @@
+{
+  "schema": "vlc_redesign.m1_final_delivery.v1",
+  "stage": "M1 Upstream sync and optimized release",
+  "status": "COMPLETE",
+  "verified_date": "2026-11-01",
+  "requirements": {
+    "R71": "satisfied_and_verified",
+    "R72": "satisfied_and_verified"
+  },
+  "version": "1.1.1",
+  "source_commit": "b84e7326e3d3e554120f3866fbe1c1acfa5ec6cc",
+  "upstream_commit": "c7834066e27cf07a2a15f1e8aab17c12df97e5d4",
+  "incoming_commits": 243,
+  "merge_commit": "5a1787357806b1ef65f9cc12761d337847c61686",
+  "release": {
+    "tag": "redesign-v1.1.1",
+    "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-01T03:14:11Z",
+    "independently_downloaded_and_verified": true,
+    "assets": [
+      {
+        "name": "Modern-VLC-Fork-1.1.1-win64-portable.zip",
+        "bytes": 131825637,
+        "sha256": "3fab83f67cd504b0f36515641fe75c28c8cb8b7fa2da9a77d43735bc0b9aa0b3"
+      },
+      {
+        "name": "Modern-VLC-Fork-1.1.1-corresponding-source.tar.gz",
+        "bytes": 879141477,
+        "sha256": "a49f59d03beec40a8142e313cdc310cced4d3f84f06e644d5055fb133f8dc210"
+      },
+      {
+        "name": "Modern-VLC-Fork-1.1.1-win64-symbols.zip",
+        "bytes": 802564438,
+        "sha256": "2037d3402ba32decfb8ea86b4a41cf231fcadd30494ea9ab3e8d56311457300b"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "bytes": 329,
+        "sha256": "443c9d19d8c0e0a038a0b230ce424c1e78f3d231ac762b0d43836af1a56a9ef6"
+      }
+    ]
+  },
+  "package": {
+    "portable_bytes": 329720825,
+    "previous_portable_bytes": 1534873267,
+    "reduction_percent": 78.51804236290735,
+    "pe_files_stripped": 417,
+    "coherent_plugins": 410,
+    "runtime_sections_imports_exports_relocations_preserved": true,
+    "every_symbol_sidecar_and_debuglink_crc_verified": true,
+    "mpv_runtime_images_unchanged_from_accepted_1_1_0": true,
+    "normal_qt_plugin_sha256": "cd3171f0b6204f44ffd920d33068eccb6eb90402750f6a10c483d49ebd1a75c2",
+    "plugin_cohort_sha256": "05f5fc3d6e83903f01e97df9a6d74d5d144918c7bbd52b90bdd0d5de2b5d1b0a",
+    "codec_linkage_sha256": "32eca666c7517cc02f083c7b5a55a1a4cebffb888912bd933c869bc35afae17c",
+    "signing": "NotSigned; established unsigned release policy"
+  },
+  "source": {
+    "every_application_blob_matches_release_commit": true,
+    "corresponding_dependency_sources": 121,
+    "notice_entries": 124,
+    "host_only_inputs": 3,
+    "aom_patents_included": true,
+    "updated_dependencies": {
+      "medialibrary": "0.14.1",
+      "mpg123": "1.33.7",
+      "zvbi": "0.2.46",
+      "mad": "0.16.5",
+      "aom": "3.15.2"
+    },
+    "other_sdk_and_mpv_inputs": "Existing recorded compatible pins retained; no blanket dependency freshness claim"
+  },
+  "acceptance": {
+    "functional_cases": [
+      "codec-decodes",
+      "incoming-transition",
+      "language-el",
+      "medialibrary-upgrade",
+      "mpv-history",
+      "mpv-inputs",
+      "mpv-library",
+      "mpv-volume",
+      "prior-vlc",
+      "recovery",
+      "runtime-incompatible",
+      "runtime-missing",
+      "theme-dark-1",
+      "theme-dark-15",
+      "theme-dark-2",
+      "theme-light-15",
+      "theme-light-2",
+      "vlc-handover",
+      "vlc-inputs"
+    ],
+    "color_cases": [
+      "hdr10",
+      "p5",
+      "p81",
+      "p84",
+      "sdr"
+    ],
+    "actual_wgc_pixels_compared_to_fresh_software_references": true,
+    "p5_mapping_disabled_negative_control_passed": true,
+    "selected_native_upstream_regressions": [
+      {
+        "case": "test_src_audio_output_dec.exe",
+        "exit_code": 0,
+        "skipped": false
+      },
+      {
+        "case": "test_modules_video_filter_blend.exe",
+        "exit_code": 0,
+        "skipped": false
+      },
+      {
+        "case": "test_qt_csd_button_model.exe",
+        "exit_code": 0,
+        "skipped": false
+      }
+    ],
+    "upstream_suite_limit": "Selected Windows native tests only; entire POSIX-oriented suite and absent optional Qt Quick Test not claimed",
+    "native_visual_review": true,
+    "real_medialibrary_schema_38_to_39_preserved_media_history_and_other_settings": true,
+    "production_tree_sha256": "f5c6704190161c8cc74d91c852e0aed3ecf47eb0706171d3bd515df59cfb98da",
+    "applicability": "Integrated diagnostic source adb5a019d797b40f6113fa34b5218b4503659913 has the same production tree as final source b84e7326; normal package and delivered native behavior independently verified",
+    "normal_native_cases": [
+      "vlc-sdr",
+      "vlc-hdr10",
+      "mpv-sdr",
+      "mpv-dv-p5"
+    ],
+    "downloaded_native_cases": [
+      "vlc",
+      "mpv-dv-p5"
+    ],
+    "actual_picture_eof_teardown_verified": true,
+    "protected_profiles_unchanged_after_downloaded_checks": true,
+    "input_desktop_and_foreground_preserved": true,
+    "placement_review": "Original private-desktop verifier false result preserved. Independent provenance review bound two Windows indicator classes to Microsoft-signed InputSwitch.dll. Subsequent actual-picture cases passed unchanged strict all-owned-windows-offscreen checks.",
+    "output_limit": "BT.709/sRGB SDR mapping. Native Dolby Vision signaling and Profile7 FEL reconstruction are not claimed."
+  },
+  "retention": {
+    "continuing_consumer": "vlc-weekly-upstream-sync-and-release",
+    "normal_mode": "normal-mpv-full",
+    "read_only_verification_sequence": 142,
+    "workflow_id": "ce4c8896e04a4adca4df15cfe908a5e2",
+    "report_sha256": "06611b55dfad2c3d5ed173ee5ce6df2c4c2aa0df60d0dd2f63d5ef2f4e4315d7",
+    "source_configuration_sdk_objects_prefixes_and_promoted_runtime_verified": true,
+    "no_rebuild_or_initialization": true,
+    "all_required_managed_groups_empty": true,
+    "no_oom": true,
+    "private_mounts_released": true,
+    "namespace_exit_code": 0
+  },
+  "weekly_automation": {
+    "id": "vlc-weekly-upstream-sync-and-release",
+    "status": "ACTIVE",
+    "cadence": "Monday09:00 Europe/Bucharest; unchanged",
+    "prompt_bound_to_verified_1_1_1": true,
+    "persisted_readback_passed": true,
+    "quiet_when_unchanged": true
+  },
+  "cleanup": {
+    "d_task_root": {
+      "transaction": "712c5e62ebf23db635cfead57702222d",
+      "state": "applied",
+      "members": 4297,
+      "bytes": 624019743,
+      "excluded": 0,
+      "errors": [],
+      "root_absent": true
+    },
+    "e_task_root": {
+      "transaction": "86399ed6fb8ecf1844f070df67819d76",
+      "state": "applied",
+      "members": 215,
+      "bytes": 505473,
+      "excluded": 0,
+      "errors": [],
+      "root_absent": true
+    },
+    "earlier_exact_intermediate_transactions": "Applied; current-release local qualification retains their receipts",
+    "intentional_deliverables_and_active_build_consumers_preserved": true
+  },
+  "preservation": {
+    "previous_releases": true,
+    "installed_vlc_and_nuvio_profiles": true,
+    "protected_agents_file": true,
+    "unrelated_wsl_bindings": true,
+    "no_shutdown_attempt": true
+  },
+  "remaining_criteria": [],
+  "blockers": [],
+  "tracked_deferrals": [],
+  "next_planned_stage": {
+    "stage": "S9 profiling and selective Rust migration assessment",
+    "status": "NOT STARTED"
+  },
+  "local_qualification": "Retained with the current versioned local release; private color frames and profile evidence are not public release assets"
+}

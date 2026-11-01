@@ -1,15 +1,16 @@
 # Windows x64 reproduction and recovery
 
-Current delivery is [Modern VLC Fork 1.1.0](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.0), application commit `c8a1cdfd31a97e7ecc0bda772d4148f1f87a6b26`. Its binary/source/checksums and independently downloaded native behavior are verified in [S8 final delivery](resources/s8/final-release.json). The original 1.0.0/S7 procedure below remains the preserved baseline; the S8 section records the source-bound MPV build and current retained binding.
+Current delivery is [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1), application commit `b84e7326e3d3e554120f3866fbe1c1acfa5ec6cc`. Its portable binary, complete corresponding source, matching separate symbols and checksums, including independently downloaded native playback, are verified in [M1 final delivery](resources/m1-verification.json). Current local qualification is `D:/VLC-Redesign/releases/1.1.1/verification`. The existing host reuses `D:/VLC-Redesign/build/windows-x64`; its read-only retained check142 verified source/configuration, SDK, MPV and new dependency prefixes plus the promoted runtime without rebuilding or initializing a VM. Use `normal-mpv-full` for the merged release. Do not repeat cold setup or configuration when the verified inputs remain unchanged. The original1.0.0/S7 procedure below is historical recovery guidance, not the current-host continuation procedure.
 
 The fork reuses VLC's engine and Qt frontend. It does not replace the installed
-VLC or require MPV. The upstream application pin is
+VLC or require MPV. The current upstream application pin is
+`c7834066e27cf07a2a15f1e8aab17c12df97e5d4`; the historical S7 baseline is
 `392bc1d0abdb7396b6c97fef206efa1d23868e19`. Target Qt is 6.8.3; the image's host
 qmake label is 6.8.0. The unchanged prebuilt archive and target headers retain
 those distinct upstream identities. The image digest, complete input hashes,
 source overlay and actual native runtime evidence bind each reproduction.
 
-## Isolated environment
+## Historical S7 isolated environment
 
 Use a fresh, exactly registered `D:/Temp/vlc-s7-<run>` root for sustained I/O,
 with a uniquely named disposable WSL distribution. Preserve every existing
@@ -302,6 +303,18 @@ media/file identity and history value. Codec acceptance parses VLC's native
 YUV format and per-frame headers before comparing decoded AV1 frame payloads.
 Offscreen pixel checks explicitly disable VLC's auto-raise option, retaining
 the foreground-ownership rejection and actual WGC image comparison.
+
+The 1.1.1 private-desktop placement verifier originally rejected a second Windows
+input-indicator class, `UAC_InputIndicatorOverlayWnd`. Its original failed receipt
+is preserved. Independent review established that both it and `UAC Input Indicator`
+came from the same Microsoft-signed System32/InputSwitch.dll; the native run
+exited 0, all visible Qt windows stayed outside every monitor, no owner became
+foreground and the input desktop was unchanged. This is an explicit review of
+that closed placement run, not a rewritten passing verifier receipt. Subsequent
+normal MPV SDR/P5 and downloaded P5 actual-picture checks passed the unchanged
+strict all-visible-owned-windows-offscreen guard. Frozen local control snapshots
+retain original historical paths; use maintained project tools and the current
+retained binding for new execution.
 
 Version1.1.1 corrects the1.1.0 symbol bloat without removing plugins or engines.
 Use `normal-mpv-full` with the exact `--release-symbols` directory for the
