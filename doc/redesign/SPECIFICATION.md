@@ -33,6 +33,15 @@ input-desktop run. Preserve the failed receipt; do not waive its foreground
 failure or repeat the failed protocol unchanged. This is required normal-runtime
 verification integration, not an additional implementation stage.
 
+The first passive inactive-desktop proof correctly rejected Qt's native style:
+Qt6.8.3 retains `WindowDoesNotAcceptFocus` in its activation-message policy but
+does not map it to `WS_EX_NOACTIVATE`. Keep the native-style criterion unchanged.
+The Windows interface handler must add that style during Qt's pre-platform-show
+event and preserve it in `WM_STYLECHANGING` for this explicit passive option.
+Default interactive windows must retain their ordinary style. Preserve the
+failed private proof and repeat affected checks only after this native bridge
+has been integrated; no input-desktop launch was attempted from that proof.
+
 The2 November rendered-reference audit and user correction also reopen R52 for
 the player chrome/menu. M2 must restore the interactive Figma main menu as the
 priority: direct media/global actions, original two-tone vector icons, aligned

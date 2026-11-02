@@ -971,6 +971,21 @@ bool InterfaceWindowHandlerWin32::eventFilter(QObject* obj, QEvent* ev)
     if (ret)
         return ret;
 
+    // Qt 6.8 handles WindowDoesNotAcceptFocus in its activation messages,
+    // but does not map it to WS_EX_NOACTIVATE. QWindow sends Show before
+    // the platform window is shown, so establish the native policy here.
+    if (obj == m_window && ev->type() == QEvent::Show
+        && var_InheritBool(p_intf, "qt-passive"))
+    {
+        const HWND hwnd = WinId(m_window);
+        const LONG_PTR style = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+        SetLastError(ERROR_SUCCESS);
+        const LONG_PTR previous = SetWindowLongPtr(hwnd, GWL_EXSTYLE, style | WS_EX_NOACTIVATE);
+        const DWORD error = GetLastError();
+        if (!previous && error != ERROR_SUCCESS)
+            msg_Err(p_intf, "Unable to establish passive native window style: %lu", error);
+    }
+
     if (ev->type() == QEvent::Resize)
     {
         /*
@@ -1021,6 +1036,14 @@ bool InterfaceWindowHandlerWin32::eventFilter(QObject* obj, QEvent* ev)
     bool handled = false;
     switch( msg->message )
     {
+        case WM_STYLECHANGING:
+            // Preserve the explicit passive policy when Qt replaces the
+            // extended style while changing frame/window flags.
+            if (msg->wParam == static_cast<WPARAM>(GWL_EXSTYLE)
+                && m_window && m_window->handle() && msg->hwnd == WinId(m_window)
+                && var_InheritBool(p_intf, "qt-passive"))
+                reinterpret_cast<STYLESTRUCT*>(msg->lParam)->styleNew |= WS_EX_NOACTIVATE;
+            break;
         case WM_APPCOMMAND:
             cmd = GET_APPCOMMAND_LPARAM(msg->lParam);
 

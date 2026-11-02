@@ -32,6 +32,16 @@ style gate, then use the proven Qt-only cohort path to rebuild only the changed
 frontend and revision binaries. Retain the completed HEIF/non-Qt objects and
 unchanged decoder/runtime image evidence; no SDK, configure or full module rebuild.
 
+Qt-only continuation170 (`0ae8671ae2a647e19a9462af41673585`, source
+`0515f2f2cffb2a7ee49357d1a9fa76078f455894`) closed0 with409 non-Qt plugins
+retained,417 stripped mappings,1704787968 bytes peak RAM, zero OOM/max events and
+released mounts/group. Qualification22762 passed normal VLC and default focus
+style, then its passive **inactive-desktop** proof failed the native-style check.
+No offscreen launch followed. Installed Qt6.8.3 source confirms that its no-focus
+flag does not create `WS_EX_NOACTIVATE`; add the required Windows lifecycle bridge
+without weakening that criterion. M3 remains ACTIVE with this internal acceptance
+blocker. Preserve both failures and reuse unchanged HEIF evidence.
+
 **M2 First-run usability and fork identity is COMPLETE (2 November2026).**
 [Modern VLC Fork1.1.3](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3)
 delivers the full Figma main-menu/Playback-panel correction and the reported
