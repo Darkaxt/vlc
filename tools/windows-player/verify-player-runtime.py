@@ -21,6 +21,7 @@ if not (r/'portable').is_dir() or any((r/'portable').iterdir()):
 (s/'tmp').mkdir(parents=True,exist_ok=True);(s/'cache/qml-normal').mkdir(parents=True,exist_ok=True)
 sys.path.insert(0,str(repo/'tools/windows-player'))
 from isolated_desktop import IsolatedProcess
+from runtime_teardown import vlc_input_release_evidence
 assert r.is_dir() and (r/'portable').is_dir()
 e.mkdir(parents=True,exist_ok=True)
 qt=r/'plugins/gui/libqt_plugin.dll';blob=qt.read_bytes()
@@ -58,10 +59,11 @@ with (e/'native-ui.stdout').open('wb') as out,(e/'native-ui.stderr').open('wb') 
 # Preserve the exact native result even when acceptance below fails.
 log=(e/'native-ui.log').read_text(encoding='utf8',errors='replace');stderr=(e/'native-ui.stderr').read_text(encoding='utf8',errors='replace')
 qml_failure_pattern=r'(TypeError:|ReferenceError:|is not installed|is not a type|is not available in|Type [^\n]+ unavailable|failed to load component|Binding loop detected|source item.s window:|Cannot assign to non-existent property|Unable to assign \[undefined\] to)'
+release_evidence=vlc_input_release_evidence(log,options.fixture,records['exit_code'])
 requirements={
  'actual_picture': 'Received first picture' in log,
  'natural_eof': 'EOF reached' in log,
- 'input_released': ("destroying input for '"+options.fixture.name+"'") in log,
+ 'input_released': release_evidence['passed'],
  'qt_event_loop_finished': 'QApp exec() finished' in log,
  'no_plugin_load_errors':not any(x in log for x in ['cannot load module','could not load module','cannot load plug-in']),
  'no_qml_runtime_errors':not re.search(qml_failure_pattern,log+'\n'+stderr)
@@ -81,6 +83,7 @@ warnings=[line for line in (log+'\n'+stderr).splitlines() if re.search(qml_failu
 records['qml_runtime_errors']=warnings
 records['media_library_enabled']=options.with_media_library
 records['engine']=options.engine
+if options.engine=='vlc':records['input_release_evidence']=release_evidence
 records.update(checks=requirements,qt_plugin_sha256=hashlib.sha256(blob).hexdigest(),upnp_plugin_sha256=hashlib.sha256((r/'plugins/services_discovery/libupnp_plugin.dll').read_bytes()).hexdigest(),debug_markers_absent=markers,profile_isolation='Existing empty portable directory beside executable',capture_scope='Inactive desktop, no OS input or desktop switching',verified_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
 records['passed']=records['exit_code']==0 and all(requirements.values())
 (e/'result.json').write_text(json.dumps(records,indent=2)+'\n',encoding='utf8')

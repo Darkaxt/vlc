@@ -1,196 +1,61 @@
 # VLC redesign stages and reconciliation
 
-**Current M2 priority after the user's rendered-reference audit:** rebuild the
-top-left main menu to the interactive Figma design, verify direct Global Settings
-access, and close the reported toggle/time/sidebar/control-order/Playback-panel
-differences. One explicitly requested bounded agent inspected the live prototype
-and restored/released its browser workflow. Its audit is diagnostic; no1.1.3
-native visual acceptance was claimed by that audit alone. Preserve required engine switching with the
-plain VLC/MPV labels, custom layouts and all existing functional requirements.
-The optimized objects from original159/161 are retained. Their obsolete
-invocations were intentionally stopped with empty process groups and zero OOM
-events. A native SVG diagnostic against the retained Qt6.8.3 now verifies
-supported masks for closed contours and preservation of open waves/dividers.
-The cohesive corrected assets are bound at source1692f4ebddaa151cf749e666b22f641cb91f532e.
-Original gate ticket164 (`eef32fd279914e2b92381c183328a000`), pipeline run0013,
-has compiled the stale Qt/QML objects and linked the interface plugin. The same
-pipeline has completed all configured VLC modules and staged410 plugins with
-the retained SDK/MPV/codecs. Session71873 is closed: the player step exited0;
-the outer job exited1 afterward because the separate Windows thumbnail test
-included POSIX alarm(). Its Linux group is empty, all OOM/max counters are zero,
-and peak charged RAM was1708650496 bytes. Test-only source6e843b2d373fd0484e961307f00d58b19737fc42
-ports that watchdog boundary and preserves explicitly staged Windows plugin paths;
-the assembled player's production tree is unchanged. Original session80556,
-ticket165 (`e2e5db60a90a402f86b402664b5e5cf0`), now builds only the two native
-acceptance executables. Ticket165 is now closed with exit0, an empty Linux group,
-zero max/OOM events and533127168 bytes peak charged RAM. Its native internal-
-preparser thumbnail regression passes; the test-only SSP dependency is isolated
-from the application. The configured upstream conditional does not run the
-external preparser cases, so no external-preparser pass is claimed.
-
-**Current acceptance (2 November):** the completed native workflows pass against
-the unchanged optimized1692f4e production tree. The full pass's stale host checks
-were traced to compact/full library IDs, numeric versus string image status,
-replacement-input readiness, pointer completion versus decoded-position readiness,
-and keyboard focus reason. Raw failure receipts remain preserved. Reconciliation
-reuses AST-identical unaffected checks, plus complete corrected menu and preview
-workflows. The main menu, Recent/Profile, direct Global Settings from both player
-and library, Playback panel, timer and speed controls pass. Native screenshots
-were inspected against the original Figma/live prototype at100/125/150/200%.
-Original transport paths are unchanged and native sampling is verified. The user's
-4K VP9 MP4 decodes a cold5:11 preview in77.1686ms and publishes its cached image in
-0.0005ms; distinct-position pixels, continuous hover, replacement-input pixels,
-invalidation and the truthful MPV limitation pass. Default fixed window sizing,
-bounded explicit opt-in, fullscreen restore, drops, subtitles and both engines'
-sidebar transitions pass. Protected profiles are unchanged.
-Evidence: `resources/m2-1.1.3-native-acceptance.json` and the retained native
-captures under `resources/m2-1.1.3`. The final normal release, delivered-package
-verification, retained/weekly binding and older-release cleanup remain pending.
-M2 remains the only ACTIVE stage.
-
-Object-level R78 diagnostics found a remaining release-profile blocker: generated
-QML cache units do not include config.h, so changing NDEBUG/compiler flags left
-unchanged cached units with their earlier .debug_info. The newly compiled
-PlayerSettingsPopup.o has no .debug_info; retained MainDisplay/ControlBar/widget
-cache objects still do. Add the existing config.status prerequisite to each
-Automake application's object variables. This reuses objects already newer than
-configuration and rebuilds the stale generated units once. Inspect the completed
-application objects after integration before claiming a consistent optimized
-cohort. That inspection now passes: all303 generated QML application COFF objects
-in the current Automake archives have no debug sections. Tickets159/161 are
-closed intentional cancellations, and164 completed the application. SDK/MPV/codecs
-remain retained. The R78 optimized-object blocker is resolved; final normal
-packaging and delivery are still required.
-
-**Current execution authority (2 November):** the user explicitly requested the
-new release and deletion of older releases. The earlier compilation stop below
-is superseded. Finish M2 as one corrective1.1.3 delivery. Normalize retained
-configuration to upstream release `--disable-debug`, `-O3`, `-g0`, with the QML
-debugger disabled, and verify generated core/Qt/module flags. This profile change
-also changes global `NDEBUG`, so the application objects must rebuild once to
-avoid a mixed debug/release cohort; unchanged SDK, MPV and codec libraries stay
-retained. Diagnostic hooks are separate from compiler optimization; acceptance
-must cover the optimized code, followed by removal of the narrow test hooks for
-the normal package. Publish only after acceptance, independently verify the new
-download, update continuing build/weekly bindings, then remove older release
-entries/assets and local version directories. Preserve installed app/settings,
-Git history and dependencies needed by the continuing weekly build.
-
-**Historical investigation checkpoint before ticket159 (2 November 2026).**
-Compilation ticket158 was cancelled at the user's explicit request. The original
-session completed with exit137, no OOM events and an empty Linux group; the gate
-is idle. Do not resume automatically. The icon cause is now reproduced in a
-small Qt6.8.3/Direct3D11 renderer at native display scales without compiling VLC:
-fractional physical placement plus a second linear filter softens SVG edges.
-Native-size SVG sampling without that second filter preserves the original
-curves; the earlier4x/mipmap proposal and diagnostic A/B action are removed.
-The supplied100% pause image matches a direct24px Qt SVG render (RGB RMSE0.096),
-not an enlarged12px/16px bitmap. This does not establish full-player acceptance.
-The same default filter was found across library/navigation, queue, settings,
-track choices, layout editor and welcome icons; the source correction covers
-these existing SVG paths. Native-media image filtering and intentional blur stay
-under their existing requirements. Complete source/integrated verification before
-claiming the installed UI is fixed; compilation was still stopped at this checkpoint.
-[Controlled Qt pixel comparison](resources/m2-icon-sampling/comparison.png) and
-[diagnosis](resources/m2-icon-sampling/diagnosis.json) retain the100/125/150/200%
-Qt6.8.3/D3D11 evidence and actual100% screenshot fit. Edited QML parses with
-Qt6.8.3. Native qVersion and target qconfig.h now also confirm the retained SDK is
-Qt6.8.3; the earlier6.8.0 note incorrectly treated its separate ABI header as the
-runtime version. The isolated comparison remains diagnostic evidence, and
-acceptance must use the actual player. Full-player verification is pending. The
-temporary Qt diagnostic runtime has been removed through reviewed cleanup
-`7056a3620bee37f0d8b19b35170e3fe3`; compact retained evidence is358KiB.
-Source `a9681b237f6eab2b9b59eff8bfbaab32fcdbca0d` is an intermediate, unverified
-repair commit; it is not a delivered1.1.3 release. Exact interruption/recovery
-state is in `E:/Temp/vlc-preview-1.1.3-20261102/operation.json` and the gate result
-under `D:/Temp/vlc-s8-preview-1.1.3-20261102/gate-diagnostics`.
-The user's build-scope correction is binding: keep compilation stopped while
-reported defects remain unresolved. Inspection found the retained configuration
-still has `--enable-debug`, `-g`, `-Og` and `LTCFLAGS=-O0`; the script's "normal"
-mode only removes diagnostic hooks and strips packaged symbols. It does not
-establish an optimized release profile. R78 must verify the actual compiler
-profile before a later final build, without rebuilding now to change that profile.
-Do not invoke the full plugin graph for UI-only edits. Limit later compilation
-to the affected Qt/QML targets; the proven thumbnail correction additionally
-requires the affected core target. Reuse unchanged SDK, MPV and codec builds.
-Normal/diagnostic flag switching and repeated complete release packages must
-not substitute for investigating and finishing the user's reported bugs.
-The user's1.1.2 screenshot shows a black seek-preview image for a4K VP9 MP4.
-R80 acceptance is reopened: reproduce with the supplied local file around5:11,
-trace decoded frame through provider and visible popup, correct the proven cause,
-then verify actual changing/nonblank content, cold/cache latency, latest hover,
-input invalidation and cancellation. Preserve the user's file and live profile.
-R78 requires one verified corrective1.1.3 release after the complete repair,
-independent downloads/native verification, retained/weekly binding and exact cleanup.
-All other current-source evidence is reusable where its relevant code is unchanged.
-No build until the cause and cohesive repair are established; no desktop input,
-active-player takeover, shutdown or cold SDK/MPV rebuild. No tracked deferrals.
-R52 also includes the user's transport-icon sharpness request: preserve the
-reference controls and action states, preserve the compared original vector geometry, correct
-shared icon sampling and inspect real native100/150/200%/fractional-scale pixels.
-Both repairs ship together after one coordinated affected-workflow acceptance.
-The requested VTracer trial traced the exact original silhouettes from24px and
-384px PNG renders. Native-size tracing distorts the curves;384px tracing preserves
-them closely and looks effectively identical to the existing source SVGs.
-Retain the original vectors. Rounded corners are intentional; investigate actual
-edge diffusion independently with baseline/new sampling in the native renderer.
-The native thumbnail probe proved the released core returns the opening frame
-(PTS1) before processing its queued seek. The cohesive correction now applies
-the thumbnail's initial seek before first demux; actual-app acceptance is pending.
-The newly reported library-panel collapse flash belongs to this same ACTIVE M2
-repair batch. Its current ordering commits the video position before reporting
-the new output size; MPV additionally queues the resized-frame presentation.
-Resize/present before the placement commit, then verify paused/playing transitions
-in both engines and the native swapchain size at placement. This remains an
-acceptance blocker until verified and ships with the other1.1.3 repairs.
-R74 now defaults video-driven window resizing to off, as requested; preserve the
-explicit opt-in preference and bounded enabled behavior. Verify default file-open,
-replacement, manual sizing and fullscreen restoration in both engines with this batch.
-
-The following records the delivered1.1.2 baseline, not acceptance of this new case.
-[Modern VLC Fork 1.1.2](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.2)
-delivers all nine reported repairs, both confirmed subtitle gaps and the R52
-shortcut-design correction. Application source is `409daf4ef173f463d7833464b128513fda04366d`.
-The final closure changes only documentation, evidence and the host verification helper.
+**M2 First-run usability and fork identity is COMPLETE (2 November2026).**
+[Modern VLC Fork1.1.3](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3)
+delivers the full Figma main-menu/Playback-panel correction and the reported
+preview, original-icon sampling and window/sidebar sizing repairs. Application
+source is `6cba6f96e3b341acac3886c97597b7aa74c6c169`; the final closure changes only
+host verification tools, documentation and evidence. No implementation stage is
+ACTIVE. S0/D1/S1-S8/M1/M2 are COMPLETE; S9 is NOT STARTED and remains planning scope.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M2 First-run usability and fork identity | ACTIVE | Current optimized native acceptance passes R52 Figma menu/Playback panel, direct Global Settings from player/library, original icons at100/125/150/200%, control order and timestamps; R79 sidebar placement and R74 disabled-default/bounded-opt-in resizing; R80 correct distinct/cached/latest/replacement pixels on the user's4K file. First-run, subtitle, engine-switch and update regressions pass; protected profiles are unchanged. All303 generated QML objects have no debug sections. | R78 delivery blocker: assemble normal mode using the accepted production tree and retained409 non-Qt plugins; verify normal runtime/MPV presentation, source/symbol/checksum artifacts and independently downloaded1.1.3; promote retained runtime plus compilation state, update the existing weekly binding, and retire older releases through reviewed cleanup. | None. |
+| M2 First-run usability and fork identity | COMPLETE | R52/R65/R73-R82: native Figma menu/submenus/keyboard and direct Global Settings from player/library; Playback panel, plain VLC/MPV choices, control order/time/toggle; welcome/remapping, no-root indexing, flat application icon, quiet update errors/manual retry, both engines/drop/geometry/fullscreen, original SVG pixels at100/125/150/200%, subtitle track/cue/timing/handover/restart, sidebar transitions and actual4K preview pixels/cache/latest/replacement/cancellation. Normal optimized release and four independently downloaded assets pass; retained weekly build/binding verified; older releases and spent D: output retired. | None. | None. |
 
-Native acceptance uses the same production tree as the normal release. The
-4K preview measured 99.6047ms cold and 0.0009ms cached; previews use keyframes.
-The original Figma frame 1902:6770 governs raised 42px key faces, 3px borders,
-6px lower edges, horizontal pairs, Inter typography and the final Back/Finish
-page. True configurable bindings remain authoritative. Optional font setup
-precedes the final shortcut page. Actual [100%](resources/m2/shortcuts-100.png),
-[150%](resources/m2/shortcuts-150.png) and [200%](resources/m2/shortcuts-200.png)
-app captures and the long-chord/small-workarea checks pass.
+[Final requirement/delivery reconciliation](resources/m2-1.1.3-verification.json)
+records exact asset hashes, native evidence applicability, preservation and limits.
+[Native acceptance](resources/m2-1.1.3-native-acceptance.json) binds the optimized
+production tree and the complete corrected workflows, with original host failures
+preserved locally. Actual native captures are under `resources/m2-1.1.3`.
+The reported4K VP9 file decodes a cold5:11 preview in77.1686ms and publishes its
+cached image in0.0005ms. These are decode/publication metrics, not full GUI latency.
+Previews use keyframes and require VLC. Original transport silhouettes are retained;
+native DPR rasterization avoids the second filtering pass. Window autoresize is
+disabled by default; the explicit opt-in remains bounded to available screen space.
 
-The normal build completed in managed ticket 154 without OOM, with an empty
-Linux group and released private mounts. Its 417 PE files are stripped with
-matching separate symbols; 410 plugins form one source-bound cohort. All four
-published assets were independently retrieved and checked. Downloaded VLC
-playback and MPV lifecycle pass. Actual normal MPV SDR/P5 presentation is
-verified; P5's separate placement protocol failed after a Qt monitor identity
-change and is preserved as failed evidence. Subsequent downloaded MPV checks
-use an inactive desktop and reuse presentation evidence only after identical
-whole-archive SHA256. No OS input, desktop switch, foreground activation or
-shutdown was performed.
+Normal managed ticket166 exited0 with an empty Linux group, released mounts and
+zero OOM/max events. The consistent application profile is --disable-debug,
+-O3/-g0, NDEBUG and QML debugger off. All303 generated QML objects have no debug
+sections;417 shipped PE images are stripped and matched to separate symbols.
+The current409 non-Qt plugins, SDK, MPV and codecs were verified and retained.
+Normal VLC playback/EOF/teardown, MPV SDR/P5 actual Present(S_OK), native media
+library startup and flat executable/window icons pass. Private placement preceded
+each nonactivating offscreen MPV run; input desktop/foreground were preserved.
+The independently downloaded player passes VLC playback and MPV lifecycle checks;
+MPV actual presentation is reused only after identical whole-package SHA256 and
+unchanged Qt/geometry/display binding. The release-build checker now uses ordered
+unconditional teardown instead of an NDEBUG-only object-name log. Its original
+failed receipt and negative controls remain retained; no extra player build was needed.
 
-`D:/VLC-Redesign/releases/1.1.2` contains the usable portable player and all
-release assets; compact qualification is in its `verification` directory.
-The retained SDK/source/objects/MPV build remains at
-`D:/VLC-Redesign/build/windows-x64`; its read-only source/runtime check and
-existing Monday weekly automation now bind to 1.1.2. Synthetic regression inputs
-have an explicit continuing weekly consumer outside the portable package.
-Exact task/controller/font/build scratch is absent after reviewed cleanup;
-previous releases and installed profiles are preserved.
+The usable portable player and four assets are in `D:/VLC-Redesign/releases/1.1.3`.
+The portable ZIP is145034239 bytes; symbols are a separate optional download.
+Local qualification, original Figma/native captures, failed observations and
+recovery receipts are retained in `verification`. The build remains at
+`D:/VLC-Redesign/build/windows-x64`; runtime AND matching compilation state were
+promoted together. Read-only gate168 (`1ca995994a4f4826a2ef88f0e68f6a13`) verifies
+source/configuration/417 PE mappings/410 plugins/dependencies and next run0015,
+with no rebuild/initialization, no OOM, an empty group and released mounts.
+The existing Monday09:00 heartbeat now binds to1.1.3 and that verified cohort.
+UI-only changes may use normal-mpv-current's exact reuse guard; relevant global
+flags/API/core changes require normal-mpv-full. Preserve unchanged dependency inputs.
 
-[Historical1.1.2 reconciliation](resources/m2-verification.json) records delivery hashes,
-verification applicability, limitations and cleanup. The reopened R80/R78 blockers
-above govern current work. Existing native owners retain lifecycle and state; no new
-framework or further refactor is required. M1/S8 remain COMPLETE; S9 remains
-NOT STARTED. M2 is the only ACTIVE implementation stage.
+Older release entries/assets and local1.1.1/1.1.2 directories were explicitly
+retired after new delivery and retained/weekly verification. Git tags/history,
+the installed `D:/Tools/Modern VLC`1.1.2, profiles and reusable inputs remain.
+Historical release URLs below record their original delivery; retired versions
+remain traceable through their preserved Git tags and committed reconciliation.
+[Historical1.1.2 qualification](resources/m2-verification.json) retains its original scope.
+No shutdown, desktop control or installed-player replacement was performed.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
