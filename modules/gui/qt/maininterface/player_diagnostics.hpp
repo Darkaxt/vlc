@@ -6,6 +6,8 @@
 #ifdef VLC_PLAYER_DIAGNOSTICS
 #include <QAccessible>
 #include <QAbstractItemView>
+#include <QAbstractScrollArea>
+#include <QScrollBar>
 #include <QApplication>
 #include <QComboBox>
 #include <QCheckBox>
@@ -486,12 +488,27 @@ private:
             row.insert(QStringLiteral("palette_text"),widget->palette().color(QPalette::Text).name());
             row.insert(QStringLiteral("x"),widget->x());row.insert(QStringLiteral("y"),widget->y());
             row.insert(QStringLiteral("checked"),QJsonValue::fromVariant(widget->property("checked")));
+            if (widget->property("value").isValid())
+                row.insert(QStringLiteral("value"),QJsonValue::fromVariant(widget->property("value")));
+            if(widget->property("preferenceKey").isValid())
+            {
+                row.insert(QStringLiteral("option_key"),widget->property("preferenceKey").toString());
+                row.insert(QStringLiteral("reference_view"),widget->property("referenceView").toString());
+            }
             if (auto *combo = qobject_cast<QComboBox *>(widget)) {
                 row.insert(QStringLiteral("current_text"), combo->currentText());
                 row.insert(QStringLiteral("current_index"), combo->currentIndex());
                 row.insert(QStringLiteral("item_count"), combo->count());
             }
             row.insert(QStringLiteral("visible_region_empty"),widget->visibleRegion().isEmpty());
+            row.insert(QStringLiteral("center_visible"),widget->visibleRegion().contains(widget->rect().center()));
+            if (auto *scroll=qobject_cast<QAbstractScrollArea *>(widget))
+            {
+                auto *bar=scroll->verticalScrollBar();
+                row.insert(QStringLiteral("scroll_value"),bar->value());
+                row.insert(QStringLiteral("scroll_maximum"),bar->maximum());
+                row.insert(QStringLiteral("scroll_page_step"),bar->pageStep());
+            }
             if (widget->isWindow() && widget->windowHandle())
                 row.insert(QStringLiteral("native_id"), QString::number(quintptr(widget->windowHandle()->winId()), 16));
             if(widget->objectName()==QStringLiteral("redesignPreferences")) {
@@ -672,6 +689,9 @@ private:
         }
         else if (!command.value(QStringLiteral("await_service")).toString().isEmpty()) {
             const QString name = command.value(QStringLiteral("await_service")).toString();
+            if(name==QStringLiteral("redesignPreferences") && awaitProperty==QStringLiteral("pluginScanActive"))
+                for(auto *widget : QApplication::topLevelWidgets())
+                    if(widget->objectName()==name) { observed=widget;break; }
             const QMap<QString, QStringList> allowed{
                 {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("timelineStatus"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
                 {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("waveformStatus")}},
@@ -789,12 +809,22 @@ private:
                     error = QStringLiteral("drop_not_accepted_by_ui");
                 }
             }
-        } else if (op == QStringLiteral("widget_click") || op == QStringLiteral("widget_key") || op == QStringLiteral("widget_resize")) {
+        } else if (op == QStringLiteral("widget_click") || op == QStringLiteral("widget_key") || op == QStringLiteral("widget_resize") || op == QStringLiteral("widget_scroll")) {
             const int index = command.value(QStringLiteral("node")).toInt(-1);
             if (index < 0 || index >= m_widgets.size() || !m_widgets[index] || !m_widgets[index]->isEnabled()) error = QStringLiteral("invalid_widget_target");
             else {
                 auto widget = m_widgets[index].data();
-                if (op == QStringLiteral("widget_resize")) {
+                if (op == QStringLiteral("widget_scroll")) {
+                    auto *area=qobject_cast<QAbstractScrollArea *>(widget);
+                    const int delta=command.value(QStringLiteral("delta")).toInt();
+                    if(!area || qAbs(qint64(delta))>24000)error=QStringLiteral("invalid_native_scroll_target_or_delta");
+                    else {
+                        auto *viewport=area->viewport();
+                        const QPointF point(5,viewport->height()/2.0);
+                        QWheelEvent event(point,viewport->mapToGlobal(point),QPoint(),QPoint(0,delta),Qt::NoButton,Qt::NoModifier,Qt::NoScrollPhase,false);
+                        QCoreApplication::sendEvent(viewport,&event);
+                    }
+                } else if (op == QStringLiteral("widget_resize")) {
                     const int width=command.value(QStringLiteral("width")).toInt();
                     const int height=command.value(QStringLiteral("height")).toInt();
                     if(!widget->isWindow() || width<widget->minimumWidth() || height<widget->minimumHeight() || width>3840 || height>2160)error=QStringLiteral("size_outside_current_widget_constraints");

@@ -101,6 +101,11 @@ def main():
         QML_DISK_CACHE_PATH=str(root / 'tmp/qml'), QT_DISABLE_SHADER_DISK_CACHE='1',
         QSG_RHI_DISABLE_SHADER_DISK_CACHE='1', QT_FORCE_STDERR_LOGGING='1')
     environment['QT_QPA_PLATFORM'] = 'offscreen'
+    if any(program['name']=='test_player_chrome.exe' for suite in build['suites'] for program in suite['programs']):
+        chrome=root/'source/modules/gui/qt/player/qml/PlayerChromeState.qml'
+        assert chrome.is_file()
+        assert sha_file(chrome)==sha_file(tools_root/'work/src/modules/gui/qt/player/qml/PlayerChromeState.qml')
+        environment['VLC_TEST_PLAYER_CHROME_QML']=str(chrome)
     result = {'schema': 'vlc_redesign.native_suite.v1', 'source_commit': build['source_commit'],
         'native_build_helper_sha256': build['native_build_helper_sha256'],
         'platform_header_sha256': build['platform_header_sha256'],

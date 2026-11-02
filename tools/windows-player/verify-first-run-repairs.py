@@ -31,7 +31,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -181,6 +181,25 @@ class Case:
 
     def click(self, label, target, *options): return self.inspect(label, 'click', '--target', target, *options)
     def native(self, label, target, *options): return self.inspect(label, 'widget_click', '--target', target, *options)
+    def reveal(self,label,target,scroll):
+        snapshot=self.inspect(label+'-locate','snapshot')
+        seen=set()
+        while True:
+            widgets={item['node']:item for item in snapshot['widgets']}
+            found=[item for item in widgets.values() if item['id']==target]
+            assert len(found)==1,(target,found)
+            if found[0]['center_visible']:return snapshot
+            area=next(item for item in widgets.values() if item['id']==scroll)
+            state=area['scroll_value']
+            assert state not in seen,('native control cannot be revealed',target,area)
+            seen.add(state)
+            def y(item):
+                result=item['y']
+                while item['parent']>=0:
+                    item=widgets[item['parent']];result+=item['y']
+                return result
+            delta=120 if y(found[0])<y(area) else -120
+            snapshot=self.inspect(label+'-scroll-'+str(len(seen)),'widget_scroll','--target',scroll,'--delta',str(delta))
     def key(self, label, key, *, target='playButton', modifiers=0, text='', **unused):
         self.inspect(label + '-focus', 'focus', '--target', target)
         return self.inspect(label, 'key', '--target', target, '--key', hex(key), '--modifiers', hex(modifiers), '--text', text)
@@ -465,16 +484,24 @@ def playback():
             case.close(True)
         finally: case.close()
 
+def open_vlc_commands(case,label):
+    case.inspect(label+'-main-menu','click','--name','Main menu')
+    case.click(label+'-settings','mainMenuGlobalSettings')
+    case.reveal(label+'-reveal-advanced','preferencesAdvanced0','preferencesScroll0')
+    case.native(label+'-advanced','preferencesAdvanced0')
+    case.reveal(label+'-reveal-commands','preferencesAction-vlc-commands','preferencesScroll0')
+    return case.native(label+'-commands','preferencesAction-vlc-commands')
+
 def subtitle_menu(case, label, enabled):
-    case.inspect(label + '-open','click','--name','Main menu')
-    case.click(label + '-legacy','mainMenuMoreCommands')
-    result=case.inspect(label + '-submenu', 'widget_click', '--menu-action', 'Subtitle', '--capture')
+    open_vlc_commands(case,label)
+    result=case.inspect(label + '-submenu', 'widget_click', '--menu-action', 'Subtitles', '--capture')
     actions=[action for widget in result['widgets'] for action in widget.get('actions', [])]
     tracks=[action for action in actions if action['text'].replace('&','').split('\t')[0]=='Sub Track']
     assert len(tracks)==1 and tracks[0]['enabled']==enabled, tracks
     assert any(action['enabled'] and action['text'].replace('&','').startswith('Add Subtitle File') for action in actions)
     case.inspect(label + '-dismiss','key','--key','0x1000000')
     case.inspect(label + '-dismiss-root','key','--key','0x1000000')
+    case.native(label+'-close-settings','preferencesClose')
 
 
 def subtitle_choices(snapshot):
@@ -601,9 +628,8 @@ def subtitles(verify_navigation=True, engines=('vlc','mpv')):
             external=case.inspect('external-cues','snapshot','--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.'))
             assert len(service(external)['cues'])==3
             subtitle_menu(case,'external-track-menu',True)
-            case.inspect('native-add-subtitle-menu','click','--name','Main menu')
-            case.click('native-add-subtitle-legacy','mainMenuMoreCommands')
-            case.inspect('native-subtitle-submenu','widget_click','--menu-action','Subtitle')
+            open_vlc_commands(case,'native-add-subtitle')
+            case.inspect('native-subtitle-submenu','widget_click','--menu-action','Subtitles')
             case.inspect('native-add-subtitle-dialog','widget_click','--menu-action','Add Subtitle File...')
             case.native('native-file-name-focus','fileNameEdit')
             case.inspect('select-file-name','widget_key','--target','fileNameEdit','--key','0x41','--modifiers','0x4000000','--text','a')
@@ -611,6 +637,7 @@ def subtitles(verify_navigation=True, engines=('vlc','mpv')):
             chosen=case.inspect('accept-native-subtitle-file','widget_key','--target','fileNameEdit','--key','0x1000004',
                 '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('2 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.'))
             assert service(chosen)['subtitleLoaded'] and len(service(chosen)['cues'])==2
+            case.native('close-native-subtitle-settings','preferencesClose')
             case.inspect('external-track-viewport','resize','--width','960','--height','720')
             available=case.click('reopen-external-track-choice','subtitleButton')
             earlier=[node for node in subtitle_choices(available) if node.get('name')!='None' and not node['selected']]
@@ -787,13 +814,16 @@ def menus():
         assert [item['y'] for item in rows]==sorted(item['y'] for item in rows)
         assert all(abs(item['height']-48)<1 for item in rows), rows
         assert max(item['x'] for item in rows)-min(item['x'] for item in rows)<1
+        primary=[item for item in opened['tree'] if item['visible'] and item.get('actions') and
+                 abs(item.get('x',-1000)-rows[0]['x'])<1 and item.get('height',0)>24]
+        assert len(primary)==12, primary
         case.record['reference_menu_rows']=rows
         case.inspect('recent-submenu','click','--name','Open Recent','--capture')
         case.inspect('close-recent-submenu','key','--key','0x1000000')
         settings=case.click('direct-global-settings','mainMenuGlobalSettings','--capture')
         assert any(widget['id']=='redesignPreferences' for widget in settings['widgets'])
         assert any(widget['id']=='preferencesHeading' and widget.get('text')=='Global Settings' for widget in settings['widgets'])
-        case.native('cancel-global-settings','preferencesCancel')
+        case.native('cancel-global-settings','preferencesClose')
         case.inspect('keyboard-main-menu-focus','focus','--name','Main menu')
         # Accessibility SetFocus uses OtherFocusReason, which intentionally
         # preserves player hotkeys. Traverse with Tab to establish keyboard
@@ -838,10 +868,240 @@ def menus():
         assert nodes(library_menu,'mainMenuGlobalSettings')
         library_settings=case.click('library-direct-global-settings','mainMenuGlobalSettings','--capture')
         assert any(widget['id']=='redesignPreferences' for widget in library_settings['widgets'])
-        case.native('cancel-library-global-settings','preferencesCancel')
+        case.native('cancel-library-global-settings','preferencesClose')
         case.close(True)
     finally: case.close()
 
+
+def settings():
+    """All reference categories, real scrolling, DPI/theme and retained edits."""
+    reference=json.loads((repo/'doc/redesign/resources/m4-settings-reference.json').read_text())
+    corrections={key.casefold():value for key,value in reference['copy_corrections'].items()}
+    categories=reference['categories']
+    def text(value):
+        value=value.strip().rstrip(':').casefold()
+        return corrections.get(value,value).casefold()
+    def widget(snapshot,identity):
+        matches=[row for row in snapshot['widgets'] if row['id']==identity]
+        assert len(matches)==1,(identity,matches)
+        return matches[0]
+    def select(case,index,label):
+        case.native(label+'-nav','preferencesCategories')
+        result=case.inspect(label+'-home','widget_key','--target','preferencesCategories','--key','0x1000010')
+        for step in range(index):
+            result=case.inspect(label+'-down-'+str(step),'widget_key','--target','preferencesCategories','--key','0x1000015')
+        selected=[row['columns'][0] for row in widget(result,'preferencesCategories')['rendered_rows'] if row['selected']]
+        assert selected==[categories[index]['category']],selected
+        return result
+    def check_labels(snapshot,index,expanded):
+        frames=categories[index]['frames']
+        widgets={row['node']:row for row in snapshot['widgets']}
+        area=widget(snapshot,'preferencesScroll'+str(index))
+        def belongs(row):
+            while row['parent']>=0:
+                row=widgets[row['parent']]
+                if row['node']==area['node']:return True
+            return False
+        def y(row):
+            result=row['y']
+            while row['parent']>=0:
+                row=widgets[row['parent']];result+=row['y']
+            return result
+        rows=[row for row in widgets.values() if belongs(row)]
+        # Lazy hidden sections are not substitutes for the category under test.
+        labels=[text(row.get('text','')) for row in sorted(rows,key=lambda row:(y(row),row['x']))
+                if row['type']=='QLabel' and not row['id'].startswith(('description-','equalizerValue'))
+                and (not row['id'].startswith('equalizerFrequency') or row['id']=='equalizerFrequencyPreamp')]
+        for frame in frames[:2 if expanded else 1]:
+            expected=[row['text'] for row in frame['labels']]
+            if not expanded and categories[index]['category']=='Performance':expected=expected[:expected.index('Developer')]
+            expected=[text(label) for label in expected if label not in ('Search','12.0 dB')]
+            if index==2:
+                names=[i for i,label in enumerate(expected) if label=='last.fm username']
+                if len(names)==2:expected[names[1]]='last.fm password'
+            if index==3:
+                # The prototype repeats its wheel controls under Remotes.
+                expected=list(dict.fromkeys(expected))
+            position=0
+            for label in expected:
+                assert label in labels[position:],(categories[index]['category'],frame['source_frame'],label,labels[position:])
+                position=labels.index(label,position)+1
+        ids=[row['id'] for row in snapshot['widgets'] if row['id'].startswith(('preference-','value-'))]
+        assert len(ids)==len(set(ids)),('duplicate settings view identities',ids)
+        if index==2:
+            password=widget(snapshot,'value-lastfm-password')
+            assert password.get('text')=='[redacted]'
+    def capture(case,label,index,dark):
+        result=case.inspect(label,'snapshot','--capture')
+        dialog=widget(result,'redesignPreferences')
+        assert abs(dialog['dpr']-float(case.record['scale']))<0.01
+        file=next(row for row in result['widget_captures'] if row['widget']==dialog['node'])
+        assert file['saved']
+        with Image.open(case.evidence/file['file']) as original:
+            image=original.convert('RGBA')
+            assert image.getpixel((0,0))[3]==0,('opaque outside rounded settings card',label)
+            rgb=image.getpixel((round(image.width*0.7),round(30*dialog['dpr'])))[:3]
+            expected=(7,7,7) if dark else (213,213,213)
+            assert max(abs(a-b) for a,b in zip(rgb,expected))<=1,('header band',label,rgb)
+        case.record.setdefault('settings_views',[]).append({'label':label,'category':categories[index]['category'],'capture':file['file'],'dpr':dialog['dpr']})
+        return result
+    def edit(case,label,target,value,scroll):
+        case.reveal(label+'-reveal',target,scroll)
+        case.native(label+'-focus',target)
+        case.inspect(label+'-select','widget_key','--target',target,'--key','0x41','--modifiers','0x4000000')
+        case.inspect(label+'-type','widget_key','--target',target,'--key','0','--text',str(value))
+        return case.inspect(label+'-commit','widget_key','--target',target,'--key','0x1000001')
+    def behaviour(case):
+        case.inspect('behaviour-open','key','--key','0x50','--modifiers','0x4000000')
+        first=select(case,2,'behaviour-privacy')
+        assert widget(first,'value-save-playback-position')['checked']
+        case.reveal('scrobbler-reveal','value-extraintf-audioscrobbler','preferencesScroll2')
+        scoped=case.native('scrobbler-stage','value-extraintf-audioscrobbler')
+        assert widget(scoped,'value-lastfm-username')['enabled']
+        select(case,3,'behaviour-controls')
+        case.reveal('remote-reveal','value-extraintf-http','preferencesScroll3')
+        scoped=case.native('remote-stage','value-extraintf-http')
+        assert widget(scoped,'value-http-port')['enabled']
+        # Search exercises the native module route, not a second configuration
+        # owner. Both presentation switches must track edits to that same key.
+        case.native('search-shared-focus','preferencesSearch')
+        case.inspect('search-shared-type','widget_key','--target','preferencesSearch','--key','0','--text','extraintf')
+        case.native('search-shared-results','preferencesResults')
+        case.inspect('search-shared-first','widget_key','--target','preferencesResults','--key','0x1000010')
+        shared=case.inspect('search-shared-open','widget_key','--target','preferencesResults','--key','0x1000004')
+        modules=widget(shared,'value-native-extraintf')['text'].split(':')
+        assert 'audioscrobbler' in modules and 'http' in modules,modules
+        edit(case,'shared-native-edit','value-native-extraintf','gestures','preferencesScroll2')
+        scoped=select(case,2,'shared-privacy')
+        assert not widget(scoped,'value-extraintf-audioscrobbler')['checked']
+        scoped=select(case,3,'shared-controls')
+        assert not widget(scoped,'value-extraintf-http')['checked']
+        case.native('cancel-shared-draft','preferencesCancel')
+        case.inspect('reopen-after-cancel','key','--key','0x50','--modifiers','0x4000000')
+        scoped=select(case,2,'cancelled-privacy')
+        assert not widget(scoped,'value-extraintf-audioscrobbler')['checked']
+        edit(case,'history-exclusion','value-history-exclude','private-*;*.secret','preferencesScroll2')
+        case.reveal('position-off-reveal','value-save-playback-position','preferencesScroll2')
+        case.native('position-off','value-save-playback-position')
+        select(case,3,'save-controls')
+        edit(case,'short-jump','value-short-jump-size','7','preferencesScroll3')
+        select(case,6,'save-audio')
+        case.reveal('equalizer-reveal','preferencesAction-equalizer','preferencesScroll6')
+        case.native('equalizer-open','preferencesAction-equalizer')
+        edit(case,'equalizer-band','equalizerValue0','2.5','preferencesScroll6')
+        select(case,1,'save-interface')
+        case.reveal('tree-view-reveal','value-playlist-tree','preferencesScroll1')
+        case.native('tree-view-stage','value-playlist-tree')
+        select(case,0,'save-general')
+        case.reveal('save-advanced-reveal','preferencesAdvanced0','preferencesScroll0')
+        case.native('save-advanced','preferencesAdvanced0')
+        edit(case,'invalid-extra','value-extra-options','--m4-invalid-option=1','preferencesScroll0')
+        failed=case.native('reject-invalid-save','preferencesSave')
+        assert any('m4-invalid-option' in row.get('text','') for row in failed['widgets'])
+        case.inspect('dismiss-invalid-save','widget_click','--widget-text','OK')
+        scoped=select(case,2,'failed-save-retains-draft')
+        assert widget(scoped,'value-history-exclude')['text']=='private-*;*.secret'
+        select(case,0,'correct-extra-general')
+        edit(case,'valid-extra','value-extra-options','--rate=1.5','preferencesScroll0')
+        case.native('save-settings-draft','preferencesSave')
+        case.click('tree-queue-open','playqueueToggle')
+        queue=case.inspect('tree-queue-ready','snapshot','--await-target','playlistpopup','--await-property','width',
+            '--await-value','300','--await-comparison','at_least','--capture')
+        folders=[row for row in queue['tree'] if row['id'].startswith('queueFolder-') and row['visible']]
+        assert len(folders)==1,folders
+        folder=folders[0]['id']
+        collapsed=case.click('tree-folder-collapse',folder,'--capture')
+        assert not any(row['visible'] and row['id']=='delegate' and row.get('url')==(fixtures/'control.mkv').as_uri()
+                       for row in collapsed['tree'])
+        expanded=case.click('tree-folder-expand',folder,'--capture')
+        assert any(row['visible'] and row['id']=='delegate' and row.get('url')==(fixtures/'control.mkv').as_uri()
+                   for row in expanded['tree'])
+        case.click('tree-queue-close','playqueueToggle')
+        case.inspect('readback-saved-settings','key','--key','0x50','--modifiers','0x4000000')
+        scoped=select(case,2,'saved-privacy')
+        assert widget(scoped,'value-history-exclude')['text']=='private-*;*.secret'
+        assert not widget(scoped,'value-save-playback-position')['checked']
+        scoped=select(case,3,'saved-controls')
+        assert widget(scoped,'value-short-jump-size')['value']==7
+        select(case,6,'saved-audio')
+        case.reveal('saved-equalizer-reveal','preferencesAction-equalizer','preferencesScroll6')
+        scoped=case.native('saved-equalizer-open','preferencesAction-equalizer')
+        assert widget(scoped,'equalizerValue0')['value']==2.5
+        select(case,10,'plugin-rescan-performance')
+        case.reveal('plugin-rescan-reveal','preferencesAction-rescan-plugins','preferencesScroll10')
+        scanned=case.native('plugin-rescan','preferencesAction-rescan-plugins','--await-service','redesignPreferences',
+            '--await-property','pluginScanActive','--await-value','false')
+        assert any('plugin cache has been rebuilt' in row.get('text','') for row in scanned['widgets'])
+        case.inspect('plugin-rescan-dismiss','widget_click','--widget-text','OK')
+        case.native('behaviour-close','preferencesClose')
+        case.record['settings_behaviour']={'shared_native_and_reference_draft':True,'cancel':True,
+            'invalid_save_preserves_draft':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True}
+    for scale in ('1','1.5','2'):
+        case=Case('settings-'+scale.replace('.','-'),scale=scale,media=fixtures/'control.mkv')
+        try:
+            for dark in (True,False):
+                case.inspect('open-theme-'+str(dark),'key','--key','0x50','--modifiers','0x4000000')
+                select(case,0,'theme-general-'+str(dark))
+                case.native('stage-theme-'+str(dark),'preferencesTheme'+('2' if dark else '1'))
+                case.native('save-theme-'+str(dark),'preferencesSave')
+                case.inspect('reopen-theme-'+str(dark),'key','--key','0x50','--modifiers','0x4000000')
+                for narrow in (False,True):
+                    case.inspect('viewport-'+str(dark)+'-'+str(narrow),'widget_resize','--target','redesignPreferences',
+                                 '--width','740' if narrow else '1048','--height','700' if narrow else '865')
+                    for index,category in enumerate(categories):
+                        label=('dark' if dark else 'light')+('-narrow-' if narrow else '-normal-')+str(index)
+                        snapshot=select(case,index,label)
+                        button=widget(snapshot,'preferencesAdvanced'+str(index))
+                        if button.get('checked'):
+                            case.reveal(label+'-reveal-collapse',button['id'],'preferencesScroll'+str(index))
+                            case.native(label+'-collapse',button['id'])
+                        if index==6:
+                            eq=widget(snapshot,'preferencesAction-equalizer')
+                            if eq.get('checked'):
+                                case.reveal(label+'-reveal-close-equalizer',eq['id'],'preferencesScroll6')
+                                case.native(label+'-close-equalizer',eq['id'])
+                        case.inspect(label+'-top','widget_scroll','--target','preferencesScroll'+str(index),'--delta','24000')
+                        snapshot=capture(case,label+'-basic',index,dark)
+                        check_labels(snapshot,index,False)
+                        case.reveal(label+'-reveal-advanced','preferencesAdvanced'+str(index),'preferencesScroll'+str(index))
+                        expanded=case.native(label+'-expand','preferencesAdvanced'+str(index))
+                        if index==6:
+                            eq=widget(expanded,'preferencesAction-equalizer')
+                            if not eq.get('checked'):
+                                case.reveal(label+'-reveal-equalizer',eq['id'],'preferencesScroll6')
+                                case.native(label+'-equalizer',eq['id'])
+                        snapshot=capture(case,label+'-expanded',index,dark)
+                        check_labels(snapshot,index,True)
+                        case.inspect(label+'-expanded-top','widget_scroll','--target','preferencesScroll'+str(index),'--delta','24000')
+                        seen=set()
+                        while True:
+                            snapshot=capture(case,label+'-page-'+str(len(seen)),index,dark)
+                            area=widget(snapshot,'preferencesScroll'+str(index))
+                            state=area['scroll_value']
+                            if state==area['scroll_maximum']:break
+                            assert state not in seen,('settings page cannot scroll to end',label,area)
+                            seen.add(state)
+                            # A real wheel event advances the owned Qt viewport;
+                            # observed scrollbar state, not elapsed time, ends it.
+                            case.inspect(label+'-scroll-'+str(len(seen)),'widget_scroll','--target',area['id'],'--delta','-480')
+                case.native('close-settings-'+str(dark),'preferencesClose')
+            if scale=='1':behaviour(case)
+            case.close(True)
+        finally:case.close()
+        if scale=='1':
+            for name,engine,extra,rate in [(name+'-'+engine,engine,extra,rate) for engine in ('vlc','mpv')
+                    for name,extra,rate in [('saved-extra-startup',(),1.5),('explicit-extra-priority',('--rate=1.75',),1.75)]]:
+                restarted=Case(name,engine=engine,media=fixtures/'control.mkv',reused_profile=case.path/'profile',extra=extra)
+                try:
+                    result=restarted.inspect('saved-rate-effective','snapshot','--await-core','rate','--await-value',str(rate))
+                    assert abs(result['core']['rate']-rate)<0.001
+                    restarted.inspect('restart-settings','key','--key','0x50','--modifiers','0x4000000')
+                    result=select(restarted,2,'restart-privacy')
+                    assert widget(result,'value-history-exclude')['text']=='private-*;*.secret'
+                    assert not widget(result,'value-save-playback-position')['checked']
+                    restarted.native('restart-close-settings','preferencesClose')
+                    restarted.close(True)
+                finally:restarted.close()
 
 def seek_policy():
     """Diagnostic comparison of VLC's public absolute-time seek and cue position seek."""
@@ -901,8 +1161,7 @@ def updates():
                     widget.get('text','').replace('&','')=='Open release page' for widget in result['widgets'])
             if mode == 'unavailable':
                 case.inspect('manual-check-library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
-                case.inspect('open-main-menu','click','--name','Main menu')
-                case.click('retained-vlc-commands','mainMenuMoreCommands')
+                open_vlc_commands(case,'retained-vlc')
                 case.inspect('open-help','widget_click','--menu-action','Help')
                 failure=case.inspect('explicit-check-error','widget_click','--menu-action','Check for Updates...', '--await-service','forkUpdateModel','--await-property','updateStatus','--await-value','4','--capture')
                 assert any(node.get('name')=='Re-check' and node['visible'] for node in failure['tree']) or any(widget.get('text')=='&Recheck version' for widget in failure['widgets'])
@@ -946,7 +1205,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.case=='preview-icons' and name not in ('preview','icons','sidebar'):continue
         if args.case=='correction' and name not in ('playback','preview','icons','sidebar','menus','updates'):continue
         if args.case=='subtitles-mpv':

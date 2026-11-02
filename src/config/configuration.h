@@ -59,6 +59,7 @@ void config_Free(struct vlc_param *, size_t);
 void config_CmdLineEarlyScan( libvlc_int_t *, int, const char *[] );
 
 int config_LoadCmdLine   ( libvlc_int_t *, int, const char *[], int * );
+void config_ApplySavedOptions(libvlc_int_t *);
 int config_LoadConfigFile( libvlc_int_t * );
 bool config_PrintHelp (libvlc_int_t *);
 void config_Lock(void);

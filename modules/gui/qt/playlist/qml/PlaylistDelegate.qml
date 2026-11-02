@@ -57,6 +57,7 @@ T.Control {
     required property bool isCurrent
     required property url artwork
     required property url url
+    required property string folder
     required property string artist
     required property string album
     required property string title

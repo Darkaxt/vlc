@@ -258,6 +258,9 @@ void WheelToVLCConverter::wheelEvent( const QWheelEvent* e )
     }
 
     QPoint p = e->angleDelta();
+    const bool reversed=config_FindConfig("qt-reverse-wheel") && config_GetInt("qt-reverse-wheel");
+    if (reversed!=m_reversed) { m_scrollAmount={};m_reversed=reversed; }
+    if (reversed) p=-p;
     if (e->inverted())
     {
         const Qt::Orientations preliminaryOrientation = getWheelOrientation(p.x(), p.y());

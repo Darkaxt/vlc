@@ -1,5 +1,51 @@
 # VLC redesign stages and reconciliation
 
+**M4 Settings and menu parity: ACTIVE (2 November 2026).** User authorized
+implementation of the complete thirteen-category live Figma audit. This is the
+only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
+evidence, not acceptance of the newly identified settings/menu defects.
+
+| Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
+|---|---|---|---|---|
+| M4 Settings and menu parity | ACTIVE | All thirteen live reference categories reviewed, including scrollable sections; source causes for generic categorization, absent header and extra main-menu row identified; original reference captures and control inventory retained. | R83: integrate every audited category/control, themed advanced command route and shared visual correction. R84: complete native behavior/persistence/pixel acceptance, optimized package, final release, independent delivery and retained/weekly binding. These are internal advancement blockers; corner backing still requires an affected native reproduction. | None. |
+
+Use the existing Qt/native configuration controls and player/library owners.
+Finish the cohesive settings/menu implementation before compiling. Reuse retained
+SDK/MPV/codecs/objects. The integrated settings owners now also affect core
+history, saved options, subtitle rendering and MMDevice volume, so use the full
+incremental MPV path rather than the Qt-only reuse guard. The new libass style
+API requires the documented 0.13.0 minimum; the pinned 0.17.5 input already
+satisfies it. Refresh only affected configuration inputs; do not initialize
+the VM or rebuild unchanged dependencies. Final
+delivery remains the established normal four-asset release, with debug/COFF
+symbols outside the portable player. The user resolved the release-directory
+size question; do not reorganize its requested artifacts under this task.
+
+The existing review deliverable and thirty reference captures are at
+`D:/VLC-Redesign/verification/settings-parity-20261102`. Its explicit retention
+contract covers this repair. Stage closure requires actual rendered comparisons
+and real actions, not merely exposing all native option keys in module groups.
+
+**M4 source checkpoint:** all thirteen ordered categories are now represented by
+219 distinct reference views backed by shared native draft values. Native
+specialist options remain searchable under Advanced Options / All VLC options;
+the main menu has the twelve reference rows, with remaining native commands in
+General's themed advanced route. The source includes the original active icons,
+black header/rounded exterior, reference slider/startup-volume/equalizer layouts,
+dependent controls and real history, shortcuts, add-on and plugin-cache actions.
+Previously unconsumed compact/fullscreen-control/tree preferences now have
+active interface/queue bindings; folder presentation preserves native queue
+identity/order. Native filter/appearance help preserves the established VLC-only
+engine boundary. Shared speed/delay defaults also initialize MPV.
+
+C/C++ history/parser portability diagnostics and the catalog declaration/unique
+identities pass. These are source diagnostics, **not** M4 acceptance. Remaining
+internal blockers are the integrated optimized assembly, all-category native
+pixel/scroll/theme/DPI and behavior/rollback/restart checks, affected playback and
+handover/picture checks, final release and independent delivery/binding/cleanup.
+No deferrals or second ACTIVE stage are introduced. Version1.1.5 is reserved for
+the final verified outcome; no M4 release has been published.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is
@@ -10,7 +56,7 @@ without conflicts. Normal release
 and independently verified from app source
 `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`. Untracked AGENTS.md, installed
 player/profiles, source history/tags and active build inputs are preserved.
-No implementation stage is ACTIVE; S9 remains NOT STARTED.
+No other implementation stage is ACTIVE; S9 remains NOT STARTED.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|

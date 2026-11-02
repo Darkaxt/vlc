@@ -25,6 +25,9 @@
 #include "widgets/native/qvlcframe.hpp"
 #include <QVector>
 #include <QSet>
+#include <QHash>
+#include <QVariant>
+namespace PreferencesCatalog { struct Row; }
 class QComboBox;
 class ConfigControl;
 class KeySelectorControl;
@@ -33,17 +36,25 @@ class QListWidget;
 class QLineEdit;
 class QLabel;
 class QVBoxLayout;
+class QProcess;
 class QTreeWidget;
 class QTreeWidgetItem;
 struct WindowEffectsModule;
 class PrefsDialog : public QVLCDialog
 {
     Q_OBJECT
+    Q_PROPERTY(bool pluginScanActive READ pluginScanActive NOTIFY pluginScanChanged)
   public:
     PrefsDialog(QWindow *, qt_intf_t *);
     ~PrefsDialog() override;
     void showShortcuts();
     void editShortcut(const QString &option);
+    void reject() override;
+    bool pluginScanActive() const { return pluginScan != nullptr; }
+
+  signals:
+    void draftChanged(const QString &key, const QVariant &value);
+    void pluginScanChanged();
 
   protected:
     bool eventFilter(QObject *, QEvent *) override;
@@ -67,6 +78,10 @@ class PrefsDialog : public QVLCDialog
     QStackedWidget *pages = nullptr;
     QListWidget *categories = nullptr;
     QWidget *categoryContainer;
+    QWidget *editFooter = nullptr;
+    void markEdited();
+    void updateReferenceDependencies();
+    void addEqualizer(QVBoxLayout *);
     QLineEdit *search;
     QTreeWidget *results;
     QLabel *heading;
@@ -78,9 +93,20 @@ class PrefsDialog : public QVLCDialog
     KeySelectorControl *shortcuts = nullptr;
     WindowEffectsModule *windowEffects = nullptr;
     bool blurBehind = false;
+    QProcess *pluginScan = nullptr;
+    QHash<QString, QVariant> draftValues;
+    QSet<ConfigControl *> stagedControls;
+    QVariant draftValue(const QString &key);
+    void stageValue(const QString &key, const QVariant &value);
+    void addReferenceRows(QVBoxLayout *, int category, bool advanced);
+    void addReferenceRow(QVBoxLayout *, const PreferencesCatalog::Row &);
+    void addReferenceAction(QVBoxLayout *, const PreferencesCatalog::Row &);
+    void updateDialogShape();
+    void applySettingsStyle();
+    void showVlcCommands(QWidget *anchor);
     void inventory();
     QWidget *createCategory(int);
-    void addOption(QVBoxLayout *, const Option &);
+    void addOption(QVBoxLayout *, const Option &, const PreferencesCatalog::Row * = nullptr);
     void selectCategory(int);
     void filter(const QString &);
     void openResult(QTreeWidgetItem *);

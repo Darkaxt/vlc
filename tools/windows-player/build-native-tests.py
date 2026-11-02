@@ -1,4 +1,4 @@
-"""Build the new upstream audio/blending/CSD regressions for native Windows."""
+"""Build the selected affected regressions for native Windows execution."""
 import argparse
 import hashlib
 import json
@@ -15,6 +15,7 @@ def main():
     parser.add_argument('--receipt', required=True, type=Path)
     parser.add_argument('--platform-header', required=True, type=Path)
     parser.add_argument('--qt-platform-source', required=True, type=Path)
+    parser.add_argument('--scope',choices=['upstream','settings'],default='upstream')
     args = parser.parse_args()
     assert args.platform_header.is_file()
     assert args.qt_platform_source.is_file()
@@ -29,8 +30,11 @@ def main():
     failures = []
     selection = {'test': ['test_src_audio_output_dec.exe', 'test_modules_video_filter_blend.exe'],
         'modules/gui/qt': ['test_qt_csd_button_model.exe']}
+    if args.scope=='settings':
+        selection={'test':['test_src_misc_history.exe','test_src_misc_saved_options.exe'],
+            'modules/gui/qt':['test_player_chrome.exe']}
     input_state = args.build / 'native-test-inputs.json'
-    inputs = {'windows_layout': args.windows_layout, 'build_helper_sha256': sha_file(Path(__file__)),
+    inputs = {'windows_layout': args.windows_layout, 'scope':args.scope, 'build_helper_sha256': sha_file(Path(__file__)),
         'platform_header_sha256': sha_file(args.platform_header),
         'make_fragment_sha256': sha_file(args.make_fragment),
         'qt_platform_source_sha256': sha_file(args.qt_platform_source),
@@ -105,7 +109,8 @@ def main():
         'native_input_state_sha256': sha_file(input_state),
         'qt_platform': 'Existing static SDK offscreen integration, explicitly imported for the CSD model test',
         'native_timeout_contract': 'VLC_TEST_TIMEOUT=0 required; any POSIX alarm request exits with failure instead of being ignored',
-        'scope': 'Focused regressions added by this upstream merge. The fork full Windows acceptance matrix owns broad product regression. The complete upstream C suite includes POSIX /tmp assumptions and is not claimed as a native Windows suite.',
+        'scope': ('M4 affected history exclusions, saved-option parser and real chrome state machine. The complete native settings/player acceptance owns integrated behavior and pixels.' if args.scope=='settings' else
+            'Focused regressions added by this upstream merge. The fork full Windows acceptance matrix owns broad product regression. The complete upstream C suite includes POSIX /tmp assumptions and is not claimed as a native Windows suite.'),
         'execution': 'Not run; execute these exact binaries natively on owned inactive Windows desktops'}
     args.receipt.write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps({'native_test_build_receipt': str(args.receipt), 'suites': len(suites)}), flush=True)

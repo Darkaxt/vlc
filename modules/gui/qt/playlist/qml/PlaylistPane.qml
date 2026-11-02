@@ -40,6 +40,16 @@ T.Pane {
     property bool useAcrylic: true
     property bool redesigned: false
     property int positionTab: 0
+    // The native queue retains identity and playback order. This is a folder
+    // presentation of that queue, not a separate playlist or reordered model.
+    property var collapsedFolders: ({})
+    function setFolderCollapsed(folder,collapsed) {
+        if (!folder || collapsedFolders[folder]===collapsed)return
+        const next=Object.assign({},collapsedFolders)
+        if(collapsed)next[folder]=true
+        else delete next[folder]
+        collapsedFolders=next
+    }
 
     readonly property real minimumWidth: contentItem.Layout.minimumWidth +
                                          leftPadding +
@@ -379,6 +389,52 @@ T.Pane {
             clip: !fadingEdge.implicitClipping && (height < contentHeight)
 
             model: proxyModel ?? root.model
+            section.property: MainCtx.playlistTree ? "folder" : ""
+            section.criteria: ViewSection.FullString
+            section.delegate: T.ItemDelegate {
+                id: folderHeader
+                required property string section
+                readonly property bool collapsed: root.collapsedFolders[section]===true
+                width: listView.width
+                height: section ? PlayerStyle.px(40) : 0
+                visible: section.length>0
+                activeFocusOnTab: true
+                AccessibleCompat.id: "queueFolder-"+section
+                Accessible.name: (collapsed ? qsTr("Expand folder %1") : qsTr("Collapse folder %1")).arg(MainCtx.displayMRL(section))
+                background: Rectangle { color: Qt.alpha(theme.fg.primary,folderHeader.hovered || folderHeader.activeFocus ? 0.08 : 0);radius:PlayerStyle.px(4) }
+                contentItem: RowLayout {
+                    spacing: PlayerStyle.px(8)
+                    Image {
+                        Layout.preferredWidth: PlayerStyle.px(24)
+                        Layout.preferredHeight: PlayerStyle.px(24)
+                        source: "qrc:/redesign/icons/chevron-down.svg"
+                        rotation: folderHeader.collapsed ? -90 : 0
+                        sourceSize: Qt.size(width*Screen.devicePixelRatio,height*Screen.devicePixelRatio)
+                        smooth: false
+                    }
+                    Image {
+                        Layout.preferredWidth: PlayerStyle.px(24)
+                        Layout.preferredHeight: PlayerStyle.px(24)
+                        source: "qrc:/redesign/icons/folder.svg"
+                        sourceSize: Qt.size(width*Screen.devicePixelRatio,height*Screen.devicePixelRatio)
+                        smooth: false
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        text: MainCtx.displayMRL(folderHeader.section)
+                        font.family: root.redesigned ? PlayerStyle.fontFamily : Qt.application.font.family
+                        font.pixelSize: root.redesigned ? PlayerStyle.px(14) : VLCStyle.fontSize_normal
+                        color: theme.fg.primary
+                        elide: Text.ElideMiddle
+                    }
+                }
+                onClicked: root.setFolderCollapsed(section,!collapsed)
+                Keys.onRightPressed: event => { root.setFolderCollapsed(section,false);event.accepted=true }
+                Keys.onLeftPressed: event => { root.setFolderCollapsed(section,true);event.accepted=true }
+            }
+            onCurrentItemChanged: {
+                if(MainCtx.playlistTree && currentItem?.folder)root.setFolderCollapsed(currentItem.folder,false)
+            }
 
             onWidthChanged: {
                 if (searchBox.expanded) {
@@ -540,6 +596,10 @@ T.Pane {
             delegate: PlaylistDelegate {
                 id: delegate
                 redesigned: root.redesigned
+                readonly property bool treeHidden: MainCtx.playlistTree && root.collapsedFolders[folder]===true
+                visible: !treeHidden
+                height: treeHidden ? 0 : redesigned ? PlayerStyle.px(44) : Math.round(implicitHeight)
+                leftPadding: (MainCtx.playlistTree && folder ? PlayerStyle.px(24) : 0) + (redesigned ? 0 : VLCStyle.margin_normal)
 
                 width: listView.contentWidth
                 rightPadding: root.redesigned ? 0 : Math.max(listView.T.ScrollBar.vertical.width, VLCStyle.margin_normal)
@@ -554,8 +614,10 @@ T.Pane {
                 onContainsDragChanged: listView.updateItemContainsDrag(this, containsDrag)
 
                 onIsCurrentChanged: {
-                    if (isCurrent)
+                    if (isCurrent) {
+                        if(MainCtx.playlistTree)root.setFolderCollapsed(folder,false)
                         listView.fadingEdge.excludeItem = delegate
+                    }
                     else if (listView.fadingEdge.excludeItem === delegate)
                         listView.fadingEdge.excludeItem = null
                 }

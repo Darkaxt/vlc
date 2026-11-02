@@ -53,7 +53,8 @@ public:
         AlbumRole,
         ArtworkRole,
         UrlRole,
-        PreparsedRole
+        PreparsedRole,
+        FolderRole
     };
     Q_ENUM(Roles);
 

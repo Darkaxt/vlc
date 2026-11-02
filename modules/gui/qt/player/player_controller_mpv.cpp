@@ -11,6 +11,7 @@
 #include "maininterface/compositor.hpp"
 #include "medialibrary/medialib.hpp"
 #include <vlc_media_library.h>
+#include <vlc_history.h>
 #include "playlist/playlist_controller.hpp"
 #include <vlc_dialog.h>
 #include <vlc_url.h>
@@ -617,7 +618,12 @@ void PlayerController::saveMpvHistory(bool eof, std::function<void()> completion
         return;
     }
     const auto uri = d->m_url.toEncoded();
-    const double progress = eof ? 1. : d->m_position;
+    char *patterns = var_InheritString(d->p_intf,"history-exclude");
+    const bool excluded = vlc_history_is_excluded(patterns,uri.constData(),qtu(d->m_url.toLocalFile()));
+    free(patterns);
+    if (excluded || !var_InheritBool(d->p_intf,"save-recentplay"))
+    { if (completion) completion(); return; }
+    const double progress = var_InheritBool(d->p_intf,"save-playback-position") ? (eof ? 1. : d->m_position) : 0.;
     const bool video = d->m_hasVideo;
     const bool recent = var_InheritBool(d->p_intf, "save-recentplay");
     const auto rate = QByteArray::number(d->m_rate, 'g', 9);
@@ -646,6 +652,17 @@ void PlayerController::restoreMpvHistory()
     struct State { double progress = 0.; float rate = 0.; };
     const auto revision = d->m_mpvMediaRevision;
     const auto uri = d->m_url.toEncoded();
+    char *patterns = var_InheritString(d->p_intf,"history-exclude");
+    const bool excluded = vlc_history_is_excluded(patterns,uri.constData(),qtu(d->m_url.toLocalFile()));
+    free(patterns);
+    if (excluded)
+    {
+        d->m_mpvHistoryReady = true;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        emit mpvHistoryReadyChanged();
+#endif
+        return;
+    }
     library->runOnMLThread<State>(this, [uri](vlc_medialibrary_t *ml, State &state) {
         auto *media = vlc_ml_get_media_by_mrl(ml, uri.constData());
         if (!media) return;
@@ -662,6 +679,7 @@ void PlayerController::restoreMpvHistory()
 #endif
         if (var_InheritBool(d->p_intf, "restore-playback-states") && state.rate > 0.) setRate(state.rate);
         const auto mode = var_InheritInteger(d->p_intf, "restore-playback-pos");
+        if (!var_InheritBool(d->p_intf,"save-playback-position")) return;
         if (!std::isfinite(state.progress) || state.progress <= 0. || state.progress >= 1.) return;
         d->m_mpvResumePosition = state.progress;
         if (mode == VLC_PLAYER_RESTORE_PLAYBACK_POS_ALWAYS) restorePlaybackPos();

@@ -393,6 +393,7 @@ bool RendererManager::useRenderer() const
 void RendererManager::StartScan()
 {
     Q_D(RendererManager);
+    if (config_FindConfig("qt-cast-discovery") && !config_GetInt("qt-cast-discovery")) return;
     if( d->m_stop_scan_timer.isActive() )
         return;
 

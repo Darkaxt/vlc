@@ -295,7 +295,8 @@ PlaylistListModel::roleNames() const
         { ArtistRole , QByteArrayLiteral("artist") },
         { AlbumRole  , QByteArrayLiteral("album") },
         { ArtworkRole, QByteArrayLiteral("artwork") },
-        { UrlRole, QByteArrayLiteral("url") }
+        { UrlRole, QByteArrayLiteral("url") },
+        { FolderRole, QByteArrayLiteral("folder") }
     };
 }
 
@@ -512,6 +513,11 @@ PlaylistListModel::data(const QModelIndex &index, int role) const
         return d->m_items[row].getArtwork();
     case UrlRole:
         return d->m_items[row].getUrl();
+    case FolderRole:
+    {
+        const auto url=d->m_items[row].getUrl();
+        return url.isLocalFile() ? url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).toString(QUrl::FullyEncoded) : QString();
+    }
     case PlaylistListModel::PreparsedRole:
         return d->m_items[row].preparsed();
     default:

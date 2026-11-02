@@ -11,7 +11,7 @@ test_modules_video_filter_blend_LDADD += $(top_builddir)/compat/libcompat.la
 test_src_audio_output_dec.exe test_modules_video_filter_blend.exe: $(top_builddir)/compat/libcompat.la $(native_test_recipe)
 
 ifdef NATIVE_TEST_INPUT_STATE
-$(test_src_audio_output_dec_OBJECTS) $(test_modules_video_filter_blend_OBJECTS) $(test_qt_csd_button_model_OBJECTS): $(NATIVE_TEST_INPUT_STATE)
+$(test_src_audio_output_dec_OBJECTS) $(test_modules_video_filter_blend_OBJECTS) $(test_qt_csd_button_model_OBJECTS) $(test_player_chrome_OBJECTS) $(test_src_misc_history_OBJECTS) $(test_src_misc_saved_options_OBJECTS): $(NATIVE_TEST_INPUT_STATE)
 endif
 
 ifneq ($(strip $(QT_QTEST_COMMON_ldadd)),)

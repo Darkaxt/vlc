@@ -3862,7 +3862,7 @@ dnl
 AC_ARG_ENABLE([libass],
   AS_HELP_STRING([--enable-libass], [Subtitle support using libass (default enabled)]))
 AS_IF( [test "${enable_libass}" != "no"], [
-  PKG_CHECK_MODULES(LIBASS, [libass >= 0.9.8],
+  PKG_CHECK_MODULES(LIBASS, [libass >= 0.13.0],
       [
         VLC_ADD_PLUGIN([libass])
 

@@ -180,6 +180,7 @@ int libvlc_InternalInit( libvlc_int_t *p_libvlc, int i_argc,
             config_LoadConfigFile( p_libvlc );
     }
 
+    config_ApplySavedOptions(p_libvlc);
     vlc_LogInit(p_libvlc);
 
     char *tracer_name = var_InheritString(p_libvlc, "tracer");

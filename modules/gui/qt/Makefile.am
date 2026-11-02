@@ -155,6 +155,7 @@ libqt_plugin_la_SOURCES = \
 	dialogs/preferences/preferences_languages.hpp \
 	dialogs/preferences/preferences_widgets.cpp \
 	dialogs/preferences/preferences_widgets.hpp \
+	dialogs/preferences/preferences_catalog.hpp \
 	dialogs/preferences/simple_preferences.cpp \
 	dialogs/preferences/simple_preferences.hpp \
 	dialogs/sout/convert.cpp dialogs/sout/convert.hpp \
@@ -831,6 +832,18 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/settings-info.svg \
 	pixmaps/redesign/settings-general.svg \
 	pixmaps/redesign/settings-interface.svg \
+	pixmaps/redesign/settings-general-active.svg \
+	pixmaps/redesign/settings-interface-active.svg \
+	pixmaps/redesign/settings-privacy-active.svg \
+	pixmaps/redesign/settings-controls-active.svg \
+	pixmaps/redesign/settings-playback-active.svg \
+	pixmaps/redesign/settings-video-active.svg \
+	pixmaps/redesign/settings-audio-active.svg \
+	pixmaps/redesign/settings-subtitles-active.svg \
+	pixmaps/redesign/settings-library-active.svg \
+	pixmaps/redesign/settings-network-active.svg \
+	pixmaps/redesign/settings-recording-active.svg \
+	pixmaps/redesign/settings-extensions-active.svg \
 	pixmaps/redesign/settings-privacy.svg \
 	pixmaps/redesign/settings-controls.svg \
 	pixmaps/redesign/settings-recording.svg \

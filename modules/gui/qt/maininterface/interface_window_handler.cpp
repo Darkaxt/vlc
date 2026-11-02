@@ -71,7 +71,14 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
     m_window->setIcon( QApplication::windowIcon() );
     m_window->setOpacity( var_InheritFloat( p_intf, "qt-opacity" ) );
 
-    QVLCTools::restoreWindowPosition( getSettings(), m_window, QSize(600, 420) );
+    if (var_InheritBool(p_intf,"qt-remember-window"))
+        QVLCTools::restoreWindowPosition( getSettings(), m_window, QSize(600, 420) );
+    else
+        m_window->resize(QSize(1048,740).boundedTo(m_window->screen()->availableGeometry().size()));
+    connect(m_window,&QWindow::widthChanged,this,&InterfaceWindowHandler::updateVisualizationDimensions);
+    connect(m_window,&QWindow::heightChanged,this,&InterfaceWindowHandler::updateVisualizationDimensions);
+    connect(m_mainCtx,&MainCtx::playbackPreferencesChanged,this,&InterfaceWindowHandler::updateVisualizationDimensions);
+    updateVisualizationDimensions();
 
     // this needs to be called asynchronously
     // otherwise QQuickWidget won't initialize properly
@@ -208,9 +215,15 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
 
 InterfaceWindowHandler::~InterfaceWindowHandler()
 {
+    if(m_ownsVisualizationDimensions)
+    {
+        var_Destroy(vlc_object_instance(p_intf),"effect-width");
+        var_Destroy(vlc_object_instance(p_intf),"effect-height");
+    }
     m_window->removeEventFilter(this);
     /* Save this size */
-    QVLCTools::saveWindowPosition(getSettings(), m_window);
+    if (config_GetInt("qt-remember-window"))
+        QVLCTools::saveWindowPosition(getSettings(), m_window);
     assert(qApp);
     if (!qApp->property("isDying").toBool())
     {
@@ -223,6 +236,30 @@ InterfaceWindowHandler::~InterfaceWindowHandler()
 void InterfaceWindowHandler::updateCSDWindowSettings()
 {
     m_window->setFlag(Qt::FramelessWindowHint, m_mainCtx->useClientSideDecoration());
+}
+void InterfaceWindowHandler::updateVisualizationDimensions()
+{
+    auto *instance=vlc_object_instance(p_intf);
+    if(!config_GetInt("qt-visualization-fit"))
+    {
+        if(m_ownsVisualizationDimensions)
+        {
+            var_Destroy(instance,"effect-width");var_Destroy(instance,"effect-height");
+            m_ownsVisualizationDimensions=false;
+        }
+        return;
+    }
+    if(!m_ownsVisualizationDimensions)
+    {
+        // Explicit launch arguments retain precedence. Never replace another
+        // owner's values or write the custom dimensions back to preferences.
+        if(var_Type(instance,"effect-width") || var_Type(instance,"effect-height"))return;
+        var_Create(instance,"effect-width",VLC_VAR_INTEGER);
+        var_Create(instance,"effect-height",VLC_VAR_INTEGER);
+        m_ownsVisualizationDimensions=true;
+    }
+    var_SetInteger(instance,"effect-width",qMax(532,qRound(m_window->width()*m_window->devicePixelRatio())));
+    var_SetInteger(instance,"effect-height",qMax(400,qRound(m_window->height()*m_window->devicePixelRatio())));
 }
 
 bool InterfaceWindowHandler::eventFilter(QObject*, QEvent* event)

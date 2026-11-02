@@ -33,6 +33,18 @@
 
         <file alias="settings-general.svg">pixmaps/redesign/settings-general.svg</file>
         <file alias="settings-interface.svg">pixmaps/redesign/settings-interface.svg</file>
+        <file alias="settings-general-active.svg">pixmaps/redesign/settings-general-active.svg</file>
+        <file alias="settings-interface-active.svg">pixmaps/redesign/settings-interface-active.svg</file>
+        <file alias="settings-privacy-active.svg">pixmaps/redesign/settings-privacy-active.svg</file>
+        <file alias="settings-controls-active.svg">pixmaps/redesign/settings-controls-active.svg</file>
+        <file alias="settings-playback-active.svg">pixmaps/redesign/settings-playback-active.svg</file>
+        <file alias="settings-video-active.svg">pixmaps/redesign/settings-video-active.svg</file>
+        <file alias="settings-audio-active.svg">pixmaps/redesign/settings-audio-active.svg</file>
+        <file alias="settings-subtitles-active.svg">pixmaps/redesign/settings-subtitles-active.svg</file>
+        <file alias="settings-library-active.svg">pixmaps/redesign/settings-library-active.svg</file>
+        <file alias="settings-network-active.svg">pixmaps/redesign/settings-network-active.svg</file>
+        <file alias="settings-recording-active.svg">pixmaps/redesign/settings-recording-active.svg</file>
+        <file alias="settings-extensions-active.svg">pixmaps/redesign/settings-extensions-active.svg</file>
         <file alias="settings-privacy.svg">pixmaps/redesign/settings-privacy.svg</file>
         <file alias="settings-controls.svg">pixmaps/redesign/settings-controls.svg</file>
         <file alias="settings-recording.svg">pixmaps/redesign/settings-recording.svg</file>

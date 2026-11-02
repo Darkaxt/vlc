@@ -20,7 +20,7 @@ def visible_label(text):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'resize', 'cancel', 'quit'])
+    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'widget_scroll', 'resize', 'cancel', 'quit'])
     parser.add_argument('--target')
     parser.add_argument('--name', help='Exact accessible name of an actionable Qt Quick item')
     parser.add_argument('--item-url', help='Exact URL of one rendered queue row')
@@ -42,9 +42,9 @@ def main():
     parser.add_argument('--widget-text', help='Exact native widget text, ignoring mnemonic ampersands')
     parser.add_argument('--widget-name', help='Exact accessible name of one native widget')
     parser.add_argument('--url', action='append', default=[])
-    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'ready', 'itemCount', 'indexing', 'busy', 'waveformBusy', 'subtitleLoaded', 'timelineStatus', 'updateStatus', 'sleepMinutes', 'previewSource', 'previewStatus', 'previewPosition', 'waveformStatus', 'sleepStatus', 'status', 'source'])
+    parser.add_argument('--await-property', choices=['selected', 'description', 'visible', 'checked', 'text', 'value', 'width', 'height', 'contentY', 'moving', 'ready', 'itemCount', 'indexing', 'busy', 'waveformBusy', 'subtitleLoaded', 'timelineStatus', 'updateStatus', 'sleepMinutes', 'previewSource', 'previewStatus', 'previewPosition', 'waveformStatus', 'sleepStatus', 'status', 'source', 'pluginScanActive'])
     parser.add_argument('--await-value', type=json.loads)
-    parser.add_argument('--await-service', choices=['redesignMediaTools', 'redesignMediaAnalysis', 'redesignSubtitleSearch', 'forkUpdateModel'])
+    parser.add_argument('--await-service', choices=['redesignMediaTools', 'redesignMediaAnalysis', 'redesignSubtitleSearch', 'forkUpdateModel', 'redesignPreferences'])
     parser.add_argument('--await-target')
     parser.add_argument('--await-name')
     parser.add_argument('--await-node', type=int, help='Observation node from a fresh rendered snapshot')
@@ -170,7 +170,7 @@ def main():
                         fields['node'] = args.node
                     else:
                         parser.error('Widget key requires --target or --node')
-            elif args.op == 'widget_click':
+            elif args.op in ('widget_click','widget_scroll'):
                 if args.menu_action:
                     matches = [(n['node'], i) for n in before['widgets'] for i, a in enumerate(n.get('actions', []))
                                if a['enabled'] and visible_label(a['text']).split('\t', 1)[0] == args.menu_action]
@@ -197,6 +197,7 @@ def main():
                 else:
                     parser.error('Widget click requires --target or --node')
                 fields.setdefault('action', args.action if args.action is not None else -1)
+                if args.op=='widget_scroll': fields['delta']=args.delta
             elif args.op in ('resize', 'widget_resize'):
                 if args.width is None or args.height is None:
                     parser.error('Resize requires --width and --height')

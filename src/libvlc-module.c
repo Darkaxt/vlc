@@ -1827,6 +1827,11 @@ vlc_module_begin ()
                  SUB_PATH_TEXT, SUB_PATH_LONGTEXT )
     add_integer( "sub-margin", 0, SUB_MARGIN_TEXT,
                  SUB_MARGIN_LONGTEXT )
+    add_integer("sub-alignment",-1,N_("Vertical position of primary subtitles"),
+                N_("Override non-positioned primary subtitles. Automatic preserves the alignment supplied by the subtitle."))
+        change_integer_list(pi_sub_align_values,ppsz_sub_align_descriptions)
+    add_bool("sub-ass-style-override",false,N_("Ignore styling in ASS and SSA subtitles"),
+             N_("Use the configured subtitle appearance instead of the script's style. Disable this to preserve authored typography and positioning."))
     add_integer_with_range( "sub-text-scale", 100, 10, 500,
                SUB_TEXT_SCALE_TEXT, SUB_TEXT_SCALE_LONGTEXT )
     set_section( N_( "Overlays" ) , NULL )
@@ -1924,6 +1929,12 @@ vlc_module_begin ()
         change_safe ()
 
     add_bool( "save-recentplay", true, SAVE_RECENTPLAY, NULL )
+    add_string("extra-options","",N_("Additional command line options"),
+               N_("Additional saved options applied on startup, before playback. Use --name=value or boolean --name/--no-name, quoting values with spaces. Explicit launch arguments take precedence. Launch-only, plugin-loading and media-opening arguments are not accepted."))
+    add_bool("save-playback-position",true,N_("Remember the playback position"),
+             N_("Save and restore positions for items in playback history. Disabling history also disables recording new positions."))
+    add_string("history-exclude","",N_("Never remember items matching"),
+               N_("Semicolon-separated terms or wildcard patterns (* and ?) matched against the URI and local path. Matching items are neither recorded nor restored."))
 
     add_integer( "restore-playback-pos", VLC_PLAYER_RESTORE_PLAYBACK_POS_ASK,
                  RESTORE_PLAYBACK_POS_TEXT, RESTORE_PLAYBACK_POS_LONGTEXT )

@@ -4,6 +4,41 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**M4 settings/menu parity, authorized 2 November 2026:** implement the complete
+thirteen-category review at
+`D:/VLC-Redesign/verification/settings-parity-20261102/settings-parity-review.json`.
+The original Figma archive and inspected interactive prototype remain the visual
+authority. Earlier M2/M3 delivery proves their recorded functionality; its generic
+settings presentation and extra menu row do not establish settings parity.
+
+R83 (M4): restore the distinct black header, truly rounded transparent exterior,
+original selected/unselected artwork, compact information icons, fields, grouped
+switch housings, sliders/ticks, spacing and scroll behavior. Reproduce each
+category's ordered basic and expanded sections and integrate the missing controls
+through the existing VLC/Qt/MPV owners. Preserve native option identities, ranges,
+credentials, saved values, search, staged edits, save-failure rollback and Cancel.
+Preserve explicit VLC/MPV selection and disabled-by-default video window resizing.
+Use truthful platform/capability states for platform-specific operations; never
+create a decorative working-looking control or silently substitute another action.
+Correct prototype copy errors such as the duplicated Last.fm username label.
+Remove the thirteenth main-menu preservation row while retaining the underlying
+VLC commands through an appropriately themed advanced route. Global Settings
+must remain directly reachable from player/library and keyboard. No default
+profile, installation, real media history or OS setting is changed by validation.
+
+R84 (M4): strengthen acceptance to reject unexpected primary-menu rows and verify
+all thirteen settings categories, their sections/control types, dependent states,
+native behavior and persistence. Compare actual native pixels with the reference
+at normal/narrow viewports and 100/150/200 percent DPI, including dark/light and
+corner/backdrop behavior. Complete all related implementation before one
+coordinated acceptance pass; repair failures and recheck affected workflows.
+Retain applicable unchanged playback/DV evidence, verify native VLC/MPV handover
+and protected state, and deliver one final normal optimized release with source,
+separate symbols and checksums through the established channel. Independently
+verify delivery and retained/weekly rebinding before obsolete-output retirement.
+No Rust work, additional upstream integration, SDK recreation or release-folder
+reorganization is authorized by this scope.
+
 **M3 delivery reconciliation: COMPLETE.** Normal release
 [1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4), app source
 `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`, satisfies the maintenance R71/R72

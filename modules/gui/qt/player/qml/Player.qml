@@ -41,6 +41,7 @@ FocusScope {
     readonly property int positionSliderY: controlBar.y + controlBar.sliderY
 
     readonly property string coverSource: {
+        if (!MainCtx.audioCoverArt && !Player.hasVideoOutput) return VLCStyle.noArtAlbumCover
         if (Player.artwork &&
             Player.artwork.toString())
             return Player.artwork
@@ -155,6 +156,11 @@ FocusScope {
 
     PlayerChromeState {
         id: chrome
+        hidden: MainCtx.minimalView
+        autoHideMode: MainCtx.controlsVisibility
+        hideDelay: MainCtx.mouseHideTimeout
+        fullscreenControls: MainCtx.showFullscreenControls
+        mouseSensitivity: MainCtx.fullscreenControlsSensitivity
         fullscreen: MainCtx.intfMainWindow.visibility === Window.FullScreen
         topHovered: topBar.hovered || (rootPlayer._surfaceHovered && rootPlayer._surfacePointer.y <= topBar.height)
         bottomHovered: controlBar.hovered || (rootPlayer._surfaceHovered && rootPlayer._surfacePointer.y >= rootPlayer.height - controlBar.height)
@@ -174,10 +180,10 @@ FocusScope {
             }
         }
     }
-    HoverHandler { id: pointer }
+    HoverHandler { id: pointer; onPointChanged: chrome.pointerMoved(point.position) }
     Connections {
         target:PlayerCustomization
-        function onEditingChanged(){if(PlayerCustomization.editing)chrome.hidden=false}
+        function onEditingChanged(){if(PlayerCustomization.editing)MainCtx.minimalView=false}
     }
     TapHandler {
         acceptedButtons: Qt.AllButtons
@@ -187,7 +193,7 @@ FocusScope {
     Shortcut {
         sequence: "Ctrl+Shift+H"
         enabled: rootPlayer.visible && !PlayerCustomization.editing && !PlayerCustomization.profilesVisible && !PlayerCustomization.onboardingVisible
-        onActivated: chrome.toggleHidden()
+        onActivated: MainCtx.minimalView=!MainCtx.minimalView
     }
 
     PlayerPlaylistVisibilityFSM {
@@ -203,7 +209,7 @@ FocusScope {
             playlistVisibility.updateVideoEmbed()
         }
         function onAskShow() {
-            chrome.toggleHidden()
+            MainCtx.minimalView=!MainCtx.minimalView
         }
     }
 
@@ -325,7 +331,7 @@ FocusScope {
 
                     focus: true
 
-                    HoverHandler { id: videoPointer }
+                    HoverHandler { id: videoPointer; onPointChanged: chrome.pointerMoved(videoSurface.mapToItem(rootPlayer,point.position)) }
 
                     cursorShape: playerSpecializationLoader.cursorShape
 
@@ -992,7 +998,8 @@ FocusScope {
         checkedControls:controlBar.checkedControls
         showCSD: MainCtx.clientSideDecoration && !chrome.fullscreen
         visible: chrome.topVisible
-        onHideChromeRequested: chrome.hidden = true
+        opacity: chrome.fullscreen ? MainCtx.pinOpacity : 1
+        onHideChromeRequested: MainCtx.minimalView = true
         onActionRequested:(key,invoker)=>{
             if(["audio","subtitles","tools","speed","zoom","queue","showQueue","more"].includes(key))controlBar.activate(key,invoker)
             else rootPlayer.layoutAction(key,invoker)
@@ -1068,7 +1075,7 @@ FocusScope {
 
     Connections {
         target: MainCtx
-        function onHidePlayerChromeRequested() { chrome.hidden = true }
+        function onHidePlayerChromeRequested() { MainCtx.minimalView = true }
     }
 
     PlayerResume {
@@ -1262,7 +1269,7 @@ FocusScope {
         Navigation.downItem: controlBar
 
         onClicked:{
-            chrome.toggleHidden();
+            MainCtx.minimalView=!MainCtx.minimalView;
         }
     }
 
@@ -1285,8 +1292,9 @@ FocusScope {
         z: 2
         popupParent: rootPlayer
         visible: chrome.bottomVisible
+        opacity: chrome.fullscreen ? MainCtx.pinOpacity : 1
         queueVisible: playlistVisibility.isPlaylistVisible
-        onHideChromeRequested:chrome.hidden=true
+        onHideChromeRequested:MainCtx.minimalView=true
         onToggleQueue: playlistVisibility.togglePlaylistVisibility()
         onExternalActionRequested:(key,invoker)=>rootPlayer.layoutAction(key,invoker)
         Navigation.parentItem: rootPlayer
@@ -1341,10 +1349,10 @@ FocusScope {
                 event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
                 rootPlayer._keyboardNavigation = true
                 if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab)
-                    chrome.hidden = false
+                    MainCtx.minimalView = false
             }
             if (event.key === Qt.Key_Escape && chrome.hidden) {
-                chrome.hidden = false
+                MainCtx.minimalView = false
                 event.accepted = true
             }
         }

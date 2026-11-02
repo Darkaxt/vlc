@@ -30,6 +30,7 @@
 #include <vlc_charset.h>
 #include <vlc_modules.h>
 #include <vlc_plugin.h>
+#include <vlc_saved_options.h>
 
 #include "vlc_getopt.h"
 #include "vlc_jaro_winkler.h"
@@ -40,6 +41,103 @@
 
 #include <assert.h>
 #include <unistd.h>             /* STDERR_FILENO */
+
+static int SavedOptions(libvlc_int_t *target,const char *text,char **error)
+{
+    if (error) *error=NULL;
+    struct vlc_saved_options tokens;
+    if (!vlc_saved_options_split(text,&tokens)) return VLC_EINVAL;
+    struct parsed_option { const char *name; int type; module_value_t value; bool explicit; };
+    struct parsed_option *parsed=vlc_alloc(tokens.count,sizeof(*parsed));
+    if (!parsed && tokens.count) { vlc_saved_options_release(&tokens);return VLC_ENOMEM; }
+    int result=VLC_EINVAL;
+    for (size_t i=0; i<tokens.count; ++i)
+    {
+        struct vlc_saved_option option;
+        if (!vlc_saved_option_read(tokens.args[i],&option)) goto out;
+        struct vlc_param *param=vlc_param_Find(option.name);
+        if (!param || param->unsaved || param->obsolete || !vlc_saved_option_allowed(option.name))
+        { if (error) *error=strdup(option.name);goto out; }
+        const module_config_t *config=&param->item;
+        parsed[i].name=option.name;
+        parsed[i].explicit=target && var_Type(target,option.name)!=0;
+        parsed[i].type=CONFIG_CLASS(config->i_type);
+        switch (parsed[i].type)
+        {
+            case CONFIG_ITEM_BOOL:
+            {
+                bool value;
+                if (!vlc_saved_option_bool(&option,&value)) goto invalid;
+                parsed[i].value.i=value;
+                break;
+            }
+            case CONFIG_ITEM_STRING:
+                if (!option.value || option.negative) goto invalid;
+                parsed[i].value.psz=(char*)option.value;
+                break;
+            case CONFIG_ITEM_INTEGER:
+                if (!vlc_saved_option_int(&option,&parsed[i].value.i)) goto invalid;
+                if ((config->min.i || config->max.i) &&
+                    (parsed[i].value.i<config->min.i || parsed[i].value.i>config->max.i)) goto invalid;
+                break;
+            case CONFIG_ITEM_FLOAT:
+            {
+                if (!option.value || option.negative) goto invalid;
+                char *end;
+                errno=0;
+                parsed[i].value.f=vlc_strtof_c(option.value,&end);
+                if (errno || end==option.value || *end || !isfinite(parsed[i].value.f)) goto invalid;
+                if ((config->min.f || config->max.f) &&
+                    (parsed[i].value.f<config->min.f || parsed[i].value.f>config->max.f)) goto invalid;
+                break;
+            }
+            default: goto invalid;
+        }
+        continue;
+invalid:
+        if (error) *error=strdup(option.name);
+        goto out;
+    }
+    /* All validation precedes mutation. Explicit launch arguments already
+     * occupy variables on the instance and retain priority over saved extras. */
+    if (target) for (size_t i=0; i<tokens.count; ++i)
+    {
+        if (parsed[i].explicit) continue;
+        const char *name=parsed[i].name;
+        switch (parsed[i].type)
+        {
+            case CONFIG_ITEM_BOOL:
+                if (!var_Type(target,name)) var_Create(target,name,VLC_VAR_BOOL);
+                var_SetBool(target,name,parsed[i].value.i);break;
+            case CONFIG_ITEM_STRING:
+                if (!var_Type(target,name)) var_Create(target,name,VLC_VAR_STRING);
+                var_SetString(target,name,parsed[i].value.psz);break;
+            case CONFIG_ITEM_INTEGER:
+                if (!var_Type(target,name)) var_Create(target,name,VLC_VAR_INTEGER);
+                var_SetInteger(target,name,parsed[i].value.i);break;
+            case CONFIG_ITEM_FLOAT:
+                if (!var_Type(target,name)) var_Create(target,name,VLC_VAR_FLOAT);
+                var_SetFloat(target,name,parsed[i].value.f);break;
+        }
+    }
+    result=VLC_SUCCESS;
+out:
+    free(parsed);
+    vlc_saved_options_release(&tokens);
+    return result;
+}
+int config_ValidateSavedOptions(const char *text,char **error)
+{
+    return SavedOptions(NULL,text,error);
+}
+void config_ApplySavedOptions(libvlc_int_t *instance)
+{
+    char *text=var_InheritString(instance,"extra-options"), *error=NULL;
+    if (SavedOptions(instance,text,&error)!=VLC_SUCCESS)
+        msg_Warn(instance,"Ignoring invalid saved command line options%s%s",error ? ": " : "",error ? error : "");
+    free(error);
+    free(text);
+}
 
 /**
  * Perform early scan of arguments for a small subset of simple options.

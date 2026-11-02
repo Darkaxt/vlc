@@ -723,6 +723,7 @@ modules/gui/qt/dialogs/preferences/expert_view.cpp
 modules/gui/qt/dialogs/preferences/expert_view.hpp
 modules/gui/qt/dialogs/preferences/preferences.cpp
 modules/gui/qt/dialogs/preferences/preferences.hpp
+modules/gui/qt/dialogs/preferences/preferences_catalog.hpp
 modules/gui/qt/dialogs/preferences/preferences_widgets.cpp
 modules/gui/qt/dialogs/preferences/preferences_widgets.hpp
 modules/gui/qt/dialogs/preferences/simple_preferences.cpp

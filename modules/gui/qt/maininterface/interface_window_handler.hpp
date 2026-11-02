@@ -65,6 +65,8 @@ signals:
 
 private:
     bool applyKeyEvent(QKeyEvent * event) const;
+    void updateVisualizationDimensions();
+    bool m_ownsVisualizationDimensions = false;
 
 protected:
     virtual void updateCSDWindowSettings();

@@ -279,6 +279,13 @@ public:
                 value.mouse_event = [](vlc_window_t *wnd, const vlc_window_mouse_event_t *event) {
                     if (event->type == VLC_WINDOW_MOUSE_DOUBLE_CLICK && event->button_mask == MOUSE_BUTTON_LEFT)
                         var_SetInteger(vlc_object_instance(wnd), "qt-mpv-action", ACTIONID_TOGGLE_FULLSCREEN);
+                    else if (event->type == VLC_WINDOW_MOUSE_RELEASED && event->button_mask == MOUSE_BUTTON_LEFT)
+                    {
+                        char *policy=var_InheritString(wnd,"mouse-pause-policy");
+                        const bool pause=!policy || strcmp(policy,"disabled");
+                        free(policy);
+                        if(pause)var_SetInteger(vlc_object_instance(wnd),"qt-mpv-action",ACTIONID_PLAY_PAUSE);
+                    }
                 };
                 return value;
             }();
@@ -386,7 +393,24 @@ struct MpvPlayback::Private {
     void finishFileLoad() {
         loaded = true;
         const auto tracks = properties.value(QStringLiteral("track-list")).toList();
+        QStringList selectedByIndex;
+        for(const auto &entry : {std::pair{"audio-track","aid"},std::pair{"sub-track","sid"}}) {
+            const bool audio=QString::fromLatin1(entry.second)==QStringLiteral("aid");
+            if(!var_InheritBool(intf,audio ? "audio" : "spu"))continue;
+            int ordinal=var_InheritInteger(intf,entry.first);
+            if(ordinal<0)continue;
+            for(const auto &value : tracks) {
+                const auto track=value.toMap();
+                if(track.value(QStringLiteral("type")).toString()!=(audio ? QStringLiteral("audio") : QStringLiteral("sub")))continue;
+                if(ordinal--!=0)continue;
+                const auto property=QString::fromLatin1(entry.second);
+                q->set(property,track.value(QStringLiteral("id")));
+                selectedByIndex.append(property);
+                break;
+            }
+        }
         for (auto preference = languagePreferences.cbegin(); preference != languagePreferences.cend(); ++preference) {
+            if(selectedByIndex.contains(preference.key()))continue;
             const bool audio = preference.key() == QStringLiteral("aid");
             QVariantMap selected;
             const auto choose = [&](const QString &language) {
@@ -537,12 +561,30 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
     const auto maximumVolume = QByteArray::number(100. * maximumUiVolume * maximumUiVolume * maximumUiVolume);
     code = d->api->set_option_string(d->player, "volume-max", maximumVolume.constData());
     if (code < 0) d->error = tr("MPV could not apply the configured volume limit.");
+    const std::pair<const char *,QByteArray> defaults[]={
+        {"speed",QByteArray::number(var_InheritFloat(intf,"rate"),'g',12)},
+        {"audio-delay",QByteArray::number(var_InheritInteger(intf,"audio-desync")/1000.,'g',12)},
+        {"sub-delay",QByteArray::number(var_InheritInteger(intf,"sub-delay")/10.,'g',12)}};
+    for(const auto &[name,value] : defaults) {
+        if(code<0)break;
+        code=d->api->set_option_string(d->player,name,value.constData());
+        if(code<0)d->error=tr("MPV could not apply the configured %1.").arg(QString::fromLatin1(name));
+    }
     // Reuse mmdevice's existing persisted Windows session, or its nonpersistent
     // default session when volume-save is disabled. No second settings owner.
     const char *session = var_InheritBool(intf, "volume-save")
         ? "{4533f59d-59ee-00c6-adb2-c68b501a6655}" : "";
     if (code >= 0) code = d->api->set_option_string(d->player, "wasapi-session-id", session);
     if (code < 0 && d->error.isEmpty()) d->error = tr("MPV could not join the player's Windows audio session.");
+    if (code >= 0 && !var_InheritBool(intf,"volume-save"))
+    {
+        const double volume=var_InheritFloat(intf,"mmdevice-volume");
+        const auto initial=QByteArray::number(100.*volume*volume*volume,'g',12);
+        code=d->api->set_option_string(d->player,"volume",initial.constData());
+        if(code<0)d->error=tr("MPV could not apply the configured startup volume.");
+    }
+    if (code >= 0 && var_InheritBool(intf,"sub-ass-style-override"))
+        code=d->api->set_option_string(d->player,"sub-ass-override","force");
     if (code >= 0) {
         // A previously selected native endpoint and the volume owner must refer
         // to the same device. An empty id retains default eConsole routing.

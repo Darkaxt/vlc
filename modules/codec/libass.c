@@ -279,6 +279,39 @@ static int Create( vlc_object_t *p_this )
         return VLC_EGENERIC;
     }
     ass_process_codec_private( p_track, p_dec->fmt_in->p_extra, p_dec->fmt_in->i_extra );
+    if (var_InheritBool(p_dec,"sub-ass-style-override"))
+    {
+        ASS_Style style={0};
+        char *family=var_InheritString(p_dec,"freetype-font");
+        style.Name="VLC";
+        style.FontName=family && *family ? family : (char*)psz_family;
+        const int pixels=var_InheritInteger(p_dec,"freetype-absolute-fontsize");
+        style.FontSize=pixels > 0 ? pixels : 20.0*var_InheritInteger(p_dec,"sub-text-scale")/100.0;
+        style.ScaleX=style.ScaleY=1;
+        style.PrimaryColour=((uint32_t)var_InheritInteger(p_dec,"freetype-color")<<8) |
+                            (255-var_InheritInteger(p_dec,"freetype-opacity"));
+        style.SecondaryColour=style.PrimaryColour;
+        style.OutlineColour=((uint32_t)var_InheritInteger(p_dec,"freetype-outline-color")<<8) |
+                            (255-var_InheritInteger(p_dec,"freetype-outline-opacity"));
+        style.BackColour=((uint32_t)var_InheritInteger(p_dec,"freetype-shadow-color")<<8) |
+                            (255-var_InheritInteger(p_dec,"freetype-shadow-opacity"));
+        style.Bold=var_InheritBool(p_dec,"freetype-bold");
+        style.BorderStyle=1;
+        style.Outline=var_InheritInteger(p_dec,"freetype-outline-thickness");
+        style.Shadow=style.FontSize*var_InheritFloat(p_dec,"freetype-shadow-distance");
+        const int alignment=var_InheritInteger(p_dec,"sub-alignment");
+        style.Alignment=alignment<0 ? 2 :
+            ((alignment & SUBPICTURE_ALIGN_TOP) ? 7 :
+             (alignment & SUBPICTURE_ALIGN_BOTTOM) ? 1 : 4) +
+            ((alignment & SUBPICTURE_ALIGN_LEFT) ? 0 :
+             (alignment & SUBPICTURE_ALIGN_RIGHT) ? 2 : 1);
+        style.MarginL=style.MarginR=20;
+        style.MarginV=20;
+        ass_set_selective_style_override(p_renderer,&style);
+        ass_set_selective_style_override_enabled(p_renderer,ASS_OVERRIDE_FULL_STYLE |
+            ASS_OVERRIDE_BIT_FONT_SIZE_FIELDS | ASS_OVERRIDE_BIT_BORDER);
+        free(family);
+    }
     OldEngineClunkyRollInfoPatch( p_dec, p_track );
 
     p_dec->fmt_out.i_codec = VLC_CODEC_RGBA;

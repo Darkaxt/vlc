@@ -32,6 +32,8 @@ private slots:
 
         QVERIFY(visible("topVisible") && visible("bottomVisible"));
         set("fullscreen", true);
+        QVERIFY(visible("topVisible") && visible("bottomVisible"));
+        set("idle",true);
         QVERIFY(!visible("topVisible") && !visible("bottomVisible"));
         set("topHovered", true);
         QVERIFY(visible("topVisible") && !visible("bottomVisible"));
@@ -61,6 +63,32 @@ private slots:
         QVERIFY(!visible("topVisible") && !visible("bottomVisible"));
         QVERIFY(QMetaObject::invokeMethod(chrome.get(), "toggleHidden"));
         QVERIFY(visible("topVisible") && visible("bottomVisible"));
+        set("topHovered",false);
+        set("bottomFocused",false);
+        set("fullscreen",false);
+        QVERIFY(chrome->setProperty("autoHideMode",1));
+        set("idle",true);
+        QVERIFY(!visible("topVisible") && !visible("bottomVisible"));
+        QVERIFY(chrome->setProperty("autoHideMode",2));
+        QVERIFY(visible("topVisible") && visible("bottomVisible"));
+        set("fullscreen",true);
+        set("fullscreenControls",false);
+        QVERIFY(visible("topVisible") && !visible("bottomVisible"));
+        set("fullscreenControls",true);
+        QVERIFY(chrome->setProperty("autoHideMode",0));
+        QVERIFY(chrome->setProperty("mouseSensitivity",10));
+        const QVariant origin=QPointF(0,0),small=QPointF(3,4),threshold=QPointF(8,6);
+        QVERIFY(QMetaObject::invokeMethod(chrome.get(),"pointerMoved",Q_ARG(QVariant,origin)));
+        set("idle",true);
+        QVERIFY(QMetaObject::invokeMethod(chrome.get(),"pointerMoved",Q_ARG(QVariant,small)));
+        QVERIFY(!visible("topVisible") && !visible("bottomVisible"));
+        QVERIFY(QMetaObject::invokeMethod(chrome.get(),"pointerMoved",Q_ARG(QVariant,threshold)));
+        QVERIFY(visible("topVisible") && visible("bottomVisible"));
+        QVERIFY(chrome->setProperty("hideDelay",0));
+        QSignalSpy idleChanged(chrome.get(),SIGNAL(idleChanged()));
+        QVERIFY(QMetaObject::invokeMethod(chrome.get(),"activity"));
+        if(!chrome->property("idle").toBool())QVERIFY(idleChanged.wait());
+        QVERIFY(!visible("topVisible") && !visible("bottomVisible"));
     }
 };
 QTEST_GUILESS_MAIN(TestPlayerChrome)

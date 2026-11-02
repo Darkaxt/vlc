@@ -25,18 +25,35 @@
 #include <vlc_common.h>
 #include "player.h"
 #include "misc/variables.h"
+#include <vlc_history.h>
+#include <vlc_url.h>
+
+static bool history_excluded(struct vlc_player_input *input)
+{
+    input_item_t *item = input_GetItem(input->thread);
+    if (!item) return true;
+    char *patterns = var_InheritString(input->thread,"history-exclude");
+    char *path = vlc_uri2path(item->psz_uri);
+    bool excluded = vlc_history_is_excluded(patterns,item->psz_uri,path);
+    free(path);
+    free(patterns);
+    return excluded;
+}
 
 void
 vlc_player_input_RestoreMlStates(struct vlc_player_input* input, bool force_pos)
 {
     vlc_player_t* player = input->player;
     vlc_player_assert_locked(player);
+    if (history_excluded(input)) return;
 
     int restore_pos;
     if (force_pos)
         restore_pos = VLC_PLAYER_RESTORE_PLAYBACK_POS_ALWAYS;
     else
         restore_pos = var_InheritInteger(input->thread, "restore-playback-pos");
+    if (!var_InheritBool(input->thread,"save-playback-position"))
+        restore_pos = VLC_PLAYER_RESTORE_PLAYBACK_POS_NEVER;
 
     const bool restore_states = var_InheritBool(input->thread, "restore-playback-states");
 
@@ -174,6 +191,7 @@ vlc_player_UpdateMLStates(vlc_player_t *player, struct vlc_player_input* input)
        the main vlc object, then it's the main player */
     if (player->obj.priv->parent != (vlc_object_t*)vlc_object_instance(player))
         return;
+    if (history_excluded(input) || !var_InheritBool(input->thread,"save-recentplay")) return;
 
     vlc_medialibrary_t* ml = vlc_ml_instance_get(player);
     if (!ml)
@@ -203,7 +221,8 @@ vlc_player_UpdateMLStates(vlc_player_t *player, struct vlc_player_input* input)
     assert(media->i_type != VLC_ML_MEDIA_TYPE_UNKNOWN);
 
     if ( var_GetBool( input->thread, "save-recentplay" ) )
-        vlc_ml_media_update_progress( ml, media->i_id, input->position );
+        vlc_ml_media_update_progress( ml, media->i_id,
+            var_InheritBool(input->thread,"save-playback-position") ? input->position : 0.0 );
 
     /* If the value changed during the playback, update it in the medialibrary.
      * If not, set each state to their "unset" values, so that they aren't saved

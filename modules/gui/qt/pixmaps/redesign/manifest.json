@@ -163,6 +163,102 @@
       "sha256": "7b226c722b761074602b5890394b45cfda00bacfc94b3d93ac2317c3bf7cf91e"
     },
     {
+      "id": "1803:2965",
+      "name": "name=preferences, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-general-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "4aeceefdaa896474772fe061338623a3f381ace11653a5fb1a049b7020e4f15a"
+    },
+    {
+      "id": "1088:4044",
+      "name": "name=interface, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-interface-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "935a2a6645cc4afd8f15331aa654492a120da71b27839892e86893008574e819"
+    },
+    {
+      "id": "3050:10424",
+      "name": "name=privacy, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-privacy-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "a7886c83674c6f9324cebad4939d292a87d69880a2927099c34ddb03f35808d3"
+    },
+    {
+      "id": "1089:4464",
+      "name": "name=hotkeys, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-controls-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "3b15837935687424e01ea2bdc4c5604934f8cb99787107c9375f0d4c0269d39b"
+    },
+    {
+      "id": "3180:17978",
+      "name": "name=playback, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-playback-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "5f1d742bf630c50c83d8755cf907c4d00e74b74f7283cc99a8abee4b94c5d531"
+    },
+    {
+      "id": "1102:5055",
+      "name": "name=video, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-video-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "432c1c49a66120ca4ce9b22b8115207d125afe72120d8475592a01483b64545e"
+    },
+    {
+      "id": "496:2439",
+      "name": "name=audio, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-audio-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "16870771c286d83076f5ed41cb15069cbdadb8c06eac70efeac01a8fc5f75c83"
+    },
+    {
+      "id": "467:497",
+      "name": "name=subtitles, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-subtitles-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "88e2efb93fe084f3d5801df87f94fae6546ca6211dbac272596bcd271eb540f0"
+    },
+    {
+      "id": "87:1031",
+      "name": "name=folder, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-library-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "a3013f32a82459c394b7724b74d749bbec909624d1d219057e1f34edd1ff5c30"
+    },
+    {
+      "id": "477:1202",
+      "name": "name=streaming, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-network-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "600a64ab51fa4e9070b0efbab42b256e18efd9ca99c89e2ab83718c099462bfd"
+    },
+    {
+      "id": "6571:16751",
+      "name": "name=record, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-recording-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "0f24103e924058a698610d0f7abb9b7c586bf0d199f2e2b4c1e940463a2d9106"
+    },
+    {
+      "id": "2516:9375",
+      "name": "name=plugins, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "settings-extensions-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "41ded735a1a0606a2046319a8e7e7f31ba58a4ef3d2a6ad231a4ced89e75dcda"
+    },
+    {
       "id": "45:18",
       "name": "name=previous, direction=default, state=default, value=default, EQ=default, two-tone=no",
       "filename": "previous.svg",

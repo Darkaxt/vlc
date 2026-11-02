@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Templates as T
 import VLC.Util
 import VLC.Player
+import VLC.MainInterface
 
 Item {
     id: analysis
@@ -158,6 +159,7 @@ Item {
     }
     HoverHandler {
         id: hover
+        enabled: MainCtx.seekPreviewEnabled
         onHoveredChanged: {
             if (hovered) { analysis.hoverPosition = Math.max(0, Math.min(1, point.position.x / analysis.width)); analysis.positionPreview(); preview.open(); MediaAnalysis.requestPreview(analysis.hoverPosition) }
             else { preview.close(); MediaAnalysis.hidePreview() }

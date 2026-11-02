@@ -329,6 +329,12 @@ static const char *const compositor_vlc[] = {
 #endif
     "dummy"
 };
+static const int controls_visibility_values[] = {0,1,2};
+static const char *const controls_visibility_labels[] = {N_("In fullscreen only"),N_("Always"),N_("Never")};
+static const int double_click_values[] = {0,1,2};
+static const char *const double_click_labels[] = {N_("Toggle fullscreen"),N_("Play / pause"),N_("Do nothing")};
+static const int process_priority_values[] = {0,1,2,3,4};
+static const char *const process_priority_labels[] = {N_("Normal"),N_("Idle"),N_("Below normal"),N_("Above normal"),N_("High")};
 static const char *const compositor_user[] = {
     N_("Automatic"),
 #ifdef _WIN32
@@ -431,6 +437,24 @@ vlc_module_begin ()
                nullptr )
 
     add_bool( "qt-pin-controls", false, QT_PIN_CONTROLS_TEXT, QT_PIN_CONTROLS_LONGTEXT )
+    add_bool("qt-remember-window",true,N_("Remember window size and position"),
+             N_("Restore the saved main-window placement at startup. Existing saved geometry is retained when this is disabled."))
+    add_integer("qt-controls-visibility",0,N_("Auto-hide the controls"),nullptr)
+        change_integer_list(controls_visibility_values,controls_visibility_labels)
+    add_integer_with_range("qt-notification-duration",3000,0,10000,N_("Track popup duration (milliseconds)"),
+             N_("Requested system-tray notification duration. The operating system may apply its own notification policy."))
+    add_bool("qt-audio-cover-art",true,N_("Show cover art while playing audio"),nullptr)
+    add_bool("qt-visualization-fit",false,N_("Match visualization size to the window"),
+             N_("Use the current player dimensions when starting a visualization. Existing custom dimensions are retained; resizing an active visualization scales its picture normally."))
+    add_integer("qt-double-click-action",0,N_("Double click on the video"),nullptr)
+        change_integer_list(double_click_values,double_click_labels)
+    add_bool("qt-reverse-wheel",false,N_("Reverse scroll direction"),N_("Reverse playback wheel gestures, including horizontal scrolling."))
+    add_bool("qt-seek-preview",true,N_("Show thumbnail while scrubbing"),nullptr)
+    add_bool("qt-cast-discovery",true,N_("Discover cast devices"),N_("Allow renderer discovery when opening the casting device list."))
+#ifdef _WIN32
+    add_integer("qt-process-priority",0,N_("Process priority"),N_("Applied when VLC starts. High-priority playback takes precedence over this selection."))
+        change_integer_list(process_priority_values,process_priority_labels)
+#endif
 
 
     add_obsolete_bool( "qt-advanced-pref" ) /* since 4.0.0 */
@@ -609,6 +633,15 @@ static void *ThreadCleanup( qt_intf_t *p_intf, CleanupReason cleanupReason );
 /* Open Interface */
 static int OpenInternal( qt_intf_t *p_intf )
 {
+#ifdef _WIN32
+    if (!var_InheritBool(p_intf,"high-priority"))
+    {
+        const DWORD priorities[] = {NORMAL_PRIORITY_CLASS,IDLE_PRIORITY_CLASS,BELOW_NORMAL_PRIORITY_CLASS,ABOVE_NORMAL_PRIORITY_CLASS,HIGH_PRIORITY_CLASS};
+        const int selection = var_InheritInteger(p_intf,"qt-process-priority");
+        if (selection >= 0 && selection < 5 && !SetPriorityClass(GetCurrentProcess(),priorities[selection]))
+            msg_Warn(p_intf,"Cannot set requested process priority: %lu",GetLastError());
+    }
+#endif
 #ifndef X_DISPLAY_MISSING
     if (!vlc_xlib_init(&p_intf->obj))
         return VLC_EGENERIC;

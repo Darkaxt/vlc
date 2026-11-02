@@ -72,6 +72,7 @@ public slots:
 
 private:
     QPoint m_scrollAmount = {};
+    bool m_reversed = false;
     Qt::KeyboardModifiers m_modifiers = {};
     Qt::MouseButtons m_buttons = {};
 };

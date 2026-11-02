@@ -17,6 +17,12 @@ export const icons = [
   ['2139:8985', 'settings-info'], ['1803:2957', 'settings-general'], ['999:4960', 'settings-interface'],
   ['3046:10386', 'settings-privacy'], ['1089:4450', 'settings-controls'],
   ['2115:7482', 'settings-recording'], ['2516:9369', 'settings-extensions'],
+  ['1803:2965', 'settings-general-active'], ['1088:4044', 'settings-interface-active'],
+  ['3050:10424', 'settings-privacy-active'], ['1089:4464', 'settings-controls-active'],
+  ['3180:17978', 'settings-playback-active'], ['1102:5055', 'settings-video-active'],
+  ['496:2439', 'settings-audio-active'], ['467:497', 'settings-subtitles-active'],
+  ['87:1031', 'settings-library-active'], ['477:1202', 'settings-network-active'],
+  ['6571:16751', 'settings-recording-active'], ['2516:9375', 'settings-extensions-active'],
   ['45:18', 'previous'], ['45:12', 'next'], ['44:419', 'play'],
   ['44:427', 'pause'], ['42:398', 'subtitles'], ['44:407', 'audio'],
   ['217:191', 'queue'], ['182:179', 'volume'], ['182:198', 'muted'],
@@ -74,7 +80,7 @@ export function extractPlayerAssets(destination) {
   const bytes = fs.readFileSync(source);
   const decoded = decode(bytes);
   resolveStyleReferences(decoded.document);
-  const { document } = expandSelection(decoded.document, icons.map(([key]) => key));
+  const { document } = expandSelection(decoded.document, [...new Set(icons.map(([key]) => key))]);
   const nodes = new Map(document.nodeChanges.map(n => [id(n.guid), n]));
   const children = new Map();
   for (const node of nodes.values()) {

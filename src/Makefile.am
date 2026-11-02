@@ -58,6 +58,8 @@ pluginsinclude_HEADERS.h = \
 	../include/vlc_frame.h \
 	../include/vlc_fs.h \
 	../include/vlc_gcrypt.h \
+	../include/vlc_history.h \
+	../include/vlc_saved_options.h \
 	../include/vlc_hash.h \
 	../include/vlc_http.h \
 	../include/vlc_httpd.h \

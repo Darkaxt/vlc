@@ -10,7 +10,6 @@ import VLC.Player
 import VLC.Dialogs
 import VLC.MediaLibrary
 import VLC.Widgets as Widgets
-import VLC.Menus as Menus
 import VLC.Util
 
 T.Pane {
@@ -19,8 +18,8 @@ T.Pane {
     property bool showCSD:false
     property bool libraryContext:false
     property var checkedControls:({})
-    readonly property var activeControls:Object.assign({},checkedControls,{more:mainMenu.shown||legacyMenu.shown||!!checkedControls.more})
-    readonly property bool menuOpen:mainMenu.shown||legacyMenu.shown||PlayerCustomization.editing
+    readonly property var activeControls:Object.assign({},checkedControls,{more:mainMenu.shown||!!checkedControls.more})
+    readonly property bool menuOpen:mainMenu.shown||PlayerCustomization.editing
     signal backRequested()
     signal browseRequested()
     signal browseFolderRequested()
@@ -28,7 +27,7 @@ T.Pane {
     signal hideChromeRequested()
     signal actionRequested(string key,var invoker)
     signal forceUnlock()
-    onForceUnlock:{mainMenu.close();legacyMenu.close()}
+    onForceUnlock:mainMenu.close()
     padding:0;implicitHeight:PlayerStyle.px(40);hoverEnabled:true;enabled:visible
     Accessible.name:qsTr("Player title bar");AccessibleCompat.id:"playerTopBar"
     background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(50);color:PlayerStyle.chrome}
@@ -215,17 +214,10 @@ T.Pane {
         MenuRow { text: qsTr("Customize Player"); glyph: "customize"; onTriggered: { MainCtx.playerView=true;PlayerCustomization.begin() } }
         MenuRow { text: qsTr("Settings"); glyph: "settings"; shortcutText: "Ctrl + P"; AccessibleCompat.id: "mainMenuGlobalSettings"; onTriggered: DialogsProvider.prefsDialog() }
         MenuRow { text: qsTr("About VLC"); glyph: "info"; shortcutText: "Shift + F1"; onTriggered: DialogsProvider.aboutDialog() }
-        MenuRow {
-            text: qsTr("More VLC commands…")
-            AccessibleCompat.id: "mainMenuMoreCommands"
-            implicitHeight: PlayerStyle.px(32)
-            onTriggered: legacyMenu.popup(header.mapToGlobal(mainMenu.x,header.height))
-        }
         onAboutToShow: {
             // Menu-generated parent rows keep the same original icon treatment.
             itemAt(6).glyph="recent"
             itemAt(8).glyph="profile"
         }
     }
-    Menus.QmlGlobalMenu{id:legacyMenu;ctx:MainCtx;playerChromeCommand:true;onHidePlayerChromeRequested:header.hideChromeRequested()}
 }

@@ -55,6 +55,8 @@ check_PROGRAMS = \
 	test_src_clock_start \
 	test_src_misc_ancillary \
 	test_src_misc_variables \
+	test_src_misc_history \
+	test_src_misc_saved_options \
 	test_src_input_stream \
 	test_src_input_stream_fifo \
 	test_src_preparser_cmp_internal_external \
@@ -242,6 +244,10 @@ test_src_misc_ancillary_SOURCES = src/misc/ancillary.c
 test_src_misc_ancillary_LDADD = $(LIBVLCCORE) $(LIBVLC)
 test_src_misc_variables_SOURCES = src/misc/variables.c
 test_src_misc_variables_LDADD = $(LIBVLCCORE) $(LIBVLC)
+test_src_misc_history_SOURCES = src/misc/history.c
+test_src_misc_history_LDADD =
+test_src_misc_saved_options_SOURCES = src/misc/saved_options.c
+test_src_misc_saved_options_LDADD =
 test_src_config_chain_SOURCES = src/config/chain.c
 test_src_config_chain_LDADD = $(LIBVLCCORE)
 test_src_crypto_update_SOURCES = src/crypto/update.c

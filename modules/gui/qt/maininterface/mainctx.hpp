@@ -146,6 +146,12 @@ class MainCtx : public QObject
     Q_PROPERTY(float safeArea READ safeArea NOTIFY safeAreaChanged FINAL)
     Q_PROPERTY(VideoSurfaceProvider* videoSurfaceProvider READ getVideoSurfaceProvider WRITE setVideoSurfaceProvider NOTIFY hasEmbededVideoChanged FINAL)
     Q_PROPERTY(int mouseHideTimeout READ mouseHideTimeout NOTIFY mouseHideTimeoutChanged FINAL)
+    Q_PROPERTY(int controlsVisibility READ controlsVisibility NOTIFY playbackPreferencesChanged FINAL)
+    Q_PROPERTY(int fullscreenControlsSensitivity READ fullscreenControlsSensitivity NOTIFY playbackPreferencesChanged FINAL)
+    Q_PROPERTY(bool playlistTree READ playlistTree NOTIFY playbackPreferencesChanged FINAL)
+    Q_PROPERTY(bool showFullscreenControls READ showFullscreenControls NOTIFY playbackPreferencesChanged FINAL)
+    Q_PROPERTY(bool audioCoverArt READ audioCoverArt NOTIFY playbackPreferencesChanged FINAL)
+    Q_PROPERTY(bool seekPreviewEnabled READ seekPreviewEnabled NOTIFY playbackPreferencesChanged FINAL)
     Q_PROPERTY(bool albumSections READ albumSections WRITE setAlbumSections NOTIFY albumSectionsChanged FINAL)
     Q_PROPERTY(bool lyricsMode READ lyricsMode WRITE setLyricsMode NOTIFY lyricsModeChanged FINAL)
     Q_PROPERTY(bool usingTouch READ usingTouch NOTIFY usingTouchChanged FINAL)
@@ -320,6 +326,12 @@ public:
     void setVideoSurfaceProvider(VideoSurfaceProvider* videoSurfaceProvider);
 
     int mouseHideTimeout() const { return m_mouseHideTimeout; }
+    int controlsVisibility() const { return config_GetInt("qt-controls-visibility"); }
+    int fullscreenControlsSensitivity() const { return config_GetInt("qt-fs-sensitivity"); }
+    bool playlistTree() const { return config_GetInt("playlist-tree"); }
+    bool showFullscreenControls() const { return config_GetInt("qt-fs-controller"); }
+    bool audioCoverArt() const { return config_GetInt("qt-audio-cover-art"); }
+    bool seekPreviewEnabled() const { return config_GetInt("qt-seek-preview"); }
 
     bool usingTouch() const { return m_usingTouch; }
 
@@ -696,6 +708,7 @@ signals:
     void safeAreaChanged();
 
     void mouseHideTimeoutChanged();
+    void playbackPreferencesChanged();
 
     void navBoxToggled();
 

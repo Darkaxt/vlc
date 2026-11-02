@@ -20,6 +20,8 @@
 #include <QSGRectangleNode>
 #include <QThreadPool>
 #include <vlc_window.h>
+#include <vlc_actions.h>
+#include <vlc_mouse.h>
 
 #include <QQuickRenderControl>
 #ifdef QT_DECLARATIVE_PRIVATE
@@ -84,6 +86,18 @@ void VideoSurfaceProvider::onMouseReleased(int vlcButton)
 
 void VideoSurfaceProvider::onMouseDoubleClick(int vlcButton)
 {
+    if (vlcButton == MOUSE_BUTTON_LEFT && config_FindConfig("qt-double-click-action"))
+    {
+        const auto action = config_GetInt("qt-double-click-action");
+        // Qt delivers the second press as MouseButtonDblClick. Preserve that
+        // press/release pair when replacing fullscreen, so native single-click
+        // pause accounting remains balanced across a double click.
+        if (action != 0 && m_voutWindow)
+            vlc_window_ReportMousePressed(m_voutWindow,vlcButton);
+        if (action == 1 && m_voutWindow)
+            var_SetInteger(vlc_object_instance(m_voutWindow),"key-action",ACTIONID_PLAY_PAUSE);
+        if (action != 0) return;
+    }
     if (m_voutWindow)
         vlc_window_ReportMouseDoubleClick(m_voutWindow, vlcButton);
 }
