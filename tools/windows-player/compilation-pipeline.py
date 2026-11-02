@@ -154,7 +154,7 @@ def main():
         run_pending.write_text(json.dumps(attempt, indent=2) + '\n')
         run_pending.replace(log_root / 'attempt.json')
 
-    environment = dict(os.environ, JOBS='1', CMAKE_BUILD_PARALLEL_LEVEL='1', CARGO_BUILD_JOBS='1')
+    environment = dict(os.environ, JOBS='1', CMAKE_BUILD_PARALLEL_LEVEL='1', CARGO_BUILD_JOBS='1', PYTHONDONTWRITEBYTECODE='1')
     if full or current:
         environment['VLC_PLAYER_UPSTREAM_PREFIX'] = '/work/upstream-medialibrary-0.14.1/prefix'
         environment['VLC_PLAYER_UPSTREAM_CODEC_PREFIX'] = '/work/upstream-codecs-1.1.1/prefix'

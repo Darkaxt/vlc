@@ -2,6 +2,7 @@
 # Incremental player build after the pinned Windows baseline and SDK repairs.
 # Finish consumers of the destination runtime before replacing its plugins.
 set -eu
+export PYTHONDONTWRITEBYTECODE=1
 mode=${1:-normal}
 source_root=${2:-/work/src}
 build_root=${3:-/work/build/win64}
@@ -48,7 +49,7 @@ fi
 # These generated headers belong to src's Automake graph, not an include
 # subdirectory Makefile. Explicit targets also support the first cold build.
 make -C "$build_root/src" -j1 ../include/vlc_about.h fourcc_tables.h stamp-revision
-make -C "$build_root/compat" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk"
+make -C "$build_root/compat" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" all-am
 make -C "$build_root/src" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" libvlccore.la
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/libvlccore.dll" "$build_root/src/.libs/libvlccore.dll"
@@ -123,8 +124,9 @@ if test "$compile_cache" = 0; then
     printf 'Player compile caches omitted: %s\n' "$VLC_PLAYER_COMPILE_CACHE_REASON"
 fi
 make -C "$build_root/modules/gui/qt" -j1 -f Makefile \
+    -f "$source_root/tools/windows-player/qt-objects.mk" \
     -f "$source_root/tools/windows-player/release-profile-objects.mk" \
-    PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all
+    PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" qt-player-objects all-am
 if test "$plugin_scope" = full; then
     # All configured modules use this source/header/core cohort after an ABI change.
     if test "$compile_cache" = 1; then
