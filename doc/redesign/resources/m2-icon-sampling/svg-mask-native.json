@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "qt_runtime": "6.8.3",
+  "qt_headers": "6.8.3",
+  "native_probe_sha256": "f820f16ed308158ef70c181ad71f68befb5deeedadf9f3056bc609d8d208aba2",
+  "same_retained_player_sdk": true,
+  "no_window_created_or_input_injected": true,
+  "video_original_ignored_clip_bounds_at_384": [
+    24,
+    40,
+    360,
+    344
+  ],
+  "video_supported_mask_bounds_at_384": [
+    48,
+    64,
+    336,
+    320
+  ],
+  "video_mask_to_unclipped_alpha_coverage": 0.5357045081427345,
+  "open_radio_waves_pixel_identical": true,
+  "sidebar_divider_preserved": {
+    "before": [
+      [
+        24,
+        71
+      ],
+      [
+        96,
+        127
+      ],
+      [
+        312,
+        359
+      ]
+    ],
+    "after": [
+      [
+        48,
+        71
+      ],
+      [
+        96,
+        127
+      ],
+      [
+        312,
+        335
+      ]
+    ]
+  },
+  "scope": "Native SVG compatibility diagnostic; full player/menu acceptance remains required.",
+  "visual_review": "Original curved geometry retained; complete divider and radio waves confirmed in the native comparison. Main-player/menu comparison still required.",
+  "source_archive_sha256": "86637a31ad4ffbcaddc89244e0588df2c0cbe0954a6fe87c7bf5b6a65345e49e",
+  "comparison_sha256": "6455332f60cbe15d79665da5b4cec5522b3a9bebebe7270898b68d356ea04863"
+}

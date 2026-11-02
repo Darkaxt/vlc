@@ -10,17 +10,21 @@ test('reference sidebar uses the outlined default component and colored menu var
   assert.deepEqual(icons.find(([,name])=>name==='menu-file'),['2461:9644','menu-file',true]);
 });
 
-test('inside-stroke icons keep Figma clipping instead of doubling their visible outline', async () => {
+test('inside-stroke icons preserve Figma contours with Qt-compatible masks', async () => {
   const {extractPlayerAssets}=await import('./player-assets.mjs');
   const output=process.env.VLC_DESIGN_TEST_OUTPUT;
   assert.ok(output);
   extractPlayerAssets(output);
   for(const name of ['video','sidebar']) {
     const svg=fs.readFileSync(path.join(output,`${name}.svg`),'utf8');
-    assert.match(svg,/<clipPath id="inside-\d+"><path clip-rule="nonzero" d="M /);
-    assert.match(svg,/<g clip-path="url\(#inside-\d+\)">/);
+    assert.match(svg,/<mask id="inside-\d+" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"/);
+    assert.match(svg,/<path fill="white" fill-rule="nonzero" d="M /);
+    assert.match(svg,/<g mask="url\(#inside-\d+\)">/);
+    assert.doesNotMatch(svg,/<clipPath|clip-path=/,'Qt 6.8 ignores clipPath');
   }
   const colored=fs.readFileSync(path.join(output,'menu-file.svg'),'utf8');
+  const network=fs.readFileSync(path.join(output,'menu-network.svg'),'utf8');
+  assert.doesNotMatch(network,/<mask /,'Open radio-wave contours must retain their complete saved outlines');
   assert.match(colored,/fill="rgb\(171,99,20\)"/,'the original file component orange detail is not flattened to a white mask');
   assert.match(colored,/fill="rgb\(143,143,143\)"/,'the original neutral stroke remains separate from the orange');
 });

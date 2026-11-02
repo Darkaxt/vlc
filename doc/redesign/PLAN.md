@@ -7,9 +7,12 @@ differences. One explicitly requested bounded agent inspected the live prototype
 and restored/released its browser workflow. Its audit is diagnostic; no1.1.3
 native visual acceptance is claimed. Preserve required engine switching with the
 plain VLC/MPV labels, custom layouts and all existing functional requirements.
-The optimized application cohort is already compiling in ticket159; retain its
-original session and useful objects. Integrate the coherent reference corrections
-before the final normal package and release. M2 remains the only ACTIVE stage.
+The optimized objects from original159/161 are retained. Their obsolete
+invocations were intentionally stopped with empty process groups and zero OOM
+events. A native SVG diagnostic against the retained Qt6.8.3 now verifies
+supported masks for closed contours and preservation of open waves/dividers.
+Bind the cohesive corrected assets and continue the existing player graph before
+full native acceptance and final normal release. M2 remains the only ACTIVE stage.
 
 Object-level R78 diagnostics found a remaining release-profile blocker: generated
 QML cache units do not include config.h, so changing NDEBUG/compiler flags left
@@ -54,9 +57,10 @@ claiming the installed UI is fixed; compilation was still stopped at this checkp
 [Controlled Qt pixel comparison](resources/m2-icon-sampling/comparison.png) and
 [diagnosis](resources/m2-icon-sampling/diagnosis.json) retain the100/125/150/200%
 Qt6.8.3/D3D11 evidence and actual100% screenshot fit. Edited QML parses with
-Qt6.8.3; the retained application's verified SDK headers identify Qt6.8.0.
-The isolated comparison is diagnostic evidence, and acceptance must use the
-actual Qt6.8.0 player. Full-player verification is still pending. The
+Qt6.8.3. Native qVersion and target qconfig.h now also confirm the retained SDK is
+Qt6.8.3; the earlier6.8.0 note incorrectly treated its separate ABI header as the
+runtime version. The isolated comparison remains diagnostic evidence, and
+acceptance must use the actual player. Full-player verification is pending. The
 temporary Qt diagnostic runtime has been removed through reviewed cleanup
 `7056a3620bee37f0d8b19b35170e3fe3`; compact retained evidence is358KiB.
 Source `a9681b237f6eab2b9b59eff8bfbaab32fcdbca0d` is an intermediate, unverified

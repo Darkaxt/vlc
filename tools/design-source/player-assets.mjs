@@ -115,18 +115,29 @@ export function extractPlayerAssets(destination) {
         const opacity = (paint.opacity ?? 1) * (paint.color?.a ?? 1);
         outlined.push(`<path fill="${paintColor(paint)}" fill-opacity="${opacity}" fill-rule="${geometryPath.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`);
       }
-      if (geometry === 'strokeGeometry' && node.strokeAlign === 'INSIDE' && outlined.length) {
+      const contours = (node.fillGeometry ?? []).map(g => {
+        const blob = document.blobs[g.commandsBlob - (document.blobBaseIndex ?? 0)];
+        if (!blob?.bytes) throw new Error('Missing saved fill contour');
+        return { windingRule: g.windingRule, commands: pathCommands(blob.bytes) };
+      });
+      // Open strokes have no fill interior. Their saved stroke outline is
+      // already the centered result; masking it erases dividers/radio waves.
+      const closedInterior = contours.length>0 && node.size.x>0 && node.size.y>0 && contours.every(({commands}) => {
+        const starts=(commands.match(/(?:^| )M /g)??[]).length;
+        return starts>0 && starts===(commands.match(/(?:^| )Z(?= |$)/g)??[]).length;
+      });
+      if (geometry === 'strokeGeometry' && node.strokeAlign === 'INSIDE' && outlined.length && closedInterior) {
         // Saved inside-stroke outlines straddle their contour. Figma clips
         // them to the fill shape; without that clip their apparent width and
         // bounds double (for example the clapperboard and sidebar outlines).
-        if (!node.fillGeometry?.length) throw new Error(`Inside stroke has no clip contour: ${node.name}`);
         const clip = `inside-${clipSerial++}`;
-        const contours = node.fillGeometry.map(g => {
-          const blob = document.blobs[g.commandsBlob - (document.blobBaseIndex ?? 0)];
-          if (!blob?.bytes) throw new Error('Missing inside-stroke clip geometry');
-          return `<path clip-rule="${g.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`;
+        const maskPaths = contours.map(g => {
+          return `<path fill="white" fill-rule="${g.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${g.commands}"/>`;
         }).join('');
-        paths.push(`<defs><clipPath id="${clip}">${contours}</clipPath></defs><g clip-path="url(#${clip})">${outlined.join('')}</g>`);
+        // Qt SVG 6.8 supports masks, but explicitly does not support clipPath.
+        // Keep the exact original curves and mask the cached outline to its
+        // contour, including a standard 10% mask-region antialiasing gutter.
+        paths.push(`<defs><mask id="${clip}" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="${-node.size.x*0.1}" y="${-node.size.y*0.1}" width="${node.size.x*1.2}" height="${node.size.y*1.2}">${maskPaths}</mask></defs><g mask="url(#${clip})">${outlined.join('')}</g>`);
       } else paths.push(...outlined);
     }
     // Text-bearing S6 icons retain the original outlined glyph blobs too.

@@ -15,10 +15,13 @@ radius and stroke alignment, rather than potentially stale geometry caches.
 M2 restores the default outlined sidebar component `69:814` and the original
 two-tone main-menu and Playback-tab components recorded in the manifest. Their
 neutral/orange paints are retained rather than flattened to a single mask.
-Inside-aligned vector stroke outlines are clipped to their saved fill contours,
-as in Figma; omitting that clipping made outlines extend outside their intended
-bounds. The original path commands and curves are preserved. Native comparison
-against the interactive reference remains required before release.
+Inside-aligned closed vector stroke outlines use their saved fill contours as
+SVG masks, supported by Qt6.8. Open contours keep their saved centered outlines:
+masking those would erase radio waves and the sidebar divider. Qt ignores
+clipPath, so exports must not depend on it. Original commands and curves remain
+unchanged. The retained Qt6.8.3 renderer verified the closed-frame bounds, complete
+open radio waves and divider at24/30/36/48/384px. Full-player comparison with the
+interactive reference remains required before release.
 
 Reproduce with the locked design-source dependencies and
 `node tools/design-source/player-assets.mjs <explicit-output-directory>`.
