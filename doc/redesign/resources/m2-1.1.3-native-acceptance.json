@@ -1,0 +1,476 @@
+{
+  "schema": "vlc_redesign.m2_native_acceptance.v1",
+  "source_commit": "1692f4ebddaa151cf749e666b22f641cb91f532e",
+  "qt_plugin_sha256": "12a3b625265d79fd4df44b54800e12875e457fe93fe2fefd311c7563d8056b8a",
+  "production_tree_sha256": "4a9a42afce5b5b4c7be1daeb684a85cc5f1dece92194d6043e192a44a99db4e3",
+  "verification_helper_sha256": "811658b908853049af9b562dc70a6d4ee8b42f8ef81942f597117aab74acdb4f",
+  "scope": "all",
+  "passed": true,
+  "protected_profiles_unchanged": true,
+  "native_policies": {
+    "cancellation": true,
+    "decoded": [
+      {
+        "cues": [
+          {
+            "end": 2500,
+            "start": 1000,
+            "text": "English first"
+          },
+          {
+            "end": 5500,
+            "start": 4000,
+            "text": "English second"
+          },
+          {
+            "end": 9500,
+            "start": 8000,
+            "text": "English third"
+          }
+        ],
+        "file": "embedded-text.mkv"
+      },
+      {
+        "cues": [
+          {
+            "end": 2500,
+            "start": 1000,
+            "text": "English first"
+          },
+          {
+            "end": 5500,
+            "start": 4000,
+            "text": "English second"
+          },
+          {
+            "end": 9500,
+            "start": 8000,
+            "text": "English third"
+          }
+        ],
+        "file": "embedded-ass.mkv"
+      },
+      {
+        "cues": [
+          {
+            "end": 2500,
+            "start": 1000,
+            "text": "English first"
+          },
+          {
+            "end": 5500,
+            "start": 4000,
+            "text": "English second"
+          },
+          {
+            "end": 9500,
+            "start": 8000,
+            "text": "English third"
+          }
+        ],
+        "file": "embedded-text.mp4"
+      }
+    ],
+    "geometry_cases": 27,
+    "image_limit": true,
+    "passed": true,
+    "real_https_metadata": true,
+    "selected_track_identity": true
+  },
+  "cases": [
+    {
+      "name": "welcome-1",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "restart-empty-1",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "welcome-15",
+      "scale": "1.5",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "restart-empty-15",
+      "scale": "1.5",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "welcome-2",
+      "scale": "2",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "restart-empty-2",
+      "scale": "2",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "skip-empty",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "drop-vlc-wide",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "drop-vlc-portrait",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "drop-vlc-preview-4k-long-gop",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "fixed-size-vlc",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "opt-in-video-size-vlc",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "drop-mpv-wide",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "drop-mpv-portrait",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "drop-mpv-preview-4k-long-gop",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "fixed-size-mpv",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "opt-in-video-size-mpv",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "scaled-video-vlc",
+      "scale": "1.5",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "scaled-video-mpv",
+      "scale": "2",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "timeline-vlc",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "timeline-restart-vlc",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "timeline-mpv",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "timeline-restart-mpv",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "transport-icons-1",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "transport-icons-1.25",
+      "scale": "1.25",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "transport-icons-1.5",
+      "scale": "1.5",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "transport-icons-2",
+      "scale": "2",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "sidebar-transition-vlc",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "sidebar-transition-mpv",
+      "scale": "1",
+      "engine": "mpv",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "updates-first-welcome",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "updates-unavailable",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "updates-malformed",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "updates-current",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "updates-newer",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "updates-real-https",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "figma-player-menus",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "seek-preview",
+      "scale": "1",
+      "engine": "vlc",
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "thumbnail_regression": {
+    "passed": true,
+    "exit_code": 0,
+    "source_commit": "1692f4ebddaa151cf749e666b22f641cb91f532e",
+    "pid": 172644,
+    "desktop": "VLC-S2-d57d3d634347437aa9b77ff06412d0b0",
+    "ssp_dependency": {
+      "source": "D:\\VLC-Redesign\\build\\windows-x64\\toolchain\\usr\\lib\\gcc\\x86_64-w64-mingw32\\14-posix\\libssp-0.dll",
+      "sha256": "5c551800d435481d4f568d3f5790634ce0457195b6601ff6c9b2422780405649",
+      "scope": "Only isolated test executable; application runtime unchanged"
+    },
+    "prior_pre_main_loader_failure_preserved": true,
+    "test_source": {
+      "application_source_commit": "1692f4ebddaa151cf749e666b22f641cb91f532e",
+      "test_source_commit": "6e843b2d373fd0484e961307f00d58b19737fc42",
+      "test_header_sha256": "ddfa4d5fae0a204e249c2c0e2b0b7418f47ce8350b3e050f8974d3b1380bfa0e",
+      "runtime_was_not_rebuilt": true
+    },
+    "test_executable_sha256": "0c37f395c834bdc259801a92789d545ce62037b565fb0c720a4625fc652f5446",
+    "core_sha256": "f94945da8fe55701e6b8c104f3c5721a44ce3c322f540a32d6d06319260e65ab",
+    "assertions_enabled_by_upstream_test_header": true,
+    "execution_kill_deadline_disabled": true,
+    "scope": "Upstream thumbnail time/position/negative/late-track/timeout/cancellation cases",
+    "internal_preparser_exercised": true,
+    "external_preparser_exercised": false,
+    "inactive_desktop_and_no_os_input": true
+  },
+  "visual_review": {
+    "schema": "vlc_redesign.m2_visual_review.v1",
+    "passed": true,
+    "source_commit": "1692f4ebddaa151cf749e666b22f641cb91f532e",
+    "qt_plugin_sha256": "12a3b625265d79fd4df44b54800e12875e457fe93fe2fefd311c7563d8056b8a",
+    "runtime": "Optimized diagnostic player from managed ticket164; final normal delivery still pending.",
+    "authority": "Original editable Figma archive and the inspected live Community prototype; frame6062:13354 for the main menu.",
+    "reviewed_by": "Main agent; actual native captures visually inspected, not inferred from worker reports.",
+    "findings": [
+      "Twelve primary main-menu actions follow the reference order and original gray/orange artwork, equal48px rows, aligned shortcut column, divider, rounded375px card and bounded titlebar anchor. More VLC commands is a separate compact preservation entry.",
+      "Recent/Profile open and dismiss; keyboard Tab/Space and submenu navigation work; Settings opens actual Global Settings from both player and library. Native dialog appearance retains the existing measured1048x865 S5 contract and live option values.",
+      "Playback uses the original outlined orange play/clapperboard/audio/subtitle tabs, reference core row order, aligned outlined timer/visualizer selectors, editable speed and tick slider. Required VLC/MPV and waveform/metadata remain below the reference core.",
+      "The panel toggle is the original thin outline; elapsed/duration use HH:MM:SS; bottom actions follow volume, audio, subtitles, tools, queue. Sidebar section chevrons align at the right edge.",
+      "Native transport controls and main menu inspected at100/125/150/200 percent. Original rounded transport paths are unchanged; native-DPR raster requests use no second linear filter or mipmaps. No extra bitmap enlargement was introduced."
+    ],
+    "evidence": [
+      {
+        "path": "doc/redesign/resources/m2-1.1.3/main-menu.png",
+        "sha256": "cc26bd5c266b1387f84de6809536d0813770cb76eaebb93617035936b3305287",
+        "raw_capture": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\menus-native-05\\figma-player-menus\\evidence\\552dad3fd6af4686b2fb76211f568e6f.png"
+      },
+      {
+        "path": "doc/redesign/resources/m2-1.1.3/playback-panel.png",
+        "sha256": "7dccddc3de6d6286511f4996f1092420b78f2154c76b9665ae6a1360010ea18d",
+        "raw_capture": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\menus-native-05\\figma-player-menus\\evidence\\e4355c82bb344b6690c6921e819c97b4.png"
+      },
+      {
+        "path": "doc/redesign/resources/m2-1.1.3/global-settings.png",
+        "sha256": "b6fc8ce918bae766cac54ade04101123f732cff423237985779e5334e808d598",
+        "raw_capture": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\menus-native-05\\figma-player-menus\\evidence\\815f1f94ea0049f69737dc66cdcbf0a0-widget-0.png"
+      },
+      {
+        "path": "doc/redesign/resources/m2-1.1.3/library-menu.png",
+        "sha256": "27580d46c9e1196c47d4014a6d7948ca3255eb2bcaba668db8bc3c4e2f5d4d8f",
+        "raw_capture": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\menus-native-05\\figma-player-menus\\evidence\\ca8992edf3f54577b2f4b565e2a9349a.png"
+      },
+      {
+        "path": "doc/redesign/resources/m2-1.1.3/controls-dpi.png",
+        "sha256": "a83ee8551b89f6039636fd0ca68eb97a34fcde17d62f350382da24a6f2d09344",
+        "scope": "Unscaled physical-pixel crops of native play/pause/previous/next captures at100/125/150/200 percent; synthetic inputs only."
+      }
+    ],
+    "limits": [
+      "These Qt Quick captures exclude the separately composed native video surface. Normal MPV Present(S_OK), EOF and teardown are checked separately at final delivery.",
+      "The reference media and current option values legitimately differ. No pixel-identical text rasterization, platform blur-kernel or compositor equivalence is claimed."
+    ]
+  },
+  "evidence_reconciliation": {
+    "evidence_kind": "Reconciled complete workflows, with immutable raw receipts",
+    "constituent_reports": [
+      {
+        "path": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\integrated-native-02\\result.json",
+        "sha256": "2df0a6721deb01875b1f827a82253899783ab2d7821dac0f98217f912b5c3277",
+        "scope": "all",
+        "verification_helper_sha256": "9cf88a1d6f057b68978757c7b3f7a82ad42fcd2c3ba5c5c2f890d3fd18f26d65"
+      },
+      {
+        "path": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\menus-native-05\\result.json",
+        "sha256": "8b5fee2f22c402ab4e446f65b12ffc779c23fbd8dc9459e2180cc2e607ee3a95",
+        "scope": "menus",
+        "verification_helper_sha256": "811658b908853049af9b562dc70a6d4ee8b42f8ef81942f597117aab74acdb4f"
+      },
+      {
+        "path": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\preview-native-05\\result.json",
+        "sha256": "bba01558a7d8e0fc58781b2079e377552b74261746da491f20dd8b5de56cbf98",
+        "scope": "preview",
+        "verification_helper_sha256": "fbb79fba8d20ae13a2e0937c36974f4bbd81c12a47b179d4ebb9c5394f9b9863"
+      }
+    ],
+    "host_test_repairs": {
+      "menu": "Test now traverses Tab focus before Space, uses valid JSON 0.75, and checks direct Global Settings from both player and library.",
+      "preview": "Ready is an enum string; dark menu content is checked for pixel variation; completion follows requested previewPosition, not an already-empty status; replacement accepts an already-published new revision and verifies its actual blue pixels.",
+      "unaffected_workflows": "AST-identical outside menus/preview compared with the helper recorded by the full pass. Production bytes and runtime Qt hash identical in every run.",
+      "preview_helper_applicability": "Only menus() changed after the successful preview run; preview() and its dependencies remain unchanged."
+    }
+  },
+  "preview_measurements": {
+    "input_sha256": "e8c99032bc2a2fff7041f7b69d1e7d2cc4ac7d0ad311ffd083b20b75880ad7a6",
+    "cold_decode_ms": 77.1686,
+    "cached_publication_ms": 0.0005,
+    "actual_frame_mean_difference": 11.85587962962963,
+    "new_input_preview_rgb": [
+      30,
+      63,
+      127
+    ]
+  },
+  "generated_qml_objects": {
+    "passed": true,
+    "source_commit": "1692f4ebddaa151cf749e666b22f641cb91f532e",
+    "scope": "Current generated Qt/QML application archives; retained external SDK libraries are excluded",
+    "archives": [
+      "libqml_module_dialogs.a",
+      "libqml_module_maininterface.a",
+      "libqml_module_medialibrary.a",
+      "libqml_module_menus.a",
+      "libqml_module_network.a",
+      "libqml_module_player.a",
+      "libqml_module_playercontrols.a",
+      "libqml_module_playlist.a",
+      "libqml_module_style.a",
+      "libqml_module_util.a",
+      "libqml_module_widgets.a"
+    ],
+    "object_count": 303,
+    "objects_with_debug_sections": []
+  },
+  "normal_release_delivery": "Pending; M2 remains ACTIVE"
+}

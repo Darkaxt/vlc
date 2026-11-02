@@ -444,7 +444,7 @@ def playback():
         finally: fixed.close()
         opted=Case('opt-in-video-size-'+engine,engine=engine,extra=['--qt-video-autoresize'])
         try:
-            opted.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
+            opted.inspect('library-ready','snapshot','--await-target','compactLibrary','--await-property','ready','--await-value','true')
             drop_fixture(opted,'opt-in-wide-video','wide.mkv')
             resized=opted.inspect('opt-in-main-view','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
             assert_window(opted,resized)
@@ -453,7 +453,7 @@ def playback():
     for engine,scale in (('vlc','1.5'),('mpv','2')):
         case=Case('scaled-video-'+engine,engine=engine,scale=scale)
         try:
-            case.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
+            case.inspect('library-ready','snapshot','--await-target','compactLibrary','--await-property','ready','--await-value','true')
             drop_fixture(case,'scaled-video','wide.mkv')
             result=case.inspect('scaled-main-view','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
             try:assert_window(case,result)
@@ -467,6 +467,7 @@ def playback():
 
 def subtitle_menu(case, label, enabled):
     case.inspect(label + '-open','click','--name','Main menu')
+    case.click(label + '-legacy','mainMenuMoreCommands')
     result=case.inspect(label + '-submenu', 'widget_click', '--menu-action', 'Subtitle', '--capture')
     actions=[action for widget in result['widgets'] for action in widget.get('actions', [])]
     tracks=[action for action in actions if action['text'].replace('&','').split('\t')[0]=='Sub Track']
@@ -601,6 +602,7 @@ def subtitles(verify_navigation=True, engines=('vlc','mpv')):
             assert len(service(external)['cues'])==3
             subtitle_menu(case,'external-track-menu',True)
             case.inspect('native-add-subtitle-menu','click','--name','Main menu')
+            case.click('native-add-subtitle-legacy','mainMenuMoreCommands')
             case.inspect('native-subtitle-submenu','widget_click','--menu-action','Subtitle')
             case.inspect('native-add-subtitle-dialog','widget_click','--menu-action','Add Subtitle File...')
             case.native('native-file-name-focus','fileNameEdit')
@@ -645,14 +647,18 @@ def preview():
         case.record['input_sha256']=hashlib.file_digest(media.open('rb'),'sha256').hexdigest()
         def popup_pixels(snapshot):
             frame=nodes(snapshot,'seekPreviewImage')
-            assert len(frame)==1 and frame[0]['status']==1
+            assert len(frame)==1 and frame[0]['status']=='Ready', frame
             picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')).convert('RGB')
             ratio=picture.width/snapshot['window']['width']
             item=frame[0]
             bounds=tuple(round(value*ratio) for value in (item['x'],item['y'],item['x']+item['width'],item['y']+item['height']))
             pixels=picture.crop(bounds).resize((160,90)).convert('RGB')
             values=list(pixels.getdata())
-            assert sum(max(rgb)>24 for rgb in values)>len(values)*.1, 'Rendered popup is blank/black'
+            # The reported 5:11 frame is a dark menu on a mostly black video.
+            # Reject blank output from luminance variation, not an assumption
+            # that a large part of every legitimate frame must be bright.
+            levels=[max(rgb) for rgb in values]
+            assert max(levels)-min(levels)>32 and len(set(levels))>32, 'Rendered popup is blank/black'
             return pixels
         cold=case.inspect('cold-preview','move','--target','progressSlider','--fraction-x',position,
             '--await-service','redesignMediaAnalysis','--await-property','previewStatus','--await-value','""','--capture')
@@ -670,7 +676,8 @@ def preview():
         assert popup_pixels(warm).tobytes()==first_pixels.tobytes(), 'Cached rendered frame changed'
         if args.preview_media:
             second=case.inspect('distinct-actual-frame','move','--target','progressSlider','--fraction-x',693/paused['core']['length_seconds'],
-                '--await-service','redesignMediaAnalysis','--await-property','previewStatus','--await-value','""','--capture')
+                '--await-service','redesignMediaAnalysis','--await-property','previewPosition',
+                '--await-value',693/paused['core']['length_seconds'],'--await-tolerance','0.001','--capture')
             second_pixels=popup_pixels(second)
             difference=sum(abs(a-b) for a,b in zip(first_pixels.tobytes(),second_pixels.tobytes()))/len(first_pixels.tobytes())
             assert difference>10, ('Different source positions returned the same/incorrect frame',difference)
@@ -681,10 +688,13 @@ def preview():
         case.record['latest_preview']=service(latest,'redesignMediaAnalysis')
         assert abs(case.record['latest_preview']['previewPosition']-.9)<.02
         cleared=drop_fixture(case,'change-preview-input','control.mkv')
-        assert not service(cleared,'redesignMediaAnalysis')['previewSource'], 'Previous input preview survived invalidation'
+        # A stationary hover may already request and publish the new input's
+        # frame while the drop finishes. Its revision must replace the old
+        # input; the actual new blue pixels are checked below.
+        assert service(cleared,'redesignMediaAnalysis')['previewSource']!=case.record['latest_preview']['previewSource'], 'Previous input preview survived invalidation'
         case.inspect('leave-old-preview','move','--target','playButton')
         blue=case.inspect('fresh-input-preview','move','--target','progressSlider','--fraction-x','.55',
-            '--await-service','redesignMediaAnalysis','--await-property','previewStatus','--await-value','""','--capture')
+            '--await-service','redesignMediaAnalysis','--await-property','previewPosition','--await-value','0.55','--await-tolerance','0.001','--capture')
         frame=nodes(blue,'seekPreviewImage')
         assert len(frame)==1
         picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')).convert('RGB')
@@ -710,9 +720,10 @@ def icons():
             extra=(str(fixtures/'control.mkv'),str(fixtures/'embedded-text.mkv')))
         try:
             case.inspect('paused','snapshot','--await-core','state','--await-value','3')
-            middle=case.inspect('middle-item','click','--name','Next')
-            if middle['core']['state']!=3:
-                case.click('pause-middle-item','playButton','--await-core','state','--await-value','3')
+            case.inspect('middle-item','click','--name','Next','--await-core','url',
+                '--await-value',json.dumps((fixtures/'embedded-text.mkv').as_uri()))
+            case.inspect('middle-item-playing','snapshot','--await-core','state','--await-value','2')
+            case.click('pause-middle-item','playButton','--await-core','state','--await-value','3')
             for state in ('play','pause'):
                 case.inspect(state+'-controls','move','--target','playButton')
                 snapshot=case.inspect(state+'-native-sampling','snapshot','--capture')
@@ -723,6 +734,10 @@ def icons():
                 if state=='play':
                     case.click('play-action','playButton','--await-core','state','--await-value','2')
             case.click('pause-action','playButton','--await-core','state','--await-value','3')
+            case.inspect('main-menu-viewport','resize','--width','1280','--height','800')
+            menu=case.inspect('main-menu-native-scale','click','--name','Main menu','--capture')
+            assert nodes(menu,'mainMenuGlobalSettings'), 'Direct Settings entry missing at this display scale'
+            case.inspect('close-main-menu-native-scale','key','--key','0x1000000')
             case.close(True)
         finally: case.close()
 
@@ -757,6 +772,7 @@ def menus():
     """Reference menu, real Settings route and Playback controls as one workflow."""
     case=Case('figma-player-menus',media=fixtures/'control.mkv')
     try:
+        case.inspect('reference-viewport','resize','--width','1280','--height','900')
         snapshot=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
         elapsed=nodes(snapshot,'playerElapsedTime')
         assert len(elapsed)==1 and re.fullmatch(r'\d{2,}:\d{2}:\d{2}',elapsed[0]['text']), elapsed
@@ -778,8 +794,17 @@ def menus():
         assert any(widget['id']=='redesignPreferences' for widget in settings['widgets'])
         assert any(widget['id']=='preferencesHeading' and widget.get('text')=='Global Settings' for widget in settings['widgets'])
         case.native('cancel-global-settings','preferencesCancel')
-        case.inspect('reopen-main-menu','click','--name','Main menu')
-        profile=case.inspect('profile-submenu','click','--name','Profile','--capture')
+        case.inspect('keyboard-main-menu-focus','focus','--name','Main menu')
+        # Accessibility SetFocus uses OtherFocusReason, which intentionally
+        # preserves player hotkeys. Traverse with Tab to establish keyboard
+        # visual focus through the real Qt navigation path before Space.
+        case.inspect('keyboard-main-menu-backtab','key','--key','0x1000002','--modifiers','0x2000000')
+        focused=case.inspect('keyboard-main-menu-tab','key','--key','0x1000001')
+        assert any(item.get('name')=='Main menu' and item.get('focused') and item['visible'] for item in focused['tree'])
+        reopened=case.inspect('reopen-main-menu','key','--key','0x20','--text',' ')
+        assert nodes(reopened,'mainMenuGlobalSettings'), 'Keyboard did not open the main menu'
+        case.inspect('profile-keyboard-focus','focus','--name','Profile')
+        profile=case.inspect('profile-submenu','key','--key','0x1000014','--capture')
         assert any(item['visible'] and item.get('name')=='New / Manage Profiles…' for item in profile['tree'])
         case.inspect('close-profile-submenu','key','--key','0x1000000')
         case.inspect('close-main-menu','key','--key','0x1000000')
@@ -800,11 +825,20 @@ def menus():
         edited=case.inspect('speed-value-apply','key','--key','0x1000004','--await-core','rate','--await-value','1.25','--await-tolerance','.001')
         slider=nodes(edited,'speedSlider')[0]
         fraction=(4+(slider['width']-8)*(.75-.25)/1.75)/slider['width']
-        case.inspect('speed-slider-apply','click','--target','speedSlider','--fraction-x',fraction,'--await-core','rate','--await-value','.75','--await-tolerance','.011')
+        case.inspect('speed-slider-apply','click','--target','speedSlider','--fraction-x',fraction,'--await-core','rate','--await-value','0.75','--await-tolerance','.011')
         case.inspect('speed-reset-focus','focus','--name','Playback speed value')
         case.inspect('speed-reset-select','key','--key','0x41','--modifiers','0x4000000','--text','a')
         case.inspect('speed-reset-input','key','--key','0','--text','1x')
         case.inspect('speed-reset-apply','key','--key','0x1000004','--await-core','rate','--await-value','1','--await-tolerance','.001')
+        case.inspect('close-playback-panel','key','--key','0x1000000')
+        case.inspect('library-menu-route','click','--name','Back to media','--await-target','viewLoader',
+            '--await-property','source','--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml'))
+        case.inspect('library-menu-ready','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
+        library_menu=case.inspect('library-main-menu','click','--name','Main menu','--capture')
+        assert nodes(library_menu,'mainMenuGlobalSettings')
+        library_settings=case.click('library-direct-global-settings','mainMenuGlobalSettings','--capture')
+        assert any(widget['id']=='redesignPreferences' for widget in library_settings['widgets'])
+        case.native('cancel-library-global-settings','preferencesCancel')
         case.close(True)
     finally: case.close()
 
@@ -912,7 +946,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('menus',menus),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.case=='preview-icons' and name not in ('preview','icons','sidebar'):continue
         if args.case=='correction' and name not in ('playback','preview','icons','sidebar','menus','updates'):continue
         if args.case=='subtitles-mpv':

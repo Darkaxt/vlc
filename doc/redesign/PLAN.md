@@ -5,14 +5,48 @@ top-left main menu to the interactive Figma design, verify direct Global Setting
 access, and close the reported toggle/time/sidebar/control-order/Playback-panel
 differences. One explicitly requested bounded agent inspected the live prototype
 and restored/released its browser workflow. Its audit is diagnostic; no1.1.3
-native visual acceptance is claimed. Preserve required engine switching with the
+native visual acceptance was claimed by that audit alone. Preserve required engine switching with the
 plain VLC/MPV labels, custom layouts and all existing functional requirements.
 The optimized objects from original159/161 are retained. Their obsolete
 invocations were intentionally stopped with empty process groups and zero OOM
 events. A native SVG diagnostic against the retained Qt6.8.3 now verifies
 supported masks for closed contours and preservation of open waves/dividers.
-Bind the cohesive corrected assets and continue the existing player graph before
-full native acceptance and final normal release. M2 remains the only ACTIVE stage.
+The cohesive corrected assets are bound at source1692f4ebddaa151cf749e666b22f641cb91f532e.
+Original gate ticket164 (`eef32fd279914e2b92381c183328a000`), pipeline run0013,
+has compiled the stale Qt/QML objects and linked the interface plugin. The same
+pipeline has completed all configured VLC modules and staged410 plugins with
+the retained SDK/MPV/codecs. Session71873 is closed: the player step exited0;
+the outer job exited1 afterward because the separate Windows thumbnail test
+included POSIX alarm(). Its Linux group is empty, all OOM/max counters are zero,
+and peak charged RAM was1708650496 bytes. Test-only source6e843b2d373fd0484e961307f00d58b19737fc42
+ports that watchdog boundary and preserves explicitly staged Windows plugin paths;
+the assembled player's production tree is unchanged. Original session80556,
+ticket165 (`e2e5db60a90a402f86b402664b5e5cf0`), now builds only the two native
+acceptance executables. Ticket165 is now closed with exit0, an empty Linux group,
+zero max/OOM events and533127168 bytes peak charged RAM. Its native internal-
+preparser thumbnail regression passes; the test-only SSP dependency is isolated
+from the application. The configured upstream conditional does not run the
+external preparser cases, so no external-preparser pass is claimed.
+
+**Current acceptance (2 November):** the completed native workflows pass against
+the unchanged optimized1692f4e production tree. The full pass's stale host checks
+were traced to compact/full library IDs, numeric versus string image status,
+replacement-input readiness, pointer completion versus decoded-position readiness,
+and keyboard focus reason. Raw failure receipts remain preserved. Reconciliation
+reuses AST-identical unaffected checks, plus complete corrected menu and preview
+workflows. The main menu, Recent/Profile, direct Global Settings from both player
+and library, Playback panel, timer and speed controls pass. Native screenshots
+were inspected against the original Figma/live prototype at100/125/150/200%.
+Original transport paths are unchanged and native sampling is verified. The user's
+4K VP9 MP4 decodes a cold5:11 preview in77.1686ms and publishes its cached image in
+0.0005ms; distinct-position pixels, continuous hover, replacement-input pixels,
+invalidation and the truthful MPV limitation pass. Default fixed window sizing,
+bounded explicit opt-in, fullscreen restore, drops, subtitles and both engines'
+sidebar transitions pass. Protected profiles are unchanged.
+Evidence: `resources/m2-1.1.3-native-acceptance.json` and the retained native
+captures under `resources/m2-1.1.3`. The final normal release, delivered-package
+verification, retained/weekly binding and older-release cleanup remain pending.
+M2 remains the only ACTIVE stage.
 
 Object-level R78 diagnostics found a remaining release-profile blocker: generated
 QML cache units do not include config.h, so changing NDEBUG/compiler flags left
@@ -22,8 +56,11 @@ cache objects still do. Add the existing config.status prerequisite to each
 Automake application's object variables. This reuses objects already newer than
 configuration and rebuilds the stale generated units once. Inspect the completed
 application objects after integration before claiming a consistent optimized
-cohort. Original ticket159 remains supervised and useful; SDK/MPV/codecs remain
-retained. This is an internal R78 acceptance blocker in M2.
+cohort. That inspection now passes: all303 generated QML application COFF objects
+in the current Automake archives have no debug sections. Tickets159/161 are
+closed intentional cancellations, and164 completed the application. SDK/MPV/codecs
+remain retained. The R78 optimized-object blocker is resolved; final normal
+packaging and delivery are still required.
 
 **Current execution authority (2 November):** the user explicitly requested the
 new release and deletion of older releases. The earlier compilation stop below
@@ -118,7 +155,7 @@ The final closure changes only documentation, evidence and the host verification
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M2 First-run usability and fork identity | ACTIVE | Delivered1.1.2 baseline: R52/R65/R73-R77/R79/R81/R82 and preview checks on synthetic inputs; published assets and protected profiles verified. | R80: user's4K VP9 MP4 produces a black preview despite a published timestamp. Internal, root cause under investigation; resolve by proving correct actual popup pixels for this file and affected regressions. R78: corrective1.1.3 final delivery, retained binding and cleanup depend on that repair. | None. |
+| M2 First-run usability and fork identity | ACTIVE | Current optimized native acceptance passes R52 Figma menu/Playback panel, direct Global Settings from player/library, original icons at100/125/150/200%, control order and timestamps; R79 sidebar placement and R74 disabled-default/bounded-opt-in resizing; R80 correct distinct/cached/latest/replacement pixels on the user's4K file. First-run, subtitle, engine-switch and update regressions pass; protected profiles are unchanged. All303 generated QML objects have no debug sections. | R78 delivery blocker: assemble normal mode using the accepted production tree and retained409 non-Qt plugins; verify normal runtime/MPV presentation, source/symbol/checksum artifacts and independently downloaded1.1.3; promote retained runtime plus compilation state, update the existing weekly binding, and retire older releases through reviewed cleanup. | None. |
 
 Native acceptance uses the same production tree as the normal release. The
 4K preview measured 99.6047ms cold and 0.0009ms cached; previews use keyframes.
