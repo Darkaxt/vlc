@@ -632,3 +632,23 @@ Independently retrieve its binary/source packages, inspect their identities and
 normal native behavior, compare protected installed state, and retire only spent
 task artifacts through transactional cleanup. Build completion is not stage
 acceptance or final delivery.
+## November2 weekly maintenance1.1.4 qualification
+
+Application source6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d contains upstream
+8a47770f6333df6b60181329db5fdaad318bdb44 HEIF checked grid-offset arithmetic and
+an explicit volatile default-off `--qt-passive` option. Normal validation uses
+that option with auto-raise disabled. Qt6.8.3 does not map its no-focus flag to
+WS_EX_NOACTIVATE; the Windows handler establishes the style before show and
+preserves it during native restyling. Ordinary startup retains its default style.
+
+Before offscreen validation, the maintained verify-normal-presentation.py checks
+that WinSta0's worker-startup desktop equals the input desktop, repeats that check
+at launch readiness, and requires a fresh inactive-desktop placement/native-style
+proof bound to the exact Qt binary, saved geometry and monitor layout. A screen
+saver can leave the worker on Default while input belongs to Screen-saver; such
+a run cannot establish actual presentation. Dismissal is performed by the user,
+never desktop controls. Continuation93701 verified actual SDR/P5 presentation,
+EOF/release and foreground preservation on Default using the unchanged6288 build.
+Original failed receipts remain separate from acceptance evidence. This entry
+records qualification; publication/retained-binding results are recorded below
+only after their actual gates pass.

@@ -10,7 +10,7 @@ until replacement delivery passes. No other implementation stage is ACTIVE.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M3 Weekly upstream maintenance | ACTIVE | R71/R72 scope pinned; compatible one-commit merge resolved; actual current remotes/divergence verified. | Finish 1.1.4 version/focused HEIF regression, one incremental normal assembly from retained objects, changed-path and packaged native acceptance, source/symbol/checksum artifacts, independent published download verification, retained/weekly rebinding and obsolete-output retirement. These are internal advancement blockers being implemented. | None. |
+| M3 Weekly upstream maintenance | ACTIVE | Pinned upstream merge; optimized assembly; native HEIF guard/grid decode; normal VLC and default focus style; passive native style; fresh active-desktop SDR/P5 picture, EOF, release and foreground preservation; four verified local artifacts and unsigned policy. | Normal publication and independent download/native verification; matching retained/weekly rebinding; obsolete-output retirement and final reconciliation. | None. |
 
 Use exact `E:/Temp/vlc-weekly-20261102-1.1.4` controls and
 `D:/Temp/vlc-s8-weekly-20261102-1.1.4` native/build staging. D: is required for
@@ -41,6 +41,22 @@ No offscreen launch followed. Installed Qt6.8.3 source confirms that its no-focu
 flag does not create `WS_EX_NOACTIVATE`; add the required Windows lifecycle bridge
 without weakening that criterion. M3 remains ACTIVE with this internal acceptance
 blocker. Preserve both failures and reuse unchanged HEIF evidence.
+
+Native bridge assembly174 (`0d7c81b6fc964abdae3a4e2e08dda36a`, app source
+`6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`) closed0, with zero OOM/max events,
+1701789696 bytes peak RAM, empty group and released mounts. Only
+`mainctx_win32.cpp` recompiled for that repair;409 other plugins remained bound.
+Its default and passive native-style checks pass. Qualification3587 reached EOF
+without a picture marker; a subsequent binding read found worker `Default` but
+input `Screen-saver`. That run does not establish active-desktop presentation.
+The host verifier now refuses a startup/input-desktop mismatch before copying or
+launching, checks again at readiness and records actual desktop identities.
+The negative guard test launches no player. With both desktops observed as
+`Default`, continuation93701 passes fresh private placement and actual SDR/P5
+Present(S_OK), EOF, release and no foreground ownership with the same binaries.
+No rendering change or rebuild was needed for the desktop condition. The failed
+receipts remain historical evidence. Portable/source/symbol/checksum artifacts
+are verified; the portable ZIP is145033709 bytes. Publication remains pending.
 
 **M2 First-run usability and fork identity is COMPLETE (2 November2026).**
 [Modern VLC Fork1.1.3](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3)

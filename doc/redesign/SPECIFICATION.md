@@ -42,6 +42,17 @@ Default interactive windows must retain their ordinary style. Preserve the
 failed private proof and repeat affected checks only after this native bridge
 has been integrated; no input-desktop launch was attempted from that proof.
 
+The native bridge and default-focus criteria now pass in source6288. A missing
+picture marker in a later run was followed by a direct binding read identifying
+worker `Default` and input `Screen-saver`; it is not accepted as an active-desktop
+presentation result. Bind future offscreen verification to WinSta0 with equal
+worker-startup and input desktops before allocation/launch and again at readiness,
+without switching desktops or dismissing the screen saver through automation.
+The refusal test creates no player. Fresh SDR/P5 presentation with the same6288
+binaries passes after both desktops are observed as `Default`, including native
+no-activation style, no foreground ownership, EOF and release. Preserve all earlier
+failed receipts and their limits; do not reclassify them as successful runs.
+
 The2 November rendered-reference audit and user correction also reopen R52 for
 the player chrome/menu. M2 must restore the interactive Figma main menu as the
 priority: direct media/global actions, original two-tone vector icons, aligned

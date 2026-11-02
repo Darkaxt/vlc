@@ -37,6 +37,21 @@ parser.add_argument('--interactive-private', action='store_true',
     help='Verify ordinary default focus flags only on an owned inactive desktop; never issue a placement proof')
 args = parser.parse_args()
 assert not args.interactive_private or args.mode == 'private-playback'
+k.GetCurrentThreadId.restype = W.DWORD
+u.GetThreadDesktop.argtypes = [W.DWORD]
+u.GetThreadDesktop.restype = W.HANDLE
+u.GetProcessWindowStation.restype = W.HANDLE
+def object_name(handle):
+    assert handle
+    buffer, length = ctypes.create_unicode_buffer(256), W.DWORD()
+    assert u.GetUserObjectInformationW(handle, 2, buffer, ctypes.sizeof(buffer), ctypes.byref(length))
+    return buffer.value
+startup_desktop = object_name(u.GetThreadDesktop(k.GetCurrentThreadId()))
+window_station = object_name(u.GetProcessWindowStation())
+initial_input_desktop = input_desktop()
+if args.mode == 'offscreen':
+    assert window_station == 'WinSta0' and startup_desktop == initial_input_desktop, \
+        'Actual presentation requires the worker startup desktop to be the input desktop; dismiss the screen saver/unlock, without desktop controls'
 root = args.scratch_root.resolve()
 assert root.parent == Path('D:/Temp') and root.name.startswith('vlc-s8-')
 root.mkdir(exist_ok=True)
@@ -152,9 +167,12 @@ finally:
 if args.mode == 'offscreen':
     assert monitors == proof['monitors'], 'Re-prove saved geometry after a display configuration change'
 desktop_before = input_desktop()
+if args.mode == 'offscreen':
+    assert desktop_before == startup_desktop, 'Input desktop changed before launch; dismiss the screen saver/unlock'
 observed_windows = []
 foreground_owned = False
 result = {'schema': 'vlc_redesign.s8_normal_presentation.v1', 'mode': args.mode, 'passed': False,
+    'worker_startup_desktop': startup_desktop, 'input_desktop_before': initial_input_desktop, 'window_station': window_station,
     'passive_launch': not args.interactive_private,
     'qt_plugin_sha256': expected_qt, 'saved_geometry_sha256': geometry_hash, 'saved_screen': screen,
     'monitors': monitors, 'scope': 'Public app-owned synthetic saved geometry; no desktop/input control, no diagnostic hooks',
@@ -173,6 +191,7 @@ if args.mode in {'private', 'private-playback'}:
     desktop_name = 'VLC-S2-' + uuid.uuid4().hex
     owned_desktop = u.CreateDesktopW(desktop_name, None, None, 0, 0x1FF, None)
     assert owned_desktop
+result['player_desktop'] = desktop_name or startup_desktop
 observer_command = [sys.executable, '-B', str(repo / 'tools/windows-player/observe-normal-window.py'),
     '--binding', str(scratch / 'target.json'), '--result', str(scratch / 'window-events.json'),
     '--ready-event', event_names[0], '--bound-event', event_names[1], '--cancel-event', event_names[2],
@@ -195,6 +214,8 @@ with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb'
             observer_handle = observer._handle
         readiness = (W.HANDLE * 2)(ready_event, observer_handle)
         assert k.WaitForMultipleObjects(2, readiness, False, 0xFFFFFFFF) == 0, 'Observer exited before hook readiness'
+        if args.mode == 'offscreen':
+            assert input_desktop() == startup_desktop, 'Input desktop changed at launch readiness; no player launched'
         if args.mode in {'private', 'private-playback'}:
             player = IsolatedProcess(command, cwd=runtime, env=environment, stdout=output, stderr=error,
                 desktop_name=desktop_name)
