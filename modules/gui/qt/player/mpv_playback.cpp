@@ -211,7 +211,12 @@ class Surface final : public QObject {
                 self->pendingSize = QSize(int(width), int(height));
             if (ack) ack(wnd, width, height, opaque);
         }
-        QMetaObject::invokeMethod(self, [self] { self->draw(true); }, Qt::QueuedConnection);
+        // Surface placement is committed after this callback returns. Finish
+        // resizing/presenting on the existing render owner before that commit,
+        // including while paused; a queued draw leaves an old-sized surface
+        // exposed during a sidebar collapse. Never block a thread on itself.
+        if (QThread::currentThread() == self->thread()) self->draw(true);
+        else QMetaObject::invokeMethod(self, [self] { self->draw(true); }, Qt::BlockingQueuedConnection);
     }
     void draw(bool force = false) {
         QMutexLocker lock(&sizeLock);

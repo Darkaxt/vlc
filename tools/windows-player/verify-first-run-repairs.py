@@ -31,7 +31,8 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-') and not root.exists()
@@ -49,6 +50,9 @@ records = {'schema': 'vlc_redesign.m2_native_acceptance.v1', 'scope': args.case,
     'no_os_input_or_desktop_switching': True, 'passed': False}
 records['verification_helper_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 records['source_commit']=json.loads((source/'VLC-PLUGIN-BUILDINFO.json').read_text())['source_commit']
+version_header=subprocess.check_output(['git','-C',str(repo),'show',records['source_commit']+':modules/gui/qt/dialogs/help/fork_release.hpp'],text=True)
+fork_version=re.search(r'currentVersion\[\] = "([0-9.]+)"',version_header).group(1)
+newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_version.split('.')[2])+1)))
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
@@ -86,13 +90,16 @@ class Peer(BaseHTTPRequestHandler):
         assert self.path == '/releases/latest'
         Peer.calls.append({'mode': Peer.mode, 'path': self.path})
         payload = (fixtures / 'github-latest.json').read_bytes()
+        item=json.loads(payload)
+        old=item['tag_name'][len('redesign-v'):]
+        payload=json.dumps(item).replace('redesign-v'+old,'redesign-v'+fork_version).replace('Modern-VLC-Fork-'+old,'Modern-VLC-Fork-'+fork_version).encode('utf-8')
         status = 200
         if Peer.mode == 'unavailable': status, payload = 503, b'Unavailable test peer'
         elif Peer.mode == 'malformed': payload = b'{broken'
         elif Peer.mode == 'newer':
             item = json.loads(payload)
             old = item['tag_name'][len('redesign-v'):]
-            encoded = json.dumps(item).replace('redesign-v' + old, 'redesign-v1.1.3').replace('Modern-VLC-Fork-' + old, 'Modern-VLC-Fork-1.1.3')
+            encoded = json.dumps(item).replace('redesign-v' + old, 'redesign-v'+newer_version).replace('Modern-VLC-Fork-' + old, 'Modern-VLC-Fork-'+newer_version)
             payload = encoded.encode('utf-8')
         self.send_response(status)
         self.send_header('Content-Type', 'application/json')
@@ -393,9 +400,10 @@ def playback():
             case=Case('drop-' + engine + '-' + name.split('.')[0], engine=engine)
             try:
                 case.inspect('full-library-viewport','resize','--width','1280','--height','800')
-                case.inspect('library-ready', 'snapshot', '--await-target','fullLibrary','--await-property','ready','--await-value','true')
+                initial=case.inspect('library-ready', 'snapshot', '--await-target','fullLibrary','--await-property','ready','--await-value','true')
                 drop_fixture(case,'drop-video',name)
                 result=case.inspect('main-player-visible','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
+                assert (initial['window']['width'],initial['window']['height'])==(result['window']['width'],result['window']['height']), 'Default video open resized the chosen window'
                 try:assert_window(case,result)
                 except AssertionError as failure:
                     if args.case!='integration-diagnostic':raise
@@ -405,7 +413,7 @@ def playback():
                 case.record['source']=name
                 case.close(True)
             finally: case.close()
-        fixed=Case('fixed-size-'+engine,engine=engine,extra=['--no-qt-video-autoresize'])
+        fixed=Case('fixed-size-'+engine,engine=engine)
         try:
             fixed.inspect('full-library-viewport','resize','--width','1280','--height','800')
             before=fixed.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
@@ -434,10 +442,17 @@ def playback():
                 drop_fixture(fixed,'video-after-audio','portrait.mkv')
             fixed.close(True)
         finally: fixed.close()
+        opted=Case('opt-in-video-size-'+engine,engine=engine,extra=['--qt-video-autoresize'])
+        try:
+            opted.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
+            drop_fixture(opted,'opt-in-wide-video','wide.mkv')
+            resized=opted.inspect('opt-in-main-view','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
+            assert_window(opted,resized)
+            opted.close(True)
+        finally: opted.close()
     for engine,scale in (('vlc','1.5'),('mpv','2')):
         case=Case('scaled-video-'+engine,engine=engine,scale=scale)
         try:
-            case.inspect('full-library-viewport','resize','--width','1280','--height','800')
             case.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
             drop_fixture(case,'scaled-video','wide.mkv')
             result=case.inspect('scaled-main-view','snapshot','--await-target','playerView','--await-property','visible','--await-value','true','--capture')
@@ -621,21 +636,45 @@ def subtitles(verify_navigation=True, engines=('vlc','mpv')):
         finally: case.close()
 
 def preview():
-    case=Case('seek-preview',media=fixtures/'preview-4k-long-gop.mkv')
+    media=args.preview_media.resolve() if args.preview_media else fixtures/'preview-4k-long-gop.mkv'
+    assert media.is_file()
+    case=Case('seek-preview',media=media)
     try:
-        case.inspect('paused','snapshot','--await-core','state','--await-value','3')
-        cold=case.inspect('cold-preview','move','--target','progressSlider','--fraction-x','0.55',
+        paused=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        position=311/paused['core']['length_seconds'] if args.preview_media else .55
+        case.record['input_sha256']=hashlib.file_digest(media.open('rb'),'sha256').hexdigest()
+        def popup_pixels(snapshot):
+            frame=nodes(snapshot,'seekPreviewImage')
+            assert len(frame)==1 and frame[0]['status']==1
+            picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')).convert('RGB')
+            ratio=picture.width/snapshot['window']['width']
+            item=frame[0]
+            bounds=tuple(round(value*ratio) for value in (item['x'],item['y'],item['x']+item['width'],item['y']+item['height']))
+            pixels=picture.crop(bounds).resize((160,90)).convert('RGB')
+            values=list(pixels.getdata())
+            assert sum(max(rgb)>24 for rgb in values)>len(values)*.1, 'Rendered popup is blank/black'
+            return pixels
+        cold=case.inspect('cold-preview','move','--target','progressSlider','--fraction-x',position,
             '--await-service','redesignMediaAnalysis','--await-property','previewStatus','--await-value','""','--capture')
         first=service(cold,'redesignMediaAnalysis')
-        assert first['previewSource'] and abs(first['previewPosition']-.55)<.02
+        assert first['previewSource'] and abs(first['previewPosition']-position)<.02
+        first_pixels=popup_pixels(cold)
         case.inspect('leave-preview','move','--target','playButton')
-        warm=case.inspect('cached-preview','move','--target','progressSlider','--fraction-x','0.55',
+        warm=case.inspect('cached-preview','move','--target','progressSlider','--fraction-x',position,
             '--await-service','redesignMediaAnalysis','--await-property','previewStatus','--await-value','""','--capture')
         cached=service(warm,'redesignMediaAnalysis')
         assert cached['previewLatencyMS']<16.7, cached
         case.record['cold_decode_ms']=first['previewLatencyMS']
         case.record['cached_publication_ms']=cached['previewLatencyMS']
         assert first['previewLatencyMS']<1000, 'Uncached local preview still takes several seconds'
+        assert popup_pixels(warm).tobytes()==first_pixels.tobytes(), 'Cached rendered frame changed'
+        if args.preview_media:
+            second=case.inspect('distinct-actual-frame','move','--target','progressSlider','--fraction-x',693/paused['core']['length_seconds'],
+                '--await-service','redesignMediaAnalysis','--await-property','previewStatus','--await-value','""','--capture')
+            second_pixels=popup_pixels(second)
+            difference=sum(abs(a-b) for a,b in zip(first_pixels.tobytes(),second_pixels.tobytes()))/len(first_pixels.tobytes())
+            assert difference>10, ('Different source positions returned the same/incorrect frame',difference)
+            case.record['actual_frame_mean_difference']=difference
         for position in (.1,.2,.3,.4,.5,.6,.7,.8,.9):
             case.inspect('continuous-' + str(position),'move','--target','progressSlider','--fraction-x',position)
         latest=case.inspect('latest-preview','snapshot','--await-service','redesignMediaAnalysis','--await-property','previewPosition','--await-value','0.9','--await-tolerance','.02','--capture')
@@ -664,6 +703,57 @@ def preview():
         assert not disclosure['previewSource'] and 'require VLC playback' in disclosure['previewStatus']
         case.close(True)
     finally: case.close()
+
+def icons():
+    for scale in ('1','1.25','1.5','2'):
+        case=Case('transport-icons-'+scale,scale=scale,media=fixtures/'control.mkv',
+            extra=(str(fixtures/'control.mkv'),str(fixtures/'embedded-text.mkv')))
+        try:
+            case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+            middle=case.inspect('middle-item','click','--name','Next')
+            if middle['core']['state']!=3:
+                case.click('pause-middle-item','playButton','--await-core','state','--await-value','3')
+            for state in ('play','pause'):
+                for sampling in ('baseline','high-definition'):
+                    case.inspect(state+'-'+sampling+'-controls','move','--target','playButton')
+                    snapshot=case.inspect(state+'-'+sampling,'icon_sampling','--sampling',sampling,'--capture')
+                    glyphs=[node for node in snapshot['tree'] if node['visible'] and node['id'].startswith('playerGlyph-')]
+                    assert any(node['id']=='playerGlyph-'+state for node in glyphs)
+                    for node in glyphs:
+                        assert node['mipmap']==(sampling=='high-definition')
+                        assert node['smooth']==(sampling=='baseline')
+                if state=='play':
+                    case.click('play-action','playButton','--await-core','state','--await-value','2')
+            case.click('pause-action','playButton','--await-core','state','--await-value','3')
+            case.close(True)
+        finally: case.close()
+
+def sidebar():
+    for engine in ('vlc','mpv'):
+        case=Case('sidebar-transition-'+engine,engine=engine,media=fixtures/'control.mkv')
+        try:
+            case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+            for playing in (False,True):
+                if playing:
+                    case.click('start-playing','playButton','--await-core','state','--await-value','2')
+                state='playing' if playing else 'paused'
+                for opened in (True,False):
+                    label=state+('-open' if opened else '-collapse')
+                    snapshot=case.inspect(label,'click','--name','Media browser','--capture')
+                    surfaces=nodes(snapshot,'playerVideoSurface')
+                    assert len(surfaces)==1
+                    surface=surfaces[0]
+                    dpr=snapshot['window']['dpr']
+                    actual=snapshot['video_backdrop']['surface_at_placement_px']
+                    assert abs(actual['width']-surface['width']*dpr)<=1, (label,actual,surface)
+                    assert abs(actual['height']-surface['height']*dpr)<=1, (label,actual,surface)
+                    if opened: assert surface['x']>0
+                    else: assert abs(surface['x'])<1 and abs(surface['width']-snapshot['window']['width'])<1
+                    case.record.setdefault('surface_transitions',[]).append({
+                        'state':state,'opened':opened,'surface_at_placement_px':actual,
+                        'qml_viewport':{key:surface[key] for key in ('x','y','width','height')}})
+            case.close(True)
+        finally: case.close()
 
 def seek_policy():
     """Diagnostic comparison of VLC's public absolute-time seek and cue position seek."""
@@ -718,7 +808,7 @@ def updates():
                 assert not any(widget['type']=='UpdateDialog' for widget in result['widgets'])
             case.record['observed_status']=result['update']['status']
             if expected==3:
-                assert result['update']['url']=='https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3'
+                assert result['update']['url']=='https://github.com/Darkaxt/vlc/releases/tag/redesign-v'+newer_version
                 assert any(node.get('name')=='Open release page' and node['visible'] for node in result['tree']) or any(
                     widget.get('text','').replace('&','')=='Open release page' for widget in result['widgets'])
             if mode == 'unavailable':
@@ -736,7 +826,7 @@ def updates():
                 labels=[node.get('text','') for node in retried['tree'] if node['visible'] and 'You have the latest version' in node.get('text','')]
                 labels += [widget.get('text','') for widget in retried['widgets'] if 'latest available Modern VLC Fork release' in widget.get('text','')]
                 case.record['manual_current_version_labels']=labels
-                assert labels and all('1.1.2' in text for text in labels), 'Update result does not show the fork version'
+                assert labels and all(fork_version in text for text in labels), 'Update result does not show the fork version'
             case.close(True)
         finally: case.close()
     live=Case('updates-real-https',updates=True,live_updates=True)
@@ -767,7 +857,9 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+        if args.case=='preview-icons' and name not in ('preview','icons','sidebar'):continue
+        if args.case=='correction' and name not in ('playback','preview','icons','sidebar','updates'):continue
         if args.case=='subtitles-mpv':
             if name!='subtitles':continue
             operation=lambda:subtitles(engines=('mpv',))
@@ -779,7 +871,7 @@ try:
             if name not in ('welcome','playback','subtitles'):continue
             if name=='subtitles':operation=lambda:subtitles(False)
         if name=='seek-policy' and args.case!='seek-policy':continue
-        if args.case not in ('all','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic',name): continue
+        if args.case not in ('all','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction',name): continue
         try:
             operation()
         except Exception as failure:

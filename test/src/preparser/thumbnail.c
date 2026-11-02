@@ -81,8 +81,6 @@ static void thumbnailer_callback( vlc_preparser_req *req, int status,
         assert( thumbnail->format.i_chroma == VLC_CODEC_ARGB );
         assert( status == VLC_SUCCESS );
 
-        /* TODO: Enable this once the new clock is merged */
-#if 0
         vlc_tick_t expected_date;
         /* Don't rely on the expected date if it was purposely invalid */
         if ( test_params[p_ctx->test_idx].b_use_pos == true )
@@ -92,12 +90,15 @@ static void thumbnailer_callback( vlc_preparser_req *req, int status,
         else
         {
             if ( test_params[p_ctx->test_idx].i_time < 0 )
-                expected_date = VLC_TICK_0;
+                expected_date = 0;
             else
                 expected_date = test_params[p_ctx->test_idx].i_time;
         }
-        assert( thumbnail->date == expected_date && "Unexpected picture date");
-#endif
+        /* Mock pictures are quantized to their frame interval. In particular,
+         * returning the opening picture is not a successful seek thumbnail. */
+        expected_date += VLC_TICK_0;
+        assert(llabs(thumbnail->date - expected_date) < VLC_TICK_FROM_MS(100)
+               && "Thumbnail was produced before its initial seek");
     }
     else
     {

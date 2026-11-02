@@ -214,7 +214,7 @@ private:
             {QStringLiteral("opacity"), item->opacity()}, {QStringLiteral("z"), item->z()},
             {QStringLiteral("focused"), item->hasActiveFocus()}};
         const bool secret = item->metaObject()->indexOfProperty("echoMode") >= 0 && item->property("echoMode").toInt() != 0;
-        for (const char *property : {"index", "text", "checked", "selected", "isCurrent", "url", "value", "from", "to", "pressed", "hovered", "font", "color", "source", "status", "contentY", "contentHeight", "moving", "count", "currentIndex", "currentText", "highlightedIndex", "live", "position"}) {
+        for (const char *property : {"index", "text", "checked", "selected", "isCurrent", "url", "value", "from", "to", "pressed", "hovered", "font", "color", "source", "sourceSize", "smooth", "mipmap", "highDefinition", "status", "contentY", "contentHeight", "moving", "count", "currentIndex", "currentText", "highlightedIndex", "live", "position"}) {
             if (secret && (qstrcmp(property, "text") == 0 || qstrcmp(property, "value") == 0)) { node.insert(QString::fromLatin1(property), QStringLiteral("[redacted]")); continue; }
             const QVariant value = item->property(property);
             if (value.isValid()) node.insert(QString::fromLatin1(property), QJsonValue::fromVariant(value));
@@ -706,6 +706,21 @@ private:
             error = QStringLiteral("stale_revision_rejected_before_dispatch");
         else if (!window) error = QStringLiteral("window_not_created");
         else if (op == QStringLiteral("snapshot")) {}
+        else if (op == QStringLiteral("icon_sampling")) {
+            const QString policy = command.value(QStringLiteral("sampling")).toString();
+            if (policy != QStringLiteral("baseline") && policy != QStringLiteral("high-definition"))
+                error = QStringLiteral("invalid_icon_sampling_policy");
+            else {
+                int changed = 0;
+                for (auto item : std::as_const(m_items))
+                    if (item && item->metaObject()->indexOfProperty("highDefinition") >= 0
+                        && item->metaObject()->indexOfProperty("glyph") >= 0) {
+                        item->setProperty("highDefinition", policy == QStringLiteral("high-definition"));
+                        ++changed;
+                    }
+                if (!changed) error = QStringLiteral("playback_icons_not_present");
+            }
+        }
         else if (op == QStringLiteral("focus")) {
             const int target = command.value(QStringLiteral("node")).toInt(-1);
             if (target < 0 || target >= m_items.size() || !m_items[target]

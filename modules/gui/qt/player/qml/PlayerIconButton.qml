@@ -12,6 +12,9 @@ T.ToolButton {
     required property string description
     property bool accented: false
     property color foreground: PlayerStyle.foreground
+    // The instrumented native renderer can compare sampling against the
+    // original policy without changing the artwork or building a second app.
+    property bool highDefinition: true
     implicitWidth: PlayerStyle.px(30)
     implicitHeight: PlayerStyle.px(32)
     padding: 0
@@ -31,11 +34,17 @@ T.ToolButton {
     }
     contentItem: Item {
       IconImage {
+        objectName: "playerGlyph-" + button.glyph
         anchors.centerIn: parent
         source: "qrc:/redesign/icons/" + button.glyph + ".svg"
         color: button.accented ? PlayerStyle.accentForeground : button.foreground
         opacity: button.enabled ? 1 : 0.45
-        sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
+        // Rasterize the vector above its final size, then use its mip level
+        // without a second bilinear blur when a layout lands between pixels.
+        sourceSize: Qt.size(PlayerStyle.px(24) * (button.highDefinition ? 4 : 1),
+                            PlayerStyle.px(24) * (button.highDefinition ? 4 : 1))
+        mipmap: button.highDefinition
+        smooth: !button.highDefinition
         width: PlayerStyle.px(24)
         height: PlayerStyle.px(24)
         fillMode: Image.PreserveAspectFit

@@ -309,6 +309,7 @@ FocusScope {
 
                 VideoSurface {
                     id: videoSurface
+                    objectName: "playerVideoSurface"
 
                     anchors.fill: parent
 
@@ -1014,6 +1015,7 @@ FocusScope {
 
     Loader {
         id: libraryBrowser
+        objectName: "playerLibraryBrowser"
         active: rootPlayer.libraryVisible
         anchors.top: topBar.bottom; anchors.bottom: controlBar.top; anchors.left: parent.left
         width: active ? Math.min(PlayerStyle.px(427),rootPlayer.width-PlayerStyle.px(180)) : 0

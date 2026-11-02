@@ -71,7 +71,7 @@ static void             MainLoop( input_thread_t *p_input, bool b_interactive );
 
 static inline int ControlPop( input_thread_t *, int *, input_control_param_t *, vlc_tick_t i_deadline, bool b_postpone_seek );
 static int ControlPopEarly(input_thread_t *input, int *type,
-                           input_control_param_t *param);
+                           input_control_param_t *param, bool allow_seek);
 static void       ControlRelease( int i_type, const input_control_param_t *p_param );
 static bool       ControlIsSeekRequest( int i_type );
 static bool       Control( input_thread_t *, int, input_control_param_t );
@@ -415,6 +415,17 @@ static void *Run( void *data )
 
     if( !Init( p_input ) )
     {
+        if (priv->type == INPUT_TYPE_THUMBNAILING)
+        {
+            /* The demuxer now exists, but has not produced a picture. Apply
+             * the thumbnail's queued seek before its first demux: a fast
+             * decoder can otherwise publish the opening frame and complete
+             * the request before MainLoop reaches its control queue. */
+            int type;
+            input_control_param_t param;
+            while (ControlPopEarly(p_input, &type, &param, true) == VLC_SUCCESS)
+                Control(p_input, type, param);
+        }
         MainLoop( p_input, true ); /* FIXME it can be wrong (like with VLM) */
 
         /* Clean up */
@@ -1323,7 +1334,7 @@ static int Init( input_thread_t * p_input )
     {
         int type;
         input_control_param_t param;
-        if (ControlPopEarly(p_input, &type, &param))
+        if (ControlPopEarly(p_input, &type, &param, false))
             break;
         Control(p_input, type, param);
     }
@@ -1656,7 +1667,7 @@ static bool ControlTypeIsEarly(int type)
 }
 
 static int ControlPopEarly(input_thread_t *input, int *type,
-                           input_control_param_t *param)
+                           input_control_param_t *param, bool allow_seek)
 {
     input_thread_private_t *sys = input_priv(input);
 
@@ -1664,7 +1675,10 @@ static int ControlPopEarly(input_thread_t *input, int *type,
 
     for (size_t i = 0; i < sys->i_control; ++i)
     {
-        if (ControlTypeIsEarly(sys->control[i].i_type))
+        const int queued_type = sys->control[i].i_type;
+        if (ControlTypeIsEarly(queued_type) ||
+            (allow_seek && (queued_type == INPUT_CONTROL_SET_TIME ||
+                            queued_type == INPUT_CONTROL_SET_POSITION)))
         {
             *type = sys->control[i].i_type;
             *param = sys->control[i].param;
@@ -1672,7 +1686,7 @@ static int ControlPopEarly(input_thread_t *input, int *type,
             sys->i_control--;
             if (sys->i_control > i)
                 memmove(&sys->control[i], &sys->control[i+1],
-                        sizeof(*sys->control) * sys->i_control - i);
+                        sizeof(*sys->control) * (sys->i_control - i));
             vlc_mutex_unlock(&sys->lock_control);
             return VLC_SUCCESS;
         }

@@ -112,9 +112,12 @@ void VideoSurfaceProvider::onSurfacePropertiesChanged(const std::optional<QSizeF
                                                       const std::optional<QPointF>& position,
                                                       const std::optional<qreal>& scale)
 {
-    emit surfacePropertiesChanged(size, position, scale);
+    // Resize the consumer before the compositor commits a new position. Moving
+    // an old, narrow swapchain first exposes the window backdrop when the
+    // library panel collapses, until the resize reaches the video renderer.
     if (m_voutWindow && size)
         vlc_window_ReportSize(m_voutWindow, std::ceil(size->width()), std::ceil(size->height()));
+    emit surfacePropertiesChanged(size, position, scale);
 }
 
 

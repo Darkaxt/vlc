@@ -20,7 +20,8 @@ def visible_label(text):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'resize', 'cancel', 'quit'])
+    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'resize', 'icon_sampling', 'cancel', 'quit'])
+    parser.add_argument('--sampling', choices=['baseline', 'high-definition'])
     parser.add_argument('--target')
     parser.add_argument('--name', help='Exact accessible name of an actionable Qt Quick item')
     parser.add_argument('--item-url', help='Exact URL of one rendered queue row')
@@ -126,6 +127,10 @@ def main():
         else:
             _, before = request('snapshot')
             fields = dict(revision=before['revision'], capture=args.capture)
+            if args.op == 'icon_sampling':
+                if not args.sampling:
+                    parser.error('Icon comparison requires --sampling')
+                fields['sampling'] = args.sampling
             if args.op in ('click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus'):
                 if args.target or args.name or args.item_url:
                     nodes = [n for n in before['tree'] if n['visible'] and n['enabled'] and

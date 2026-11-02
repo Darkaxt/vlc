@@ -4,7 +4,40 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
-**M2 First-run usability and fork identity is COMPLETE (2 November 2026).**
+**M2 First-run usability and fork identity is ACTIVE again (2 November 2026).**
+The user's post-release black-preview report reopens R80 acceptance for the
+supplied4K VP9 MP4. Verify actual nonblank/changing popup frames around5:11 and
+other distinguishable positions, not only request completion, timestamps or a
+single synthetic color sample. Trace decoding, exported image, provider and
+rendered popup; preserve bounded/cancellable work, cache/latest-position behavior
+and truthful unsupported-engine states. R78 now includes one corrective1.1.3
+release after the full repair and its delivery/retention/cleanup gates. Retain
+the1.1.2 evidence below as historical qualification with its original scope.
+The user's2 November icon report also reopens R52 for transport-icon sharpness.
+Preserve the established control sizes, palette, focus/disabled states and action
+bindings. Original-versus-redrawn comparison rejected changed silhouettes,
+corner radii and stroke weights. Preserve the original Play/Pause/Previous/Next
+SVG geometry and24-unit icon grid; correct shared icon rasterization so it is crisp at
+100/150/200% and fractional display scaling. Inspect actual enabled-control pixels
+in the native application; a larger raster asset or source-only SVG is insufficient.
+Use the existing Qt/SVG path, without a new renderer dependency or ImageGen bitmap.
+Retain the actual comparison and selection rationale; compare original and
+remade rendering at native size and enlarged before release.
+The user's requested VTracer comparison uses PNG renders of the exact original
+Play/Pause/Previous/Next artwork, with24px and384px tracing inputs. Keep rounded
+corners and silhouettes; sharpness means avoiding unintended edge diffusion,
+not replacing rounded corners with pointed ones. Retain the original SVGs if
+tracing provides no demonstrated benefit. Native rendering remains acceptance.
+The user's2 November panel-collapse report extends this repair batch: the library
+panel must hide without briefly exposing a strip of the window backdrop. Resize
+the video consumer before committing its new placement and removing the panel.
+Verify open/collapse transitions while paused and playing in both playback engines,
+including the actual swapchain dimensions at placement, not only final QML bounds.
+The user also changes R74's default: disable `qt-video-autoresize` by default so
+opening/replacing video preserves the chosen window size in either engine. Keep
+the explicit preference available, with the existing work-area bounds when enabled;
+manual resizing, fullscreen and restoration must continue to work. Preserve
+explicit user preferences rather than rewriting their existing configuration.
 [Final delivery and requirement reconciliation](resources/m2-verification.json) verifies R52/R65/R73-R82 in normal release1.1.2 and records exact evidence applicability and limits.
 The user's reports and icon reference authorize correcting welcome sizing,
 shortcut assignment, false empty-library indexing, the Windows application icon

@@ -3,6 +3,9 @@
 #define VLC_PLAYER_VIDEO_BACKDROP_HPP
 
 #include <dcomp.h>
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <dxgi1_2.h>
+#endif
 #include <wrl.h>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -38,6 +41,10 @@ class PlayerVideoBackdrop final : public IDCompositionVisual
     QPointF m_videoPosition;
     bool m_content = false, m_enabled = false;
     HRESULT m_error = S_OK;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    ComPtr<IDXGISwapChain1> m_swapchain;
+    QSize m_surfaceAtPosition;
+#endif
 
     HRESULT check(HRESULT result) { if (FAILED(result)) m_error = result; return result; }
 
@@ -113,6 +120,11 @@ public:
     void setVideoPosition(const QPointF &position)
     {
         QMutexLocker lock(&m_lock);
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        DXGI_SWAP_CHAIN_DESC1 descriptor{};
+        m_surfaceAtPosition = m_swapchain && SUCCEEDED(m_swapchain->GetDesc1(&descriptor))
+            ? QSize(int(descriptor.Width), int(descriptor.Height)) : QSize();
+#endif
         m_videoPosition = position;
         for (auto &region : m_regions) {
             check(region.video->SetOffsetX(float(position.x() - region.rect.x())));
@@ -176,6 +188,11 @@ public:
         if (changed) check(m_device->Commit());
 #ifdef VLC_PLAYER_DIAGNOSTICS
         return {{QStringLiteral("video_content"), m_content}, {QStringLiteral("enabled"), m_enabled},
+                {QStringLiteral("surface_at_placement_px"), QVariantMap{
+                    {QStringLiteral("width"), m_surfaceAtPosition.width()},
+                    {QStringLiteral("height"), m_surfaceAtPosition.height()}}},
+                {QStringLiteral("video_position_px"), QVariantMap{
+                    {QStringLiteral("x"), m_videoPosition.x()}, {QStringLiteral("y"), m_videoPosition.y()}}},
                 {QStringLiteral("hresult"), quint32(m_error)}, {QStringLiteral("regions"), regions}};
 #else
         return {};
@@ -187,6 +204,10 @@ public:
         QMutexLocker lock(&m_lock);
         HRESULT result = m_source->SetContent(content);
         if (FAILED(result)) return result;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        m_swapchain.Reset();
+        if (content) content->QueryInterface(IID_PPV_ARGS(&m_swapchain));
+#endif
         for (auto &region : m_regions) check(region.video->SetContent(content));
         m_content = content != nullptr;
         return result;

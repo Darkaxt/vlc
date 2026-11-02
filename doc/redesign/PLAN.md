@@ -1,6 +1,39 @@
 # VLC redesign stages and reconciliation
 
-**M2 First-run usability and fork identity is COMPLETE (2 November 2026).**
+**M2 First-run usability and fork identity is ACTIVE again (2 November 2026).**
+The user's1.1.2 screenshot shows a black seek-preview image for a4K VP9 MP4.
+R80 acceptance is reopened: reproduce with the supplied local file around5:11,
+trace decoded frame through provider and visible popup, correct the proven cause,
+then verify actual changing/nonblank content, cold/cache latency, latest hover,
+input invalidation and cancellation. Preserve the user's file and live profile.
+R78 requires one verified corrective1.1.3 release after the complete repair,
+independent downloads/native verification, retained/weekly binding and exact cleanup.
+All other current-source evidence is reusable where its relevant code is unchanged.
+No build until the cause and cohesive repair are established; no desktop input,
+active-player takeover, shutdown or cold SDK/MPV rebuild. No tracked deferrals.
+R52 also includes the user's transport-icon sharpness request: preserve the
+reference controls and action states, preserve the compared original vector geometry, correct
+shared icon sampling and inspect real native100/150/200%/fractional-scale pixels.
+Both repairs ship together after one coordinated affected-workflow acceptance.
+The requested VTracer trial traced the exact original silhouettes from24px and
+384px PNG renders. Native-size tracing distorts the curves;384px tracing preserves
+them closely and looks effectively identical to the existing source SVGs.
+Retain the original vectors. Rounded corners are intentional; investigate actual
+edge diffusion independently with baseline/new sampling in the native renderer.
+The native thumbnail probe proved the released core returns the opening frame
+(PTS1) before processing its queued seek. The cohesive correction now applies
+the thumbnail's initial seek before first demux; actual-app acceptance is pending.
+The newly reported library-panel collapse flash belongs to this same ACTIVE M2
+repair batch. Its current ordering commits the video position before reporting
+the new output size; MPV additionally queues the resized-frame presentation.
+Resize/present before the placement commit, then verify paused/playing transitions
+in both engines and the native swapchain size at placement. This remains an
+acceptance blocker until verified and ships with the other1.1.3 repairs.
+R74 now defaults video-driven window resizing to off, as requested; preserve the
+explicit opt-in preference and bounded enabled behavior. Verify default file-open,
+replacement, manual sizing and fullscreen restoration in both engines with this batch.
+
+The following records the delivered1.1.2 baseline, not acceptance of this new case.
 [Modern VLC Fork 1.1.2](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.2)
 delivers all nine reported repairs, both confirmed subtitle gaps and the R52
 shortcut-design correction. Application source is `409daf4ef173f463d7833464b128513fda04366d`.
@@ -8,7 +41,7 @@ The final closure changes only documentation, evidence and the host verification
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M2 First-run usability and fork identity | COMPLETE | R52/R65/R73-R82: reference keycaps/footer at100/150/200%; editable and persisted shortcuts; blank-root idle and explicit indexing; flat PE/window icons; fork update privacy/failure/retry/HTTPS; display-bounded main video including MPV replacement/audio transitions; fast cached previews; accurate subtitle menu and selected embedded/external text cues, timing/navigation, handover and restart. Normal package, published four-asset release, independent downloads/native verification, protected profiles, retained build/weekly binding and exact cleanup all pass. | None. | None. |
+| M2 First-run usability and fork identity | ACTIVE | Delivered1.1.2 baseline: R52/R65/R73-R77/R79/R81/R82 and preview checks on synthetic inputs; published assets and protected profiles verified. | R80: user's4K VP9 MP4 produces a black preview despite a published timestamp. Internal, root cause under investigation; resolve by proving correct actual popup pixels for this file and affected regressions. R78: corrective1.1.3 final delivery, retained binding and cleanup depend on that repair. | None. |
 
 Native acceptance uses the same production tree as the normal release. The
 4K preview measured 99.6047ms cold and 0.0009ms cached; previews use keyframes.
@@ -39,11 +72,11 @@ have an explicit continuing weekly consumer outside the portable package.
 Exact task/controller/font/build scratch is absent after reviewed cleanup;
 previous releases and installed profiles are preserved.
 
-[Final reconciliation](resources/m2-verification.json) records delivery hashes,
-verification applicability, limitations and cleanup. No blocker or tracked
-deferral remains. Existing native owners retain lifecycle and state; no new
+[Historical1.1.2 reconciliation](resources/m2-verification.json) records delivery hashes,
+verification applicability, limitations and cleanup. The reopened R80/R78 blockers
+above govern current work. Existing native owners retain lifecycle and state; no new
 framework or further refactor is required. M1/S8 remain COMPLETE; S9 remains
-NOT STARTED. No implementation stage is ACTIVE.
+NOT STARTED. M2 is the only ACTIVE implementation stage.
 
 **M1 Upstream sync and optimized release is COMPLETE (1 November 2026).**
 [Modern VLC Fork 1.1.1](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.1)
