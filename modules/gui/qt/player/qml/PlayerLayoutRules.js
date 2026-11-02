@@ -2,7 +2,14 @@
 function defaults() {
     return {topLeft:['more','browser','divider','folder'],topCenter:['filename'],topRight:['fullscreen'],
             bottomLeft:['previous','play','next'],bottomCenter:['elapsed','seek','duration'],
-            bottomRight:['mute','volume','tools','subtitles','audio','queue']}
+            bottomRight:['mute','volume','audio','subtitles','tools','queue']}
+}
+function currentStockStore(store) {
+    // Upgrade only the untouched, unnamed former stock layout in memory.
+    // Named profiles and every genuinely customized arrangement retain order.
+    var prior=defaults();prior.bottomRight=['mute','volume','tools','subtitles','audio','queue']
+    if(store.selected!=='' || !zones.every(zone=>JSON.stringify(store.layout[zone])===JSON.stringify(prior[zone])))return store
+    var next=copy(store);next.layout=defaults();return next
 }
 var zones=['topLeft','topCenter','topRight','bottomLeft','bottomCenter','bottomRight']
 var controls=['more','browser','divider','folder','filename','fullscreen','previous','play','next','elapsed','seek','duration',

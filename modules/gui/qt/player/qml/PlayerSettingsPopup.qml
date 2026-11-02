@@ -12,6 +12,7 @@ T.Popup {
     property int page: 0
     property string expanded: ""
     property bool pixelSizes: false
+    property bool metadataExpanded: false
     property int settingsRevision: 0
     Connections { target: MediaTools; function onChanged() { settingsPopup.settingsRevision++ } }
     function filterEnabled(module) { const revision = settingsRevision; return MediaTools.filterEnabled(module) }
@@ -81,6 +82,7 @@ T.Popup {
         property bool checked: false
         property bool available: true
         property bool requiresVlc: false
+        property string unavailableReason: ""
         readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
         signal toggled(bool enabled)
         width: body.width - PlayerStyle.px(40)
@@ -92,8 +94,12 @@ T.Popup {
             value: parent.checked
             enabled: parent.available && !Player.engineSwitching && (!parent.requiresVlc || Player.playbackEngine === "vlc")
             Accessible.name: parent.displayLabel
+            Accessible.description: parent.unavailableReason.length ? parent.unavailableReason : value ? qsTr("On") : qsTr("Off")
             onClicked: parent.toggled(!parent.checked)
         }
+        HoverHandler { id: reasonHover }
+        T.ToolTip.visible: reasonHover.hovered && unavailableReason.length>0
+        T.ToolTip.text: unavailableReason
     }
     component Effect: Column {
         id: effect
@@ -162,14 +168,17 @@ T.Popup {
         property string text
         property var choices
         property bool requiresVlc: true
+        property bool referenceControl: false
         readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
         width: body.width - PlayerStyle.px(40)
-        height: PlayerStyle.px(48)
+        height: PlayerStyle.px(referenceControl ? 68 : 48)
         x: PlayerStyle.px(20)
         Label { Layout.fillWidth: true; text: parent.displayLabel }
         PlayerSettingsChoice {
             id: trackChoice
-            Layout.preferredWidth: PlayerStyle.px(140)
+            Layout.preferredWidth: PlayerStyle.px(choiceRow.referenceControl ? 220 : 140)
+            Layout.preferredHeight: PlayerStyle.px(choiceRow.referenceControl ? 48 : 32)
+            outlined: choiceRow.referenceControl
             label: parent.displayLabel
             enabled: !Player.engineSwitching && (!choiceRow.requiresVlc || Player.playbackEngine === "vlc")
             model: parent.choices
@@ -297,8 +306,12 @@ T.Popup {
                     onClicked: { settingsPopup.page = index; settingsPopup.expanded = "" }
                     contentItem: RowLayout {
                         spacing: PlayerStyle.px(4)
-                        IconImage { smooth: false; source: "qrc:/redesign/icons/" + ["playback","video","audio","subtitles"][parent.parent.index] + ".svg"; sourceSize: Qt.size(PlayerStyle.px(20), PlayerStyle.px(20)); Layout.preferredWidth: PlayerStyle.px(20); Layout.preferredHeight: PlayerStyle.px(20); color: settingsPopup.page === parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground }
-                        Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(12); Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
+                        Item {
+                            Layout.preferredWidth: PlayerStyle.px(24); Layout.preferredHeight: PlayerStyle.px(24)
+                            Image { visible: parent.parent.parent.index===0; anchors.fill: parent; smooth: false; source: "qrc:/redesign/icons/tab-playback.svg"; sourceSize: Qt.size(width,height) }
+                            IconImage { visible: parent.parent.parent.index!==0; anchors.fill: parent; smooth: false; source: "qrc:/redesign/icons/" + ["playback","video","audio","subtitles"][parent.parent.parent.index] + ".svg"; sourceSize: Qt.size(width,height); color: PlayerStyle.sectionForeground }
+                        }
+                        Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(14); color: settingsPopup.page===parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground; Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
                     }
                     background: Item {
                         Rectangle { anchors.bottom: parent.bottom; width: parent.width - PlayerStyle.px(16); x: PlayerStyle.px(8); height: PlayerStyle.px(2); color: settingsPopup.page === parent.parent.index ? PlayerStyle.accent : "transparent" }
@@ -312,7 +325,7 @@ T.Popup {
             objectName: "mediaSettingsBody"
             y: PlayerStyle.px(51)
             width: parent.width
-            height: Math.max(0, parent.height - y - PlayerStyle.px(126))
+            height: Math.max(0, parent.height - y - (settingsPopup.page===0 ? 0 : PlayerStyle.px(126)))
             contentWidth: width
             contentHeight: pages.implicitHeight
             clip: true
@@ -349,41 +362,88 @@ T.Popup {
                 Column {
                     visible: settingsPopup.page === 0
                     width: parent.width
-                    Section { text: qsTr("Playback engine") }
-                    RowLayout {
-                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
-                        Button { Layout.fillWidth: true; text: "VLC"; checked: Player.playbackEngine === "vlc"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("vlc") }
-                        Button { Layout.fillWidth: true; text: "MPV / Dolby Vision"; checked: Player.playbackEngine === "mpv"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("mpv") }
-                    }
-                    Label {
-                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
-                        text: Player.engineSwitching ? qsTr("Switching engines… Playback will resume at the same position.")
-                            : qsTr("Switches this session without closing the player. The startup default is in Preferences.")
-                        font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground
-                        Accessible.role: Accessible.StaticText
-                    }
+                    topPadding: PlayerStyle.px(10)
                     Toggle { text: qsTr("Show Subtitle Timeline on Seekbar"); checked: MediaTools.timelineVisible; onToggled: enabled => MediaTools.timelineVisible = enabled }
                     Toggle { text: qsTr("Show Statistics"); requiresVlc: true; checked: MediaTools.statisticsVisible; onToggled: enabled => MediaTools.statisticsVisible = enabled }
-                    Toggle { text: qsTr("Show Audio Waveform"); checked: MediaTools.waveformVisible; onToggled: enabled => MediaTools.waveformVisible = enabled }
-                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: MediaTools.waveformVisible ? MediaAnalysis.waveformStatus : MediaAnalysis.previewStatus; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
-                    Toggle { text: qsTr("Reverse"); checked: Player.rate < 0; available: Player.rewindable; onToggled: enabled => { if (enabled !== (Player.rate < 0)) Player.reverse() } }
-                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); visible: !Player.rewindable; text: qsTr("Reverse is unavailable for this input."); color: PlayerStyle.sectionForeground }
-                    Section { text: qsTr("Sleep Timer") }
+                    Toggle { text: qsTr("Reverse"); checked: Player.rate < 0; available: Player.rewindable; unavailableReason: available ? "" : qsTr("Reverse is unavailable for this input."); onToggled: enabled => { if (enabled !== (Player.rate < 0)) Player.reverse() } }
                     RowLayout {
-                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
-                        PlayerSettingsChoice { id: sleep; Layout.fillWidth: true; label: qsTr("Sleep timer"); model: [qsTr("Off"), qsTr("1 minute"), qsTr("15 minutes"), qsTr("30 minutes"), qsTr("60 minutes"), qsTr("90 minutes")]; onActivated: MediaTools.armSleep([0,1,15,30,60,90][currentIndex]) }
-                        Button { text: qsTr("Cancel"); enabled: MediaTools.sleepMinutes > 0; onClicked: { MediaTools.cancelSleep(); sleep.currentIndex = 0 } }
+                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(68)
+                        Label { text: qsTr("Sleep Timer"); Layout.fillWidth: true }
+                        PlayerSettingsChoice {
+                            id: sleep
+                            Layout.preferredWidth: PlayerStyle.px(220); Layout.preferredHeight: PlayerStyle.px(48)
+                            outlined: true
+                            label: qsTr("Sleep timer")
+                            hoverEnabled: true
+                            Accessible.description: MediaTools.sleepStatus
+                            model: [qsTr("Off"), qsTr("1 minute"), qsTr("15 minutes"), qsTr("30 minutes"), qsTr("60 minutes"), qsTr("90 minutes")]
+                            currentIndex: [0,1,15,30,60,90].indexOf(MediaTools.sleepMinutes)
+                            displayText: MediaTools.sleepMinutes>0 ? qsTr("%1 minutes").arg(MediaTools.sleepMinutes) : qsTr("Off")
+                            onActivated: if(currentIndex===0)MediaTools.cancelSleep();else MediaTools.armSleep([0,1,15,30,60,90][currentIndex])
+                            T.ToolTip.visible: hovered && MediaTools.sleepMinutes>0
+                            T.ToolTip.text: MediaTools.sleepStatus
+                        }
                     }
-                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: MediaTools.sleepStatus; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
-                    Section { text: qsTr("Speed") }
+                    ChoiceRow { text: qsTr("Audio Visualizer"); choices: Player.audioVisualization; referenceControl: true }
+                    Item { width: 1; height: PlayerStyle.px(8) }
                     RowLayout {
-                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
-                        PlayerSettingsChoice { Layout.fillWidth: true; label: qsTr("Playback speed"); model: ["0.25×", "0.5×", "0.75×", "1×", "1.25×", "1.5×", "1.75×", "2×"]; currentIndex: [0.25,0.5,0.75,1,1.25,1.5,1.75,2].indexOf(Math.abs(Player.rate)); enabled: Player.ratechangable; onActivated: Player.rate = [0.25,0.5,0.75,1,1.25,1.5,1.75,2][currentIndex] }
-                        Label { text: Number(Player.rate).toFixed(2) + "×" }
+                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(52)
+                        Label { text: qsTr("Speed"); Layout.fillWidth: true }
+                        T.TextField {
+                            Layout.preferredWidth: PlayerStyle.px(140); Layout.preferredHeight: PlayerStyle.px(32)
+                            padding: PlayerStyle.px(10)
+                            text: (Math.round(Math.abs(Player.rate)*100)/100)+"x"
+                            selectByMouse: true
+                            enabled: Player.ratechangable && !Player.engineSwitching
+                            color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
+                            Accessible.name: qsTr("Playback speed value")
+                            onEditingFinished: {
+                                const value=Number(text.replace(/[x×]/g,""))
+                                if(isFinite(value)&&value>0)Player.rate=(Player.rate<0?-1:1)*value
+                                text=Qt.binding(()=>(Math.round(Math.abs(Player.rate)*100)/100)+"x")
+                            }
+                            background: Rectangle { color: PlayerStyle.timeline; radius: PlayerStyle.px(6); border.color: PlayerStyle.accent; border.width: parent.activeFocus ? PlayerStyle.px(1) : 0 }
+                        }
                     }
-                    ChoiceRow { text: qsTr("Audio Visualizer"); choices: Player.audioVisualization }
-                    Section { text: qsTr("Metadata") }
-                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: qsTr("Title: %1\nArtist: %2\nAlbum: %3\nLocation: %4").arg(Player.title).arg(Player.artist).arg(Player.album).arg(Player.url); font.pixelSize: PlayerStyle.px(12) }
+                    T.Slider {
+                        id: speedSlider
+                        x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(32)
+                        from: 0.25; to: 2; stepSize: 0.01; padding: 0
+                        enabled: Player.ratechangable && !Player.engineSwitching
+                        Accessible.name: qsTr("Playback speed")
+                        Accessible.description: qsTr("%1 times").arg(Math.abs(Player.rate))
+                        Binding on value { when: !speedSlider.pressed; value: Math.max(0.25,Math.min(2,Math.abs(Player.rate))); restoreMode: Binding.RestoreNone }
+                        onMoved: Player.rate=(Player.rate<0?-1:1)*value
+                        background: Rectangle {
+                            y: (speedSlider.height-height)/2; width: speedSlider.width; height: PlayerStyle.px(15); radius: PlayerStyle.px(6); color: PlayerStyle.timeline
+                            Rectangle { width: parent.width*speedSlider.visualPosition; height: parent.height; radius: parent.radius; color: PlayerStyle.accentWell }
+                            Repeater { model: 8; Rectangle { required property int index; x: (parent.width-PlayerStyle.px(4))*index/7; y: PlayerStyle.px(4); width: PlayerStyle.px(2); height: PlayerStyle.px(7); color: PlayerStyle.foreground; opacity: 0.18 } }
+                        }
+                        handle: Rectangle { x: speedSlider.visualPosition*(speedSlider.availableWidth-width); y: (speedSlider.height-height)/2; width: PlayerStyle.px(8); height: PlayerStyle.px(24); radius: PlayerStyle.px(4); color: PlayerStyle.accent }
+                    }
+                    Item {
+                        x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(32)
+                        Repeater {
+                            model: [0.25,0.5,0.75,1,1.25,1.5,1.75,2]
+                            Label {
+                                required property int index
+                                required property var modelData
+                                x: Math.max(0,Math.min(parent.width-width,PlayerStyle.px(4)+(parent.width-PlayerStyle.px(8))*index/7-width/2))
+                                text: modelData; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground
+                            }
+                        }
+                    }
+                    Section { text: qsTr("Playback engine") }
+                    RowLayout {
+                        x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(48)
+                        Button { Layout.fillWidth: true; text: "VLC"; checked: Player.playbackEngine==="vlc"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("vlc") }
+                        Button { Layout.fillWidth: true; text: "MPV"; checked: Player.playbackEngine==="mpv"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("mpv") }
+                    }
+                    Label { visible: Player.engineSwitching; x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); text: qsTr("Switching engines… Playback will resume at the same position."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
+                    Toggle { text: qsTr("Show Audio Waveform"); checked: MediaTools.waveformVisible; onToggled: enabled => MediaTools.waveformVisible=enabled }
+                    Label { x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); text: MediaTools.waveformVisible ? MediaAnalysis.waveformStatus : MediaAnalysis.previewStatus; visible: text.length>0; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
+                    Button { x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); text: qsTr("Media Information"); onClicked: settingsPopup.metadataExpanded=!settingsPopup.metadataExpanded }
+                    Label { visible: settingsPopup.metadataExpanded; x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); text: qsTr("Title: %1\nArtist: %2\nAlbum: %3\nLocation: %4").arg(Player.title).arg(Player.artist).arg(Player.album).arg(Player.url); font.pixelSize: PlayerStyle.px(12) }
                 }
                 Column {
                     visible: settingsPopup.page === 1
@@ -516,6 +576,7 @@ T.Popup {
             }
         }
         Column {
+            visible: settingsPopup.page!==0
             x: PlayerStyle.px(20)
             y: parent.height - PlayerStyle.px(104)
             width: parent.width - PlayerStyle.px(40)

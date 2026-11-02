@@ -15,6 +15,8 @@ case "$mode" in
     diagnostics-mpv) flags=-DVLC_PLAYER_DIAGNOSTICS; plugin_scope=mpv ;;
     normal-mpv-full) flags=; plugin_scope=full ;;
     diagnostics-mpv-full) flags=-DVLC_PLAYER_DIAGNOSTICS; plugin_scope=full ;;
+    normal-mpv-current) flags=; plugin_scope=current ;;
+    diagnostics-mpv-current) flags=-DVLC_PLAYER_DIAGNOSTICS; plugin_scope=current ;;
     *) printf '%s\n' 'Expected normal, diagnostics, normal-mpv or diagnostics-mpv' >&2; exit 2 ;;
 esac
 if test -z "$flags"; then
@@ -24,11 +26,15 @@ test -f "$build_root/config.status"
 test -f "$source_root/modules/gui/qt/maininterface/player_video_backdrop.hpp"
 python3 "$source_root/tools/windows-player/configure-player.py" \
     --source "$source_root" --build "$build_root" --verify-only
-if test "$plugin_scope" = mpv || test "$plugin_scope" = full; then
+if test "$plugin_scope" = mpv || test "$plugin_scope" = full || test "$plugin_scope" = current; then
     # S8 changes the Qt frontend and hotkey dispatcher. Reuse the verified 1.0
     # package's other plugins only with the exact additive public-ABI contract.
     if test "$plugin_scope" = mpv; then
         python3 "$source_root/tools/windows-player/check-mpv-plugin-abi.py" --source "$source_root"
+    fi
+    if test "$plugin_scope" = current; then
+        python3 "$source_root/tools/windows-player/verify-retained-plugin-cohort.py" \
+            --source "$source_root" --build "$build_root" --runtime "$runtime"
     fi
     mpv_flags=-DVLC_MPV_RUNTIME_IDENTITY
     python3 "$source_root/tools/windows-player/stage-built-mpv-runtime.py" \
@@ -42,14 +48,14 @@ fi
 # These generated headers belong to src's Automake graph, not an include
 # subdirectory Makefile. Explicit targets also support the first cold build.
 make -C "$build_root/src" -j1 ../include/vlc_about.h fourcc_tables.h stamp-revision
-make -C "$build_root/compat" -j1
-make -C "$build_root/src" -j1 libvlccore.la
+make -C "$build_root/compat" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk"
+make -C "$build_root/src" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" libvlccore.la
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/libvlccore.dll" "$build_root/src/.libs/libvlccore.dll"
-make -C "$build_root/lib" -j1 libvlc.la
+make -C "$build_root/lib" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" libvlc.la
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/libvlc.dll" "$build_root/lib/.libs/libvlc.dll"
-make -C "$build_root/bin" -j1 -f Makefile -f "$source_root/tools/windows-player/windows-icon.mk" vlc.exe vlc-cache-gen.exe vlc-preparser.exe
+make -C "$build_root/bin" -j1 -f Makefile -f "$source_root/tools/windows-player/windows-icon.mk" -f "$source_root/tools/windows-player/release-profile-objects.mk" vlc.exe vlc-cache-gen.exe vlc-preparser.exe
 cp "$source_root/share/icons/vlc.ico" "$runtime/vlc.ico"
 # The shared Windows module resource belongs to the parent modules graph.
 # Building Qt directly does not run that parent's BUILT_SOURCES target.
@@ -103,6 +109,7 @@ if test "$plugin_scope" != maintained && test "$compile_cache" = 1; then
     # A failed object still fails the whole step; no Qt link or acceptance runs.
     make -C "$build_root/modules/gui/qt" -j1 -k -f Makefile \
         -f "$source_root/tools/windows-player/qt-objects.mk" \
+        -f "$source_root/tools/windows-player/release-profile-objects.mk" \
         PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" \
         qt-player-objects || qt_compile_result=$?
     python3 "$source_root/tools/windows-player/cache-toolchain.py" release
@@ -115,7 +122,8 @@ fi
 if test "$compile_cache" = 0; then
     printf 'Player compile caches omitted: %s\n' "$VLC_PLAYER_COMPILE_CACHE_REASON"
 fi
-make -C "$build_root/modules/gui/qt" -j1 \
+make -C "$build_root/modules/gui/qt" -j1 -f Makefile \
+    -f "$source_root/tools/windows-player/release-profile-objects.mk" \
     PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all
 if test "$plugin_scope" = full; then
     # All configured modules use this source/header/core cohort after an ABI change.
@@ -129,6 +137,7 @@ if test "$plugin_scope" = full; then
     python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" --prepare --source "$source_root" --build "$build_root"
     make -C "$build_root/modules" -j1 -f Makefile \
         -f "$source_root/tools/windows-player/upstream-codec-links.mk" \
+        -f "$source_root/tools/windows-player/release-profile-objects.mk" \
         PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all-am || module_result=$?
     if test "$compile_cache" = 1; then
         python3 "$source_root/tools/windows-player/cache-toolchain.py" release
@@ -140,13 +149,21 @@ if test "$plugin_scope" = full; then
     python3 "$source_root/tools/windows-player/stage-full-plugins.py" \
         --source "$source_root" --build "$build_root" --runtime "$runtime"
 fi
-make -C "$build_root/modules" -j1 libhotkeys_plugin.la
+if test "$plugin_scope" = current; then
+    # This cohort has already passed the global release-profile rebuild. Only
+    # Qt production sources changed, proven against the exact retained commit.
+    python3 "$source_root/tools/windows-player/stage-full-plugins.py" \
+        --source "$source_root" --build "$build_root" --runtime "$runtime" --retain-non-qt
+fi
+if test "$plugin_scope" != current; then
+make -C "$build_root/modules" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" libhotkeys_plugin.la
 mkdir -p "$runtime/plugins/control"
 x86_64-w64-mingw32-strip --strip-debug \
     -o "$runtime/plugins/control/libhotkeys_plugin.dll" \
     "$build_root/modules/.libs/libhotkeys_plugin.dll"
+fi
 if test "$plugin_scope" = maintained || test "$plugin_scope" = full; then
-make -C "$build_root/modules" -j1 libfreetype_plugin.la libequalizer_plugin.la libmedialibrary_plugin.la libstream_out_transcode_plugin.la libwasapi_plugin.la libskins2_plugin.la
+make -C "$build_root/modules" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" libfreetype_plugin.la libequalizer_plugin.la libmedialibrary_plugin.la libstream_out_transcode_plugin.la libwasapi_plugin.la libskins2_plugin.la
 make -C "$build_root/share" -j1 lua/extensions/VLSub.luac skins2/default.vlt
 # Compile against the existing template without updating tracked translator
 # sources. GNU gettext still performs its build-only --for-msgfmt merge.

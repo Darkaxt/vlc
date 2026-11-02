@@ -190,7 +190,7 @@ def main():
                 expected_state = 2 if playing else 3
                 assert before['core']['state'] == expected_state, before['core']
                 inspect('handover-settings-' + engine, 'click', '--target', 'toolsButton', '--capture')
-                inspect('choose-' + engine, 'click', '--name', 'MPV / Dolby Vision' if engine == 'mpv' else 'VLC')
+                inspect('choose-' + engine, 'click', '--name', 'MPV' if engine == 'mpv' else 'VLC')
                 settled, _ = inspect('handover-settled-' + engine, 'snapshot',
                     '--await-core', 'engine_switching', '--await-value', 'false')
                 if settled['core']['engine'] != engine:
@@ -261,7 +261,7 @@ def main():
             inspect('idle-home-menu-' + engine, 'click', '--target', 'menuBtn')
             inspect('idle-playback-menu-' + engine, 'widget_click', '--menu-action', 'Playback')
             inspect('idle-engine-menu-' + engine, 'widget_click', '--menu-action', 'Playback engine')
-            inspect('idle-engine-choice-' + engine, 'widget_click', '--menu-action', 'MPV / Dolby Vision' if engine == 'mpv' else 'VLC')
+            inspect('idle-engine-choice-' + engine, 'widget_click', '--menu-action', 'MPV' if engine == 'mpv' else 'VLC')
             selected, _ = inspect('idle-engine-settled-' + engine, 'snapshot',
                 '--await-core', 'engine_switching', '--await-value', 'false')
             assert selected['core']['engine'] == engine and selected['core']['state'] == 0, selected['core']
@@ -424,7 +424,7 @@ def main():
                 if args.runtime_failure:
                     before, _ = inspect('before-rejected-engine', 'snapshot')
                     inspect('open-engine-menu', 'click', '--target', 'toolsButton')
-                    inspect('choose-unavailable-mpv', 'click', '--name', 'MPV / Dolby Vision')
+                    inspect('choose-unavailable-mpv', 'click', '--name', 'MPV')
                     after, _ = inspect('rejected-engine-error', 'snapshot', '--capture')
                     assert after['core']['engine'] == 'vlc' and not after['core']['engine_switching']
                     assert after['core']['state'] == before['core']['state'] == 3

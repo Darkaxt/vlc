@@ -1,6 +1,8 @@
 {
   "schema": "vlc_redesign.icon_sampling_diagnosis.v1",
   "qt": "6.8.3",
+  "retained_player_qt": "6.8.0",
+  "version_scope": "Isolated sampling experiment uses Qt6.8.3; retained player SDK headers identify6.8.0. The experiment is diagnostic and does not replace native player acceptance.",
   "backend": "Direct3D11",
   "scales": [
     "1",

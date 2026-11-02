@@ -12,6 +12,14 @@ tinting; the Figma component canvas is omitted. Saved path geometry and nested
 affine matrices are retained. Rectangle primitives use their current dimensions,
 radius and stroke alignment, rather than potentially stale geometry caches.
 
+M2 restores the default outlined sidebar component `69:814` and the original
+two-tone main-menu and Playback-tab components recorded in the manifest. Their
+neutral/orange paints are retained rather than flattened to a single mask.
+Inside-aligned vector stroke outlines are clipped to their saved fill contours,
+as in Figma; omitting that clipping made outlines extend outside their intended
+bounds. The original path commands and curves are preserved. Native comparison
+against the interactive reference remains required before release.
+
 Reproduce with the locked design-source dependencies and
 `node tools/design-source/player-assets.mjs <explicit-output-directory>`.
 Temporary dependencies and exports must use the task's E: scratch root.

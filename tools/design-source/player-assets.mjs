@@ -23,7 +23,14 @@ export const icons = [
   ['48:54', 'fullscreen'], ['187:322', 'stop'], ['45:40', 'close'],
   ['48:46', 'minimize'], ['48:51', 'maximize'], ['2230:9222', 'tools'],
   ['51:808', 'folder'], ['48:57', 'vlc'], ['247:418', 'more'],
-  ['87:1041', 'sidebar'],
+  ['69:814', 'sidebar'],
+  ['2461:9644', 'menu-file', true], ['2461:9734', 'menu-folder', true],
+  ['2461:9672', 'menu-network', true], ['2460:9552', 'menu-disc', true],
+  ['2493:9342', 'menu-capture', true], ['2461:9628', 'menu-convert', true],
+  ['2493:9246', 'menu-recent', true], ['2493:9300', 'menu-profile', true],
+  ['2493:9253', 'menu-shortcuts', true], ['2493:9283', 'menu-customize', true],
+  ['2493:9293', 'menu-settings', true], ['2461:9651', 'menu-info', true],
+  ['6073:13944', 'tab-playback', true],
   ['87:1026', 'home-active'], ['71:857', 'library-videos'], ['87:1015', 'library-videos-active'],
   ['71:851', 'library-music'], ['87:1009', 'library-music-active'],
   ['42:357', 'library-playlists'], ['858:5098', 'library-playlists-active'],
@@ -78,6 +85,9 @@ export function extractPlayerAssets(destination) {
   }
   for (const list of children.values()) list.sort((a, b) =>
     a.parentIndex.position < b.parentIndex.position ? -1 : a.parentIndex.position > b.parentIndex.position ? 1 : 0);
+  let preserveColors = false, clipSerial = 0;
+  const paintColor = paint => preserveColors
+    ? `rgb(${[paint.color.r, paint.color.g, paint.color.b].map(value => Math.round(value * 255)).join(',')})` : 'white';
   const render = node => {
     if (node.visible === false) return '';
     const paths = [];
@@ -94,16 +104,30 @@ export function extractPlayerAssets(destination) {
         const inset = !stroke ? 0 : node.strokeAlign === 'INSIDE' ? weight / 2 : node.strokeAlign === 'OUTSIDE' ? -weight / 2 : 0;
         for (const paint of visiblePaints) {
           const opacity = (paint.opacity ?? 1) * (paint.color?.a ?? 1);
-          paths.push(`<rect x="${inset}" y="${inset}" width="${node.size.x - inset * 2}" height="${node.size.y - inset * 2}" rx="${Math.max(0, (node.cornerRadius ?? 0) - inset)}" fill="${stroke ? 'none' : 'white'}" stroke="${stroke ? 'white' : 'none'}" stroke-width="${weight}" opacity="${opacity}"/>`);
+          paths.push(`<rect x="${inset}" y="${inset}" width="${node.size.x - inset * 2}" height="${node.size.y - inset * 2}" rx="${Math.max(0, (node.cornerRadius ?? 0) - inset)}" fill="${stroke ? 'none' : paintColor(paint)}" stroke="${stroke ? paintColor(paint) : 'none'}" stroke-width="${weight}" opacity="${opacity}"/>`);
         }
         continue;
       }
+      const outlined = [];
       for (const paint of visiblePaints) for (const geometryPath of node[geometry] ?? []) {
         const blob = document.blobs[geometryPath.commandsBlob - (document.blobBaseIndex ?? 0)];
         if (!blob?.bytes) throw new Error('Missing saved path geometry');
         const opacity = (paint.opacity ?? 1) * (paint.color?.a ?? 1);
-        paths.push(`<path fill="white" fill-opacity="${opacity}" fill-rule="${geometryPath.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`);
+        outlined.push(`<path fill="${paintColor(paint)}" fill-opacity="${opacity}" fill-rule="${geometryPath.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`);
       }
+      if (geometry === 'strokeGeometry' && node.strokeAlign === 'INSIDE' && outlined.length) {
+        // Saved inside-stroke outlines straddle their contour. Figma clips
+        // them to the fill shape; without that clip their apparent width and
+        // bounds double (for example the clapperboard and sidebar outlines).
+        if (!node.fillGeometry?.length) throw new Error(`Inside stroke has no clip contour: ${node.name}`);
+        const clip = `inside-${clipSerial++}`;
+        const contours = node.fillGeometry.map(g => {
+          const blob = document.blobs[g.commandsBlob - (document.blobBaseIndex ?? 0)];
+          if (!blob?.bytes) throw new Error('Missing inside-stroke clip geometry');
+          return `<path clip-rule="${g.windingRule === 'ODD' ? 'evenodd' : 'nonzero'}" d="${pathCommands(blob.bytes)}"/>`;
+        }).join('');
+        paths.push(`<defs><clipPath id="${clip}">${contours}</clipPath></defs><g clip-path="url(#${clip})">${outlined.join('')}</g>`);
+      } else paths.push(...outlined);
     }
     // Text-bearing S6 icons retain the original outlined glyph blobs too.
     // Their coordinates are em-normalized, Y-up from the saved baseline.
@@ -115,7 +139,7 @@ export function extractPlayerAssets(destination) {
       for(const glyph of glyphs){
         const blob=document.blobs[glyph.commandsBlob-(document.blobBaseIndex??0)];
         if(!blob?.bytes||(glyph.rotation??0)!==0||!Number.isFinite(glyph.fontSize))throw new Error(`Unsupported saved glyph: ${node.name}`);
-        for(const paint of paints)paths.push(`<path fill="white" fill-opacity="${(paint.opacity??1)*(paint.color?.a??1)}" transform="translate(${glyph.position.x} ${glyph.position.y}) scale(${glyph.fontSize} ${-glyph.fontSize})" d="${pathCommands(blob.bytes)}"/>`);
+        for(const paint of paints)paths.push(`<path fill="${paintColor(paint)}" fill-opacity="${(paint.opacity??1)*(paint.color?.a??1)}" transform="translate(${glyph.position.x} ${glyph.position.y}) scale(${glyph.fontSize} ${-glyph.fontSize})" d="${pathCommands(blob.bytes)}"/>`);
       }
     }
     // Figma saves the final boolean outline; its children are construction
@@ -127,7 +151,8 @@ export function extractPlayerAssets(destination) {
     return `<g transform="${affine(node.transform)}" opacity="${node.opacity ?? 1}">${paths.join('')}${nested}</g>`;
   };
   fs.mkdirSync(destination, { recursive: true });
-  const exported = icons.map(([key, name]) => {
+  const exported = icons.map(([key, name, colored = false]) => {
+    preserveColors = colored; clipSerial = 0;
     const root = nodes.get(key);
     if (!root) throw new Error(`Missing selected icon ${key}`);
     // A symbol's fill is its Figma editing canvas, not part of the icon.
@@ -135,7 +160,7 @@ export function extractPlayerAssets(destination) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${root.size.x}" height="${root.size.y}" viewBox="0 0 ${root.size.x} ${root.size.y}">${content}</svg>\n`;
     const filename = `${name}.svg`;
     fs.writeFileSync(path.join(destination, filename), svg);
-    return { id: key, name: root.name, filename, width: root.size.x, height: root.size.y, sha256: hash(svg) };
+    return { id: key, name: root.name, filename, width: root.size.x, height: root.size.y, ...(colored ? {originalColors:true} : {}), sha256: hash(svg) };
   });
   // The cone is a saved vector, too. SVG keeps it usable with VLC's existing
   // renderer without introducing the separately packaged QtQuick.Shapes module.

@@ -397,7 +397,7 @@ FocusScope {
             Layout.fillWidth: true; spacing: PlayerStyle.px(8)
             Label { text: qsTr("%1 items").arg(root.itemCount); color: PlayerStyle.sectionForeground; Layout.fillWidth: true }
             LibraryIcon { glyph: "sort"; description: qsTr("Sort library"); AccessibleCompat.id: "librarySort"; enabled: !["music","home","network"].includes(root.category); onClicked: sortMenu.open() }
-            LibraryIcon { glyph: root.gridMode ? "grid" : "list"; description: qsTr("Change library view"); AccessibleCompat.id: "libraryViewMode"; enabled: LibraryState.writable; onClicked: viewMenu.open() }
+            LibraryIcon { glyph: root.category === "home" ? "list" : root.gridMode ? "grid" : "list"; description: qsTr("Change library view"); AccessibleCompat.id: "libraryViewMode"; enabled: LibraryState.writable; onClicked: viewMenu.open() }
             LibraryIcon { visible: root.compact; glyph: "search"; description: qsTr("Search library"); onClicked: { search.visible = !search.visible; if (search.visible) search.forceActiveFocus() } }
         }
         T.TextField {

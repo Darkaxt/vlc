@@ -45,6 +45,7 @@ Item {
     ShortcutExt{ sequences:MainCtx.queueShortcutSequences(); onActivated: MainCtx.playqueuePanel.visible = !MainCtx.playqueuePanel.visible; }
 
     ShortcutExt{ sequence:"F1"; onActivated: DialogsProvider.helpDialog() }
+    ShortcutExt{ sequence:"Shift+F1"; onActivated: DialogsProvider.aboutDialog() }
     ShortcutExt{ sequence:"F10"; onActivated: MainCtx.toggleToolbarMenu() }
     ShortcutExt{ sequence:"F11"; onActivated: MainCtx.toggleInterfaceFullScreen() }
     ShortcutExt{ sequence:"Ctrl+H"; onActivated: MainCtx.minimalView = !MainCtx.minimalView; }

@@ -40,7 +40,7 @@
       "filename": "replay.svg",
       "width": 24,
       "height": 24,
-      "sha256": "a99d0d385885962081bec5b9acbe8e0d6501f2d5f803f76d290ea2b2ec48a7cf"
+      "sha256": "ea6d17411e432b69c281865b5adea430c1fbb75e2691a2fc430991715f1fcc11"
     },
     {
       "id": "2115:7386",
@@ -48,7 +48,7 @@
       "filename": "speed.svg",
       "width": 24,
       "height": 24,
-      "sha256": "d4039abd9b0295a0aaa5f2be81f4c1658be27fa35e371450a6948730a505f356"
+      "sha256": "22055ae1da29d059813ee9fb6830f8cddc3891918416e55517e90eec3b3043aa"
     },
     {
       "id": "2115:7492",
@@ -56,7 +56,7 @@
       "filename": "snapshot.svg",
       "width": 24,
       "height": 24,
-      "sha256": "b8d53dad1e7ffec783604e8fde1e47338035f0ff28324048f959c453181f4fa5"
+      "sha256": "ab24d5adbe87522753e55ac11e66c4ed1d3fae2753b8111d8d78acfd1bd129e0"
     },
     {
       "id": "2127:7779",
@@ -88,7 +88,7 @@
       "filename": "quit.svg",
       "width": 24,
       "height": 24,
-      "sha256": "17c823480005a1b0daf1d27faf9de46f528130dbb85d504d06bb799840dda411"
+      "sha256": "93fb55222eaa9bf9c34425a29f7d5ff8cf3382ef104274d25666b5dab81c2529"
     },
     {
       "id": "2139:8439",
@@ -152,7 +152,7 @@
       "filename": "settings-recording.svg",
       "width": 24,
       "height": 24,
-      "sha256": "7c606dee526b1ac52dc834d4280bdc10b4f4fce28533e0ed11697af77a311701"
+      "sha256": "5fddd6a9da68bf556c24b181640b2c50a2e8f5272046e28c392e4400f3409778"
     },
     {
       "id": "2516:9369",
@@ -307,12 +307,129 @@
       "sha256": "7963ecaf686f63e0c3bf37f7d7cd03b84a51c2be502226712207ef81fec5814f"
     },
     {
-      "id": "87:1041",
-      "name": "name=sidebar, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "id": "69:814",
+      "name": "name=sidebar, direction=left, state=default, value=default, EQ=default, two-tone=no",
       "filename": "sidebar.svg",
       "width": 24,
       "height": 24,
-      "sha256": "db00cb4dfda51b01563fbfc9195385534760e71ccd24cc6e57db13cd1362d79a"
+      "sha256": "7f99246b07e4d9e257c1c63de88e7e61fb8cc07b403f083999f671b896a4d252"
+    },
+    {
+      "id": "2461:9644",
+      "name": "name=file, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-file.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "b52e0c992bac8a611e3a2a1d63851344f08d762c116e3b5a483f332b592070d4"
+    },
+    {
+      "id": "2461:9734",
+      "name": "name=folder, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-folder.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "9027438518e11b305f9bb5eaf6e56e13238b85358e25f373156cc95eb7981eca"
+    },
+    {
+      "id": "2461:9672",
+      "name": "name=streaming, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-network.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "9cd9c32a809fa254f1ff75d40c6792f2ea24317b3877810bee11c8ecb7a75130"
+    },
+    {
+      "id": "2460:9552",
+      "name": "name=disc, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-disc.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "8955ed53e24ea9fa9db7da01236c8ab0a84034915bd52963a00dd65dc382c5fe"
+    },
+    {
+      "id": "2493:9342",
+      "name": "name=capture-device, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-capture.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "da47c6606260c10de66413fd04e0e731ff28e00c534ad56593a30b5ccebefcad"
+    },
+    {
+      "id": "2461:9628",
+      "name": "name=swap, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-convert.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "93396ff88102adfa258d452cc104828295456d6cac2b5aba3a9fc34b35c95616"
+    },
+    {
+      "id": "2493:9246",
+      "name": "name=recent, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-recent.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "0447b460a878fbc46ae57fe2d29ea0d4af74bc740ff0df41920c652839176b57"
+    },
+    {
+      "id": "2493:9300",
+      "name": "name=profile, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-profile.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "2d219eaf2568fa292a6ae362af58febd983fd68bdb5a281daf66fae96f4c4448"
+    },
+    {
+      "id": "2493:9253",
+      "name": "name=hotkeys, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-shortcuts.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "36f686dedafa6d7a2e531c7e52dd344fa4154400c1a0b848e7d91136ecd2b550"
+    },
+    {
+      "id": "2493:9283",
+      "name": "name=paint, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-customize.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "8baf0dc205150aeed85f10e8d6b6aaec0f6a5597844073f6c6ba54ee9da08e4a"
+    },
+    {
+      "id": "2493:9293",
+      "name": "name=settings, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-settings.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "3342f7c785f50e69ecbdfaea0f658db696c2b7052badc509ffae72603ba62bff"
+    },
+    {
+      "id": "2461:9651",
+      "name": "name=info, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "menu-info.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "3d3899b6aeb1091fd86cfd3854ba879031825312ed727fbaf763b6ec80a2d138"
+    },
+    {
+      "id": "6073:13944",
+      "name": "name=playback, direction=default, state=selected, value=default, EQ=default, two-tone=yes",
+      "filename": "tab-playback.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "263a923975b906a0d7fbe21b79c8ad7127324f773b3673c97378e144b0e10b53"
     },
     {
       "id": "87:1026",
@@ -376,7 +493,7 @@
       "filename": "recent.svg",
       "width": 24,
       "height": 24,
-      "sha256": "613f48cb6efa5835dc7088aad15e14bee792d8c7e5dff8badd4337e8167ec61a"
+      "sha256": "b00bfa35c007b1058dba1ff8dbfdd45e40ff09cdc09c4354fdee599e37ee4bb6"
     },
     {
       "id": "477:1202",
@@ -384,7 +501,7 @@
       "filename": "network-active.svg",
       "width": 24,
       "height": 24,
-      "sha256": "600a64ab51fa4e9070b0efbab42b256e18efd9ca99c89e2ab83718c099462bfd"
+      "sha256": "13c5e54c6e51174bd4cf1fa1c201d9c466fbfeedfe2b2ffa3120e7a02106e618"
     },
     {
       "id": "6206:13629",
@@ -392,7 +509,7 @@
       "filename": "albums.svg",
       "width": 24,
       "height": 24,
-      "sha256": "2557fb47e22d534d710b4748d5959859cc564e9b78d64ce3bfd3df37a32d5c25"
+      "sha256": "028190850b1bff9372bd2a660a5a7d44b1e9660b6e0ab039d09613f455d04823"
     },
     {
       "id": "858:5155",
@@ -400,7 +517,7 @@
       "filename": "artists.svg",
       "width": 24,
       "height": 24,
-      "sha256": "eaa6e02d9ec58a0143e9274bced2b8083b476e5286d080f6d327128dbe03742e"
+      "sha256": "e37b19b249d591fbbf2d979ba18f54b84c1e0b07fac2758271df0722f32bc8f2"
     },
     {
       "id": "6191:13585",
@@ -408,7 +525,7 @@
       "filename": "genres.svg",
       "width": 24,
       "height": 24,
-      "sha256": "22159b1aac6f26442c416e3b5545ef2d644f9ec6848ff95475360a1be5911e62"
+      "sha256": "5b315f46cf51bb0d3a458c78329f5b8a5b9a19303108163a545af4b1cb16bd54"
     },
     {
       "id": "70:828",
@@ -416,7 +533,7 @@
       "filename": "home.svg",
       "width": 24,
       "height": 24,
-      "sha256": "2e40f52d8793cbfe74c268fb3e7c3356093f7b080bf8d97e72880476801c44f9"
+      "sha256": "4c8f12dc5c799a3600b7ae0313103047b0978b6e8e95bdfc0a0e00a11cf97070"
     },
     {
       "id": "70:833",
@@ -424,7 +541,7 @@
       "filename": "network.svg",
       "width": 24,
       "height": 24,
-      "sha256": "5a3b24a7d8bde9b9689715085b228bc6aa54fda38fe56170ac8addc2449f761f"
+      "sha256": "3846f85d056d05cbc1c74fa7b1fae525b55ea9cf03a377edb9875dbfaa3fc6f7"
     },
     {
       "id": "999:4806",
@@ -480,7 +597,7 @@
       "filename": "expand-library.svg",
       "width": 24,
       "height": 24,
-      "sha256": "bf8f813ca67c67b3dddf34dcd7790f5b3ce2856dfc4e90b7e7df71ff95bc7268"
+      "sha256": "ae7ad4552317d359060bb9cfcfb311aa06dea2dd1307d11f4d6eeed538b97d24"
     },
     {
       "id": "463:564",
@@ -560,7 +677,7 @@
       "filename": "video.svg",
       "width": 24,
       "height": 24,
-      "sha256": "23ba9b569266b3de4e619da24ee18ff932730a19efb4d9bc7bd5561c97b49ef4"
+      "sha256": "6ae65e14e52399d071dffb3856d3d05e9a50f673cb3a30a8a2a701977a99bea8"
     },
     {
       "id": "999:4802",

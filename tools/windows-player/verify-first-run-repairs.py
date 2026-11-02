@@ -31,7 +31,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -159,7 +159,7 @@ class Case:
             self.inspect('view-mounted','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
         if op=='click' and '--name' in options:
             name=options[options.index('--name')+1]
-            if name in ('Show Subtitle Timeline on Seekbar','VLC','MPV / Dolby Vision'):
+            if name in ('Show Subtitle Timeline on Seekbar','VLC','MPV'):
                 self.inspect(label+'-reveal','focus','--name',name)
         self.record['pending'] = {'label': label, 'op': op, 'options': list(map(str, options))}
         save()
@@ -569,7 +569,7 @@ def subtitles(verify_navigation=True, engines=('vlc','mpv')):
             other='mpv' if engine=='vlc' else 'vlc'
             for target in (other,engine):
                 case.click('switch-tools-'+target,'toolsButton')
-                case.inspect('choose-engine-'+target,'click','--name','MPV / Dolby Vision' if target=='mpv' else 'VLC')
+                case.inspect('choose-engine-'+target,'click','--name','MPV' if target=='mpv' else 'VLC')
                 settled=case.inspect('engine-settled-'+target,'snapshot','--await-core','engine_switching','--await-value','false')
                 assert settled['core']['engine']==target and settled['core']['state']==3
                 # Track ids/default selections belong to each backend. R82
@@ -694,7 +694,7 @@ def preview():
         assert max(abs(actual-expected) for actual,expected in zip(center,(32,64,128)))<16, ('New input preview does not show its actual blue frame',center)
         case.record['new_input_preview_rgb']=center
         case.click('preview-engine-tools','toolsButton')
-        case.inspect('preview-switch-mpv','click','--name','MPV / Dolby Vision')
+        case.inspect('preview-switch-mpv','click','--name','MPV')
         switched=case.inspect('preview-engine-settled','snapshot','--await-core','engine_switching','--await-value','false')
         assert switched['core']['engine']=='mpv'
         case.inspect('close-preview-tools','key','--key','0x1000000')
@@ -752,6 +752,62 @@ def sidebar():
                         'qml_viewport':{key:surface[key] for key in ('x','y','width','height')}})
             case.close(True)
         finally: case.close()
+
+def menus():
+    """Reference menu, real Settings route and Playback controls as one workflow."""
+    case=Case('figma-player-menus',media=fixtures/'control.mkv')
+    try:
+        snapshot=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        elapsed=nodes(snapshot,'playerElapsedTime')
+        assert len(elapsed)==1 and re.fullmatch(r'\d{2,}:\d{2}:\d{2}',elapsed[0]['text']), elapsed
+        opened=case.inspect('main-menu','click','--name','Main menu','--capture')
+        expected=['Open File(s)','Open Folder','Open Network Stream','Open Disc','Open Capture Device',
+            'Convert','Open Recent','Profile','Keyboard Shortcuts','Customize Player','Settings','About VLC']
+        rows=[]
+        for label in expected:
+            matches=[item for item in opened['tree'] if item['visible'] and item.get('name')==label and item.get('actions')]
+            assert len(matches)==1, (label,matches)
+            rows.append(matches[0])
+        assert [item['y'] for item in rows]==sorted(item['y'] for item in rows)
+        assert all(abs(item['height']-48)<1 for item in rows), rows
+        assert max(item['x'] for item in rows)-min(item['x'] for item in rows)<1
+        case.record['reference_menu_rows']=rows
+        case.inspect('recent-submenu','click','--name','Open Recent','--capture')
+        case.inspect('close-recent-submenu','key','--key','0x1000000')
+        settings=case.click('direct-global-settings','mainMenuGlobalSettings','--capture')
+        assert any(widget['id']=='redesignPreferences' for widget in settings['widgets'])
+        assert any(widget['id']=='preferencesHeading' and widget.get('text')=='Global Settings' for widget in settings['widgets'])
+        case.native('cancel-global-settings','preferencesCancel')
+        case.inspect('reopen-main-menu','click','--name','Main menu')
+        profile=case.inspect('profile-submenu','click','--name','Profile','--capture')
+        assert any(item['visible'] and item.get('name')=='New / Manage Profiles…' for item in profile['tree'])
+        case.inspect('close-profile-submenu','key','--key','0x1000000')
+        case.inspect('close-main-menu','key','--key','0x1000000')
+        playback=case.click('playback-panel','toolsButton','--capture')
+        labels=['Show Subtitle Timeline on Seekbar','Show Statistics','Reverse','Sleep Timer','Audio Visualizer','Speed']
+        positions=[]
+        for label in labels:
+            matches=[item for item in playback['tree'] if item['visible'] and item.get('text')==label]
+            assert matches, label
+            positions.append(min(item['y'] for item in matches))
+        assert positions==sorted(positions), positions
+        timer=case.inspect('timer-focus','focus','--name','Sleep timer')
+        case.inspect('timer-arm','key','--key','0x1000015','--await-service','redesignMediaTools','--await-property','sleepMinutes','--await-value','1')
+        case.inspect('timer-cancel','key','--key','0x1000010','--await-service','redesignMediaTools','--await-property','sleepMinutes','--await-value','0')
+        case.inspect('speed-value-focus','focus','--name','Playback speed value')
+        case.inspect('speed-value-select','key','--key','0x41','--modifiers','0x4000000','--text','a')
+        case.inspect('speed-value-input','key','--key','0','--text','1.25x')
+        edited=case.inspect('speed-value-apply','key','--key','0x1000004','--await-core','rate','--await-value','1.25','--await-tolerance','.001')
+        slider=nodes(edited,'speedSlider')[0]
+        fraction=(4+(slider['width']-8)*(.75-.25)/1.75)/slider['width']
+        case.inspect('speed-slider-apply','click','--target','speedSlider','--fraction-x',fraction,'--await-core','rate','--await-value','.75','--await-tolerance','.011')
+        case.inspect('speed-reset-focus','focus','--name','Playback speed value')
+        case.inspect('speed-reset-select','key','--key','0x41','--modifiers','0x4000000','--text','a')
+        case.inspect('speed-reset-input','key','--key','0','--text','1x')
+        case.inspect('speed-reset-apply','key','--key','0x1000004','--await-core','rate','--await-value','1','--await-tolerance','.001')
+        case.close(True)
+    finally: case.close()
+
 
 def seek_policy():
     """Diagnostic comparison of VLC's public absolute-time seek and cue position seek."""
@@ -812,6 +868,7 @@ def updates():
             if mode == 'unavailable':
                 case.inspect('manual-check-library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
                 case.inspect('open-main-menu','click','--name','Main menu')
+                case.click('retained-vlc-commands','mainMenuMoreCommands')
                 case.inspect('open-help','widget_click','--menu-action','Help')
                 failure=case.inspect('explicit-check-error','widget_click','--menu-action','Check for Updates...', '--await-service','forkUpdateModel','--await-property','updateStatus','--await-value','4','--capture')
                 assert any(node.get('name')=='Re-check' and node['visible'] for node in failure['tree']) or any(widget.get('text')=='&Recheck version' for widget in failure['widgets'])
@@ -855,9 +912,9 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('menus',menus),('updates',updates),('seek-policy',seek_policy)]:
         if args.case=='preview-icons' and name not in ('preview','icons','sidebar'):continue
-        if args.case=='correction' and name not in ('playback','preview','icons','sidebar','updates'):continue
+        if args.case=='correction' and name not in ('playback','preview','icons','sidebar','menus','updates'):continue
         if args.case=='subtitles-mpv':
             if name!='subtitles':continue
             operation=lambda:subtitles(engines=('mpv',))

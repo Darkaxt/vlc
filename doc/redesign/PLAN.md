@@ -1,5 +1,27 @@
 # VLC redesign stages and reconciliation
 
+**Current M2 priority after the user's rendered-reference audit:** rebuild the
+top-left main menu to the interactive Figma design, verify direct Global Settings
+access, and close the reported toggle/time/sidebar/control-order/Playback-panel
+differences. One explicitly requested bounded agent inspected the live prototype
+and restored/released its browser workflow. Its audit is diagnostic; no1.1.3
+native visual acceptance is claimed. Preserve required engine switching with the
+plain VLC/MPV labels, custom layouts and all existing functional requirements.
+The optimized application cohort is already compiling in ticket159; retain its
+original session and useful objects. Integrate the coherent reference corrections
+before the final normal package and release. M2 remains the only ACTIVE stage.
+
+Object-level R78 diagnostics found a remaining release-profile blocker: generated
+QML cache units do not include config.h, so changing NDEBUG/compiler flags left
+unchanged cached units with their earlier .debug_info. The newly compiled
+PlayerSettingsPopup.o has no .debug_info; retained MainDisplay/ControlBar/widget
+cache objects still do. Add the existing config.status prerequisite to each
+Automake application's object variables. This reuses objects already newer than
+configuration and rebuilds the stale generated units once. Inspect the completed
+application objects after integration before claiming a consistent optimized
+cohort. Original ticket159 remains supervised and useful; SDK/MPV/codecs remain
+retained. This is an internal R78 acceptance blocker in M2.
+
 **Current execution authority (2 November):** the user explicitly requested the
 new release and deletion of older releases. The earlier compilation stop below
 is superseded. Finish M2 as one corrective1.1.3 delivery. Normalize retained
@@ -14,7 +36,7 @@ download, update continuing build/weekly bindings, then remove older release
 entries/assets and local version directories. Preserve installed app/settings,
 Git history and dependencies needed by the continuing weekly build.
 
-**M2 First-run usability and fork identity is ACTIVE again (2 November 2026).**
+**Historical investigation checkpoint before ticket159 (2 November 2026).**
 Compilation ticket158 was cancelled at the user's explicit request. The original
 session completed with exit137, no OOM events and an empty Linux group; the gate
 is idle. Do not resume automatically. The icon cause is now reproduced in a
@@ -28,11 +50,13 @@ The same default filter was found across library/navigation, queue, settings,
 track choices, layout editor and welcome icons; the source correction covers
 these existing SVG paths. Native-media image filtering and intentional blur stay
 under their existing requirements. Complete source/integrated verification before
-claiming the installed UI is fixed; compilation is still stopped.
+claiming the installed UI is fixed; compilation was still stopped at this checkpoint.
 [Controlled Qt pixel comparison](resources/m2-icon-sampling/comparison.png) and
 [diagnosis](resources/m2-icon-sampling/diagnosis.json) retain the100/125/150/200%
-Qt6.8.3/D3D11 evidence and actual100% screenshot fit. Edited QML passes the
-same-version syntax parser. Full-player verification is still pending. The
+Qt6.8.3/D3D11 evidence and actual100% screenshot fit. Edited QML parses with
+Qt6.8.3; the retained application's verified SDK headers identify Qt6.8.0.
+The isolated comparison is diagnostic evidence, and acceptance must use the
+actual Qt6.8.0 player. Full-player verification is still pending. The
 temporary Qt diagnostic runtime has been removed through reviewed cleanup
 `7056a3620bee37f0d8b19b35170e3fe3`; compact retained evidence is358KiB.
 Source `a9681b237f6eab2b9b59eff8bfbaab32fcdbca0d` is an intermediate, unverified

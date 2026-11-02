@@ -114,7 +114,7 @@ QtObject {
             if(typeof raw!=="string"||raw.length>262144)throw new Error("size")
             const value=JSON.parse(raw)
             if(!Rules.validateStore(value))throw new Error("schema")
-            accepted=value
+            accepted=Rules.currentStockStore(value)
         }catch(_){error=qsTr("Saved player customization could not be read. The original setting is preserved. Recover or remove only redesign/customization-v1 in your interface settings before editing.")}
     }
 }

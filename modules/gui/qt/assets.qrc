@@ -3,6 +3,19 @@
         <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
     </qresource>
     <qresource prefix="/redesign/icons">
+        <file alias="menu-file.svg">pixmaps/redesign/menu-file.svg</file>
+        <file alias="menu-folder.svg">pixmaps/redesign/menu-folder.svg</file>
+        <file alias="menu-network.svg">pixmaps/redesign/menu-network.svg</file>
+        <file alias="menu-disc.svg">pixmaps/redesign/menu-disc.svg</file>
+        <file alias="menu-capture.svg">pixmaps/redesign/menu-capture.svg</file>
+        <file alias="menu-convert.svg">pixmaps/redesign/menu-convert.svg</file>
+        <file alias="menu-recent.svg">pixmaps/redesign/menu-recent.svg</file>
+        <file alias="menu-profile.svg">pixmaps/redesign/menu-profile.svg</file>
+        <file alias="menu-shortcuts.svg">pixmaps/redesign/menu-shortcuts.svg</file>
+        <file alias="menu-customize.svg">pixmaps/redesign/menu-customize.svg</file>
+        <file alias="menu-settings.svg">pixmaps/redesign/menu-settings.svg</file>
+        <file alias="menu-info.svg">pixmaps/redesign/menu-info.svg</file>
+        <file alias="tab-playback.svg">pixmaps/redesign/tab-playback.svg</file>
         <file alias="forward10.svg">pixmaps/redesign/forward10.svg</file>
         <file alias="backward10.svg">pixmaps/redesign/backward10.svg</file>
         <file alias="forward15.svg">pixmaps/redesign/forward15.svg</file>

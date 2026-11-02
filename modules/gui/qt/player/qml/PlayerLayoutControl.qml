@@ -22,6 +22,11 @@ Loader {
     readonly property var ids:({more:"playerMainMenu",browser:"mediaBrowserButton",folder:"openFileButton",filename:"playerMediaTitle",previous:"previousButton",play:"playButton",next:"nextButton",elapsed:"playerElapsedTime",seek:"progressSlider",mute:"muteButton",volume:"volumeSlider",tools:"toolsButton",subtitles:"subtitleButton",audio:"audioButton",queue:"playqueueToggle",fullscreen:"fullscreenButton"})
     readonly property string label:labels[controlKey]||controlKey
     readonly property string glyph:glyphs[controlKey]||"settings-info"
+    function displayTime(tick) {
+        if(!tick.valid())return "--:--:--"
+        const value=tick.formatHMS(0)
+        return value.split(":").length===2 ? "00:"+value : value
+    }
     readonly property bool expands:controlKey==="seek"||controlKey==="spacer"
     readonly property bool hidden:compact&&(controlKey==="elapsed"||controlKey==="duration"||controlKey==="artist"||controlKey==="playlistname")
     sourceComponent:controlKey==="seek"?seekComponent:controlKey==="volume"?volumeComponent:
@@ -80,7 +85,7 @@ Loader {
             implicitWidth:PlayerStyle.px(["elapsed","duration"].includes(control.controlKey)?76:180)
             implicitHeight:PlayerStyle.px(28);padding:0;activeFocusOnTab:control.controlKey==="duration"
             AccessibleCompat.id:control.ids[control.controlKey]||"layoutAction-"+control.controlKey
-            text:control.controlKey==="elapsed"?Player.time.formatHMS(0):control.controlKey==="duration"?(MainCtx.showRemainingTime?Player.remainingTime.formatHMS(0):Player.length.valid()?Player.length.formatHMS(0):"—:—"):
+            text:control.controlKey==="elapsed"?control.displayTime(Player.time):control.controlKey==="duration"?(MainCtx.showRemainingTime?control.displayTime(Player.remainingTime):control.displayTime(Player.length)):
                 control.controlKey==="artist"?Player.artist:control.controlKey==="playlistname"?qsTr("Play Queue"):Player.name
             Accessible.name:text
             contentItem:Text {

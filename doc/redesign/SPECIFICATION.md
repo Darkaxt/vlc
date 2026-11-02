@@ -4,6 +4,26 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+The2 November rendered-reference audit and user correction also reopen R52 for
+the player chrome/menu. M2 must restore the interactive Figma main menu as the
+priority: direct media/global actions, original two-tone vector icons, aligned
+shortcuts, Recent/Profile submenus, keyboard operation and a direct Settings
+route to the implemented Global Settings dialog. Reconcile the thin panel toggle,
+HH:MM:SS time fields, sidebar list/section chevrons, volume→audio→subtitles→tools→queue
+order and the reported Playback panel's tabs, aligned selectors and speed slider.
+Preserve real engine switching and all required functionality; label its choices
+VLC and MPV. Preserve customized layouts/profiles when updating stock defaults.
+Compare actual native captures with the live prototype and original archive,
+including menu/submenu/focus states and representative DPI. These are M2
+acceptance blockers, not a new stage or grounds for a partial release.
+The original main-menu frame 6062:13354 defines a375px card with4px outer
+padding,367×48px primary rows,24px original gray/orange icons,14px labels,
+aligned shortcuts and10px outer rounding. Preserve its twelve primary actions
+and divider placement. Anchor the card4px below the title bar and32px left
+of the overflow-button center, bounded to the available window. A separate
+compact More VLC commands entry preserves
+remaining native commands without changing that primary action hierarchy.
+
 The user's2 November request authorizes producing the corrected1.1.3 release and
 removing older release versions after independently verifying its download.
 R78 requires an actual optimized application configuration (`--disable-debug`,

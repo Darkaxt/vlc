@@ -1,6 +1,29 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { affine, pathCommands } from './player-assets.mjs';
+
+test('reference sidebar uses the outlined default component and colored menu variants retain provenance', async () => {
+  const {icons}=await import('./player-assets.mjs');
+  assert.deepEqual(icons.find(([,name])=>name==='sidebar'),['69:814','sidebar']);
+  assert.deepEqual(icons.find(([,name])=>name==='menu-file'),['2461:9644','menu-file',true]);
+});
+
+test('inside-stroke icons keep Figma clipping instead of doubling their visible outline', async () => {
+  const {extractPlayerAssets}=await import('./player-assets.mjs');
+  const output=process.env.VLC_DESIGN_TEST_OUTPUT;
+  assert.ok(output);
+  extractPlayerAssets(output);
+  for(const name of ['video','sidebar']) {
+    const svg=fs.readFileSync(path.join(output,`${name}.svg`),'utf8');
+    assert.match(svg,/<clipPath id="inside-\d+"><path clip-rule="nonzero" d="M /);
+    assert.match(svg,/<g clip-path="url\(#inside-\d+\)">/);
+  }
+  const colored=fs.readFileSync(path.join(output,'menu-file.svg'),'utf8');
+  assert.match(colored,/fill="rgb\(171,99,20\)"/,'the original file component orange detail is not flattened to a white mask');
+  assert.match(colored,/fill="rgb\(143,143,143\)"/,'the original neutral stroke remains separate from the orange');
+});
 
 test('preserve nested reflection without decomposing into a rotation', () => {
   assert.equal(affine({ m00: -1, m01: 0, m02: 24, m10: 0, m11: 1, m12: 0 }),

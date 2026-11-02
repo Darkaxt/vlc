@@ -11,6 +11,7 @@ def main():
     parser.add_argument('--source', required=True, type=Path)
     parser.add_argument('--build', required=True, type=Path)
     parser.add_argument('--runtime', required=True, type=Path)
+    parser.add_argument('--retain-non-qt', action='store_true', help='Use the identity-verified completed cohort after Qt-only changes')
     args = parser.parse_args()
     assert Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip().startswith('/llm-coordinator/')
     mapping = subprocess.check_output(['make', '--no-print-directory', '-s', '-C', str(args.build / 'modules'),
@@ -30,9 +31,25 @@ def main():
     previous = {path.relative_to(args.runtime).as_posix() for path in (args.runtime / 'plugins').rglob('*.dll')}
     assert previous <= expected, 'Unexpected/stale staged plugins: ' + repr(previous - expected)
     records = []
+    retained = None
+    if args.retain_non_qt:
+        retained = json.loads((args.runtime / 'VLC-PLUGIN-REUSE.json').read_text())
+        old = json.loads((args.runtime / 'VLC-PLUGIN-BUILDINFO.json').read_text())
+        assert retained['schema'] == 'vlc_redesign.qt_only_cohort.v1'
+        assert retained['retained_from_source'] == old['source_commit']
+        assert retained['original_manifest_sha256'] == hashlib.sha256((args.runtime / 'VLC-PLUGIN-BUILDINFO.json').read_bytes()).hexdigest()
+        retained_rows = {item['file']: item for item in retained['plugins']}
+        assert set(retained_rows) == expected - {'plugins/gui/libqt_plugin.dll'}
     for binary, relative in sorted(rows, key=lambda row: row[1]):
         assert binary.is_file(), binary
         target = args.runtime / relative
+        if retained and relative != 'plugins/gui/libqt_plugin.dll':
+            item = retained_rows[relative]
+            assert item['build_source'] == str(binary)
+            assert item['unstripped_sha256'] == hashlib.sha256(binary.read_bytes()).hexdigest()
+            assert item['staged_sha256'] == hashlib.sha256(target.read_bytes()).hexdigest()
+            records.append({key: value for key, value in item.items() if key != 'staged_sha256'})
+            continue
         target.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(['x86_64-w64-mingw32-strip', '--strip-debug', '-o', str(target), str(binary)], check=True)
         records.append({'file': relative, 'build_source': str(binary),
@@ -42,6 +59,10 @@ def main():
     receipt = {'schema': 'vlc_redesign.full_plugin_build.v1', 'source_commit': commit,
         'upstream_commit': json.loads((args.runtime / 'UPSTREAM-ASSEMBLY.json').read_text())['upstream_commit'],
         'configured_install_map_sha256': hashlib.sha256(mapping.encode()).hexdigest(), 'plugins': records}
+    if retained:
+        assert retained['source_commit'] == commit
+        assert receipt['configured_install_map_sha256'] == old['configured_install_map_sha256']
+        receipt['qt_only_cohort'] = {key: retained[key] for key in ('retained_from_source', 'original_manifest_sha256', 'production_changes')}
     (args.runtime / 'VLC-PLUGIN-BUILDINFO.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps({'coherent_source_commit': commit, 'configured_plugins': len(rows)}), flush=True)
 

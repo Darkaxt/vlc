@@ -88,14 +88,14 @@ def main():
                 inspect('source-clock', 'snapshot', '--await-core', 'time_seconds', '--await-value', '42', '--await-comparison', 'at_least')
                 original = inspect('pause-source', 'click', '--target', 'playButton', '--await-core', 'state', '--await-value', '3')
                 inspect('engine-settings', 'click', '--target', 'toolsButton')
-                switching = inspect('begin-handover', 'click', '--name', 'MPV / Dolby Vision',
+                switching = inspect('begin-handover', 'click', '--name', 'MPV',
                     '--await-core', 'engine_switching', '--await-value', 'true')
                 held = json.loads(server.stdout.readline())
                 assert held['state'] == 'handover_waiting' and held['user_agent'].startswith('libmpv')
                 switching = inspect('real-pending-input', 'snapshot')
                 assert switching['core']['engine'] == 'mpv' and switching['core']['engine_switching']
                 assert switching['core']['native_vlc']['state'] == 0
-                buttons = [node for node in switching['tree'] if node['visible'] and node.get('name') in ('VLC', 'MPV / Dolby Vision') and node.get('actions')]
+                buttons = [node for node in switching['tree'] if node['visible'] and node.get('name') in ('VLC', 'MPV') and node.get('actions')]
                 assert len(buttons) == 2 and all(not node['enabled'] for node in buttons), buttons
                 assert any(node['visible'] and 'Switching engines' in node.get('text', '') for node in switching['tree'])
                 result['repeated_engine_requests_disabled_during_real_transition'] = True

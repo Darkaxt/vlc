@@ -347,7 +347,7 @@ static const char *const compositor_user[] = {
 
 /**********************************************************************/
 static const char *const playback_engine_values[] = {"vlc", "mpv"};
-static const char *const playback_engine_labels[] = {N_("VLC"), N_("MPV (Dolby Vision)")};
+static const char *const playback_engine_labels[] = {N_("VLC"), N_("MPV")};
 
 vlc_module_begin ()
     set_shortname( "Qt" )

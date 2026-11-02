@@ -7,6 +7,7 @@ import VLC.Player
 T.ComboBox {
     id: choice
     property string label
+    property bool outlined: false
     implicitWidth: PlayerStyle.px(150)
     implicitHeight: PlayerStyle.px(32)
     padding: PlayerStyle.px(8)
@@ -32,10 +33,10 @@ T.ComboBox {
         color: PlayerStyle.sectionForeground
     }
     background: Rectangle {
-        color: PlayerStyle.timeline
+        color: choice.outlined ? PlayerStyle.chrome : PlayerStyle.timeline
         radius: PlayerStyle.px(4)
-        border.width: choice.visualFocus ? PlayerStyle.px(2) : 0
-        border.color: PlayerStyle.accent
+        border.width: choice.visualFocus || choice.outlined ? PlayerStyle.px(2) : 0
+        border.color: choice.visualFocus ? PlayerStyle.accent : PlayerStyle.timeline
     }
     delegate: T.ItemDelegate {
         required property int index

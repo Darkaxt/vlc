@@ -561,7 +561,7 @@ void VLCMenuBar::NavigMenu( qt_intf_t *p_intf, QMenu *menu )
         auto *group = new QActionGroup(engines);
         group->setExclusive(true);
         auto *vlc = engines->addAction(qtr("VLC"));
-        auto *mpv = engines->addAction(qtr("MPV / Dolby Vision"));
+        auto *mpv = engines->addAction(qtr("MPV"));
         for (auto *action : {vlc, mpv}) { action->setCheckable(true); group->addAction(action); }
         const auto refresh = [player = THEMIM, engines, vlc, mpv] {
             vlc->setChecked(!player->usesMpv());

@@ -56,8 +56,8 @@ Flickable {
         RowLayout {
             Layout.fillWidth: true
             Label { text: shelf.title }
-            PlayerIconButton { implicitWidth: PlayerStyle.px(24); implicitHeight: PlayerStyle.px(24); glyph: "forward"; description: qsTr("See all %1").arg(shelf.title); onClicked: shelf.seeAll() }
             Item { Layout.fillWidth: true }
+            PlayerIconButton { implicitWidth: PlayerStyle.px(24); implicitHeight: PlayerStyle.px(24); glyph: "chevron-down"; glyphRotation: -90; description: qsTr("See all %1").arg(shelf.title); onClicked: shelf.seeAll() }
         }
         ListView {
             id: entries
@@ -152,7 +152,11 @@ Flickable {
             visible: MainCtx.historyEnabled
             Layout.fillWidth: true
             spacing: PlayerStyle.px(root.compact ? 10 : 20)
-            Label { text: qsTr("Frequently Visited Folders"); Layout.fillWidth: true }
+            RowLayout {
+                Layout.fillWidth: true
+                Label { text: qsTr("Frequently Visited Folders"); Layout.fillWidth: true }
+                PlayerIconButton { glyph: "chevron-down"; glyphRotation: -90; description: qsTr("Show all folders"); onClicked: root.browse("folders") }
+            }
             ListView {
                 id: frequentFolders
                 readonly property bool ready: {
