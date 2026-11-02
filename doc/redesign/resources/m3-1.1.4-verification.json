@@ -1,0 +1,438 @@
+{
+  "schema": "vlc_redesign.m3_final_delivery.v1",
+  "stage": "M3",
+  "status": "COMPLETE",
+  "verified_date": "2026-11-02",
+  "application_source_commit": "6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d",
+  "upstream_commit": "8a47770f6333df6b60181329db5fdaad318bdb44",
+  "incoming_upstream_commits": 1,
+  "version": "1.1.4",
+  "release": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4",
+  "normal_published_release": true,
+  "requirements": {
+    "R71": "satisfied_and_verified",
+    "R72": "satisfied_and_verified"
+  },
+  "blockers": [],
+  "tracked_deferrals": [],
+  "upstream_change": "HEIF grid destination offsets use checked unsigned arithmetic before buffer/pointer operations",
+  "normal_build": {
+    "ticket": 174,
+    "id": "0d7c81b6fc964abdae3a4e2e08dda36a",
+    "exit_code": 0,
+    "group_empty": true,
+    "private_mounts_released": true,
+    "profile": "--disable-debug -O3 -g0 NDEBUG; QML debugger disabled",
+    "stripped_pe_files": 417,
+    "configured_plugins": 410
+  },
+  "native_acceptance": {
+    "passed": true,
+    "source_commit": "6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d",
+    "upstream_commit": "8a47770f6333df6b60181329db5fdaad318bdb44",
+    "version": "1.1.4",
+    "changed_production_files": [
+      "modules/demux/mp4/heif.c",
+      "modules/gui/qt/dialogs/help/fork_release.hpp",
+      "modules/gui/qt/maininterface/compositor.cpp",
+      "modules/gui/qt/maininterface/mainctx_win32.cpp",
+      "modules/gui/qt/qt.cpp"
+    ],
+    "actual_heif_grid": {
+      "passed": true,
+      "exit_code": 0,
+      "checks": {
+        "native_exit0": true,
+        "actual_picture": true,
+        "natural_eof": true,
+        "qt_loop_finished": true,
+        "grid_frame_exported": true,
+        "no_plugin_load_errors": true
+      },
+      "decoded_frames": [
+        {
+          "file": "grid00001.png",
+          "size": [
+            1024,
+            256
+          ],
+          "stddev_sum": 142.3895272276215,
+          "sha256": "24f680836b64e37c75e4324329a8ddbfc2de6b9ab6b64057983eee4115f8792a"
+        },
+        {
+          "file": "grid00002.png",
+          "size": [
+            1024,
+            256
+          ],
+          "stddev_sum": 142.3895272276215,
+          "sha256": "dacffd1b7ed5fd6c032b9419ef5ac32c3c82677efbe65752e76252521c1920e0"
+        }
+      ],
+      "fixture_sha256": "c9e04ff9d90d7093454750fa33b7543ee5479e0cfb151e2c3d2ce6a16c1651c1",
+      "scope": "Actual packaged HEIF grid demux/decode and scene frame export on owned inactive desktop; no OS input or desktop switch"
+    },
+    "overflow_guard_regression": [
+      {
+        "case": "fixed",
+        "actual_exit": 0,
+        "expected_exit": 0,
+        "binary_sha256": "bb35f6f769e0cfa72c68a929723c4a8c49fde7f3db99d8e9737bc7059045e5e3"
+      },
+      {
+        "case": "baseline",
+        "actual_exit": 1,
+        "expected_exit": 1,
+        "binary_sha256": "3c3681f33b26fbcda5482e8ec4daae3cdabfb323f3b76aaf0465f2b1c511300f"
+      }
+    ],
+    "vlc": {
+      "actual_picture": true,
+      "natural_eof": true,
+      "input_released": true,
+      "qt_event_loop_finished": true,
+      "no_plugin_load_errors": true,
+      "no_qml_runtime_errors": true,
+      "native_media_library_started": true
+    },
+    "mpv": [
+      {
+        "case": "mpv-sdr",
+        "result_sha256": "47c9dcd120ebb26425d91b3fa887a1bd1c5a8564758a6359916655f0de0e7b24",
+        "checks": {
+          "all_visible_owned_windows_offscreen": true,
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "expected_native_focus_style": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "actual_picture_presented": true
+        },
+        "placement_proof_sha256": "cce6abacaa94fd8d3b34820466c215b7b74c46b919f21908b0eb52fae7c02f11",
+        "active_input_desktop_verified": true,
+        "presentation_bindings": {
+          "qt_plugin_sha256": "4f91ef3c8ebb072421b9cab03d607b64535a5fc2d4b15bdc9ae639b05749a35c",
+          "saved_geometry_sha256": "837669db3a06a9c2a5a45eb22b413ad28cb95b8b3b9ed0d978a34cd3e45f4d65",
+          "monitors": [
+            [
+              -2560,
+              548,
+              0,
+              2148
+            ],
+            [
+              0,
+              0,
+              5120,
+              2160
+            ]
+          ]
+        }
+      },
+      {
+        "case": "mpv-dv-p5",
+        "result_sha256": "bfb316dfbcbda55297bedac6a9fdbd58b3cf94a359916fd836bed05f7fa30456",
+        "checks": {
+          "all_visible_owned_windows_offscreen": true,
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "expected_native_focus_style": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "actual_picture_presented": true
+        },
+        "placement_proof_sha256": "9901b02a451ac82d391e6405abe633ff11ff0c83fe7b8a83da9b96bb2ec879bf",
+        "active_input_desktop_verified": true,
+        "presentation_bindings": {
+          "qt_plugin_sha256": "4f91ef3c8ebb072421b9cab03d607b64535a5fc2d4b15bdc9ae639b05749a35c",
+          "saved_geometry_sha256": "837669db3a06a9c2a5a45eb22b413ad28cb95b8b3b9ed0d978a34cd3e45f4d65",
+          "monitors": [
+            [
+              -2560,
+              548,
+              0,
+              2148
+            ],
+            [
+              0,
+              0,
+              5120,
+              2160
+            ]
+          ]
+        }
+      }
+    ],
+    "default_interactive_style": {
+      "no_observer_errors": true,
+      "never_observed_foreground_owner": true,
+      "expected_native_focus_style": true,
+      "input_desktop_preserved": true,
+      "natural_eof": true,
+      "resources_released": true,
+      "qt_event_loop_finished": true,
+      "no_competing_vlc_playback": true,
+      "no_mpv_runtime_errors": true,
+      "no_qml_errors": true,
+      "inactive_desktop_owned": true
+    },
+    "nonactivating_passive_style_verified": true,
+    "active_input_desktop_verified": true,
+    "normal_package_sha256": "6693aa92f5ee7e99fcfedc138552182b06cf58715d0b944990ce1349edc7b93b",
+    "protected_profiles_unchanged": true,
+    "preserved_failed_attempts": [
+      "b80 foreground ownership",
+      "0515 inactive native style",
+      "6288 picture absent with current Screen-saver input desktop"
+    ],
+    "reused_1_1_3_acceptance": {
+      "source_and_geometry_scope_verified": true,
+      "reason": "QML/layout/icon/engine/subtitle/preview sources and ordinary geometry logic are unchanged. Qt edits are the compiled version, default-off volatile passive option, its Qt pre-show policy and guarded Win32 Show/STYLECHANGING bridge. Default native focus style and fresh active-desktop SDR/P5 actual presentation are verified. MPV executable images and409 non-Qt plugins retain their exact cohort; HEIF guard/fixture/output/plugin hashes bind this task decoded-grid evidence.",
+      "receipt_sha256": "868faea256f618b36d70fe55e3019f423a3b7a5ef601766c6ee9721002a34a1e"
+    },
+    "stripped_pe_files": 417,
+    "configured_plugins": 410
+  },
+  "independent_delivery": {
+    "version": "1.1.4",
+    "source_commit": "6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d",
+    "tag": "redesign-v1.1.4",
+    "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4",
+    "normal_published_release": true,
+    "latest_verified": true,
+    "downloaded_hashes": {
+      "Modern-VLC-Fork-1.1.4-win64-portable.zip": "6693aa92f5ee7e99fcfedc138552182b06cf58715d0b944990ce1349edc7b93b",
+      "Modern-VLC-Fork-1.1.4-corresponding-source.tar.gz": "0c89883a05e5b2a295fba3b07929457a865925578b4a1d458eb0e3a95a7052d1",
+      "Modern-VLC-Fork-1.1.4-win64-symbols.zip": "f3473bc7eaa9d7c987471cc296396fc5c36b8a2d92802bc2c030b1d13ebcc69e"
+    },
+    "downloaded_checksums_sha256": "390b417aa2285d575ed3efbf54cadd54648c6cbd0ae9916096eb1a091ecd0a30",
+    "all_downloaded_pe_files_stripped": 417,
+    "source_and_symbols_validation_reused_by_identical_hash": true,
+    "protected_profiles_unchanged": true,
+    "native": [
+      {
+        "case": "vlc",
+        "checks": {
+          "actual_picture": true,
+          "natural_eof": true,
+          "input_released": true,
+          "qt_event_loop_finished": true,
+          "no_plugin_load_errors": true,
+          "no_qml_runtime_errors": true,
+          "native_media_library_started": true
+        },
+        "receipt_sha256": "4048aea65695d9b34e2c3f499da283eda7aed5d500a9ccfce65c18571b131ee2",
+        "passed": true
+      },
+      {
+        "case": "mpv-dv-p5",
+        "checks": {
+          "no_observer_errors": true,
+          "never_observed_foreground_owner": true,
+          "expected_native_focus_style": true,
+          "input_desktop_preserved": true,
+          "natural_eof": true,
+          "resources_released": true,
+          "qt_event_loop_finished": true,
+          "no_competing_vlc_playback": true,
+          "no_mpv_runtime_errors": true,
+          "no_qml_errors": true,
+          "native_flat_app_icon": true,
+          "inactive_desktop_owned": true
+        },
+        "receipt_sha256": "c375830605040c4b4e4e2aec481f33a90ef927d4225f2428d202e751b4059b5d",
+        "passed": true,
+        "actual_picture_reused_by_identical_whole_portable_zip_sha256": true,
+        "qualified_actual_presentation_receipt_sha256": "bfb316dfbcbda55297bedac6a9fdbd58b3cf94a359916fd836bed05f7fa30456",
+        "downloaded_lifecycle_scope": "Normal playback lifecycle on an owned inactive desktop; no actual-picture claim, OS input or desktop switching",
+        "actual_picture_observed_in_downloaded_run": false
+      }
+    ],
+    "passed": true
+  },
+  "assets": {
+    "Modern-VLC-Fork-1.1.4-win64-portable.zip": {
+      "sha256": "6693aa92f5ee7e99fcfedc138552182b06cf58715d0b944990ce1349edc7b93b",
+      "bytes": 145033709
+    },
+    "Modern-VLC-Fork-1.1.4-corresponding-source.tar.gz": {
+      "sha256": "0c89883a05e5b2a295fba3b07929457a865925578b4a1d458eb0e3a95a7052d1",
+      "bytes": 880393358
+    },
+    "Modern-VLC-Fork-1.1.4-win64-symbols.zip": {
+      "sha256": "f3473bc7eaa9d7c987471cc296396fc5c36b8a2d92802bc2c030b1d13ebcc69e",
+      "bytes": 372417848
+    },
+    "SHA256SUMS.txt": {
+      "sha256": "390b417aa2285d575ed3efbf54cadd54648c6cbd0ae9916096eb1a091ecd0a30",
+      "bytes": 329
+    }
+  },
+  "retained_build": {
+    "root": "D:\\VLC-Redesign\\build\\windows-x64",
+    "verification_id": "516f6f89459f4041934df321287ed937",
+    "exit_code": 0,
+    "group_empty": true,
+    "private_mounts_released": true,
+    "no_rebuild": true,
+    "matching_runtime_and_pipeline_promoted_together": true
+  },
+  "weekly_automation": {
+    "passed": true,
+    "id": "vlc-weekly-upstream-sync-and-release",
+    "kind": "heartbeat",
+    "status": "ACTIVE",
+    "schedule": "Existing Monday09:00 timezone binding preserved",
+    "all_non_prompt_fields_preserved": true,
+    "exact_persisted_prompt": true,
+    "official_tool_update": true,
+    "prompt_sha256": "b0e6b0ff71a8e8018fe86b266f595af8438b046042bfef28fac862668a965191",
+    "source_commit": "6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d"
+  },
+  "obsolete_remote_release_retirement": {
+    "latest_preserved": "redesign-v1.1.4",
+    "git_tags_and_history_preserved": true,
+    "operations": [
+      {
+        "tag": "redesign-v1.1.3",
+        "id": 431433620,
+        "state": "absence_verified",
+        "exit_code": 0,
+        "output": ""
+      }
+    ],
+    "passed": true,
+    "final_release_ids": [
+      431748118
+    ]
+  },
+  "cleanup": {
+    "receipts": [
+      {
+        "transaction_id": "a3a8cc6a3558df6ad1796730bb0f1788",
+        "state": "applied",
+        "candidate_count": 2723,
+        "candidate_bytes": 510657155,
+        "deleted_bytes": 510657155,
+        "result_counts": {
+          "deleted": 2723
+        },
+        "manifest_sha256": "2c75a7d340df2cf19e42d58aafebaf13127a098df3a099184d3e05d9e087d6fd"
+      },
+      {
+        "transaction_id": "7472be0190d9eff8d66a65c869e6eaa4",
+        "state": "applied",
+        "candidate_count": 2723,
+        "candidate_bytes": 510658260,
+        "deleted_bytes": 510658260,
+        "result_counts": {
+          "deleted": 2723
+        },
+        "manifest_sha256": "e7582a248f14b2ea84eb8e7463d86af61f0040311d14cbb1ce61c1ff815b16f2"
+      },
+      {
+        "transaction_id": "7e4daff263708c3fc14aa870792c6619",
+        "state": "applied",
+        "candidate_count": 9158,
+        "candidate_bytes": 3543384331,
+        "deleted_bytes": 3543384331,
+        "result_counts": {
+          "deleted": 9158
+        },
+        "manifest_sha256": "94c5ac89d2045f2dc91bf2f1b0ae36d827679764a0c166a39e3c3a51dfab8111"
+      },
+      {
+        "transaction_id": "b7c56a72eb22f2949a29b872161093da",
+        "state": "applied",
+        "candidate_count": 8188,
+        "candidate_bytes": 1099026004,
+        "deleted_bytes": 1099026004,
+        "result_counts": {
+          "deleted": 8188
+        },
+        "manifest_sha256": "e9edc1013174ac8efbc16f53bc42856422ffbde099c6475953db8d6677c8405c"
+      },
+      {
+        "transaction_id": "231a28ac5c057d251eeae3734af91fae",
+        "state": "applied",
+        "candidate_count": 31038,
+        "candidate_bytes": 6652117275,
+        "deleted_bytes": 6652117275,
+        "result_counts": {
+          "deleted": 31038
+        },
+        "manifest_sha256": "1fb0076e3de60689862a22da9bd2f3129488dc3d64b5cd59558508abc802077e"
+      },
+      {
+        "transaction_id": "af2e565a0ea4105dd8e488cd60419198",
+        "state": "applied",
+        "candidate_count": 12170,
+        "candidate_bytes": 2691349981,
+        "deleted_bytes": 2691349981,
+        "result_counts": {
+          "deleted": 12170
+        },
+        "manifest_sha256": "42c6d3029bfbad5577b07810721c7b019df6e1aae1de04dba0aad16d12ce1e80"
+      },
+      {
+        "transaction_id": "06d366fdaac8563da54fcde7048db52b",
+        "state": "applied",
+        "candidate_count": 2619,
+        "candidate_bytes": 365454838,
+        "deleted_bytes": 365454838,
+        "result_counts": {
+          "deleted": 2619
+        },
+        "manifest_sha256": "a7663ff00ac3e3dc40c898a33610196e1e9e6b64ce84f1dca36dbd319cc713fe"
+      }
+    ],
+    "deleted_logical_bytes": 15372647844,
+    "retired_roots_and_launchers": [
+      "E:\\Temp\\vlc-weekly-20261102-1.1.4",
+      "D:\\Temp\\vlc-s8-weekly-20261102-1.1.4",
+      "D:\\VLC-Redesign\\build\\windows-x64\\scratch-share\\weekly-1.1.4",
+      "D:\\VLC-Redesign\\releases\\1.1.3",
+      "D:\\VLC-Redesign\\build\\windows-x64\\weekly-run.py",
+      "D:\\VLC-Redesign\\build\\windows-x64\\weekly-passive-run.py",
+      "D:\\VLC-Redesign\\build\\windows-x64\\weekly-native-run.py",
+      "D:\\VLC-Redesign\\build\\windows-x64\\scratch-share\\weekly-run.py",
+      "D:\\VLC-Redesign\\build\\windows-x64\\scratch-share\\weekly-passive-run.py",
+      "D:\\VLC-Redesign\\build\\windows-x64\\scratch-share\\weekly-native-run.py"
+    ],
+    "all_absent": true
+  },
+  "preservation": {
+    "untracked_AGENTS_unchanged": true,
+    "installed_player_and_real_profiles_preserved": true,
+    "git_tags_and_history_preserved": true,
+    "SDK_MPV_codecs_objects_and_other_project_consumers_preserved": true,
+    "HEIF_fixture_and_frames_local_qualification_only": true,
+    "private_DV_clips_not_published": true
+  },
+  "refactoring_assessment": "No current-acceptance design debt found: volatile passive policy is scoped to the owned Windows window lifecycle; native style is established before show and preserved during style changes. No speculative refactoring or later-stage work.",
+  "limits": [
+    "Windows distribution remains unsigned",
+    "Downloaded MPV inactive-desktop lifecycle reuses actual presentation only after identical whole-portable-ZIP hash and Qt/geometry/monitor binding checks",
+    "S9 remains NOT STARTED; no Rust migration performed"
+  ],
+  "local_qualification": "D:\\VLC-Redesign\\releases\\1.1.4\\verification",
+  "evidence": {
+    "normal-package-verification.json": "37f3985da528888f386d7d6f13ba334d0a325fb912401e9ec5450582faca298b",
+    "published-delivery-verification.json": "fb494b05cb21a74bd40c4177f1c29dcec696b61f5f05f50fb16c41a6f025266a",
+    "retained-build-result.json": "17908abde2e5f6ca60f10a188d969b16b36924922cbb00316ab3eb7556c5f357",
+    "retained-build-verification.json": "eb8ded1202f2c750ee590aa7d9c4487f9f8d0b1883cd69d554c047a7dd46289c",
+    "desktop-preflight-negative.json": "390f2572e3fea97f987f0c14b516d5a54970997023148e34fe8e761b64e6f568"
+  }
+}

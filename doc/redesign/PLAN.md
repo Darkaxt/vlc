@@ -1,22 +1,41 @@
 # VLC redesign stages and reconciliation
 
-**M3 Weekly upstream maintenance (2 November 2026): ACTIVE.** Remotes/default
+**M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is
 `8a47770f6333df6b60181329db5fdaad318bdb44`, with one incoming HEIF grid-offset
 overflow fix. The isolated branch `codex/weekly-upstream-20261102` merges it
-without conflicts. Preserve untracked AGENTS.md and the verified 1.1.3 release
-until replacement delivery passes. No other implementation stage is ACTIVE.
+without conflicts. Normal release
+[1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4) is delivered
+and independently verified from app source
+`6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`. Untracked AGENTS.md, installed
+player/profiles, source history/tags and active build inputs are preserved.
+No implementation stage is ACTIVE; S9 remains NOT STARTED.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M3 Weekly upstream maintenance | ACTIVE | Pinned upstream merge; optimized assembly; native HEIF guard/grid decode; normal VLC and default focus style; passive native style; fresh active-desktop SDR/P5 picture, EOF, release and foreground preservation; four verified local artifacts and unsigned policy. | Normal publication and independent download/native verification; matching retained/weekly rebinding; obsolete-output retirement and final reconciliation. | None. |
+| M3 Weekly upstream maintenance | COMPLETE | R71/R72: pinned upstream merge; optimized coherent assembly; native HEIF guard/grid decode; default and passive focus styles; fresh SDR/P5 actual presentation, EOF, release and foreground preservation; four normal published artifacts independently downloaded/hash/native verified; matching retained runtime/pipeline read-only verification175; persisted weekly binding; obsolete1.1.3 remote/local retirement; exact spent-output cleanup and final reconciliation. | None. | None. |
 
-Use exact `E:/Temp/vlc-weekly-20261102-1.1.4` controls and
-`D:/Temp/vlc-s8-weekly-20261102-1.1.4` native/build staging. D: is required for
-sustained build/native/small-file I/O. Candidate assembly remains separate at
-`D:/VLC-Redesign/build/windows-x64/scratch-share/weekly-1.1.4`. Existing
-toolchain/MPV/codecs/fixtures and current installed player/profiles remain bound.
+Original controls were `E:/Temp/vlc-weekly-20261102-1.1.4`; sustained native/build
+I/O used `D:/Temp/vlc-s8-weekly-20261102-1.1.4`. Those exact spent roots and
+`D:/VLC-Redesign/build/windows-x64/scratch-share/weekly-1.1.4` are removed.
+Current runtime and matching compilation state were promoted together into
+`D:/VLC-Redesign/build/windows-x64/scratch-share`; read-only gate175
+(`516f6f89459f4041934df321287ed937`) passes with no rebuild, zero OOM/max events,
+empty group and released mounts. The next pipeline directory is `run-0004`.
+The weekly automation's schedule/target/status remain unchanged and its prompt
+binds1.1.4. Obsolete1.1.3 release records/assets/local outputs are retired,
+preserving Git tags/history. Seven reviewed cleanup transactions removed
+15372647844 logical bytes without exclusions/errors; all exact retired roots
+and one-shot launchers are absent. Required qualification and original control
+snapshots remain under `D:/VLC-Redesign/releases/1.1.4/verification`.
+[Final reconciliation](resources/m3-1.1.4-verification.json) records every gate,
+artifact identity, evidence-reuse boundary and cleanup receipt. No blockers or
+tracked deferrals remain. The closure refactoring assessment found no material
+debt obstructing current acceptance; no later-stage work was opened.
+
+Historical failed attempts below retain their original results and are resolved
+by the final native bridge/desktop protocol; they are not current blockers.
 
 Original gate169/session66178 is closed0, with an empty Linux group, released
 mounts, zero OOM/max events and1703432192 bytes peak charged RAM. The one-commit
@@ -25,12 +44,11 @@ guard and pass the fixed guard; actual packaged HEIF grid playback exports a
 nonblank1024x256 frame and exits normally. Normal VLC playback also passes.
 Qualification session74020 closed1 because the SDR offscreen MPV run acquired
 foreground ownership despite correct offscreen placement and actual Present(S_OK).
-All native processes exited0. This is an internal R71 acceptance blocker: the
-normal launch protocol lacks enforced no-focus flags. Keep M3 ACTIVE, preserve
-the raw failed receipt, add the explicit volatile passive launch option and native
-style gate, then use the proven Qt-only cohort path to rebuild only the changed
-frontend and revision binaries. Retain the completed HEIF/non-Qt objects and
-unchanged decoder/runtime image evidence; no SDK, configure or full module rebuild.
+All native processes exited0. This was an internal R71 acceptance blocker:
+the normal launch protocol lacked enforced no-focus flags. Its raw failed
+receipt is preserved. The explicit volatile passive option/native-style gate
+were added through the guarded Qt-only cohort path, retaining completed
+HEIF/non-Qt objects and unchanged decoder/runtime image evidence.
 
 Qt-only continuation170 (`0ae8671ae2a647e19a9462af41673585`, source
 `0515f2f2cffb2a7ee49357d1a9fa76078f455894`) closed0 with409 non-Qt plugins
@@ -39,8 +57,8 @@ released mounts/group. Qualification22762 passed normal VLC and default focus
 style, then its passive **inactive-desktop** proof failed the native-style check.
 No offscreen launch followed. Installed Qt6.8.3 source confirms that its no-focus
 flag does not create `WS_EX_NOACTIVATE`; add the required Windows lifecycle bridge
-without weakening that criterion. M3 remains ACTIVE with this internal acceptance
-blocker. Preserve both failures and reuse unchanged HEIF evidence.
+without weakening that criterion. This intermediate internal blocker was resolved
+in source6288 below; both failures and unchanged HEIF evidence are preserved.
 
 Native bridge assembly174 (`0d7c81b6fc964abdae3a4e2e08dda36a`, app source
 `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`) closed0, with zero OOM/max events,
@@ -56,7 +74,10 @@ The negative guard test launches no player. With both desktops observed as
 Present(S_OK), EOF, release and no foreground ownership with the same binaries.
 No rendering change or rebuild was needed for the desktop condition. The failed
 receipts remain historical evidence. Portable/source/symbol/checksum artifacts
-are verified; the portable ZIP is145033709 bytes. Publication remains pending.
+are verified; the portable ZIP is145033709 bytes. Normal publication and
+independent delivery/native verification subsequently passed. The downloaded
+MPV inactive-desktop lifecycle reuses actual presentation only after identical
+whole-ZIP and Qt/geometry/monitor bindings; it makes no new picture claim.
 
 **M2 First-run usability and fork identity is COMPLETE (2 November2026).**
 [Modern VLC Fork1.1.3](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3)
@@ -64,7 +85,7 @@ delivers the full Figma main-menu/Playback-panel correction and the reported
 preview, original-icon sampling and window/sidebar sizing repairs. Application
 source is `6cba6f96e3b341acac3886c97597b7aa74c6c169`; the final closure changes only
 host verification tools, documentation and evidence. S0/D1/S1-S8/M1/M2 are
-COMPLETE; only the newly authorized recurring M3 maintenance above is ACTIVE.
+COMPLETE, including the recurring M3 maintenance above. No stage is ACTIVE.
 S9 is NOT STARTED and remains planning scope.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |

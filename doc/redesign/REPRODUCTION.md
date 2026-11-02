@@ -1,5 +1,62 @@
 # Windows x64 reproduction and recovery
 
+Current delivery is [Modern VLC Fork 1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4),
+application source `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`, upstream
+`8a47770f6333df6b60181329db5fdaad318bdb44`. This maintenance integrates the
+HEIF grid overflow fix through normal merge history. All four published assets
+were independently retrieved and checked; normal VLC playback passed, and the
+downloaded MPV lifecycle reuses actual SDR/P5 presentation only after identical
+whole-portable-ZIP and Qt/geometry/monitor bindings. The portable ZIP is
+145033709 bytes, with every shipped PE stripped and matching separate symbols.
+Windows distribution remains unsigned. Local delivery and retained qualification
+are `D:/VLC-Redesign/releases/1.1.4` and its `verification` directory.
+
+The current reusable cohort is `D:/VLC-Redesign/build/windows-x64`.
+`build-retention.json` binds the promoted runtime and matching compilation state
+to read-only gate175 (`516f6f89459f4041934df321287ed937`), which verified source,
+configuration, 410 plugins, 417 stripped PE mappings and exact runtime/codec
+identities without building or initializing. Its Linux group is empty and
+private mounts are released. The original normal build predecessor is174
+(`0d7c81b6fc964abdae3a4e2e08dda36a`), following full-graph assembly169 and
+Qt-only170; next pipeline directory `run-0004` is absent. Use the installed
+WSL Coordinator launcher and `with-isolated-toolchain.py --scratch
+/mnt/d/VLC-Redesign/build/windows-x64` without `--initialize`. Its flat-script
+convention stages `verify-retained-build-1.1.4.py` from the build root into
+`/scratch/verify-retained-build-1.1.4.py`. Retain the SDK, source/object trees,
+MPV prefix, separate medialibrary/codec prefixes and synthetic/private regression
+inputs under their existing continuing-consumer contracts. Use
+`normal-mpv-current` only for UI deltas satisfying the exact409-plugin reuse
+guard; relevant core/API/global-flag changes require `normal-mpv-full`.
+
+Normal unattended playback explicitly uses volatile/default-off `--qt-passive`.
+Qt6.8.3's no-focus flag alone does not create `WS_EX_NOACTIVATE`; the app-owned
+Windows handler establishes it before native show and preserves it through
+style changes. Ordinary startup retains its default focus style. Require a
+fresh inactive-desktop native-style/placement proof before offscreen actual
+presentation. Before allocation and again at readiness, the maintained verifier
+requires WinSta0 worker startup, input and player desktops to match `Default`;
+it refuses a screen-saver/locked-desktop mismatch without launching the player.
+Never switch desktops or use desktop controls. Source6288 passed fresh SDR/P5
+Present(S_OK), natural EOF, teardown and foreground-preservation checks. Earlier
+foreground, Qt-only native-style and screen-saver picture failures remain in
+local qualification with their original limits. Frozen control snapshots retain
+original paths and are historical records, not installed relocatable launchers.
+The weekly automation now binds this verified1.1.4 cohort and preserves its
+existing schedule, target, resource limits and full M2 acceptance contract.
+
+[M3 final reconciliation](resources/m3-1.1.4-verification.json) records completed
+delivery and cleanup. Obsolete1.1.3 remote release assets and its local version
+directory are retired; Git tags/history remain. Original weekly scratch and
+one-shot launchers are removed. Required local HEIF fixture/frames and historical
+failed receipts remain in1.1.4 qualification, outside Git and published assets.
+Installed `D:/Tools/Modern VLC`, real profiles and other projects' consumers were
+preserved. Host-only closure documentation does not change the tagged6288 app.
+
+## Historical M2 reproduction
+
+The following records describe the preceding1.1.3 delivery; use the current
+cohort and qualification above for new maintenance.
+
 M2 (COMPLETE,2 November2026) delivers1.1.3 using the retained SDK/MPV/codec
 inputs, without initializing a VM. Application objects use one consistent
 optimized --disable-debug/-O3/-g0/NDEBUG configuration with the QML debugger off. `ForkRelease::currentVersion` in

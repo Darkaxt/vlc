@@ -4,6 +4,19 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**M3 delivery reconciliation: COMPLETE.** Normal release
+[1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4), app source
+`6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`, satisfies the maintenance R71/R72
+contract below. [Verified reconciliation](resources/m3-1.1.4-verification.json)
+binds the upstream merge, native HEIF boundaries/grid decode, coherent stripped
+assembly, VLC/MPV actual playback and lifecycle, four independently retrieved
+assets, preservation, retained/weekly binding and obsolete-output cleanup.
+Unchanged M2 UI/Figma/subtitle/preview acceptance is reused only under its
+recorded source/runtime applicability. All current blockers/deferrals are
+resolved; historical failed receipts remain failures. S8/M2 stay COMPLETE and
+S9 stays NOT STARTED. The notes below preserve the authorized scope and the
+resolved protocol failures; they do not reopen completed implementation.
+
 **Weekly maintenance, 2 November 2026 (M3):** the existing authorized weekly
 upstream integration and final delivery workflow applies R71/R72 to one incoming
 commit, `8a47770f6333df6b60181329db5fdaad318bdb44`, after the delivered upstream
