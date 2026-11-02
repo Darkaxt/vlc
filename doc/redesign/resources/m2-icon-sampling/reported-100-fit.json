@@ -1,0 +1,82 @@
+{
+  "original_image": [
+    3742,
+    2105
+  ],
+  "button_solid_color_bounds": [
+    59,
+    54,
+    113,
+    82
+  ],
+  "button_width": 54,
+  "button_height": 28,
+  "foreground": [
+    46,
+    46,
+    46
+  ],
+  "background": [
+    211,
+    121,
+    24
+  ],
+  "comparisons": [
+    {
+      "source_raster": 12,
+      "display_raster": 24,
+      "rmse": 12.715366906053303,
+      "native_crop": [
+        74,
+        56,
+        98,
+        80
+      ]
+    },
+    {
+      "source_raster": 16,
+      "display_raster": 24,
+      "rmse": 7.339328357604717,
+      "native_crop": [
+        74,
+        56,
+        98,
+        80
+      ]
+    },
+    {
+      "source_raster": 24,
+      "display_raster": 24,
+      "rmse": 0.09622504486493763,
+      "native_crop": [
+        74,
+        56,
+        98,
+        80
+      ]
+    },
+    {
+      "source_raster": 48,
+      "display_raster": 24,
+      "rmse": 0.7832151211039825,
+      "native_crop": [
+        74,
+        56,
+        98,
+        80
+      ]
+    },
+    {
+      "source_raster": 96,
+      "display_raster": 24,
+      "rmse": 0.5931710140017395,
+      "native_crop": [
+        74,
+        56,
+        98,
+        80
+      ]
+    }
+  ],
+  "scope": "Actual supplied100% screenshot fit; preserve rounded corners"
+}

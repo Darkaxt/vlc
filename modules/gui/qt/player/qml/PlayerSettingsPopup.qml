@@ -129,6 +129,7 @@ T.Popup {
             Accessible.name: effect.title + ": " + text
             contentItem: Label { text: expandEffect.text; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
             IconImage {
+                smooth: false
                 anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(10); anchors.verticalCenter: parent.verticalCenter
                 width: PlayerStyle.px(24); height: width
                 sourceSize: Qt.size(width, height)
@@ -296,7 +297,7 @@ T.Popup {
                     onClicked: { settingsPopup.page = index; settingsPopup.expanded = "" }
                     contentItem: RowLayout {
                         spacing: PlayerStyle.px(4)
-                        IconImage { source: "qrc:/redesign/icons/" + ["playback","video","audio","subtitles"][parent.parent.index] + ".svg"; sourceSize: Qt.size(PlayerStyle.px(20), PlayerStyle.px(20)); Layout.preferredWidth: PlayerStyle.px(20); Layout.preferredHeight: PlayerStyle.px(20); color: settingsPopup.page === parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground }
+                        IconImage { smooth: false; source: "qrc:/redesign/icons/" + ["playback","video","audio","subtitles"][parent.parent.index] + ".svg"; sourceSize: Qt.size(PlayerStyle.px(20), PlayerStyle.px(20)); Layout.preferredWidth: PlayerStyle.px(20); Layout.preferredHeight: PlayerStyle.px(20); color: settingsPopup.page === parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground }
                         Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(12); Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
                     }
                     background: Item {

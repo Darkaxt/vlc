@@ -714,14 +714,12 @@ def icons():
             if middle['core']['state']!=3:
                 case.click('pause-middle-item','playButton','--await-core','state','--await-value','3')
             for state in ('play','pause'):
-                for sampling in ('baseline','high-definition'):
-                    case.inspect(state+'-'+sampling+'-controls','move','--target','playButton')
-                    snapshot=case.inspect(state+'-'+sampling,'icon_sampling','--sampling',sampling,'--capture')
-                    glyphs=[node for node in snapshot['tree'] if node['visible'] and node['id'].startswith('playerGlyph-')]
-                    assert any(node['id']=='playerGlyph-'+state for node in glyphs)
-                    for node in glyphs:
-                        assert node['mipmap']==(sampling=='high-definition')
-                        assert node['smooth']==(sampling=='baseline')
+                case.inspect(state+'-controls','move','--target','playButton')
+                snapshot=case.inspect(state+'-native-sampling','snapshot','--capture')
+                glyphs=[node for node in snapshot['tree'] if node['visible'] and node['id'].startswith('playerGlyph-')]
+                assert any(node['id']=='playerGlyph-'+state for node in glyphs)
+                for node in glyphs:
+                    assert not node['mipmap'] and not node['smooth'], node
                 if state=='play':
                     case.click('play-action','playButton','--await-core','state','--await-value','2')
             case.click('pause-action','playButton','--await-core','state','--await-value','3')

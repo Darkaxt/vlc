@@ -1,6 +1,55 @@
 # VLC redesign stages and reconciliation
 
+**Current execution authority (2 November):** the user explicitly requested the
+new release and deletion of older releases. The earlier compilation stop below
+is superseded. Finish M2 as one corrective1.1.3 delivery. Normalize retained
+configuration to upstream release `--disable-debug`, `-O3`, `-g0`, with the QML
+debugger disabled, and verify generated core/Qt/module flags. This profile change
+also changes global `NDEBUG`, so the application objects must rebuild once to
+avoid a mixed debug/release cohort; unchanged SDK, MPV and codec libraries stay
+retained. Diagnostic hooks are separate from compiler optimization; acceptance
+must cover the optimized code, followed by removal of the narrow test hooks for
+the normal package. Publish only after acceptance, independently verify the new
+download, update continuing build/weekly bindings, then remove older release
+entries/assets and local version directories. Preserve installed app/settings,
+Git history and dependencies needed by the continuing weekly build.
+
 **M2 First-run usability and fork identity is ACTIVE again (2 November 2026).**
+Compilation ticket158 was cancelled at the user's explicit request. The original
+session completed with exit137, no OOM events and an empty Linux group; the gate
+is idle. Do not resume automatically. The icon cause is now reproduced in a
+small Qt6.8.3/Direct3D11 renderer at native display scales without compiling VLC:
+fractional physical placement plus a second linear filter softens SVG edges.
+Native-size SVG sampling without that second filter preserves the original
+curves; the earlier4x/mipmap proposal and diagnostic A/B action are removed.
+The supplied100% pause image matches a direct24px Qt SVG render (RGB RMSE0.096),
+not an enlarged12px/16px bitmap. This does not establish full-player acceptance.
+The same default filter was found across library/navigation, queue, settings,
+track choices, layout editor and welcome icons; the source correction covers
+these existing SVG paths. Native-media image filtering and intentional blur stay
+under their existing requirements. Complete source/integrated verification before
+claiming the installed UI is fixed; compilation is still stopped.
+[Controlled Qt pixel comparison](resources/m2-icon-sampling/comparison.png) and
+[diagnosis](resources/m2-icon-sampling/diagnosis.json) retain the100/125/150/200%
+Qt6.8.3/D3D11 evidence and actual100% screenshot fit. Edited QML passes the
+same-version syntax parser. Full-player verification is still pending. The
+temporary Qt diagnostic runtime has been removed through reviewed cleanup
+`7056a3620bee37f0d8b19b35170e3fe3`; compact retained evidence is358KiB.
+Source `a9681b237f6eab2b9b59eff8bfbaab32fcdbca0d` is an intermediate, unverified
+repair commit; it is not a delivered1.1.3 release. Exact interruption/recovery
+state is in `E:/Temp/vlc-preview-1.1.3-20261102/operation.json` and the gate result
+under `D:/Temp/vlc-s8-preview-1.1.3-20261102/gate-diagnostics`.
+The user's build-scope correction is binding: keep compilation stopped while
+reported defects remain unresolved. Inspection found the retained configuration
+still has `--enable-debug`, `-g`, `-Og` and `LTCFLAGS=-O0`; the script's "normal"
+mode only removes diagnostic hooks and strips packaged symbols. It does not
+establish an optimized release profile. R78 must verify the actual compiler
+profile before a later final build, without rebuilding now to change that profile.
+Do not invoke the full plugin graph for UI-only edits. Limit later compilation
+to the affected Qt/QML targets; the proven thumbnail correction additionally
+requires the affected core target. Reuse unchanged SDK, MPV and codec builds.
+Normal/diagnostic flag switching and repeated complete release packages must
+not substitute for investigating and finishing the user's reported bugs.
 The user's1.1.2 screenshot shows a black seek-preview image for a4K VP9 MP4.
 R80 acceptance is reopened: reproduce with the supplied local file around5:11,
 trace decoded frame through provider and visible popup, correct the proven cause,

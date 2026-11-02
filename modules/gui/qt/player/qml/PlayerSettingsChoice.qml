@@ -23,6 +23,7 @@ T.ComboBox {
         verticalAlignment: Text.AlignVCenter
     }
     indicator: IconImage {
+        smooth: false
         x: choice.width - width - PlayerStyle.px(7)
         anchors.verticalCenter: parent.verticalCenter
         source: "qrc:/redesign/icons/chevron-down.svg"

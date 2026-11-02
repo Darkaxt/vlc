@@ -55,6 +55,7 @@ T.Popup {
         contentItem: RowLayout {
             spacing: PlayerStyle.px(10)
             IconImage {
+                smooth: false
                 source: "qrc:/redesign/icons/" + (choice.radio ? (choice.selected ? "choice-selected" : "choice-empty") : "add") + ".svg"
                 color: choice.selected ? PlayerStyle.accent : PlayerStyle.trackForeground
                 sourceSize: Qt.size(PlayerStyle.px(32), PlayerStyle.px(32))
@@ -158,6 +159,7 @@ T.Popup {
                         spacing: PlayerStyle.px(8)
                         Item { Layout.fillWidth: true }
                         IconImage {
+                            smooth: false
                             source: "qrc:/redesign/icons/" + ["video", "audio", "subtitles"][tab.index] + ".svg"
                             color: tab.checked ? PlayerStyle.foreground : PlayerStyle.sectionForeground
                             sourceSize: Qt.size(PlayerStyle.px(20), PlayerStyle.px(20))

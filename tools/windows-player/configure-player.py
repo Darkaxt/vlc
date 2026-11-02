@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import shlex
 import subprocess
+from release_profile import release_arguments, verify_release
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--source', type=Path, default=Path('/work/src'))
@@ -81,7 +82,9 @@ if not args.verify_only:
                     assert flag in parts, (module, parts)
                     value = shlex.join([str(codecs / 'lib' / library) if part == flag else part for part in parts])
                 config.append(key + '=' + value)
+    config = release_arguments(config)
     subprocess.run([str(args.source / 'configure'), *config], cwd=args.build, env=env, check=True)
+verify_release(args.build)
 assert re.search(r'^#define ENABLE_NLS 1$', (args.build / 'config.h').read_text(), re.M), 'Production localization was not enabled'
 predeps = re.findall(r'^predep_objects="(.*)"$', (args.build / 'libtool').read_text(encoding='utf-8'), re.M)
 assert any(str(args.crt / 'dllcrt2.o') in value for value in predeps), predeps

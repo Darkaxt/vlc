@@ -89,7 +89,7 @@ Item {
                                     anchors.horizontalCenter:parent.horizontalCenter;width:choice.iconWidth;height:choice.iconHeight
                                     Rectangle{anchors.fill:parent;color:choice.modelData==="thumbnail"?PlayerStyle.hover:"transparent";border.width:PlayerStyle.px(1);border.color:PlayerStyle.sectionForeground}
                                     Rectangle{anchors.centerIn:parent;width:PlayerStyle.px(1);height:PlayerStyle.px(24);color:PlayerStyle.foreground;visible:choice.modelData==="divider"}
-                                    IconImage{anchors.centerIn:parent;width:PlayerStyle.px(24);height:width;visible:!["spacer","divider","thumbnail"].includes(choice.modelData);source:"qrc:/redesign/icons/"+(["filename","artist","folder","playlistname"].includes(choice.modelData)?"settings-info":catalog.glyphs[choice.modelData]||"settings-info")+".svg";color:PlayerStyle.foreground;sourceSize:Qt.size(width,height)}
+                                    IconImage{smooth:false;anchors.centerIn:parent;width:PlayerStyle.px(24);height:width;visible:!["spacer","divider","thumbnail"].includes(choice.modelData);source:"qrc:/redesign/icons/"+(["filename","artist","folder","playlistname"].includes(choice.modelData)?"settings-info":catalog.glyphs[choice.modelData]||"settings-info")+".svg";color:PlayerStyle.foreground;sourceSize:Qt.size(width,height)}
                                 }
                                 Text{width:parent.width;text:editor.paletteText[choice.modelData]||choice.label;horizontalAlignment:Text.AlignHCenter;color:PlayerStyle.foreground;font.family:PlayerStyle.fontFamily;font.pixelSize:PlayerStyle.px(14);wrapMode:Text.WordWrap;textFormat:Text.PlainText}
                             }

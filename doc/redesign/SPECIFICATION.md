@@ -4,6 +4,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+The user's2 November request authorizes producing the corrected1.1.3 release and
+removing older release versions after independently verifying its download.
+R78 requires an actual optimized application configuration (`--disable-debug`,
+upstream `-O3`, `-g0`, QML debugger off), effective generated-flag verification,
+and no debug sections/symbol tables in the portable runtime. Retain established
+separate source/checksum/symbol assets; separate symbols are not installed runtime
+payload. Reuse unchanged SDK/MPV/codecs. The global debug-to-release profile
+transition requires one consistent application object cohort. Preserve installed
+application/settings and Git history during release retirement.
+
 **M2 First-run usability and fork identity is ACTIVE again (2 November 2026).**
 The user's post-release black-preview report reopens R80 acceptance for the
 supplied4K VP9 MP4. Verify actual nonblank/changing popup frames around5:11 and
@@ -28,6 +38,14 @@ Play/Pause/Previous/Next artwork, with24px and384px tracing inputs. Keep rounded
 corners and silhouettes; sharpness means avoiding unintended edge diffusion,
 not replacing rounded corners with pointed ones. Retain the original SVGs if
 tracing provides no demonstrated benefit. Native rendering remains acceptance.
+The user's whole-UI sharpness clarification applies the same audit to redesigned
+library/navigation, queue, settings/track controls, layout editor and welcome
+icons. Keep source raster requests appropriate to the displayed icon size and
+actual DPR; avoid a second texture filter on native-size SVG glyphs. Do not
+disable the intentional scaling/filtering of media artwork or seek thumbnails,
+or change rounded geometry, typography or intentional backdrop blur to disguise
+this defect. Distinguish the confirmed fractional-position resampling from other
+possible causes; the supplied100% pause pixels match a direct24px SVG raster.
 The user's2 November panel-collapse report extends this repair batch: the library
 panel must hide without briefly exposing a strip of the window backdrop. Resize
 the video consumer before committing its new placement and removing the panel.

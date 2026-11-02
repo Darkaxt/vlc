@@ -1,0 +1,290 @@
+[
+  {
+    "dpr": 1.0,
+    "mode": "Original sampling",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 0.1717960677340692,
+    "crop": [
+      119,
+      84,
+      143,
+      108
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Original sampling",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 0.2856522750167102,
+    "crop": [
+      23,
+      84,
+      47,
+      108
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Original sampling",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 0.16666666666666666,
+    "crop": [
+      275,
+      84,
+      299,
+      108
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Aligned to physical pixels",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 0.1717960677340692,
+    "crop": [
+      119,
+      168,
+      143,
+      192
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Aligned to physical pixels",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 0.2856522750167102,
+    "crop": [
+      23,
+      168,
+      47,
+      192
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Aligned to physical pixels",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 0.16666666666666666,
+    "crop": [
+      275,
+      168,
+      299,
+      192
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "No second linear filter",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 0.1717960677340692,
+    "crop": [
+      119,
+      252,
+      143,
+      276
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "No second linear filter",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 0.2856522750167102,
+    "crop": [
+      23,
+      252,
+      47,
+      276
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "No second linear filter",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 0.16666666666666666,
+    "crop": [
+      275,
+      252,
+      299,
+      276
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Earlier 4x candidate",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 0.5882727384596492,
+    "crop": [
+      119,
+      336,
+      143,
+      360
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Earlier 4x candidate",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 1.8796239281066602,
+    "crop": [
+      23,
+      336,
+      47,
+      360
+    ]
+  },
+  {
+    "dpr": 1.0,
+    "mode": "Earlier 4x candidate",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 1.8233630405867554,
+    "crop": [
+      275,
+      336,
+      299,
+      360
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Original sampling",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 7.2997442031963535,
+    "crop": [
+      179,
+      126,
+      215,
+      162
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Original sampling",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 10.077937031695267,
+    "crop": [
+      35,
+      126,
+      71,
+      162
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Original sampling",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 15.389490561844028,
+    "crop": [
+      412,
+      126,
+      448,
+      162
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Aligned to physical pixels",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 0.11226255234242723,
+    "crop": [
+      179,
+      252,
+      215,
+      288
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Aligned to physical pixels",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 0.10393492741038726,
+    "crop": [
+      35,
+      252,
+      71,
+      288
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Aligned to physical pixels",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 0.35136418446315326,
+    "crop": [
+      413,
+      252,
+      449,
+      288
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "No second linear filter",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 0.11226255234242723,
+    "crop": [
+      178,
+      378,
+      214,
+      414
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "No second linear filter",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 0.10393492741038726,
+    "crop": [
+      34,
+      378,
+      70,
+      414
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "No second linear filter",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 0.35136418446315326,
+    "crop": [
+      412,
+      378,
+      448,
+      414
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Earlier 4x candidate",
+    "glyph": "play",
+    "rmse_vs_direct_svg": 2.68128708114641,
+    "crop": [
+      179,
+      504,
+      215,
+      540
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Earlier 4x candidate",
+    "glyph": "previous",
+    "rmse_vs_direct_svg": 8.763129479335847,
+    "crop": [
+      35,
+      504,
+      71,
+      540
+    ]
+  },
+  {
+    "dpr": 1.5,
+    "mode": "Earlier 4x candidate",
+    "glyph": "sidebar",
+    "rmse_vs_direct_svg": 13.549292724468438,
+    "crop": [
+      413,
+      504,
+      449,
+      540
+    ]
+  }
+]

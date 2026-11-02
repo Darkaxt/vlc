@@ -98,7 +98,7 @@ Loader {
             id:folderButton;implicitWidth:PlayerStyle.px(28)+(control.compact?0:PlayerStyle.px(4)+Math.min(PlayerStyle.px(110),folderLabel.implicitWidth));implicitHeight:PlayerStyle.px(28);padding:0;activeFocusOnTab:true
             Accessible.name:qsTr("Browse current media folder");AccessibleCompat.id:"openFileButton"
             contentItem:RowLayout{spacing:PlayerStyle.px(4)
-                IconImage{source:"qrc:/redesign/icons/folder.svg";color:PlayerStyle.foreground;sourceSize:Qt.size(PlayerStyle.px(24),PlayerStyle.px(24));Layout.preferredWidth:PlayerStyle.px(28);Layout.preferredHeight:PlayerStyle.px(28)}
+                IconImage{smooth:false;source:"qrc:/redesign/icons/folder.svg";color:PlayerStyle.foreground;sourceSize:Qt.size(PlayerStyle.px(24),PlayerStyle.px(24));Layout.preferredWidth:PlayerStyle.px(28);Layout.preferredHeight:PlayerStyle.px(28)}
                 Text{id:folderLabel;visible:!control.compact;Layout.fillWidth:true;text:Player.sourceLocationName;elide:Text.ElideRight;color:PlayerStyle.foreground;font.family:PlayerStyle.fontFamily;font.pixelSize:PlayerStyle.px(14)}
             }
             background:Rectangle{color:"transparent";border.width:folderButton.visualFocus?2:0;border.color:PlayerStyle.accent;radius:PlayerStyle.px(4)}
@@ -132,8 +132,8 @@ Loader {
             onMoved:{Player.volume=value;Player.muted=false}
             handle:Item{}
             background:Item{clip:true;opacity:Player.muted?0.45:1
-                IconImage{width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:"qrc:/redesign/icons/volume-cone.svg";color:PlayerStyle.dark?"#090909":"#888888"}
-                Item{width:parent.width*volume.position;height:parent.height;clip:true;Image{width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:"qrc:/redesign/icons/volume-level.svg"}}
+                IconImage{smooth:false; width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:"qrc:/redesign/icons/volume-cone.svg";color:PlayerStyle.dark?"#090909":"#888888"}
+                Item{width:parent.width*volume.position;height:parent.height;clip:true;Image{smooth:false;width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:"qrc:/redesign/icons/volume-level.svg"}}
                 Rectangle{anchors.fill:parent;color:"transparent";border.color:PlayerStyle.accent;border.width:volume.visualFocus?PlayerStyle.px(2):0;radius:PlayerStyle.px(4)}
             }
         }

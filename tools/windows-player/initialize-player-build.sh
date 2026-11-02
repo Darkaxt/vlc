@@ -27,14 +27,14 @@ cd "$build_root"
 export CC="x86_64-w64-mingw32-gcc -B$crt/"
 export CXX="x86_64-w64-mingw32-g++ -B$crt/"
 export CPPFLAGS='-D__MSVCRT_VERSION__=0x700 -D_WIN32_WINNT=0x0601 -DWINVER=0x0601'
-export CFLAGS="$CPPFLAGS -g"
-export CXXFLAGS="$CPPFLAGS -g"
+export CFLAGS="$CPPFLAGS -g0"
+export CXXFLAGS="$CPPFLAGS -g0"
 export LDFLAGS="-L$crt -static-libgcc"
 "$source_root/extras/package/win32/configure.sh" \
     --host=x86_64-w64-mingw32 --with-contrib="$prefix" \
     --with-packagedir="$runtime" --enable-live555 --enable-dvdread \
     --enable-qt --enable-skins2 --enable-update-check --enable-caca \
-    --enable-debug --enable-nls LTCFLAGS=-O0
+    --disable-debug --enable-optimizations --disable-qt-qml-debug --enable-nls LTCFLAGS='-O2 -g0'
 # The first configure already uses the repaired CRT and target SDK. Reuse the
 # maintained postconditions without paying for an identical second configure.
 python3 "$source_root/tools/windows-player/configure-player.py" \

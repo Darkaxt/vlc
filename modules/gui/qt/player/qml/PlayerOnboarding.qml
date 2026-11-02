@@ -128,6 +128,7 @@ T.Popup {
                     color: PlayerStyle.panel; opacity: 0.8
                 }
                 IconImage {
+                    smooth: false
                     visible: dialog.page===0
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: PlayerStyle.px(116)

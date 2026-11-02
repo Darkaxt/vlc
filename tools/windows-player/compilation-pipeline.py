@@ -123,7 +123,7 @@ def main():
     recipes = ('compilation-pipeline.py', 'build-mpv-runtime.sh', 'build-player.sh',
         'cache-toolchain.py', 'qt-objects.mk', 'rebuild-qt-network.sh', 'rebuild-qt-timers.sh',
         'stage-built-mpv-runtime.py', 'inventory-dependency-notices.py', 'install-ffmpeg-files.py',
-        'initialize-player-build.sh', 'configure-player.py', 'check-mpv-plugin-abi.py', 'release_symbols.py',
+        'initialize-player-build.sh', 'configure-player.py', 'release_profile.py', 'check-mpv-plugin-abi.py', 'release_symbols.py',
         'build-upstream-medialibrary.py', 'prepare-upstream-runtime.py', 'configure-upstream-player.sh',
         'stage-full-plugins.py', 'full-plugin-stage.mk', 'build-upstream-codecs.py',
         'prepare-upstream-codec-notices.py', 'verify-upstream-codec-links.py', 'upstream-codec-links.mk')

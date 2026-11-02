@@ -176,6 +176,7 @@ T.Control {
         readonly property Item artworkTextureProvider: artworkLoader.item?.artworkTextureProvider ?? null
 
         IconImage {
+            smooth: false
             visible: delegate.redesigned
             Layout.preferredWidth: PlayerStyle.px(32)
             Layout.preferredHeight: PlayerStyle.px(32)

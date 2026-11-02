@@ -76,6 +76,7 @@ Item {
                     spacing: PlayerStyle.px(8)
                     Item { Layout.fillWidth: true }
                     IconImage {
+                        smooth: false
                         source: "qrc:/redesign/icons/" + ["queue-tab", "bookmarks", "chapters"][tab.index] + ".svg"
                         color: tab.index === header.activeTab ? PlayerStyle.foreground : PlayerStyle.sectionForeground
                         sourceSize: Qt.size(PlayerStyle.px(20), PlayerStyle.px(20))
@@ -134,6 +135,7 @@ Item {
                 MainPlaylistController.sort()
             }
             contentItem: IconImage {
+                smooth: false
                 source: "qrc:/redesign/icons/sort.svg"
                 color: PlayerStyle.foreground
                 sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))

@@ -1,0 +1,65 @@
+{
+  "schema": "vlc_redesign.icon_sampling_diagnosis.v1",
+  "qt": "6.8.3",
+  "backend": "Direct3D11",
+  "scales": [
+    "1",
+    "1.25",
+    "1.5",
+    "2"
+  ],
+  "cause_reproduced": "A second linear filter softens native-DPR SVG rasters at fractional physical placement.",
+  "source_correction": "Preserve original vectors and native-size requests; disable second texture filtering on redesigned SVG icon paths.",
+  "rejected_candidate": "4x sourceSize/mipmap: no demonstrated improvement over native-DPR SVG sampling.",
+  "reported_100_percent": "Actual pause pixels match direct24px Qt SVG raster; RMSE0.096. They do not match a12px or16px bitmap enlarged to24px.",
+  "original_artwork_sha256": {
+    "play.svg": "3658047363d0cd0a939afa4ad8b86bc74022e6c4d3b74e8a9dfb09882583dcdd",
+    "pause.svg": "ec164906334538fa8620878975ba27784596f88f654f06dcd53d17117fb46469",
+    "previous.svg": "65be52bbb93afecbca4bad7e70d032c40d61160fcb83225f91f6b83253b93207",
+    "next.svg": "9dad4463559b6e145f929e6751493e932978c67bfdeea92263cd0d9b18cbcb3c"
+  },
+  "qml_source_sha256": {
+    "modules/gui/qt/player/qml/PlayerIconButton.qml": "c297b4013ee8eab2e46778dbdc2575fb71156ea74d45b601d54cff787bc6dd04",
+    "modules/gui/qt/player/qml/PlayerLayoutControl.qml": "d806c3392ec97dba20bc809d5779a500422ac299bc5fe3ad5cf1270a96eacbde",
+    "modules/gui/qt/player/qml/PlayerLayoutEditor.qml": "f048eeabd824a9a2fdb08944fdecf690d54d39bbadac6c0e9c5e430452f096f3",
+    "modules/gui/qt/player/qml/PlayerLibrary.qml": "baa84207ecb834685789b378f9fb751b64018c1c304e20d4547f8c83787d8099",
+    "modules/gui/qt/player/qml/PlayerLibraryHome.qml": "50888c561865068b17ae34cf56d74c376a75b81dce5a9bde56bee59a732fba35",
+    "modules/gui/qt/player/qml/PlayerOnboarding.qml": "5633bfe20dd0801ec42da6427b3b571fc8816da431da723bcacb799211fef27c",
+    "modules/gui/qt/player/qml/PlayerQueueHeader.qml": "dc702c86b871c481860a651e4b2e0bdd68807e7d82fe3bc54f81e996ac41ae14",
+    "modules/gui/qt/player/qml/PlayerSettingsChoice.qml": "02cb17e709ee1a7c1cf370b61431e77ea961533f6720ed57dc2b873cc8db3f5b",
+    "modules/gui/qt/player/qml/PlayerSettingsPopup.qml": "802ac13718ad4529cef9089f1297dca3a435ea7c324e0109a7d3a08c15d4f45a",
+    "modules/gui/qt/player/qml/PlayerTracksPopup.qml": "b067c90f91f23a5cec7a6f58260ca5325d3d1bb27b1ef90f91ca1cde1bf7aaec",
+    "modules/gui/qt/playlist/qml/PlaylistDelegate.qml": "c68f9da5870f620f8f155da1a195c3105f07a6009f88245e2aff1f7edf9497d6"
+  },
+  "qml_syntax": {
+    "tool": "Qt6.8.3 qmlformat parser, no in-place edits",
+    "exit_code": 0
+  },
+  "vlc_compilation_started": false,
+  "full_player_acceptance": false,
+  "remaining": "Integrate and verify current player after all required repairs and the release-profile correction; compilation remains stopped.",
+  "environment": {
+    "purpose": "Qt image sampling diagnostic; no VLC build, no global installation",
+    "D_exception": "Active native dependency tree and small-file I/O for temporary renderer; clean after comparison",
+    "packages": [
+      {
+        "package": "shiboken6",
+        "version": "6.8.3",
+        "metadata": "https://pypi.org/pypi/shiboken6/6.8.3/json",
+        "url": "https://files.pythonhosted.org/packages/aa/29/e77f3fba5337f2d98f977eece0fd24cda6cf7d83be2699514d2ca1d34f6c/shiboken6-6.8.3-cp39-abi3-win_amd64.whl",
+        "file": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\qt-render-kit\\downloads\\shiboken6-6.8.3-cp39-abi3-win_amd64.whl",
+        "bytes": 1150998,
+        "sha256": "bca3a94513ce9242f7d4bbdca902072a1631888e0aa3a8711a52cc5dbe93588f"
+      },
+      {
+        "package": "PySide6_Essentials",
+        "version": "6.8.3",
+        "metadata": "https://pypi.org/pypi/PySide6_Essentials/6.8.3/json",
+        "url": "https://files.pythonhosted.org/packages/8e/0f/5d8c6da7586e57ee032643e0c0e62335ef1a1add1a980160ddd1654f1d8d/PySide6_Essentials-6.8.3-cp39-abi3-win_amd64.whl",
+        "file": "D:\\Temp\\vlc-s8-preview-1.1.3-20261102\\qt-render-kit\\downloads\\PySide6_Essentials-6.8.3-cp39-abi3-win_amd64.whl",
+        "bytes": 72191029,
+        "sha256": "3c0fae5550aff69f2166f46476c36e0ef56ce73d84829eac4559770b0c034b07"
+      }
+    ]
+  }
+}

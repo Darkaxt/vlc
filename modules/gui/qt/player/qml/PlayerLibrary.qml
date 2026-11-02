@@ -285,6 +285,7 @@ FocusScope {
                         readonly property bool current: root.section === modelData.key || (modelData.key === "videos" && root.section === "allVideos") || (modelData.key === "music" && ["songs","albums","artists","genres"].includes(root.section))
                         contentItem: Item {
                             IconImage {
+                                smooth: false
                                 x: PlayerStyle.px(root.compact ? 13 : 19); anchors.verticalCenter: parent.verticalCenter
                                 width: PlayerStyle.px(24); height: width
                                 sourceSize: Qt.size(width,height)
@@ -308,7 +309,7 @@ FocusScope {
                     AccessibleCompat.id: "libraryAddItem"
                     onClicked: openMenu.open()
                     contentItem: Item {
-                        IconImage { x: PlayerStyle.px(root.compact ? 13 : 19); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); source: "qrc:/redesign/icons/add.svg"; color: PlayerStyle.foreground }
+                        IconImage { smooth: false; x: PlayerStyle.px(root.compact ? 13 : 19); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); source: "qrc:/redesign/icons/add.svg"; color: PlayerStyle.foreground }
                         Label { visible: !root.compact; x: PlayerStyle.px(54); width: parent.width-x-PlayerStyle.px(8); anchors.verticalCenter: parent.verticalCenter; text: addItem.text }
                     }
                 }
@@ -509,7 +510,7 @@ FocusScope {
                     onActiveFocusChanged: if (activeFocus) childFolders.positionViewAtIndex(index,GridView.Contain)
                     background: Rectangle { color: folderButton.hovered ? PlayerStyle.hover : "transparent"; radius: PlayerStyle.px(4); border.color: PlayerStyle.accent; border.width: folderButton.visualFocus ? PlayerStyle.px(1) : 0 }
                     contentItem: Item {
-                        IconImage { x: PlayerStyle.px(4); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); source: "qrc:/redesign/icons/folder.svg"; color: PlayerStyle.foreground }
+                        IconImage { smooth: false; x: PlayerStyle.px(4); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); source: "qrc:/redesign/icons/folder.svg"; color: PlayerStyle.foreground }
                         Label { x: PlayerStyle.px(42); anchors.verticalCenter: parent.verticalCenter; width: parent.width-x-PlayerStyle.px(8); text: folderButton.Accessible.name }
                     }
                 }
@@ -564,7 +565,7 @@ FocusScope {
                     height: items.cards ? (items.videoCards ? width*9/16 : width) : PlayerStyle.px(32)
                     Rectangle { anchors.fill: parent; radius: PlayerStyle.px(items.cards ? 8 : 2); color: PlayerStyle.hover }
                     Widgets.ImageExt { id: coverImage; anchors.fill: parent; source: entry.cover; radius: PlayerStyle.px(items.cards ? 12 : 2); fillMode: Image.PreserveAspectCrop; asynchronous: true; visible: status === Image.Ready }
-                    IconImage { anchors.centerIn: parent; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); visible: !entry.cover; source: "qrc:/redesign/icons/" + (root.category === "music" ? ["music","albums","artists","genres"][entry.index] : root.containers ? "folder" : "play") + ".svg"; color: PlayerStyle.foreground }
+                    IconImage { smooth: false; anchors.centerIn: parent; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); visible: !entry.cover; source: "qrc:/redesign/icons/" + (root.category === "music" ? ["music","albums","artists","genres"][entry.index] : root.containers ? "folder" : "play") + ".svg"; color: PlayerStyle.foreground }
                     Rectangle { anchors.left: parent.left; anchors.bottom: parent.bottom; width: parent.width * Math.max(0, Math.min(1, model.progress || 0)); height: PlayerStyle.px(3); color: PlayerStyle.accent }
                 }
                 Label {

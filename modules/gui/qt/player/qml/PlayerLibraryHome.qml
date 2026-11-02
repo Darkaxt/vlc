@@ -187,7 +187,7 @@ Flickable {
                             width: root.compact ? PlayerStyle.px(32) : parent.width; height: width
                             radius: PlayerStyle.px(root.compact ? 2 : 12); color: PlayerStyle.chrome
                             Widgets.ImageExt { id: folderCover; anchors.fill: parent; source: folder.model.thumbnail || ""; radius: PlayerStyle.px(root.compact ? 2 : 12); fillMode: Image.PreserveAspectCrop; asynchronous: true; visible: status === Image.Ready }
-                            IconImage { visible: folderCover.status !== Image.Ready; anchors.centerIn: parent; width: PlayerStyle.px(root.compact ? 24 : 48); height: width; sourceSize: Qt.size(width,height); source: "qrc:/redesign/icons/folder.svg"; color: PlayerStyle.foreground }
+                            IconImage { smooth: false; visible: folderCover.status !== Image.Ready; anchors.centerIn: parent; width: PlayerStyle.px(root.compact ? 24 : 48); height: width; sourceSize: Qt.size(width,height); source: "qrc:/redesign/icons/folder.svg"; color: PlayerStyle.foreground }
                         }
                         Label {
                             x: root.compact ? PlayerStyle.px(42) : 0
