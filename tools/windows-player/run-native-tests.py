@@ -70,6 +70,12 @@ def main():
     for relative in ('test', 'share', 'modules/gui/qt/tests'):
         if not resuming:
             shutil.copytree(source / relative, root / 'source' / relative)
+    has_chrome=any(program['name']=='test_player_chrome.exe' for suite in build['suites'] for program in suite['programs'])
+    if has_chrome and not resuming:
+        relative=Path('modules/gui/qt/player/qml/PlayerChromeState.qml')
+        destination=root/'source'/relative
+        destination.parent.mkdir(parents=True,exist_ok=True)
+        shutil.copyfile(source/relative,destination)
     if not resuming:
         shutil.copytree(args.runtime / 'plugins', root / 'modules')
     for folder in ('bin', 'tmp', 'appdata', 'localappdata', 'logs'):
@@ -101,7 +107,7 @@ def main():
         QML_DISK_CACHE_PATH=str(root / 'tmp/qml'), QT_DISABLE_SHADER_DISK_CACHE='1',
         QSG_RHI_DISABLE_SHADER_DISK_CACHE='1', QT_FORCE_STDERR_LOGGING='1')
     environment['QT_QPA_PLATFORM'] = 'offscreen'
-    if any(program['name']=='test_player_chrome.exe' for suite in build['suites'] for program in suite['programs']):
+    if has_chrome:
         chrome=root/'source/modules/gui/qt/player/qml/PlayerChromeState.qml'
         assert chrome.is_file()
         assert sha_file(chrome)==sha_file(tools_root/'work/src/modules/gui/qt/player/qml/PlayerChromeState.qml')
