@@ -1,12 +1,31 @@
 # VLC redesign stages and reconciliation
 
+**M3 Weekly upstream maintenance (2 November 2026): ACTIVE.** Remotes/default
+branch and exact revisions were refreshed: local/remote master was
+`b155f371592ca830678624b457e79c134b671a5a`, upstream master is
+`8a47770f6333df6b60181329db5fdaad318bdb44`, with one incoming HEIF grid-offset
+overflow fix. The isolated branch `codex/weekly-upstream-20261102` merges it
+without conflicts. Preserve untracked AGENTS.md and the verified 1.1.3 release
+until replacement delivery passes. No other implementation stage is ACTIVE.
+
+| Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
+|---|---|---|---|---|
+| M3 Weekly upstream maintenance | ACTIVE | R71/R72 scope pinned; compatible one-commit merge resolved; actual current remotes/divergence verified. | Finish 1.1.4 version/focused HEIF regression, one incremental normal assembly from retained objects, changed-path and packaged native acceptance, source/symbol/checksum artifacts, independent published download verification, retained/weekly rebinding and obsolete-output retirement. These are internal advancement blockers being implemented. | None. |
+
+Use exact `E:/Temp/vlc-weekly-20261102-1.1.4` controls and
+`D:/Temp/vlc-s8-weekly-20261102-1.1.4` native/build staging. D: is required for
+sustained build/native/small-file I/O. Candidate assembly remains separate at
+`D:/VLC-Redesign/build/windows-x64/scratch-share/weekly-1.1.4`. Existing
+toolchain/MPV/codecs/fixtures and current installed player/profiles remain bound.
+
 **M2 First-run usability and fork identity is COMPLETE (2 November2026).**
 [Modern VLC Fork1.1.3](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3)
 delivers the full Figma main-menu/Playback-panel correction and the reported
 preview, original-icon sampling and window/sidebar sizing repairs. Application
 source is `6cba6f96e3b341acac3886c97597b7aa74c6c169`; the final closure changes only
-host verification tools, documentation and evidence. No implementation stage is
-ACTIVE. S0/D1/S1-S8/M1/M2 are COMPLETE; S9 is NOT STARTED and remains planning scope.
+host verification tools, documentation and evidence. S0/D1/S1-S8/M1/M2 are
+COMPLETE; only the newly authorized recurring M3 maintenance above is ACTIVE.
+S9 is NOT STARTED and remains planning scope.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|

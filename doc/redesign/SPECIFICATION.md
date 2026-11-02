@@ -4,6 +4,22 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**Weekly maintenance, 2 November 2026 (M3):** the existing authorized weekly
+upstream integration and final delivery workflow applies R71/R72 to one incoming
+commit, `8a47770f6333df6b60181329db5fdaad318bdb44`, after the delivered upstream
+pin `c7834066e27cf07a2a15f1e8aab17c12df97e5d4`. Its only upstream production
+change adds checked arithmetic to the HEIF grid destination offset. Integrate
+through normal merge history and deliver version 1.1.4 through the existing
+four-asset release channel. Verify the changed demux path and overflow boundary,
+coherent enabled-plugin assembly, compiled version/update identity, packaged
+VLC/MPV playback and preservation. Reuse unchanged 1.1.3 UI/DV acceptance only
+with explicit source/runtime applicability. Use the retained optimized toolchain,
+objects and dependencies; no configure/SDK recreation when its inputs are
+unchanged. Independently verify delivery, update the retained weekly binding and
+retire obsolete outputs after their consumers exit. M2 remains COMPLETE and S9
+remains NOT STARTED. This records existing recurring authorization, not a new
+product requirement or an approval checkpoint.
+
 The2 November rendered-reference audit and user correction also reopen R52 for
 the player chrome/menu. M2 must restore the interactive Figma main menu as the
 priority: direct media/global actions, original two-tone vector icons, aligned
