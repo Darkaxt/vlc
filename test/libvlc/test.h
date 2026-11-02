@@ -65,14 +65,24 @@ static const char test_default_sample[] = "mock://";
 
 static inline void test_setup(void)
 {
+#ifdef _WIN32
+    /* Cross-built Windows tests run from an explicitly staged native runtime.
+     * The Unix configure path is not a valid native module search directory. */
+    assert(getenv("VLC_PLUGIN_PATH") != NULL);
+    assert(getenv("VLC_LIB_PATH") != NULL);
+#else
     setenv("VLC_PLUGIN_PATH", TOP_BUILDDIR"/modules", 1);
     setenv("VLC_LIB_PATH", TOP_BUILDDIR"/modules", 1);
+#endif
 }
 
 static inline void test_init (void)
 {
     (void)test_default_sample; /* This one may not be used */
 
+#ifndef _WIN32
+    /* POSIX make-check watchdog. Windows native tests are supervised by their
+     * owner; Windows has no alarm(), and no substitute deadline is introduced. */
     /* Make sure "make check" does not get stuck */
     /* Timeout of 10secs by default */
     unsigned alarm_timeout = 10;
@@ -89,6 +99,7 @@ static inline void test_init (void)
     }
     if (alarm_timeout != 0)
         alarm (alarm_timeout);
+#endif
 
     test_setup();
 }
