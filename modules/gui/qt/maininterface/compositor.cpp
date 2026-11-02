@@ -286,6 +286,15 @@ bool CompositorVideo::commonGUICreateImpl(QWindow* window, CompositorVideo::Flag
     assert(m_mainCtx);
     assert(window);
 
+    // Apply this before showing the interface. A native startup show hint can
+    // be consumed by an earlier Qt window and does not prevent later activation.
+    // The explicit volatile option leaves normal interactive startup unchanged.
+    if (var_InheritBool(m_intf, "qt-passive"))
+    {
+        window->setFlag(Qt::WindowDoesNotAcceptFocus);
+        window->setProperty("_q_showWithoutActivating", true);
+    }
+
     m_videoSurfaceProvider = std::make_unique<VideoSurfaceProvider>(canDoThreadedSurfaceUpdates());
     m_mainCtx->setVideoSurfaceProvider(m_videoSurfaceProvider.get());
 

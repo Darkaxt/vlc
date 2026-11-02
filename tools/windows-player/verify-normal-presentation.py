@@ -33,7 +33,10 @@ parser.add_argument('--geometry-source', type=Path, required=True)
 parser.add_argument('--placement-proof', type=Path, required=True)
 parser.add_argument('--qt-sha256', required=True)
 parser.add_argument('--verify-app-icon',action='store_true',help='Read the packaged PE icon and the actual owned native window icon')
+parser.add_argument('--interactive-private', action='store_true',
+    help='Verify ordinary default focus flags only on an owned inactive desktop; never issue a placement proof')
 args = parser.parse_args()
+assert not args.interactive_private or args.mode == 'private-playback'
 root = args.scratch_root.resolve()
 assert root.parent == Path('D:/Temp') and root.name.startswith('vlc-s8-')
 root.mkdir(exist_ok=True)
@@ -85,6 +88,7 @@ geometry_hash = hashlib.sha256(saved_geometry).hexdigest()
 if args.mode == 'offscreen':
     proof = json.loads(args.placement_proof.read_text())
     assert proof['geometry_verified'] and proof['qt_plugin_sha256'] == expected_qt and proof['saved_geometry_sha256'] == geometry_hash
+    assert proof['nonactivating_window_style_verified'] is True
 
 scratch.mkdir()
 runtime = scratch / 'runtime'
@@ -113,6 +117,8 @@ command = [str(runtime / 'vlc.exe'), '--qt-playback-engine=mpv', '--intf=qt', '-
     '--qt-auto-raise=0', '--no-qt-system-tray', '--qt-notification=0',
     '--no-volume-save', '--mmdevice-volume=0', '--play-and-exit',
     '--file-logging', '--log-verbose=2', '--logfile=' + str(evidence / 'native-ui.log'), str(args.fixture.resolve())]
+if not args.interactive_private:
+    command.insert(1, '--qt-passive')
 
 u.GetForegroundWindow.restype = W.HWND
 u.GetWindowThreadProcessId.argtypes = [W.HWND, ctypes.POINTER(W.DWORD)]
@@ -149,6 +155,7 @@ desktop_before = input_desktop()
 observed_windows = []
 foreground_owned = False
 result = {'schema': 'vlc_redesign.s8_normal_presentation.v1', 'mode': args.mode, 'passed': False,
+    'passive_launch': not args.interactive_private,
     'qt_plugin_sha256': expected_qt, 'saved_geometry_sha256': geometry_hash, 'saved_screen': screen,
     'monitors': monitors, 'scope': 'Public app-owned synthetic saved geometry; no desktop/input control, no diagnostic hooks',
     'test_only_input_context': 'QT_IM_MODULES=none; QT_IM_MODULE=none; process-local only, no OS input/language setting change'}
@@ -218,12 +225,19 @@ observed_windows = list({tuple(event['bounds']) for event in window_events['even
     if event['pid'] == result['pid'] and event['visible'] and event['bounds'][2] > event['bounds'][0]
     and event['bounds'][3] > event['bounds'][1]})
 foreground_owned = any(event['foreground_owner'] for event in window_events['events'] if event['pid'] == result['pid'])
+main_windows = [event for event in window_events['events'] if event['pid'] == result['pid']
+    and event['visible'] and event['class'].startswith('Qt')
+    and event['bounds'][2] > event['bounds'][0] and event['bounds'][3] > event['bounds'][1]]
+noactivate = 0x08000000  # WS_EX_NOACTIVATE, emitted by Qt::WindowDoesNotAcceptFocus.
+passive_style = bool(main_windows) and all(event['extended_style'] & noactivate for event in main_windows)
+default_style = bool(main_windows) and all(not event['extended_style'] & noactivate for event in main_windows)
 result['native_window_events'] = window_events
 log = (evidence / 'native-ui.log').read_text(encoding='utf-8', errors='replace')
 stderr = (evidence / 'stderr').read_text(encoding='utf-8', errors='replace')
 offscreen = bool(observed_windows) and all(bounds[2] <= display[0] or bounds[0] >= display[2]
     or bounds[3] <= display[1] or bounds[1] >= display[3] for bounds in observed_windows for display in monitors)
 checks = {'all_visible_owned_windows_offscreen': offscreen, 'no_observer_errors': not observer_errors, 'never_observed_foreground_owner': not foreground_owned,
+    'expected_native_focus_style': default_style if args.interactive_private else passive_style,
     'input_desktop_preserved': result['input_desktop_preserved'], 'natural_eof': 'MPV natural EOF reached' in log,
     'resources_released': 'MPV native resources released' in log, 'qt_event_loop_finished': 'QApp exec() finished' in log,
     'no_competing_vlc_playback': not re.search(r'using (?:video |audio |spu )?decoder module|Received first picture', log),
@@ -263,6 +277,7 @@ result.update(checks=checks, observed_window_bounds=observed_windows, passed=res
 if args.mode == 'private' and result['passed']:
     assert not args.placement_proof.exists()
     args.placement_proof.write_text(json.dumps({'geometry_verified': True,
+        'nonactivating_window_style_verified': passive_style,
         'qt_plugin_sha256': expected_qt, 'saved_geometry_sha256': geometry_hash,
         'monitors': monitors, 'placement_receipt_sha256': hashlib.sha256((scratch / 'result.json').read_bytes()).hexdigest(),
         'scope': 'Only placement on an inactive desktop; actual-picture acceptance remains required offscreen'}, indent=2) + '\n')

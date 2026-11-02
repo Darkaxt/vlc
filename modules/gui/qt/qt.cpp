@@ -466,6 +466,10 @@ vlc_module_begin ()
                  AUTORAISE_ON_PLAYBACK_LONGTEXT )
             change_integer_list( i_raise_list, psz_raise_list_text )
 
+    add_bool( "qt-passive", false, N_("Passive interface window"),
+              N_("Create a non-activating interface window for unattended playback.") )
+        change_volatile()
+
     add_bool( "qt-smooth-scrolling", true, SMOOTH_SCROLLING_TEXT, SMOOTH_SCROLLING_LONGTEXT )
 
     add_bool( "qt-use-scroll-handler", true, SCROLL_HANDLER_TEXT, SCROLL_HANDLER_LONGTEXT )

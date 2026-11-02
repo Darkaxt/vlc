@@ -20,6 +20,19 @@ retire obsolete outputs after their consumers exit. M2 remains COMPLETE and S9
 remains NOT STARTED. This records existing recurring authorization, not a new
 product requirement or an approval checkpoint.
 
+M3's normal MPV validation observed actual presentation but failed the required
+foreground-preservation criterion. The normal Qt path lacks the no-focus flags
+used by the diagnostic path; a Windows SW_SHOWNOACTIVATE startup hint did not
+enforce the contract. Repair this current-stage execution requirement with an
+explicit volatile `--qt-passive` launch option, false by default, applying Qt's
+nonactivating/no-focus flags before the interface is shown. Do not save this
+option into user preferences or change ordinary interactive startup. Verify
+default window flags on an inactive desktop, then require the passive native
+WS_EX_NOACTIVATE style in a fresh private placement proof before any further
+input-desktop run. Preserve the failed receipt; do not waive its foreground
+failure or repeat the failed protocol unchanged. This is required normal-runtime
+verification integration, not an additional implementation stage.
+
 The2 November rendered-reference audit and user correction also reopen R52 for
 the player chrome/menu. M2 must restore the interactive Figma main menu as the
 priority: direct media/global actions, original two-tone vector icons, aligned

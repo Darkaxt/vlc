@@ -18,6 +18,20 @@ sustained build/native/small-file I/O. Candidate assembly remains separate at
 `D:/VLC-Redesign/build/windows-x64/scratch-share/weekly-1.1.4`. Existing
 toolchain/MPV/codecs/fixtures and current installed player/profiles remain bound.
 
+Original gate169/session66178 is closed0, with an empty Linux group, released
+mounts, zero OOM/max events and1703432192 bytes peak charged RAM. The one-commit
+HEIF merge assembled successfully. Native arithmetic boundaries reject the old
+guard and pass the fixed guard; actual packaged HEIF grid playback exports a
+nonblank1024x256 frame and exits normally. Normal VLC playback also passes.
+Qualification session74020 closed1 because the SDR offscreen MPV run acquired
+foreground ownership despite correct offscreen placement and actual Present(S_OK).
+All native processes exited0. This is an internal R71 acceptance blocker: the
+normal launch protocol lacks enforced no-focus flags. Keep M3 ACTIVE, preserve
+the raw failed receipt, add the explicit volatile passive launch option and native
+style gate, then use the proven Qt-only cohort path to rebuild only the changed
+frontend and revision binaries. Retain the completed HEIF/non-Qt objects and
+unchanged decoder/runtime image evidence; no SDK, configure or full module rebuild.
+
 **M2 First-run usability and fork identity is COMPLETE (2 November2026).**
 [Modern VLC Fork1.1.3](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.3)
 delivers the full Figma main-menu/Playback-panel correction and the reported
