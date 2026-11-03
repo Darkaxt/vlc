@@ -7,7 +7,7 @@ evidence, not acceptance of the newly identified settings/menu defects.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | All thirteen live reference categories reviewed, including scrollable sections; source causes for generic categorization, absent header and extra main-menu row identified; original reference captures and control inventory retained. | R83: integrate every audited category/control, themed advanced command route and shared visual correction. R84: complete native behavior/persistence/pixel acceptance, optimized package, final release, independent delivery and retained/weekly binding. These are internal advancement blockers; corner backing still requires an affected native reproduction. | None. |
+| M4 Settings and menu parity | ACTIVE | Thirteen-category source integration and guarded optimized assembly185; native policy/SVG proof; original12-row menu/settings source; fresh all-category100% diagnostic captures, native rounded clipping and95% surface alpha. | R83/R84: repair the five native combo content hints; complete formal category/theme/DPI/scroll/behavior/rollback acceptance and actual composed backdrop/picture verification; then optimized normal package, final release, independent delivery and retained/weekly binding. These remain internal advancement blockers. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Finish the cohesive settings/menu implementation before compiling. Reuse retained
@@ -149,6 +149,29 @@ the view's exact dimensions therefore use designable QSize properties after
 that geometry step. Original artwork generation/source-resource diagnostics
 pass, with all existing artwork unchanged. Fresh native behavior/pixels, final
 normal delivery and independent verification remain internal M4 blockers.
+
+Continuation185 (`144d69b1492f4c2490b90ab9fe22725d`) passed the exact409-plugin
+reuse assembly from `7e03e19df29c7781d338be09677b05b37a141445`. It closed0 with
+empty Linux group, released private mounts, no OOM/max events and1712173056
+bytes peak RAM; player1532.3s wall/142.0s CPU. Native8780 stopped on an overly
+strict fixed-widget constraint assertion: the Interface slider wrapper actually
+renders at the original47px through its child layout. The corrected check now
+verifies that rendered47px height. Native38520 subsequently exposed a genuine
+367px combo width. A single all-category survey6686 measured129 expanded form
+editors and found five long native combo content hints, including below-viewport
+rows. The shared reference adapter now uses the existing bounded combo hint
+policy while preserving every native label/value. This correction is not yet
+compiled or accepted; no second build is active.
+
+All thirteen current normal/basic captures were visually inspected. The user's
+backdrop observation remains an explicit acceptance gap: original frame999:5047
+has#0e0e0e/95% tint and50px background blur. The native PNG has alpha242; an
+owned inactive-desktop readback31264 returns S_OK/type3 for requested Windows
+acrylic, with rounded physical bounds and clean player exit. Neither proves
+composed blur over player content. The OS transparency setting is enabled and
+unchanged. Preserve this distinction in final verification and README imagery;
+do not replace actual backdrop evidence with a widget-only screenshot. M4 remains
+ACTIVE and1.1.5 remains unpublished.
 
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was

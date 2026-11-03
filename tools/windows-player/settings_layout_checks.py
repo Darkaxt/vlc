@@ -28,9 +28,15 @@ def check_settings_layout(snapshot, category, *, compact):
             continue
         expected = owner['width'] if compact else 320
         assert abs(editor['width'] - expected) <= 1, ('Reference field width', owner['id'], identity, editor['width'], expected)
-        assert editor['minimum_height']==editor['height']==editor['maximum_height'], (
-            'Stylesheet changed the fixed reference field height',identity,
-            editor['minimum_height'],editor['height'],editor['maximum_height'])
+        if identity in ('editor-mouse-hide-timeout','editor-qt-notification-duration'):
+            # Original Interface rows use a22px slider,8px gap and17px labels.
+            # Their QWidget wrapper is sized by that child layout. Acceptance
+            # concerns its rendered47px height, not QWidget's min/max mechanism.
+            assert editor['height']==47,('Reference Interface slider group height',identity,editor['height'],47)
+        else:
+            assert editor['minimum_height']==editor['height']==editor['maximum_height'], (
+                'Stylesheet changed the fixed reference field height',identity,
+                editor['minimum_height'],editor['height'],editor['maximum_height'])
         if editor['type'] in ('QSpinBox','QDoubleSpinBox'):
             assert editor['maximum_width']>90,('Legacy numeric width cap remains',identity,editor['maximum_width'])
         checked.append(identity)

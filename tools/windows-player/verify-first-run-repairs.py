@@ -33,7 +33,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -935,6 +935,39 @@ def menus():
     finally: case.close()
 
 
+def settings_backdrop():
+    """Read the owned window's DWM request; never confuse it with pixel proof."""
+    records['diagnostic_only']=True
+    case=Case('settings-backdrop',media=fixtures/'control.mkv')
+    try:
+        snapshot=case.inspect('backdrop-settings','key','--key','0x50','--modifiers','0x4000000','--capture')
+        dialog=next(row for row in snapshot['widgets'] if row['id']=='redesignPreferences')
+        region=settings_window_region(case,dialog)
+        def read_backdrop():
+            hwnd=W.HWND(int(dialog['native_id'],16))
+            pid=W.DWORD()
+            u.GetWindowThreadProcessId(hwnd,ctypes.byref(pid))
+            assert pid.value==case.player.pid
+            dwm=ctypes.WinDLL('dwmapi',use_last_error=True)
+            dwm.DwmGetWindowAttribute.argtypes=[W.HWND,W.DWORD,ctypes.c_void_p,W.DWORD]
+            dwm.DwmGetWindowAttribute.restype=ctypes.c_long
+            backdrop=W.DWORD()
+            hr=dwm.DwmGetWindowAttribute(hwnd,38,ctypes.byref(backdrop),ctypes.sizeof(backdrop))
+            u.GetWindowLongPtrW.argtypes=[W.HWND,ctypes.c_int]
+            u.GetWindowLongPtrW.restype=ctypes.c_ssize_t
+            style=u.GetWindowLongPtrW(hwnd,-20)
+            return {'get_system_backdrop_hresult':f'0x{hr & 0xffffffff:08x}',
+                'system_backdrop_type':backdrop.value if hr==0 else None,
+                'extended_style':hex(style),'layered':bool(style & 0x80000),
+                'native_region':region,'actual_blurred_picture_verified':False,
+                'limit':'Readback proves the DWM request only; inactive desktop and QWidget captures cannot establish its composed pixels.'}
+        case.record['backdrop_diagnostic']=owned_native_read(case,read_backdrop)
+        save()
+        case.native('backdrop-close','preferencesClose')
+        case.close(True)
+    finally:case.close()
+
+
 def settings():
     """All reference categories, real scrolling, DPI/theme and retained edits."""
     reference=json.loads((repo/'doc/redesign/resources/m4-settings-reference.json').read_text())
@@ -1439,7 +1472,8 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+        if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue
             records['diagnostic_only']=True

@@ -1270,6 +1270,14 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
             // maximum. The reference adapter owns this view's field geometry.
             editor->setMinimumWidth(0);
             editor->setMaximumWidth(QWIDGETSIZE_MAX);
+            // Native option labels may be longer than the reference field.
+            // Use the same bounded content hint as reference choice editors,
+            // without changing option labels, values or the popup's contents.
+            if(auto *combo=qobject_cast<QComboBox *>(editor))
+            {
+                combo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+                combo->setMinimumContentsLength(8);
+            }
         }
         grid->setAlignment(editor, Qt::Alignment());
         editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);

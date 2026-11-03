@@ -26,6 +26,14 @@ VLC commands through an appropriately themed advanced route. Global Settings
 must remain directly reachable from player/library and keyboard. No default
 profile, installation, real media history or OS setting is changed by validation.
 
+Backdrop clarification,3 November2026: the original General frame999:5047 uses
+the#0e0e0e surface at95% opacity and a50px BACKGROUND_BLUR. Preserve that glass
+appearance over actual player content. A QWidget-only PNG omits the Windows
+compositor backdrop and cannot establish that the background blur is working.
+An alpha242 tint or a successful native acrylic request alone is not actual
+composed-picture acceptance. Verify the composed result without changing the
+user's OS transparency setting or using desktop controls.
+
 R84 (M4): strengthen acceptance to reject unexpected primary-menu rows and verify
 all thirteen settings categories, their sections/control types, dependent states,
 native behavior and persistence. Compare actual native pixels with the reference
