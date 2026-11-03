@@ -1308,6 +1308,7 @@ libqml_module_player_a_QML = \
 	player/qml/PlayerPositions.qml \
 	player/qml/RedesignControlBar.qml \
 	player/qml/RedesignTopBar.qml \
+	player/qml/PlayerRecentMenuModel.qml \
 	player/qml/PlayerResume.qml \
 	player/qml/ControlBar.qml \
 	player/qml/PlaybackSpeed.qml \

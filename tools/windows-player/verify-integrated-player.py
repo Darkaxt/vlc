@@ -389,6 +389,10 @@ def main():
             state('initial-state', 3 if args.start_paused else 2)
             selected_engine, _ = inspect('initial-engine', 'snapshot')
             assert selected_engine['core']['engine'] == args.engine, selected_engine['core']
+            loaders=[node for node in selected_engine['tree'] if node['id']=='viewLoader']
+            assert len(loaders)==1 and loaders[0].get('status')!='Error', ('Player QML did not load',loaders)
+            inspect('initial-view-mounted','snapshot','--await-target','viewLoader',
+                '--await-property','status','--await-value','1')
             if not args.start_paused:
                 clock('initial-clock', 1)
                 click_state('pause', 3)

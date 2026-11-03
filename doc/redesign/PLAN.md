@@ -7,7 +7,7 @@ evidence, not acceptance of the newly identified settings/menu defects.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Thirteen-category source integration and guarded optimized assembly185; native policy/SVG proof; original12-row menu/settings source; fresh all-category100% diagnostic captures, native rounded clipping and95% surface alpha. | R83/R84: repair the five native combo content hints; complete formal category/theme/DPI/scroll/behavior/rollback acceptance and actual composed backdrop/picture verification; then optimized normal package, final release, independent delivery and retained/weekly binding. These remain internal advancement blockers. | None. |
+| M4 Settings and menu parity | ACTIVE | Guarded optimized assembly186; original13-category/12-row source integration; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll acceptance and manual reference layout review; staged edits/Cancel/invalid-input/locked-Save rollback, VLC/MPV restart persistence, missing-font preservation and actual native history clearing. Native rounded clipping and95% surface alpha verified separately. | R83/R84: finish affected player workflows and actual composed backdrop/picture verification; then optimized normal package, final release, independent delivery and retained/weekly binding. These remain advancement blockers. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Finish the cohesive settings/menu implementation before compiling. Reuse retained
@@ -160,8 +160,61 @@ verifies that rendered47px height. Native38520 subsequently exposed a genuine
 367px combo width. A single all-category survey6686 measured129 expanded form
 editors and found five long native combo content hints, including below-viewport
 rows. The shared reference adapter now uses the existing bounded combo hint
-policy while preserving every native label/value. This correction is not yet
-compiled or accepted; no second build is active.
+policy while preserving every native label/value.
+
+Continuation186 (`7307e18849cb4703b436edf1138b5d54`) passed the guarded
+assembly from `70dd7b60c2ef17868093f48f1e938c29e9d09ceb`, retaining409 non-Qt
+plugins. The inspected report records exit0, empty Linux group, released private
+mounts, no OOM/max events and1714921472 bytes peak RAM; player1251.5s wall/
+122.7s CPU. Original native acceptance session62989 is running under
+`E:/Temp/vlc-settings-implementation-20261102/accept-settings.py
+--resume-combo-hints`, with results in `settings-native-6`. All thirteen dark/
+light, normal/narrow100% categories and staged edit/rollback checks passed;
+VLC/MPV saved-option restart and explicit-command-line precedence passed.
+The150% layout/scroll matrix also completed, but62989 closed1 because the input
+desktop changed before its clean player exit0. A bounded150% lifecycle probe
+reproduced that same equality-check failure. Both original results are preserved
+in `settings-native-6/result-before-desktop-change.json` and
+`result-lifecycle-before-desktop-transition-handling.json`; neither is relabeled
+as passed. Native actions separately reject foreground ownership, and the
+owned desktop is never switched. The verifier now records input-desktop names
+and preservation truthfully, rejects the owned test desktop becoming input,
+and allows unrelated user lock/unlock transitions. The default strict check for
+other native helpers is unchanged. Managed continuation23465 rechecks the150%
+owned lifecycle and resumes200%/unfinished workflows while reusing the completed
+unchanged100/150% layouts. No compilation or duplicate layout matrix is active.
+
+The200% matrix and missing-font preservation passed. History navigation exposed
+a verifier assumption that EOF always mounted `fullLibrary`; the actual narrow
+window mounts `compactLibrary`. A first attempted Expand observation was also
+rejected before dispatch because that observation target did not yet exist.
+Both failed records are retained. The corrected test observes the actual mounted
+library owner without changing its layout. Managed continuation90147 passed the
+complete settings outcome, including real Recent history Cancel/confirm, native
+database retention/reset and unchanged media/profile hashes. Its original
+controller continues with the main menu, onboarding and affected player paths.
+`settings-native-6/result.json` is now a closed passed result; its historical
+desktop/navigation failures remain separate evidence, not relabeled passes.
+
+Main-menu, first-run/shortcuts, playback/subtitles and the actual reported4K
+seek-preview workflow passed on70dd. Handover then found a production regression
+with `--no-media-library`: `RedesignTopBar.qml` declared `MLRecentMediaModel`
+inline even though VLC registers that type only when the backend is available.
+Its inactive Loader guard could not prevent the parent QML parse failure. The
+model is now in a separately loaded declarative component, retaining the same
+history/backend availability guard and native Recent behavior. This is a current
+R83/R84 advancement blocker until the affected native workflows pass.
+
+The controller also selected the wrong fixture for the older integrated/prior-
+profile programs:12-second `control.mkv` has one audio stream and no subtitles,
+while those programs require the120-second multi-track input. Reused the existing
+`generate-s7-fixtures.py` into the exact task-owned `s7-fixtures` directory on D:
+(native media I/O exception); its synthetic media/CC0 manifest is retained only
+through this acceptance and then cleaned. No user media is generated or altered.
+Bind the complete QML/test correction once, retain all409 non-Qt plugins and
+unchanged settings/backend evidence, then recheck Recent with/without the media
+library, real handover and both prior-profile paths. No whole SDK/configuration
+rebuild or repeat of the completed thirteen-category matrix is justified.
 
 All thirteen current normal/basic captures were visually inspected. The user's
 backdrop observation remains an explicit acceptance gap: original frame999:5047

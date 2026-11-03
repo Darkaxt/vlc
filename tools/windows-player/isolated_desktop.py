@@ -133,7 +133,7 @@ class IsolatedProcess:
         self.exit_code = None
         self.resources_closed = False
 
-    def wait(self):
+    def wait(self, *, permit_external_desktop_transition=False):
         if k.WaitForSingleObject(self.handle, 0xFFFFFFFF) != 0:
             raise ctypes.WinError(ctypes.get_last_error())
         code = W.DWORD()
@@ -145,5 +145,8 @@ class IsolatedProcess:
         if not u.CloseDesktop(self.desktop):
             raise ctypes.WinError(ctypes.get_last_error())
         self.resources_closed = True
-        assert input_desktop() == self.before, "Input desktop unexpectedly changed"
+        self.after = input_desktop()
+        assert self.after != self.desktop_name, "Owned test desktop became the input desktop"
+        if not permit_external_desktop_transition:
+            assert self.after == self.before, "Input desktop unexpectedly changed"
         return code.value

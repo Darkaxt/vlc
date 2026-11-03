@@ -72,7 +72,9 @@ T.Pane {
         id: recentSource
         visible: false
         active: MainCtx.historyEnabled && MainCtx.mediaLibraryAvailable
-        sourceComponent: MLRecentMediaModel { ml: MediaLib; limit: 10 }
+        // Media-library types are registered only when that backend exists.
+        // Resolve this component only while the guarded Loader is active.
+        source: "PlayerRecentMenuModel.qml"
     }
     component MenuRow: T.MenuItem {
         id: row
