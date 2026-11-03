@@ -109,7 +109,7 @@ protected:
 class QVLCDialog : public QDialog
 {
 public:
-    QVLCDialog(QWindow *parent, qt_intf_t *_p_intf );
+    QVLCDialog(QWindow *parent, qt_intf_t *_p_intf, bool translucent = false);
     virtual ~QVLCDialog() {}
     void toggleVisible()
     {

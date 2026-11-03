@@ -7,6 +7,8 @@
 #include <QAccessible>
 #include <QAbstractItemView>
 #include <QAbstractScrollArea>
+#include <QAbstractSpinBox>
+#include <QLineEdit>
 #include <QScrollBar>
 #include <QApplication>
 #include <QComboBox>
@@ -488,6 +490,14 @@ private:
                     ? QStringLiteral("[redacted]") : widget->property("text").toString());
             row.insert(QStringLiteral("font_family"),widget->font().family());
             row.insert(QStringLiteral("font_pixel_size"),widget->font().pixelSize());
+            row.insert(QStringLiteral("font_weight"),int(widget->font().weight()));
+            if (auto *line=qobject_cast<QLineEdit *>(widget))
+                row.insert(QStringLiteral("input_alignment"),int(line->alignment()));
+            if (auto *spin=qobject_cast<QAbstractSpinBox *>(widget))
+            {
+                row.insert(QStringLiteral("input_alignment"),int(spin->alignment()));
+                row.insert(QStringLiteral("spin_buttons"),int(spin->buttonSymbols()));
+            }
             row.insert(QStringLiteral("minimum_width"),widget->minimumWidth());
             row.insert(QStringLiteral("maximum_width"),widget->maximumWidth());
             row.insert(QStringLiteral("minimum_height"),widget->minimumHeight());
@@ -510,6 +520,7 @@ private:
                 row.insert(QStringLiteral("current_text"), combo->currentText());
                 row.insert(QStringLiteral("current_index"), combo->currentIndex());
                 row.insert(QStringLiteral("item_count"), combo->count());
+                row.insert(QStringLiteral("editable"),combo->isEditable());
             }
             row.insert(QStringLiteral("visible_region_empty"),widget->visibleRegion().isEmpty());
             row.insert(QStringLiteral("center_visible"),widget->visibleRegion().contains(widget->rect().center()));
@@ -521,13 +532,16 @@ private:
                 row.insert(QStringLiteral("scroll_page_step"),bar->pageStep());
             }
             if (widget->isWindow() && widget->windowHandle())
+            {
                 row.insert(QStringLiteral("native_id"), QString::number(quintptr(widget->windowHandle()->winId()), 16));
+                row.insert(QStringLiteral("surface_alpha_bits"),widget->windowHandle()->format().alphaBufferSize());
+            }
             if(widget->objectName()==QStringLiteral("redesignPreferences")) {
                 row.insert(QStringLiteral("option_keys"),QJsonArray::fromStringList(widget->property("optionKeys").toStringList()));
                 row.insert(QStringLiteral("option_count"),widget->property("optionCount").toInt());
             }
             if (auto view=qobject_cast<QAbstractItemView *>(widget);view &&
-                (widget->objectName()==QStringLiteral("preferencesCategories") || widget->objectName()==QStringLiteral("preferencesResults") || widget->objectName()==QStringLiteral("keyboardShortcutsTable") || widget->objectName()==QStringLiteral("installedExtensionsList") || widget->objectName()==QStringLiteral("installableAddonsList") || widget->objectName()==QStringLiteral("internalModulesList"))) {
+                (widget->objectName()==QStringLiteral("preferencesCategories") || widget->objectName()==QStringLiteral("preferencesResults") || widget->objectName()==QStringLiteral("keyboardShortcutsTable") || widget->objectName()==QStringLiteral("installedExtensionsList") || widget->objectName()==QStringLiteral("installableAddonsList") || widget->objectName()==QStringLiteral("internalModulesList") || widget->objectName().endsWith(QStringLiteral("-choices")))) {
                 QJsonArray items;auto *model=view->model();
                 row.insert(QStringLiteral("model_count"),model->rowCount());
                 for(int r=0;r<model->rowCount()&&items.size()<100;++r){const auto index=model->index(r,0);const QRect bounds=view->visualRect(index);if(bounds.isEmpty()||!bounds.intersects(view->viewport()->rect()))continue;

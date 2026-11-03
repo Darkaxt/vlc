@@ -754,3 +754,37 @@ verifier stages the captured native `value-interact` checkbox before testing
 Cancel; an untouched dialog closes through `preferencesClose`. Original failed
 verifier receipts are preserved, not relabeled as passed. These native and raw
 paint checks still do not establish the DWM-composed Settings backdrop.
+
+For normal presentation, saved geometry must match the verifier's actual DPI
+policy. The native VLC probe uses the current system DPR (1.5 on3 November),
+while verify-normal-presentation.py explicitly disables high-DPI scaling and
+uses DPR1.0. Do not feed the former's geometry directly into the latter.
+Use the fresh saved geometry from that same package's completed normal
+private-playback launch under the exact presentation environment, then obtain
+new private placement proofs before any input-desktop launch. Preserve failed
+placement receipts; never reinterpret a centered inactive window as clearance.
+The normal1.1.5 SDR/P5 acceptance uses `normal-geometry-dpi100.ini` and its
+recorded source/hash. The original DPR1.5 file remains diagnosis evidence.
+Actual normal SDR/P5 presentation passed; this does not replace the separate
+composed Settings screenshot requirement above.
+
+The subsequent user screenshots reject the189 Settings presentation. Raw alpha
+in a QWidget render did not prove the native window had an alpha format.
+QVLCDialog binds a transient parent by creating its handle; Settings previously
+set WA_TranslucentBackground after that call. Qt6.8.3's
+QWidgetPrivate::updateIsTranslucent deliberately cannot change an already-created
+native surface. Configure frameless/alpha attributes before parent binding and
+require the actual native format's alphaBufferSize to be at least8. Retain the
+composed-image gate; alpha format/request success alone is still insufficient.
+
+Reference numeric/track/font fields must be checked by actual editor type,
+alignment and presence of steppers, not just width. Inspect open combo popups
+with their own native view/delegate palette at100/150/200% in both themes.
+The original Controls fields are36px high,6px corner radius, left-aligned plain
+inputs; action captions use Inter Semi Bold. Default audio/subtitle tracks are
+typed indices, with native -1/0 semantics preserved. Reference Advanced Options
+stays neutral while expanded and has20px content separation. Additional native
+settings and the startup engine remain accessible through Search or General,
+Advanced Options, VLC commands, All VLC settings; they are not default rows in
+the prototype category's expanded surface. Source corrections remain unverified
+until a new affected native/composed acceptance passes.

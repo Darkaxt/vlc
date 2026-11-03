@@ -39,6 +39,10 @@ def check_settings_layout(snapshot, category, *, compact):
                 editor['minimum_height'],editor['height'],editor['maximum_height'])
         if editor['type'] in ('QSpinBox','QDoubleSpinBox'):
             assert editor['maximum_width']>90,('Legacy numeric width cap remains',identity,editor['maximum_width'])
+            assert editor['input_alignment'] & 1,('Reference numeric input must align left',identity)
+            assert editor['spin_buttons']==2,('Reference text input must not expose spin arrows',identity)
+        if full_action:
+            assert editor['font_weight']==600,('Reference action typography must be semibold',identity,editor['font_weight'])
         checked.append(identity)
         if identity.startswith('editor-freetype-') and identity.endswith('color'):
             assert editor['height'] == 32, ('Color field height', editor)
@@ -60,7 +64,18 @@ def check_settings_layout(snapshot, category, *, compact):
     if category == 4:
         for identity in ('value-audio-track','value-sub-track'):
             editor=next(row for row in widgets.values() if row['id']==identity)
-            assert editor['type']=='QComboBox',('Reference native track chooser',identity,editor['type'])
+            assert editor['type']=='QLineEdit',('Reference track index must be a text input',identity,editor['type'])
+            assert editor['input_alignment'] & 1,('Track input must align left',identity)
+        disc=next(row for row in widgets.values() if row['id']=='value-dvd')
+        assert disc['type']=='QComboBox' and disc['editable'],('Optical drive must allow detected choices and a custom device path',disc['type'])
+    if category == 7:
+        for identity in ('value-freetype-font','value-freetype-monofont'):
+            editor=next((row for row in widgets.values() if row['id']==identity),None)
+            if editor and editor['center_visible']:
+                assert editor['type']=='QLineEdit',('Reference font family is a free text input',identity,editor['type'])
+        size=next((row for row in widgets.values() if row['id']=='value-sub-text-scale-size'),None)
+        if size and size['center_visible']:
+            assert size['type']=='QComboBox',('Reference font size has real presets and custom numeric entry',size['type'])
     if category == 0 and not compact and area['scroll_value'] == 0:
         # These original positions are independent of native option values.
         # The log path is a grouped editor, not a shrunken Browse button.

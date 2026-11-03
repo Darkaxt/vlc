@@ -103,6 +103,7 @@ class PrefsDialog : public QVLCDialog
     void addReferenceAction(QVBoxLayout *, const PreferencesCatalog::Row &);
     void updateDialogShape();
     void applySettingsStyle();
+    void styleChoiceEditors();
     void showVlcCommands(QWidget *anchor);
     void inventory();
     QWidget *createCategory(int);

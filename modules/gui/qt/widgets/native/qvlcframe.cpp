@@ -240,12 +240,20 @@ void QVLCDialog::setWindowTransientParent(QWidget* widget, QWindow* parent, qt_i
 }
 
 
-QVLCDialog::QVLCDialog(QWindow *parent, qt_intf_t *_p_intf)
+QVLCDialog::QVLCDialog(QWindow *parent, qt_intf_t *_p_intf, bool translucent)
     : QDialog(),
       p_intf( _p_intf )
 {
-    setWindowFlags( Qt::Dialog|Qt::WindowMinMaxButtonsHint|
-                    Qt::WindowSystemMenuHint|Qt::WindowCloseButtonHint );
+    auto flags = Qt::Dialog|Qt::WindowMinMaxButtonsHint|
+                 Qt::WindowSystemMenuHint|Qt::WindowCloseButtonHint;
+    if (translucent)
+        flags |= Qt::FramelessWindowHint;
+    setWindowFlags(flags);
+    // setWindowTransientParent() creates the native handle. Qt6.8 cannot
+    // change its alpha format afterwards, even when a QWidget-only capture
+    // contains transparent pixels. Configure the actual surface first.
+    if (translucent)
+        setAttribute(Qt::WA_TranslucentBackground);
 
     setWindowTransientParent(this, parent, p_intf);
 }

@@ -5,9 +5,22 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
+**3 November actual-window rejection:** M4 remains ACTIVE. The user's composed
+General/Controls/Playback captures reject the gray corners, absent blur, wrong
+track/font input types, numeric alignment/steppers, popup foreground, action
+typography and expanded Advanced Options treatment. Earlier paint/layout checks
+remain historical evidence with their original producer identity; they do not
+establish current visual acceptance. The normal1.1.5 candidate remains unpublished.
+Current source repair configures native alpha before handle creation, restores
+the reference field/disclosure styles and input types, preserves editable native
+values and exposes extra native settings through Search and General's themed
+commands. Finish this coherent repair before the affected Qt assembly/native
+acceptance. Reuse the core, codecs, MPV and409 non-Qt plugins; no second stage,
+SDK initialization or full dependency rebuild is needed.
+
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Optimized assembly188; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review, staged edits/rollback, restart persistence, missing-font/native history, onboarding, playback/subtitles and actual4K previews on70dd under reviewed d214 applicability. Fresh d214 menu/Recent, manual setup via themed advanced commands, paused/playing/idle handovers and both prior profiles pass, including MPV history/privacy/volume. Native rounded clipping and95% surface alpha verified separately. README credits added; original upstream text preserved. | R83/R84: actual composed Settings backdrop and final normal-package picture acceptance; optimized normal four-asset release, independent delivery and retained/weekly binding/cleanup. These remain advancement blockers. | None. |
+| M4 Settings and menu parity | ACTIVE | Optimized normal assembly189; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review, staged edits/rollback, restart persistence, missing-font/native history, onboarding, playback/subtitles and actual4K previews on70dd under reviewed d214 applicability. Fresh d214 menu/Recent, manual setup via themed advanced commands, paused/playing/idle handovers and both prior profiles pass, including MPV history/privacy/volume. Native rounded clipping and95% surface alpha verified separately. Normal VLC with/without media library, normal MPV SDR/P5 actual presentation, EOF/release and nonactivation pass. All four local artifacts and unsigned/symbol/source checks pass. README credits added; original upstream text preserved. | R83/R84: current alpha/corner, field/popup and disclosure repairs; renewed affected native/composed acceptance; normal release publication, independent delivery and retained/weekly binding/cleanup. These remain advancement blockers. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Finish the cohesive settings/menu implementation before compiling. Reuse retained
@@ -42,8 +55,8 @@ C/C++ history/parser portability diagnostics and the catalog declaration/unique
 identities pass. All-category native layout/scroll/theme/DPI and settings
 behavior/rollback/restart acceptance subsequently passed on70dd, with original
 producer identities retained. Fresh affected menu/handover/profile checks passed
-on d214. Remaining blockers are actual composed backdrop and normal-package
-picture checks, final release and independent delivery/binding/cleanup.
+on d214. Remaining blockers are actual composed backdrop, final release and
+independent delivery/binding/cleanup.
 No deferrals or second ACTIVE stage are introduced. Version1.1.5 is reserved for
 the final verified outcome; no M4 release has been published.
 
@@ -74,8 +87,31 @@ manually inspected. Original settings proof retains its70dd producer identity.
 README now credits/links the YouTube video, interactive Figma project and
 upstream foundations, preserving the upstream text. Optional comparison images
 are omitted because the available widget captures cannot prove the composed
-backdrop. Normal packaging and actual composed-picture verification remain
-required; no1.1.5 release has been published and M4 remains ACTIVE.
+backdrop. Normal packaging and SDR/P5 picture checks subsequently passed;
+actual composed Settings verification remains required. No1.1.5 release has
+been published and M4 remains ACTIVE.
+
+Normal assembly189 (`8bc054e68da6455996fabc4bc3a4dd66`) closed0 from
+`e9b168f3d0074b9745e7569a25b4ae4805414d95`, with409 unchanged non-Qt
+plugins reused,417 stripped PE mappings, no OOM/max events, an empty Linux
+group and released private mounts. The local portable/source/symbols/checksum
+artifacts pass their archive and unsigned-policy checks. The Windows PowerShell
+signature probe initially selected an incompatible inherited PowerShell7 module;
+loading that host's bundled module repaired the probe without an OS or payload
+change. The original false result remains recorded.
+
+The first private placement check rejected saved DPR1.5 geometry under its
+explicit DPR1.0 environment, before any input-desktop launch. The already
+completed same-package normal private launch supplied matching DPR1.0 geometry.
+Fresh SDR/P5 private placement proofs and subsequent nonactivating offscreen
+actual presentation passed, with clean natural EOF and native/observer exits.
+The failed receipt remains false. Original session53349 closed0; all twelve
+normal preparation/picture checks pass. Actual composed Settings blur is still
+unverified. A user-launched isolated review is prepared at
+`D:/Temp/vlc-s8-settings-1.1.5-20261102/backdrop-review/review-settings.cmd`,
+bound to the normal Qt SHA256
+`732998066b13f62fb21cc779761cb587e2d7e07f8aac1c61f6a4734bdb49615f`.
+No desktop controls, focus requests or OS transparency changes are authorized.
 
 Managed assembly177 (`8f96080bd4ad4446a82a9f9e7ccb1c70`) bound source
 `3fcb63600b0783666a500e850e5cd8ffbd7fea9a` and reached configuration. It was

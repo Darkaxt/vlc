@@ -36,6 +36,22 @@ An alpha242 tint or a successful native acrylic request alone is not actual
 composed-picture acceptance. Verify the composed result without changing the
 user's OS transparency setting or using desktop controls.
 
+Actual-window rejection,3 November2026: the user's General, Controls and
+Playback screenshots reject the current corners/backdrop and several field
+types/styles. Keep M4 ACTIVE and treat those as internal repair blockers.
+Configure translucent native surfaces before binding/creating their handles;
+verify the actual alpha format, not just an alpha-bearing widget PNG. Match
+plain numeric track inputs (including native -1 automatic and0 first-track
+values), free-text font families, left-aligned numeric editors without steppers,
+reference field heights/corners, semibold action captions and readable expanded
+choice lists. Do not hardcode the prototype's example selections as saved values.
+The expanded Advanced Options bar remains neutral and its body preserves the
+reference gap. Use a real optical-drive selector with custom device-path entry.
+Keep additional native/fork settings reachable through Search and General's
+themed VLC commands / All VLC settings browser, rather than appending generic
+option-browser/engine rows to the reference category layout. Preserve the live
+VLC/MPV switcher and every native setting's staged/save/cancel behavior.
+
 R84 (M4): strengthen acceptance to reject unexpected primary-menu rows and verify
 all thirteen settings categories, their sections/control types, dependent states,
 native behavior and persistence. Compare actual native pixels with the reference

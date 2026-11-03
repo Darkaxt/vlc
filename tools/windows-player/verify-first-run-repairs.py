@@ -375,6 +375,7 @@ def verify_window_icon(case, snapshot):
 
 def settings_window_region(case, dialog):
     """Read Windows' actual clipping region, beyond the Qt paint capture."""
+    assert dialog['surface_alpha_bits']>=8,'Settings native surface was created without an alpha channel'
     def read():
         hwnd=W.HWND(int(dialog['native_id'],16))
         pid=W.DWORD()
@@ -1210,6 +1211,21 @@ def settings():
         case.inspect('reopen-after-cancel','key','--key','0x50','--modifiers','0x4000000')
         scoped=select(case,2,'cancelled-privacy')
         assert not widget(scoped,'value-extraintf-audioscrobbler')['checked']
+        select(case,0,'all-settings-general')
+        case.reveal('all-settings-advanced-reveal','preferencesAdvanced0','preferencesScroll0')
+        case.native('all-settings-expand','preferencesAdvanced0')
+        case.reveal('all-settings-commands-reveal','preferencesAction-vlc-commands','preferencesScroll0')
+        case.native('all-settings-commands','preferencesAction-vlc-commands')
+        browser=case.inspect('all-settings-browser','widget_click','--menu-action','All VLC settings…')
+        assert widget(browser,'preferencesResults')['model_count']==widget(browser,'redesignPreferences')['option_count']
+        case.native('engine-search-focus','preferencesSearch')
+        case.inspect('engine-search-type','widget_key','--target','preferencesSearch','--key','0','--text','qt-playback-engine')
+        case.native('engine-search-results','preferencesResults')
+        case.inspect('engine-search-first','widget_key','--target','preferencesResults','--key','0x1000010')
+        engine=case.inspect('engine-search-open','widget_key','--target','preferencesResults','--key','0x1000004')
+        assert widget(engine,'value-native-qt-playback-engine')['current_text'] in ('VLC','MPV')
+        reference=select(case,4,'return-reference-playback')
+        assert not any(row['id']=='preferencesAllOptions4' for row in reference['widgets'])
         select(case,7,'color-subtitles')
         edit(case,'color-invalid','value-freetype-color','#12','preferencesScroll7')
         invalid=case.native('color-invalid-save','preferencesSave')
@@ -1217,10 +1233,17 @@ def settings():
         case.inspect('color-invalid-dismiss','widget_click','--widget-text','OK')
         edit(case,'color-correct','value-freetype-color','#A1B2C3','preferencesScroll7')
         edit(case,'language-custom','value-sub-language','jpn,eng','preferencesScroll7')
+        edit(case,'font-size-invalid','value-sub-text-scale-size','9','preferencesScroll7')
+        invalid=case.native('font-size-invalid-save','preferencesSave')
+        assert any('10–500' in row.get('text','') for row in invalid['widgets'])
+        case.inspect('font-size-invalid-dismiss','widget_click','--widget-text','OK')
+        resized=edit(case,'font-size-custom','value-sub-text-scale-size','125','preferencesScroll7')
+        assert widget(resized,'value-sub-text-scale-size')['current_text']=='125%'
+        assert widget(resized,'value-sub-text-scale-size')['item_count']>=5
         select(case,4,'native-track-chooser')
         edit(case,'native-track-invalid','value-audio-track','-','preferencesScroll4')
         invalid=case.native('native-track-invalid-save','preferencesSave')
-        assert any('native track index' in row.get('text','') for row in invalid['widgets'])
+        assert any('track index' in row.get('text','') for row in invalid['widgets'])
         case.inspect('native-track-invalid-dismiss','widget_click','--widget-text','OK')
         edit(case,'native-track-index','value-audio-track','0','preferencesScroll4')
         select(case,2,'privacy-after-color')
@@ -1285,10 +1308,11 @@ def settings():
         scoped=select(case,3,'saved-controls')
         assert widget(scoped,'value-short-jump-size')['value']==7
         scoped=select(case,4,'saved-native-track')
-        assert widget(scoped,'value-audio-track')['current_text']=='0'
+        assert widget(scoped,'value-audio-track')['text']=='0'
         scoped=select(case,7,'saved-subtitles-color')
         assert widget(scoped,'value-freetype-color')['text']=='#A1B2C3'
         assert widget(scoped,'value-sub-language')['current_text']=='jpn,eng'
+        assert widget(scoped,'value-sub-text-scale-size')['current_text']=='125%'
         select(case,6,'saved-audio')
         case.reveal('saved-equalizer-reveal','preferencesAction-equalizer','preferencesScroll6')
         scoped=case.native('saved-equalizer-open','preferencesAction-equalizer')
@@ -1346,6 +1370,14 @@ def settings():
                         case.inspect(label+'-top','widget_scroll','--target','preferencesScroll'+str(index),'--delta','24000')
                         snapshot=capture(case,label+'-basic',index,dark)
                         check_labels(snapshot,index,False)
+                        if index==0 and not narrow and not survey:
+                            popup=case.native(label+'-language-popup','preferencesLanguage','--capture')
+                            choices=widget(popup,'preferencesLanguage-choices')
+                            assert choices['rendered_rows'],('No actual choice rows rendered',label)
+                            assert choices['palette_text'].lower()==('#8f8f8f' if dark else '#2e2e2e'),('Popup text does not follow the settings palette',label,choices['palette_text'])
+                            assert all(any(column for column in row['columns']) for row in choices['rendered_rows'])
+                            case.inspect(label+'-language-popup-close','widget_key','--target',choices['id'],'--key','0x1000000')
+                            case.record.setdefault('settings_choice_popups',[]).append({'label':label,'palette_text':choices['palette_text'],'visible_rows':len(choices['rendered_rows'])})
                         case.reveal(label+'-reveal-advanced','preferencesAdvanced'+str(index),'preferencesScroll'+str(index))
                         expanded=case.native(label+'-expand','preferencesAdvanced'+str(index))
                         if index==6:
@@ -1388,7 +1420,7 @@ def settings():
                     assert widget(result,'value-freetype-color')['text']=='#A1B2C3'
                     assert widget(result,'value-sub-language')['current_text']=='jpn,eng'
                     result=select(restarted,4,'restart-track')
-                    assert widget(result,'value-audio-track')['current_text']=='0'
+                    assert widget(result,'value-audio-track')['text']=='0'
                     restarted.native('restart-close-settings','preferencesClose')
                     restarted.close(True)
                 finally:restarted.close()
