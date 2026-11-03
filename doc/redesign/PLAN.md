@@ -130,6 +130,26 @@ geometry assertion demonstrably rejects the prior258px log editor. Source
 diagnostics pass; corrected native rendering/behavior remains unverified. M4
 stays ACTIVE, with complete affected acceptance and final delivery still required.
 
+Continuation184 (`797d2e21f29e4c179700b4396e6f2c0d`) completed the guarded
+Qt-only assembly from `2ceb2a07af` after183 was deliberately stopped before Qt
+compilation for a toolbar-width correction. Report184 records exit0, an empty
+group, released private mounts and no OOM; player1236.9s wall/100.3s CPU. Native
+acceptance95498 closed with exit1 and clean player exit: the new width assertion
+found a separate90px maximum in VLC's integer/float control factories. A bounded
+diagnostic survey then inspected all thirteen categories on that same assembly;
+it is explicitly not acceptance. The survey also exposed an unregistered closed
+disclosure resource and small accumulated row-height drift.
+
+The complete correction removes the legacy width cap only in reference views,
+uses the archived right-chevron component `71:875` with registered/distributed
+resource provenance, preserves native editable track indexes behind Automatic,
+and restores source field/section dimensions and Browse geometry. The pinned
+Qt6.8.3 stylesheet source confirms that polish reapplies CSS minimum geometry;
+the view's exact dimensions therefore use designable QSize properties after
+that geometry step. Original artwork generation/source-resource diagnostics
+pass, with all existing artwork unchanged. Fresh native behavior/pixels, final
+normal delivery and independent verification remain internal M4 blockers.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is

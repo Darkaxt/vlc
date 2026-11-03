@@ -876,6 +876,7 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/video.svg \
 	pixmaps/redesign/playback.svg \
 	pixmaps/redesign/chevron-down.svg \
+	pixmaps/redesign/chevron-right.svg \
 	pixmaps/redesign/native-chevron-down-dark.svg \
 	pixmaps/redesign/native-chevron-up-dark.svg \
 	pixmaps/redesign/native-chevron-down-light.svg \

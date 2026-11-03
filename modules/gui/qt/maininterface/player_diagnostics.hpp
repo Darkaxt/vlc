@@ -488,6 +488,10 @@ private:
                     ? QStringLiteral("[redacted]") : widget->property("text").toString());
             row.insert(QStringLiteral("font_family"),widget->font().family());
             row.insert(QStringLiteral("font_pixel_size"),widget->font().pixelSize());
+            row.insert(QStringLiteral("minimum_width"),widget->minimumWidth());
+            row.insert(QStringLiteral("maximum_width"),widget->maximumWidth());
+            row.insert(QStringLiteral("minimum_height"),widget->minimumHeight());
+            row.insert(QStringLiteral("maximum_height"),widget->maximumHeight());
             row.insert(QStringLiteral("font_point_size"),widget->font().pointSizeF());
             row.insert(QStringLiteral("dpr"),widget->devicePixelRatioF());
             row.insert(QStringLiteral("palette_highlight"),widget->palette().color(QPalette::Highlight).name());

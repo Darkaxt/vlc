@@ -28,6 +28,11 @@ def check_settings_layout(snapshot, category, *, compact):
             continue
         expected = owner['width'] if compact else 320
         assert abs(editor['width'] - expected) <= 1, ('Reference field width', owner['id'], identity, editor['width'], expected)
+        assert editor['minimum_height']==editor['height']==editor['maximum_height'], (
+            'Stylesheet changed the fixed reference field height',identity,
+            editor['minimum_height'],editor['height'],editor['maximum_height'])
+        if editor['type'] in ('QSpinBox','QDoubleSpinBox'):
+            assert editor['maximum_width']>90,('Legacy numeric width cap remains',identity,editor['maximum_width'])
         checked.append(identity)
         if identity.startswith('editor-freetype-') and identity.endswith('color'):
             assert editor['height'] == 32, ('Color field height', editor)
@@ -46,6 +51,10 @@ def check_settings_layout(snapshot, category, *, compact):
             toolbar=widgets[editor['parent']]
             assert editor['x']>=0 and editor['x']+editor['width']<=toolbar['width']
             checked.append(identity)
+    if category == 4:
+        for identity in ('value-audio-track','value-sub-track'):
+            editor=next(row for row in widgets.values() if row['id']==identity)
+            assert editor['type']=='QComboBox',('Reference native track chooser',identity,editor['type'])
     if category == 0 and not compact and area['scroll_value'] == 0:
         # These original positions are independent of native option values.
         # The log path is a grouped editor, not a shrunken Browse button.

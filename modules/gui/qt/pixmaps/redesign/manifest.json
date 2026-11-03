@@ -792,6 +792,14 @@
       "sha256": "a25f4f67af696a87e0389b7e9f27191ebf4da40ca1c3bae2b30eb250dbfacb59"
     },
     {
+      "id": "71:875",
+      "name": "name=chevron, direction=right, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "chevron-right.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "5d53e3c2580d5fa0b6ee0797f96412eb83ddacd652fe33f340c74c0eb8f724c3"
+    },
+    {
       "id": "494:2394",
       "name": "name=check, direction=default, state=active, value=default, EQ=default, two-tone=no",
       "filename": "choice-selected.svg",

@@ -2,7 +2,29 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import { affine, pathCommands } from './player-assets.mjs';
+
+test('native settings reference existing, distributed original Qt icon resources', async () => {
+  const {icons}=await import('./player-assets.mjs');
+  assert.deepEqual(icons.find(([,name])=>name==='chevron-right'),['71:875','chevron-right']);
+  const root=new URL('../../modules/gui/qt/',import.meta.url);
+  const source=fs.readFileSync(new URL('dialogs/preferences/preferences.cpp',root),'utf8');
+  const resources=fs.readFileSync(new URL('assets.qrc',root),'utf8');
+  const distributed=fs.readFileSync(new URL('Makefile.am',root),'utf8');
+  const manifest=JSON.parse(fs.readFileSync(new URL('pixmaps/redesign/manifest.json',root)));
+  const records=[...manifest.icons,...manifest.controls,...manifest.nativeArrows];
+  const names=[...source.matchAll(/:\/redesign\/icons\/([a-z0-9-]+\.svg)/g)].map(match=>match[1]);
+  assert.ok(names.includes('chevron-right.svg'));
+  for(const name of new Set(names)) {
+    assert.ok(resources.includes(`alias="${name}"`),`Unregistered Qt resource: ${name}`);
+    assert.ok(distributed.includes('pixmaps/redesign/'+name),`Missing distributed source: ${name}`);
+    const bytes=fs.readFileSync(new URL('pixmaps/redesign/'+name,root));
+    const record=records.find(record=>record.filename===name);
+    assert.ok(record,`Missing original artwork provenance: ${name}`);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),record.sha256,name);
+  }
+});
 
 test('reference sidebar uses the outlined default component and colored menu variants retain provenance', async () => {
   const {icons}=await import('./player-assets.mjs');

@@ -33,17 +33,28 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
-assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-') and not root.exists()
+assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
+resume_empty_survey=args.case=='settings-survey' and (root/'result.json').is_file()
+assert not root.exists() or resume_empty_survey
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
-root.mkdir()
 runtime = root / 'runtime'
-shutil.copytree(source, runtime, ignore=lambda path, names: ['sdk'] if Path(path).resolve() == source else [])
+if resume_empty_survey:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='settings-survey' and previous['diagnostic_only'] and not previous['cases']
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/'result-empty-dispatch.json'
+    assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+else:
+    root.mkdir()
+    shutil.copytree(source, runtime, ignore=lambda path, names: ['sdk'] if Path(path).resolve() == source else [])
 portable = runtime / 'portable'
 repo = Path(__file__).resolve().parents[2]
 inspector = Path(__file__).with_name('inspect-player.py')
@@ -929,6 +940,7 @@ def settings():
     reference=json.loads((repo/'doc/redesign/resources/m4-settings-reference.json').read_text())
     corrections={key.casefold():value for key,value in reference['copy_corrections'].items()}
     categories=reference['categories']
+    survey=args.case=='settings-survey'
     def text(value):
         value=value.strip().rstrip(':').casefold()
         return corrections.get(value,value).casefold()
@@ -1007,7 +1019,13 @@ def settings():
         dialog=widget(result,'redesignPreferences')
         assert abs(dialog['dpr']-float(case.record['scale']))<0.01
         native_region=settings_window_region(case,dialog)
-        layout_fields=check_settings_layout(result,index,compact=dialog['width']<900)
+        try:
+            layout_fields=check_settings_layout(result,index,compact=dialog['width']<900)
+        except AssertionError as failure:
+            if not survey:raise
+            layout_fields=[]
+            case.record.setdefault('layout_diagnostic_failures',[]).append({'label':label,'failure':repr(failure)})
+            records.setdefault('failures',{})['settings-layout']='Original geometry assertions failed; inspect layout_diagnostic_failures. This survey cannot establish acceptance.'
         file=next(row for row in result['widget_captures'] if row['widget']==dialog['node'])
         assert file['saved']
         with Image.open(case.evidence/file['file']) as original:
@@ -1061,6 +1079,12 @@ def settings():
         case.inspect('color-invalid-dismiss','widget_click','--widget-text','OK')
         edit(case,'color-correct','value-freetype-color','#A1B2C3','preferencesScroll7')
         edit(case,'language-custom','value-sub-language','jpn,eng','preferencesScroll7')
+        select(case,4,'native-track-chooser')
+        edit(case,'native-track-invalid','value-audio-track','-','preferencesScroll4')
+        invalid=case.native('native-track-invalid-save','preferencesSave')
+        assert any('native track index' in row.get('text','') for row in invalid['widgets'])
+        case.inspect('native-track-invalid-dismiss','widget_click','--widget-text','OK')
+        edit(case,'native-track-index','value-audio-track','0','preferencesScroll4')
         select(case,2,'privacy-after-color')
         edit(case,'history-exclusion','value-history-exclude','private-*;*.secret','preferencesScroll2')
         case.reveal('position-off-reveal','value-save-playback-position','preferencesScroll2')
@@ -1122,6 +1146,8 @@ def settings():
         assert not widget(scoped,'value-save-playback-position')['checked']
         scoped=select(case,3,'saved-controls')
         assert widget(scoped,'value-short-jump-size')['value']==7
+        scoped=select(case,4,'saved-native-track')
+        assert widget(scoped,'value-audio-track')['current_text']=='0'
         scoped=select(case,7,'saved-subtitles-color')
         assert widget(scoped,'value-freetype-color')['text']=='#A1B2C3'
         assert widget(scoped,'value-sub-language')['current_text']=='jpn,eng'
@@ -1139,17 +1165,17 @@ def settings():
         case.record['settings_behaviour']={'shared_native_and_reference_draft':True,'cancel':True,
             'invalid_save_preserves_draft':True,'locked_save_rolls_back_native_memory_and_file':True,
             'failed_save_preserves_draft_for_retry':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True,
-            'invalid_color_rejected':True,'color_and_custom_language_readback':True}
-    for scale in ('1','1.5','2'):
+            'invalid_color_rejected':True,'color_and_custom_language_readback':True,'native_track_validation_readback':True}
+    for scale in (('1',) if survey else ('1','1.5','2')):
         case=Case('settings-'+scale.replace('.','-'),scale=scale,media=fixtures/'control.mkv')
         try:
-            for dark in (True,False):
+            for dark in ((True,) if survey else (True,False)):
                 case.inspect('open-theme-'+str(dark),'key','--key','0x50','--modifiers','0x4000000')
                 select(case,0,'theme-general-'+str(dark))
                 case.native('stage-theme-'+str(dark),'preferencesTheme'+('2' if dark else '1'))
                 case.native('save-theme-'+str(dark),'preferencesSave')
                 case.inspect('reopen-theme-'+str(dark),'key','--key','0x50','--modifiers','0x4000000')
-                for narrow in (False,True):
+                for narrow in ((False,) if survey else (False,True)):
                     case.inspect('viewport-'+str(dark)+'-'+str(narrow),'widget_resize','--target','redesignPreferences',
                                  '--width','740' if narrow else '1048','--height','700' if narrow else '865')
                     for index,category in enumerate(categories):
@@ -1178,7 +1204,7 @@ def settings():
                         check_labels(snapshot,index,True)
                         case.inspect(label+'-expanded-top','widget_scroll','--target','preferencesScroll'+str(index),'--delta','24000')
                         seen=set()
-                        while True:
+                        while not survey:
                             snapshot=capture(case,label+'-page-'+str(len(seen)),index,dark)
                             area=widget(snapshot,'preferencesScroll'+str(index))
                             state=area['scroll_value']
@@ -1189,9 +1215,11 @@ def settings():
                             # observed scrollbar state, not elapsed time, ends it.
                             case.inspect(label+'-scroll-'+str(len(seen)),'widget_scroll','--target',area['id'],'--delta','-480')
                 case.native('close-settings-'+str(dark),'preferencesClose')
-            if scale=='1':behaviour(case)
+            if scale=='1' and not survey:behaviour(case)
             case.close(True)
         finally:case.close()
+        if survey:
+            return # A bounded all-category diagnosis, never stage acceptance.
         if scale=='1':
             for name,engine,extra,rate in [(name+'-'+engine,engine,extra,rate) for engine in ('vlc','mpv')
                     for name,extra,rate in [('saved-extra-startup',(),1.5),('explicit-extra-priority',('--rate=1.75',),1.75)]]:
@@ -1206,6 +1234,8 @@ def settings():
                     result=select(restarted,7,'restart-subtitles')
                     assert widget(result,'value-freetype-color')['text']=='#A1B2C3'
                     assert widget(result,'value-sub-language')['current_text']=='jpn,eng'
+                    result=select(restarted,4,'restart-track')
+                    assert widget(result,'value-audio-track')['current_text']=='0'
                     restarted.native('restart-close-settings','preferencesClose')
                     restarted.close(True)
                 finally:restarted.close()
@@ -1410,6 +1440,9 @@ try:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
     for name, operation in [('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+        if args.case=='settings-survey':
+            if name!='settings':continue
+            records['diagnostic_only']=True
         if args.case=='preview-icons' and name not in ('preview','icons','sidebar'):continue
         if args.case=='correction' and name not in ('playback','preview','icons','sidebar','menus','updates'):continue
         if args.case=='subtitles-mpv':
@@ -1423,7 +1456,7 @@ try:
             if name not in ('welcome','playback','subtitles'):continue
             if name=='subtitles':operation=lambda:subtitles(False)
         if name=='seek-policy' and args.case!='seek-policy':continue
-        if args.case not in ('all','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction',name): continue
+        if args.case not in ('all','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction','settings-survey',name): continue
         try:
             operation()
         except Exception as failure:
@@ -1433,7 +1466,7 @@ try:
             # Collect independent acceptance failures from this one complete
             # assembly, but never start another consumer after uncertain exit.
             assert not active_cases and not any(portable.iterdir()), 'Original native consumer/profile has not been released'
-    records['passed']=not records.get('failures')
+    records['passed']=not records.get('failures') and not records.get('diagnostic_only')
 finally:
     records['http_peer_calls']=Peer.calls
     server.shutdown();server.server_close();thread.join()

@@ -78,6 +78,7 @@
         <file alias="video.svg">pixmaps/redesign/video.svg</file>
         <file alias="playback.svg">pixmaps/redesign/playback.svg</file>
         <file alias="chevron-down.svg">pixmaps/redesign/chevron-down.svg</file>
+        <file alias="chevron-right.svg">pixmaps/redesign/chevron-right.svg</file>
         <file alias="native-chevron-down-dark.svg">pixmaps/redesign/native-chevron-down-dark.svg</file>
         <file alias="native-chevron-up-dark.svg">pixmaps/redesign/native-chevron-up-dark.svg</file>
         <file alias="native-chevron-down-light.svg">pixmaps/redesign/native-chevron-down-light.svg</file>
