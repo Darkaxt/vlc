@@ -128,7 +128,8 @@ def main():
         result = json.loads(output.read_text(encoding='utf-8'))
         assert not result.get('qml_errors'), (label, result.get('qml_errors'))
         assert '"before": false, "after": false' in completed.stdout, 'Owned player gained OS foreground'
-        records['steps'].append({'name': label, 'response': output.name, 'core': result.get('core')})
+        records['steps'].append({'name': label, 'response': output.name, 'core': result.get('core'),
+            'elapsed_ms': result.get('elapsed_ms')})
         return result, output
 
     def state(label, expected):
@@ -189,7 +190,7 @@ def main():
                 before, _ = inspect('before-handover-' + engine, 'snapshot')
                 expected_state = 2 if playing else 3
                 assert before['core']['state'] == expected_state, before['core']
-                inspect('handover-settings-' + engine, 'click', '--target', 'toolsButton', '--capture')
+                selection_ready, _ = inspect('handover-settings-' + engine, 'click', '--target', 'toolsButton', '--capture')
                 inspect('choose-' + engine, 'click', '--name', 'MPV' if engine == 'mpv' else 'VLC')
                 settled, _ = inspect('handover-settled-' + engine, 'snapshot',
                     '--await-core', 'engine_switching', '--await-value', 'false')
@@ -205,7 +206,18 @@ def main():
                 assert after['core']['engine'] == engine, after['core']
                 assert unquote(after['core']['url']) == unquote(before['core']['url']), (before['core'], after['core'])
                 difference = after['core']['time_seconds'] - before['core']['time_seconds']
-                assert abs(difference) <= (3 if playing else 0.2), (engine, playing, difference)
+                reference = selection_ready if playing else before
+                clock_window = (after['elapsed_ms'] - reference['elapsed_ms']) / 1000.
+                assert clock_window >= 0, (reference['elapsed_ms'], after['elapsed_ms'])
+                reference_delta = after['core']['time_seconds'] - reference['core']['time_seconds']
+                # Playing media advances during real menu/capture/client work.
+                # Bound that advance by the app's observed monotonic clock and
+                # playback rate; paused handovers retain the exact position test.
+                if playing:
+                    assert -0.2 <= reference_delta <= clock_window * before['core']['rate'] + 0.2, (
+                        engine, reference_delta, clock_window, before['core']['rate'])
+                else:
+                    assert abs(difference) <= 0.2, (engine, playing, difference)
                 assert abs(after['core']['audio_session_volume'] - before['core']['audio_session_volume']) < 0.001, (before['core'], after['core'])
                 assert after['core']['audio_session_muted'] == before['core']['audio_session_muted'] == 1
                 for property_name in ('rate', 'audio_delay_ms', 'subtitle_delay_ms'):
@@ -233,6 +245,8 @@ def main():
                     assert actual_mute['core']['mpv_audio_muted'] is True
                 records['engine_handovers'].append({'from': before['core']['engine'], 'to': engine,
                     'playing': playing, 'position_delta_seconds': difference,
+                    'observed_clock_window_seconds': clock_window,
+                    'selection_position_delta_seconds': reference_delta,
                     'native_session_volume': after['core']['audio_session_volume'],
                     'native_session_muted': after['core']['audio_session_muted'],
                     'rate_and_delays_preserved': True,
@@ -519,7 +533,7 @@ def main():
             try:
                 inspect('quit', 'quit')
             finally:
-                records['exit_code'] = player.wait()
+                records['exit_code'] = player.wait(permit_external_desktop_transition=True)
                 records['passed'] = records.get('passed', False) and records['exit_code'] == 0
                 log = (evidence / 'native-ui.log').read_text(encoding='utf-8', errors='replace')
                 records['wasapi_selected'] = 'using aout stream module "wasapi"' in log
@@ -541,7 +555,11 @@ def main():
                 if args.language_code != 'en':
                     records['native_translation_selected'] = ('translation test: code is "' + translate('C') + '"') in log
                     records['passed'] &= records['native_translation_selected']
-                records['input_desktop_preserved'] = True  # IsolatedProcess.wait verifies this.
+                records['input_desktop_before'] = player.before
+                records['input_desktop_after'] = player.after
+                records['input_desktop_preserved'] = player.before == player.after
+                records['owned_desktop_never_observed_as_input'] = player.after != player.desktop_name
+                records['passed'] &= records['owned_desktop_never_observed_as_input']
                 audio_verified = records['wasapi_selected'] if args.engine == 'vlc' or args.switch_engines else \
                     records.get('final_native_core', {}).get('current-ao') == 'wasapi'
                 records['native_audio_output_verified'] = audio_verified

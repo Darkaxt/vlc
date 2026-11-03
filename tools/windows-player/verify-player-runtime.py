@@ -55,12 +55,16 @@ args.insert(1,'--qt-playback-engine='+options.engine)
 (e/'launch-argv.json').write_text(json.dumps(args,indent=2)+'\n',encoding='utf8')
 with (e/'native-ui.stdout').open('wb') as out,(e/'native-ui.stderr').open('wb') as err:
  p=IsolatedProcess(args,cwd=r,env=env,stdout=out,stderr=err)
- records['pid']=p.pid;records['desktop']=p.desktop_name;records['exit_code']=p.wait()
+ records['pid']=p.pid;records['desktop']=p.desktop_name;records['exit_code']=p.wait(permit_external_desktop_transition=True)
+ records['input_desktop_before']=p.before;records['input_desktop_after']=p.after
+ records['input_desktop_preserved']=p.before==p.after
+ records['owned_desktop_never_observed_as_input']=p.after!=p.desktop_name
 # Preserve the exact native result even when acceptance below fails.
 log=(e/'native-ui.log').read_text(encoding='utf8',errors='replace');stderr=(e/'native-ui.stderr').read_text(encoding='utf8',errors='replace')
 qml_failure_pattern=r'(TypeError:|ReferenceError:|is not installed|is not a type|is not available in|Type [^\n]+ unavailable|failed to load component|Binding loop detected|source item.s window:|Cannot assign to non-existent property|Unable to assign \[undefined\] to)'
 release_evidence=vlc_input_release_evidence(log,options.fixture,records['exit_code'])
 requirements={
+ 'owned_desktop_never_observed_as_input':records['owned_desktop_never_observed_as_input'],
  'actual_picture': 'Received first picture' in log,
  'natural_eof': 'EOF reached' in log,
  'input_released': release_evidence['passed'],

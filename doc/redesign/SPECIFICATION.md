@@ -25,6 +25,8 @@ Remove the thirteenth main-menu preservation row while retaining the underlying
 VLC commands through an appropriately themed advanced route. Global Settings
 must remain directly reachable from player/library and keyboard. No default
 profile, installation, real media history or OS setting is changed by validation.
+Preserve the existing manual Welcome / Appearance Setup action through that
+themed advanced route while keeping the reference main menu's twelve rows.
 
 Backdrop clarification,3 November2026: the original General frame999:5047 uses
 the#0e0e0e surface at95% opacity and a50px BACKGROUND_BLUR. Preserve that glass

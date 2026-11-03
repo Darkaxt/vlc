@@ -947,10 +947,12 @@ def menus():
     try:
         case.inspect('reference-viewport','resize','--width','1280','--height','900')
         snapshot=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        recent_initial=next(node for node in snapshot['tree'] if node['id']=='recentSource')
+        assert recent_initial.get('status') in ('Ready','Loading',1,2), ('Recent model is not loading',recent_initial)
         recent=case.inspect('recent-model-ready','snapshot','--await-target','recentSource',
             '--await-property','status','--await-value','1')
         recent_loader=next(node for node in recent['tree'] if node['id']=='recentSource')
-        assert recent_loader['source'].endswith('/PlayerRecentMenuModel.qml'),recent_loader
+        assert recent_loader['source'].rsplit('/',1)[-1]=='PlayerRecentMenuModel.qml',recent_loader
         case.record['deferred_recent_model_ready']=True
         elapsed=nodes(snapshot,'playerElapsedTime')
         assert len(elapsed)==1 and re.fullmatch(r'\d{2,}:\d{2}:\d{2}',elapsed[0]['text']), elapsed

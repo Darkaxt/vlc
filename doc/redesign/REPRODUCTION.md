@@ -709,3 +709,34 @@ EOF/release and foreground preservation on Default using the unchanged6288 build
 Original failed receipts remain separate from acceptance evidence. This entry
 records qualification; publication/retained-binding results are recorded below
 only after their actual gates pass.
+
+## M4 settings qualification and backdrop evidence
+
+The thirteen-category settings matrix passed on70dd7b60c2ef17868093f48f1e938c29e9d09ceb
+at100/150/200% in dark/light, normal/narrow layouts, including staged edits,
+rollback/retry, native history and saved-option restart checks. Reuse that
+evidence only with its original source/binary hashes and an explicit reviewed
+production-delta binding. The subsequent b6492edd14852f2b2e85422ec27feed65ad5e9b7
+correction moves the optional Recent media-library model into a separately
+loaded QML file, because its type is not registered with --no-media-library.
+Repeat the affected main-menu, handover and prior-profile workflows, including
+the final normal player both with and without the media library. The S7
+handover/profile helpers require the existing generated120-second multi-track
+fixture; the short control.mkv is not an equivalent fixture.
+
+Widget captures establish paint/layout, rounded clipping and surface alpha;
+they omit the DWM-composed backdrop. Original Figma frame999:5047 specifies
+#0e0e0e at95% with background blur50. Successful Acrylic request/readback and
+alpha242 therefore cannot establish visible blur over player content. Require
+an actual composed screenshot bound to the normal release's Qt plugin hash,
+and retain the original screenshot unmodified. Never publish private DV clips
+or their frames as comparison artwork. README credits can ship without optional
+screenshots; compositor evidence remains a separate release acceptance gate.
+
+Inactive-desktop native verifiers may record an unrelated external transition
+of the input desktop without treating it as application activation. They must
+still prove their owned desktop never became the input desktop and preserve
+the actual before/after names and process-exit evidence. Actual offscreen
+presentation retains its stricter continuous Default/input-desktop and fresh
+placement-proof requirements. This verifier distinction does not authorize
+desktop controls, forced focus, OS transparency changes or repeated unlock prompts.

@@ -155,6 +155,26 @@ def main():
                 assert not value.get('qml_errors'), value.get('qml_errors')
                 return value
 
+            def reveal_general(label,target):
+                snapshot=inspect(label+'-locate','snapshot')
+                seen=set()
+                while True:
+                    widgets={item['node']:item for item in snapshot['widgets']}
+                    found=[item for item in widgets.values() if item['id']==target]
+                    assert len(found)==1,(target,found)
+                    if found[0]['center_visible']:return
+                    area=next(item for item in widgets.values() if item['id']=='preferencesScroll0')
+                    assert area['scroll_value'] not in seen,('Cannot reveal General control',target,area)
+                    seen.add(area['scroll_value'])
+                    def y(item):
+                        result=item['y']
+                        while item['parent']>=0:
+                            item=widgets[item['parent']];result+=item['y']
+                        return result
+                    delta=120 if y(found[0])<y(area) else -120
+                    snapshot=inspect(label+'-scroll-'+str(len(seen)),'widget_scroll',
+                        '--target','preferencesScroll0','--delta',str(delta))
+
             with (directory / 'stdout').open('wb') as out, (directory / 'stderr').open('wb') as err:
                 player = IsolatedProcess(command, cwd=runtime, env=environment, stdout=out, stderr=err)
                 session.write_text(json.dumps({'pid': player.pid, 'executable': str(runtime / 'vlc.exe'), 'token': token}))
@@ -201,7 +221,11 @@ def main():
                     assert not snapshot['optional_legacy_font']['available'] and not snapshot['optional_legacy_font']['busy']
                     assert Path(snapshot['optional_legacy_font']['location']).resolve() == font.resolve()
                     if run == 'first':
-                        inspect('open-menu', 'click', '--target', 'topBarMenuButton')
+                        inspect('open-global-settings', 'key', '--key', '0x50', '--modifiers', '0x4000000')
+                        reveal_general('reveal-general-advanced','preferencesAdvanced0')
+                        inspect('expand-general-commands', 'widget_click', '--target', 'preferencesAdvanced0')
+                        reveal_general('reveal-native-commands','preferencesAction-vlc-commands')
+                        inspect('open-native-commands', 'widget_click', '--target', 'preferencesAction-vlc-commands')
                         inspect('reopen-existing-profile-setup', 'widget_click', '--menu-action', 'Welcome / Appearance Setup…')
                         snapshot = inspect('skip-existing-profile-setup', 'click', '--target', 'onboardingSkip')
                         assert not snapshot['customization']['onboardingVisible']
@@ -274,10 +298,14 @@ def main():
                         finally:
                             inspect('quit', 'quit')
                     finally:
-                        code = player.wait()
+                        code = player.wait(permit_external_desktop_transition=True)
                         assert code == 0, code
                         records[run + '_exit'] = code
-                        records[run + '_input_desktop_preserved'] = True
+                        records[run + '_input_desktop_before'] = player.before
+                        records[run + '_input_desktop_after'] = player.after
+                        records[run + '_input_desktop_preserved'] = player.before == player.after
+                        records[run + '_owned_desktop_never_observed_as_input'] = player.after != player.desktop_name
+                        assert records[run + '_owned_desktop_never_observed_as_input']
             assert font.read_bytes() == unknown
             if args.check_history:
                 saved = stored_history()

@@ -7,7 +7,7 @@ evidence, not acceptance of the newly identified settings/menu defects.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Guarded optimized assembly186; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review; staged edits/rollback, VLC/MPV restart persistence, missing-font preservation and native history clearing; menu/onboarding, playback/subtitles and actual4K previews on70dd. Native rounded clipping and95% surface alpha verified separately. | R83/R84: verify the corrected deferred Recent dependency with/without the media library, complete handover/prior-profile workflows and actual composed backdrop/picture verification; then optimized normal package, final release, independent delivery and retained/weekly binding. These remain advancement blockers. | None. |
+| M4 Settings and menu parity | ACTIVE | Guarded optimized assembly187; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review; staged edits/rollback, VLC/MPV restart persistence, missing-font preservation and native history clearing; menu/onboarding, playback/subtitles and actual4K previews on70dd. Deferred Recent model reaches Ready; the no-library player and paused handovers now load. Native rounded clipping and95% surface alpha verified separately. | R83/R84: restore the existing manual setup action through themed advanced commands; complete the affected menu/handover/prior-profile acceptance and actual composed backdrop/picture verification; then optimized normal package, final release, independent delivery and retained/weekly binding. These remain advancement blockers. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Finish the cohesive settings/menu implementation before compiling. Reuse retained
@@ -39,12 +39,25 @@ identity/order. Native filter/appearance help preserves the established VLC-only
 engine boundary. Shared speed/delay defaults also initialize MPV.
 
 C/C++ history/parser portability diagnostics and the catalog declaration/unique
-identities pass. These are source diagnostics, **not** M4 acceptance. Remaining
-internal blockers are the integrated optimized assembly, all-category native
-pixel/scroll/theme/DPI and behavior/rollback/restart checks, affected playback and
-handover/picture checks, final release and independent delivery/binding/cleanup.
+identities pass. All-category native layout/scroll/theme/DPI and settings
+behavior/rollback/restart acceptance subsequently passed on70dd, with original
+producer identities retained. Remaining blockers are the corrected Recent-model
+dependency and affected handover/profile checks, actual composed backdrop and
+normal-package picture checks, final release and independent delivery/binding/cleanup.
 No deferrals or second ACTIVE stage are introduced. Version1.1.5 is reserved for
 the final verified outcome; no M4 release has been published.
+
+Assembly187 closed0 with an empty Linux group, released private mounts, no OOM
+and409 retained non-Qt plugins. Its affected native census closed1 with clean
+player exits. Recent model creation succeeded; its test wrongly required an
+absolute URL. The playing handover's3.10-second position delta spanned5.50 seconds
+on the actual application clock at1.21x, so the fixed3-second assertion counted
+real menu/capture time as a seek error. Paused handovers preserved positions.
+Use the measured application-clock/rate bound for playing media and retain the
+exact paused-position criterion. Both prior-profile cases also exposed the
+existing manual setup action missing from the redesigned menu route. Restore
+it inside General's themed advanced commands, then recheck these affected paths;
+the original passed settings matrix remains bound to70dd and unchanged rendering.
 
 Managed assembly177 (`8f96080bd4ad4446a82a9f9e7ccb1c70`) bound source
 `3fcb63600b0783666a500e850e5cd8ffbd7fea9a` and reached configuration. It was

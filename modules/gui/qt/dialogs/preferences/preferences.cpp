@@ -2044,6 +2044,14 @@ void PrefsDialog::showVlcCommands(QWidget *anchor)
     }
     auto *subtitles = menu->addMenu(qtr("Subtitles"));
     VLCMenuBar::SubtitleMenu(p_intf,subtitles);
+    menu->addSeparator();
+    auto *setup=menu->addAction(qtr("Welcome / Appearance Setup…"));
+    setup->setEnabled(p_intf->p_mi);
+    connect(setup,&QAction::triggered,this,[this] {
+        auto *ctx=p_intf->p_mi;
+        reject();
+        if(ctx)ctx->requestPlayerOnboarding();
+    });
     menu->popup(anchor->mapToGlobal(QPoint(0,anchor->height())));
 }
 QWidget *PrefsDialog::createCategory(int category)

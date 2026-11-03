@@ -228,11 +228,13 @@ with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb'
         result['pid'] = player.pid
         (scratch / 'target.json').write_text(json.dumps({'pid': player.pid, 'executable': str(runtime / 'vlc.exe')}))
         assert k.SetEvent(bound_event)
-        result['exit_code'] = player.wait()
+        result['exit_code'] = (player.wait(permit_external_desktop_transition=True)
+            if args.mode in {'private','private-playback'} else player.wait())
     finally:
         k.SetEvent(cancel_event)
         if observer:
-            result['observer_exit_code'] = observer.wait()
+            result['observer_exit_code'] = (observer.wait(permit_external_desktop_transition=True)
+                if args.mode in {'private','private-playback'} else observer.wait())
         if owned_desktop:
             assert u.CloseDesktop(owned_desktop)
         for handle in (ready_event, bound_event, cancel_event):
@@ -266,6 +268,13 @@ checks = {'all_visible_owned_windows_offscreen': offscreen, 'no_observer_errors'
     'no_qml_errors': not re.search(r'TypeError:|ReferenceError:|Binding loop detected|Cannot assign to non-existent property', log + stderr)}
 if args.verify_app_icon:
     checks['native_flat_app_icon']=bool(window_events['native_window_icons'])
+if args.mode in {'private','private-playback'}:
+    # User lock/unlock is independent of our inactive desktop. Preserve that
+    # observation without equating it to activation of the owned test desktop.
+    checks.pop('input_desktop_preserved')
+    checks['owned_desktop_never_observed_as_input']=input_desktop()!=desktop_name
+    result['input_desktop_before']=desktop_before
+    result['input_desktop_after']=input_desktop()
 result['actual_picture_presented'] = 'MPV picture presented' in log
 if args.mode == 'private':
     # Placement proof is confined to an inactive desktop. Qt windows must be
