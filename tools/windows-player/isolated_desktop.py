@@ -130,6 +130,8 @@ class IsolatedProcess:
         k.CloseHandle(pi.hThread)
         self.handle = pi.hProcess
         self.pid = pi.dwProcessId
+        self.exit_code = None
+        self.resources_closed = False
 
     def wait(self):
         if k.WaitForSingleObject(self.handle, 0xFFFFFFFF) != 0:
@@ -137,8 +139,11 @@ class IsolatedProcess:
         code = W.DWORD()
         if not k.GetExitCodeProcess(self.handle, ctypes.byref(code)):
             raise ctypes.WinError(ctypes.get_last_error())
-        k.CloseHandle(self.handle)
+        self.exit_code = code.value
+        if not k.CloseHandle(self.handle):
+            raise ctypes.WinError(ctypes.get_last_error())
         if not u.CloseDesktop(self.desktop):
             raise ctypes.WinError(ctypes.get_last_error())
+        self.resources_closed = True
         assert input_desktop() == self.before, "Input desktop unexpectedly changed"
         return code.value

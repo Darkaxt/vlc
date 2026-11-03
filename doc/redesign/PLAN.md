@@ -106,6 +106,30 @@ Qt Makefile changes also regenerated unchanged QML dependency/resource steps.
 Preserve those generated outputs and completed objects while resuming the same
 failed step. Native acceptance and the final normal release remain unverified.
 
+Continuation182 (`bf69734f8dfb47c19a71261aff1e8941`) completed the optimized
+Qt-only assembly and native policy/SVG test programs from `6c507440a4`, retaining
+all409 non-Qt plugins. Its inspected closed report records exit0, an empty group,
+released private mounts and no OOM/throttling. The player step used1277.9s wall
+but104.9s CPU; measured compiler/linker9p waits explain the gap. Unchanged QML
+generation rules already preserve identical outputs and do not require repair.
+No toolchain, filesystem, VM or Windows-native migration has been performed.
+
+The coordinated native pass verified the unchanged policy/SVG programs and
+captured all thirteen settings categories, basic/expanded/scrolling, dark/light,
+normal/narrow at100%. It did not pass overall: verifier navigation and leading
+`--` text handling needed correction; a later external input-desktop transition
+masked already completed native cleanup. The verifier now retains both the
+actual exit/closure evidence and any desktop-preservation failure.
+
+Actual reference/pixel inspection also rejected shrunken fields, accumulated
+row-spacing drift, blank default choices, subtitle color fields and extension
+toolbar presentation. The cohesive correction restores expanding320px fields,
+original row/control metrics, editable native-language selection, validated RGB
+hex/swatch fields, disclosure arrows and the responsive add-on toolbar. The new
+geometry assertion demonstrably rejects the prior258px log editor. Source
+diagnostics pass; corrected native rendering/behavior remains unverified. M4
+stays ACTIVE, with complete affected acceptance and final delivery still required.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is

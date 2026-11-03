@@ -19,10 +19,16 @@ struct Row
     double maximum = 1;
     double step = 0;
     bool information = true;
+    int editorHeight = 0; // Original-frame exception to the native control metric.
 };
 constexpr Row withoutInformation(Row row)
 {
     row.information = false;
+    return row;
+}
+constexpr Row withEditorHeight(Row row, int height)
+{
+    row.editorHeight = height;
     return row;
 }
 #define PREF(k,c,g,l) {k,c,g,l}
@@ -37,7 +43,7 @@ inline constexpr Row rows[] = {
     PREF("qt-updates-notif",0,N_("Startup"),N_("Check for updates automatically")),
     PREF("qt-verbose",0,N_("Diagnostics"),N_("Developer messages")),
     PREF("file-logging",0,N_("Diagnostics"),N_("Save a log")),
-    PREF("logfile",0,N_("Diagnostics"),N_("Log file")),
+    withEditorHeight(PREF("logfile",0,N_("Diagnostics"),N_("Log file")),36),
     PREF("log-verbose",0,N_("Diagnostics"),N_("Log details")),
     ADV("qt-error-dialogs",0,N_("Advanced Options"),N_("Show minor warnings")),
     ADV("extra-options",0,N_("Advanced Options"),N_("Additional command line options")),
@@ -52,7 +58,7 @@ inline constexpr Row rows[] = {
     ADV("syslog-facility",0,N_("Developer Options"),N_("System log facility")),
 
     EDIT("intf/skins2",1,N_("Skin"),N_("Use a custom skin"),Filter,"skins2"),
-    PREF("skins2-last",1,N_("Skin"),N_("Skin file")),
+    withEditorHeight(PREF("skins2-last",1,N_("Skin"),N_("Skin file")),36),
     PREF("embedded-video",1,N_("Window"),N_("Play video inside main window")),
     EDIT("qt-video-autoresize",1,N_("Window"),N_("Resize window to fit video"),Policy,"Never|Fit video within the screen"),
     withoutInformation(PREF("qt-remember-window",1,N_("Window"),N_("Remember window size and position"))),
@@ -62,12 +68,12 @@ inline constexpr Row rows[] = {
     EDIT("qt-fullscreen-screennumber",1,N_("Window"),N_("Open fullscreen on"),Choice,"fullscreen-screen"),
     PREF("qt-minimal-view",1,N_("Playback Controls"),N_("Start in compact mode")),
     PREF("qt-controls-visibility",1,N_("Playback Controls"),N_("Auto-hide the controls")),
-    withoutInformation(SLIDE("mouse-hide-timeout",1,N_("Playback Controls"),N_("Hide after"),0,10000,1000)),
+    withEditorHeight(withoutInformation(SLIDE("mouse-hide-timeout",1,N_("Playback Controls"),N_("Hide after"),0,10000,1000)),47),
     PREF("qt-fs-controller",1,N_("Playback Controls"),N_("Show controls in fullscreen")),
     PREF("qt-system-tray",1,N_("Notifications and System Tray"),N_("Show a system tray icon")),
     PREF("qt-start-minimized",1,N_("Notifications and System Tray"),N_("Start minimized to the tray")),
     PREF("qt-notification",1,N_("Notifications and System Tray"),N_("Show a popup when the track changes")),
-    withoutInformation(SLIDE("qt-notification-duration",1,N_("Notifications and System Tray"),N_("Popup duration"),0,10000,1000)),
+    withEditorHeight(withoutInformation(SLIDE("qt-notification-duration",1,N_("Notifications and System Tray"),N_("Popup duration"),0,10000,1000)),47),
     PREF("playlist-tree",1,N_("Playlist"),N_("Show the playlist as a tree")),
     withoutInformation(ASLIDE("qt-opacity",1,N_("Window"),N_("Window opacity"),0.1,1,0.45)),
     withoutInformation(ADV("qt-pause-minimized",1,N_("Window"),N_("Pause video when window is minimized"))),
@@ -110,15 +116,15 @@ inline constexpr Row rows[] = {
     PREF("playlist-cork",4,N_("Startup"),N_("Pause when another app uses audio")),
     PREF("preferred-resolution",4,N_("Tracks"),N_("Preferred video quality")),
     PREF("menu-language",4,N_("Tracks"),N_("Preferred menu language")),
-    PREF("audio-track",4,N_("Tracks"),N_("Default audio track")),
-    PREF("sub-track",4,N_("Tracks"),N_("Default subtitle track")),
+    withEditorHeight(PREF("audio-track",4,N_("Tracks"),N_("Default audio track")),36),
+    withEditorHeight(PREF("sub-track",4,N_("Tracks"),N_("Default subtitle track")),36),
     EDIT("repeat/order",4,N_("Order"),N_("Repeat"),Choice,"repeat-policy"),
     PREF("random",4,N_("Order"),N_("Shuffle")),
     PREF("play-and-pause",4,N_("Order"),N_("Stop after each item")),
     EDIT("play-and-stop/finish",4,N_("Order"),N_("When playback finishes"),Choice,"finish-policy"),
     EDIT("input-fast-seek",4,N_("Seeking"),N_("Seek precisely"),Inverse,nullptr),
     PREF("qt-seek-preview",4,N_("Seeking"),N_("Show thumbnail while scrubbing")),
-    PREF("dvd",4,N_("Files & Discs"),N_("Default optical drive")),
+    withEditorHeight(PREF("dvd",4,N_("Files & Discs"),N_("Default optical drive")),36),
     PREF("avi-index",4,N_("Files & Discs"),N_("Repair damaged AVI files")),
     PREF("mkv-preload-local-dir",4,N_("Files & Discs"),N_("Load matching .mkv files from the same folder")),
     ADV("input-timeshift-path",4,N_("Files & Discs"),N_("Time-shift buffer folder")),
@@ -192,7 +198,7 @@ inline constexpr Row rows[] = {
     PREF("sub-autodetect-file",7,N_("Loading Subtitles"),N_("Load subtitle files automatically")),
     EDIT("sub-autodetect-fuzzy",7,N_("Loading Subtitles"),N_("File name matching"),Choice,"subtitle-match"),
     PREF("freetype-font",7,N_("Appearance"),N_("Font")),
-    EDIT("freetype-absolute-fontsize/mode",7,N_("Appearance"),N_("Size values"),Choice,"font-size-mode"),
+    withEditorHeight(EDIT("freetype-absolute-fontsize/mode",7,N_("Appearance"),N_("Size values"),Choice,"font-size-mode"),38),
     withoutInformation(EDIT("sub-text-scale/size",7,N_("Appearance"),N_("Font size"),Choice,"font-size")),
     withoutInformation(PREF("freetype-bold",7,N_("Appearance"),N_("Bold"))),
     withoutInformation(PREF("freetype-color",7,N_("Appearance"),N_("Text color"))),

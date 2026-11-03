@@ -72,6 +72,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QListView>
+#include <QLocale>
 #include <QSortFilterProxyModel>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -95,6 +96,8 @@
 #include <QFileDialog>
 #include <QProcess>
 #include <QPersistentModelIndex>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 #include <algorithm>
 
 namespace
@@ -407,7 +410,7 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
     categories->setIconSize(QSize(24, 24));
     categories->setSpacing(4);
     categories->setStyleSheet(
-        "QListWidget#preferencesCategories{padding:5px 2px;}"
+        "QListWidget#preferencesCategories{padding:2px 2px 5px 2px;}"
         "QListWidget#preferencesCategories::item{padding:6px 10px;}"
         + QString("QListWidget#preferencesCategories::item:selected{color:%1;}"
                   "QListWidget#preferencesCategories::item:disabled{color:%2;}")
@@ -440,7 +443,7 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
                                                              : "System"),
                                                 categories);
             section->setFlags(Qt::NoItemFlags);
-            section->setSizeHint(QSize(188, 30));
+            section->setSizeHint(QSize(188, 33));
             section->setData(Qt::UserRole, -1);
         }
         auto *item = new QListWidgetItem(qtr(i == 7 ? "Subtitles" : i == 11 ? "Recording" : categoryNames[i]), categories);
@@ -582,7 +585,7 @@ void PrefsDialog::refreshAppearance()
     setAutoFillBackground(false);
     applySettingsStyle();
     categories->setStyleSheet(
-        "QListWidget#preferencesCategories{padding:5px 2px;}"
+        "QListWidget#preferencesCategories{padding:2px 2px 5px 2px;}"
         "QListWidget#preferencesCategories::item{padding:6px 10px;}"
         +QString("QListWidget#preferencesCategories::item:selected{color:%1;}"
                  "QListWidget#preferencesCategories::item:disabled{color:%2;}")
@@ -621,6 +624,9 @@ void PrefsDialog::applySettingsStyle()
         "PrefsDialog#redesignPreferences QLineEdit{background:%1;border:2px solid %2;padding:6px 12px;}"
         "PrefsDialog#redesignPreferences QLineEdit#preferencesSearch{background:%2;border:0;}"
         "PrefsDialog#redesignPreferences QWidget[redesignAccentPalette=\"true\"]{background:%1;border-radius:6px;}"
+        "PrefsDialog#redesignPreferences QWidget[preferenceColorEditor=\"true\"],"
+        "PrefsDialog#redesignPreferences QListView#installedExtensionsList{background:%1;border:2px solid %2;border-radius:4px;}"
+        "PrefsDialog#redesignPreferences QLineEdit[preferenceColorValue=\"true\"]{border:0;background:transparent;padding:0;min-height:0;}"
         "PrefsDialog#redesignPreferences QComboBox{border:2px solid %1;padding-top:6px;padding-bottom:6px;}"
         "PrefsDialog#redesignPreferences QAbstractSpinBox QLineEdit,PrefsDialog#redesignPreferences QComboBox QLineEdit{border:0;background:transparent;padding:0;min-height:0;}"
         "PrefsDialog#redesignPreferences QSlider::groove:horizontal{height:14px;background:%1;border-radius:4px;}"
@@ -698,12 +704,26 @@ void PrefsDialog::updateResponsiveLayout()
     const bool compact = width() < 900;
     if (auto *hint = findChild<QLabel *>("preferencesRestartHint"))
         hint->setVisible(!compact);
+    if(auto *toolbar=findChild<QWidget *>("preferencesExtensionsToolbar"))
+    {
+        auto *grid=qobject_cast<QGridLayout *>(toolbar->layout());
+        const char *ids[]={"preferencesExtensionSearch","preferencesFindExtensions",
+                           "preferencesAddExtension","preferencesRemoveExtension"};
+        for(int i=0;i<4;++i)
+        {
+            auto *editor=toolbar->findChild<QWidget *>(ids[i]);
+            grid->removeWidget(editor);
+            grid->addWidget(editor,compact ? i/2 : 0,compact ? i%2 : i==0 ? 0 : i+1);
+        }
+        for(int i=0;i<5;++i)grid->setColumnStretch(i,compact ? (i<2 ? 1 : 0) : (i==1 ? 1 : 0));
+    }
     // Keep the reference layout at its normal size. In a narrow window the
     // real native value editor goes below its label instead of forcing the
     // whole page wider than the scroll viewport. Boolean switches still fit.
     for (auto *row : findChildren<QWidget *>())
     {
         if (!row->objectName().startsWith("preference-")) continue;
+        if (row->objectName()=="preference-action-equalizer") continue; // Always spans the form.
         const bool stacked = row->property("compactPreference").toBool();
         if (stacked == compact) continue;
         auto *grid = qobject_cast<QGridLayout *>(row->layout());
@@ -722,8 +742,12 @@ void PrefsDialog::updateResponsiveLayout()
         }
         grid->removeWidget(editor);
         if (description) grid->removeWidget(description);
+        // AlignRight makes Qt shrink an expanding editor to sizeHint(), which
+        // clipped numeric values and narrowed the reference's 320px fields.
+        const auto alignment = editor->sizePolicy().horizontalPolicy() == QSizePolicy::Fixed
+            ? Qt::Alignment(Qt::AlignRight) : Qt::Alignment();
         grid->addWidget(editor, compact ? 1 : 0, compact ? 0 : 10, 1,
-                        compact ? 12 : 1, Qt::AlignRight);
+                        compact ? 12 : 1, alignment);
         if (description) grid->addWidget(description, compact ? 2 : 1, 0, 1, 12);
         grid->setColumnStretch(0, compact || accent ? 1 : 454);
         grid->setColumnStretch(10, compact || accent ? 0 : 320);
@@ -978,8 +1002,8 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     row->setProperty("editorId",QStringLiteral("editor-%1").arg(viewKey));
     row->setFocusPolicy(Qt::StrongFocus);
     auto *grid = new QGridLayout(row);
-    grid->setContentsMargins(0, 0, 0, 0);
-    grid->setRowMinimumHeight(0,34);
+    grid->setContentsMargins(0, presentation ? 5 : 0, 0, presentation ? 5 : 0);
+    grid->setRowMinimumHeight(0,32);
     // Native controls use column 10. Empty legacy columns must not each add
     // another gap; retain one deliberate label/value gutter.
     grid->setHorizontalSpacing(0);
@@ -987,6 +1011,9 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     grid->setColumnStretch(0, 454);
     grid->setColumnStretch(10, 320);
     ConfigControl *control = nullptr;
+    const bool referenceColor = presentation && o.config->i_type == CONFIG_ITEM_RGB;
+    const bool referenceLanguage = presentation &&
+        (key=="menu-language" || key=="audio-language" || key=="sub-language");
     if (key == "qt-accent-color")
     {
         grid->setColumnStretch(0, 1);
@@ -1034,6 +1061,79 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         }
         grid->addWidget(palette, 0, 10, Qt::AlignRight);
     }
+    else if (referenceLanguage)
+    {
+        auto *label=new QLabel(labelText,row);
+        auto *combo=new QComboBox(row);
+        combo->setEditable(true);
+        combo->setInsertPolicy(QComboBox::NoInsert);
+        combo->setAccessibleName(labelText);
+        combo->addItem(qtr("System language"),QString());
+        for(const auto &language : language_map)
+        {
+            const auto code=qfu(language.iso).section('_',0,0);
+            if(code=="auto" || combo->findData(code)>=0)continue;
+            combo->addItem(QLocale::languageToString(QLocale(code).language()),code);
+        }
+        grid->addWidget(label,0,0);
+        grid->addWidget(combo,0,10);
+        auto sync=[combo,key](const QString &updated,const QVariant &value) {
+            if(updated!=key)return;
+            if(combo->currentText()==value.toString())return;
+            const QSignalBlocker blocker(combo);
+            int index=combo->findData(value.toString());
+            if(index<0) { combo->addItem(value.toString(),value.toString());index=combo->count()-1; }
+            combo->setCurrentIndex(index);
+        };
+        sync(key,draftValue(key));
+        connect(this,&PrefsDialog::draftChanged,row,sync);
+        connect(combo,&QComboBox::activated,row,[this,combo,key](int index){stageValue(key,combo->itemData(index));});
+        // Native VLC also accepts comma-separated codes and special values.
+        // Preserve those strings rather than restricting the reference picker.
+        connect(combo->lineEdit(),&QLineEdit::textEdited,row,[this,key](const QString &value){stageValue(key,value);});
+    }
+    else if (referenceColor)
+    {
+        auto *label = new QLabel(labelText,row);
+        grid->addWidget(label,0,0);
+        auto *editor = new QWidget(row);
+        editor->setObjectName("editor-"+viewKey);
+        editor->setProperty("preferenceColorEditor",true);
+        editor->setProperty("preferenceEditorGroup",true);
+        editor->setFixedHeight(32);
+        auto *layout = new QHBoxLayout(editor);
+        layout->setContentsMargins(10,4,4,4);
+        layout->setSpacing(8);
+        auto *value = new QLineEdit(editor);
+        value->setObjectName("value-"+viewKey);
+        value->setAccessibleName(labelText);
+        value->setProperty("preferenceColorValue",true);
+        value->setValidator(new QRegularExpressionValidator(QRegularExpression("#[0-9a-fA-F]{6}"),value));
+        auto *swatch = new QToolButton(editor);
+        swatch->setObjectName("color-"+viewKey);
+        swatch->setAccessibleName(qtr("Choose %1").arg(labelText));
+        swatch->setFixedSize(24,24);
+        layout->addWidget(value,1);
+        layout->addWidget(swatch);
+        grid->addWidget(editor,0,10);
+        auto sync = [value,swatch,key](const QString &updated,const QVariant &native) {
+            if(updated!=key)return;
+            const QSignalBlocker blocker(value);
+            const auto color=QColor::fromRgb(native.toUInt() & 0xffffff);
+            value->setText(color.name(QColor::HexRgb).toUpper());
+            swatch->setStyleSheet(QString("QToolButton{background:%1;border:1px solid #808080;border-radius:3px;padding:0;}").arg(color.name()));
+        };
+        sync(key,draftValue(key));
+        connect(this,&PrefsDialog::draftChanged,row,sync);
+        connect(value,&QLineEdit::textEdited,row,[this,value,key] {
+            markEdited();
+            if(value->hasAcceptableInput())stageValue(key,qlonglong(QColor(value->text()).rgb() & 0xffffff));
+        });
+        connect(swatch,&QToolButton::clicked,row,[this,key,labelText] {
+            const auto color=QColorDialog::getColor(QColor::fromRgb(draftValue(key).toUInt() & 0xffffff),this,labelText);
+            if(color.isValid())stageValue(key,qlonglong(color.rgb() & 0xffffff));
+        });
+    }
     else if (o.config->i_type == CONFIG_ITEM_MODULE_LIST || o.config->i_type == CONFIG_ITEM_MODULE_LIST_CAT)
     {
         auto *label=new QLabel(labelText,row);
@@ -1066,7 +1166,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     }
     else
         control = ConfigControl::createControl(o.config, row, grid, 0);
-    if (!control)
+    if (!control && !referenceColor && !referenceLanguage)
     {
         delete row;
         return;
@@ -1090,7 +1190,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         group->setObjectName("editor-" + viewKey);
         group->setProperty("preferenceEditorGroup", true);
         group->setLayout(editorLayout);
-        for (auto *button : group->findChildren<QPushButton *>()) button->setFixedHeight(34);
+        for (auto *button : group->findChildren<QPushButton *>()) button->setFixedHeight(presentation ? 32 : 34);
         if (auto *line = group->findChild<QLineEdit *>())
             line->setObjectName("value-" + viewKey);
         grid->addWidget(group, 0, 10);
@@ -1104,62 +1204,74 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         if (editor->property("preferenceEditorGroup").toBool() ||
             qobject_cast<QLineEdit *>(editor) || qobject_cast<QComboBox *>(editor) ||
             qobject_cast<QAbstractSpinBox *>(editor))
-            editor->setFixedHeight(34);
+        {
+            const bool numeric=qobject_cast<QAbstractSpinBox *>(editor) || qobject_cast<QFontComboBox *>(editor);
+            const bool proxy=key=="http-proxy" || key=="http-proxy-pwd";
+            const bool file=editor->property("preferenceEditorGroup").toBool();
+            editor->setFixedHeight(referenceColor ? 32 : !presentation ? 34 : presentation->editorHeight ?
+                presentation->editorHeight : numeric || proxy || file ? 38 : 36);
+        }
         grid->setAlignment(editor, Qt::Alignment());
         editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     }
-    control->setParent(row);
-    if (auto *spin=row->findChild<QSpinBox *>())
+    if (control)
     {
-        if (key.endsWith("-jump-size")) spin->setSuffix(qtr(" s"));
-        else if (key.endsWith("-caching") || key=="clock-jitter") spin->setSuffix(qtr(" ms"));
-    }
-    controls.push_back(control);
-    connect(control,&ConfigControl::changed,this,&PrefsDialog::markEdited);
-    {
-        stagedControls.insert(control);
-        auto value = [control]() -> QVariant {
-            if (auto *integer = dynamic_cast<VIntConfigControl *>(control))
-                return QVariant::fromValue<qlonglong>(integer->getValue());
-            if (auto *real = dynamic_cast<VFloatConfigControl *>(control)) return real->getValue();
-            if (auto *string = dynamic_cast<VStringConfigControl *>(control)) return string->getValue();
-            return {};
-        };
-        auto changed = [this, key, value]() { stageValue(key, value()); };
-        for (auto *line : row->findChildren<QLineEdit *>())
-            connect(line, &QLineEdit::textChanged, row, changed);
-        for (auto *combo : row->findChildren<QComboBox *>())
-            connect(combo, &QComboBox::currentIndexChanged, row, changed);
-        for (auto *spin : row->findChildren<QSpinBox *>())
-            connect(spin, &QSpinBox::valueChanged, row, changed);
-        for (auto *spin : row->findChildren<QDoubleSpinBox *>())
-            connect(spin, &QDoubleSpinBox::valueChanged, row, changed);
-        for (auto *button : row->findChildren<QAbstractButton *>())
+        control->setParent(row);
+        if (auto *spin=row->findChild<QSpinBox *>())
         {
-            if (button->isCheckable()) connect(button, &QAbstractButton::toggled, row, changed);
-            else if (o.config->i_type == CONFIG_ITEM_RGB)
-                connect(button, &QAbstractButton::clicked, row, changed);
+            if (key.endsWith("-jump-size")) spin->setSuffix(qtr(" s"));
+            else if (key.endsWith("-caching") || key=="clock-jitter") spin->setSuffix(qtr(" ms"));
         }
-        QWidget *editor = row->findChild<QWidget *>("value-" + viewKey);
-        auto sync = [editor, key](const QString &updated, const QVariant &value) {
-            if (!editor || updated != key) return;
-            const QSignalBlocker blocker(editor);
-            if (auto *font = qobject_cast<QFontComboBox *>(editor)) font->setCurrentFont(QFont(value.toString()));
-            else if (auto *combo = qobject_cast<QComboBox *>(editor))
+        controls.push_back(control);
+        connect(control,&ConfigControl::changed,this,&PrefsDialog::markEdited);
+        {
+            stagedControls.insert(control);
+            auto value = [control]() -> QVariant {
+                if (auto *integer = dynamic_cast<VIntConfigControl *>(control))
+                    return QVariant::fromValue<qlonglong>(integer->getValue());
+                if (auto *real = dynamic_cast<VFloatConfigControl *>(control)) return real->getValue();
+                if (auto *string = dynamic_cast<VStringConfigControl *>(control)) return string->getValue();
+                return {};
+            };
+            auto changed = [this, key, value]() { stageValue(key, value()); };
+            for (auto *line : row->findChildren<QLineEdit *>())
+                connect(line, &QLineEdit::textChanged, row, changed);
+            for (auto *combo : row->findChildren<QComboBox *>())
+                connect(combo, &QComboBox::currentIndexChanged, row, changed);
+            for (auto *spin : row->findChildren<QSpinBox *>())
+                connect(spin, &QSpinBox::valueChanged, row, changed);
+            for (auto *spin : row->findChildren<QDoubleSpinBox *>())
+                connect(spin, &QDoubleSpinBox::valueChanged, row, changed);
+            for (auto *button : row->findChildren<QAbstractButton *>())
             {
-                int index = combo->findData(value);
-                if (index < 0) index = combo->findText(value.toString());
-                if (index < 0) { combo->addItem(value.toString(), value); index = combo->count()-1; }
-                combo->setCurrentIndex(index);
+                if (button->isCheckable()) connect(button, &QAbstractButton::toggled, row, changed);
+                else if (o.config->i_type == CONFIG_ITEM_RGB)
+                    connect(button, &QAbstractButton::clicked, row, changed);
             }
-            else if (auto *spin = qobject_cast<QSpinBox *>(editor)) spin->setValue(value.toInt());
-            else if (auto *spin = qobject_cast<QDoubleSpinBox *>(editor)) spin->setValue(value.toDouble());
-            else if (auto *button = qobject_cast<QAbstractButton *>(editor); button && button->isCheckable())
-                button->setChecked(value.toBool());
-            else if (auto *line = qobject_cast<QLineEdit *>(editor)) line->setText(value.toString());
-        };
-        sync(key, draftValue(key));
-        connect(this, &PrefsDialog::draftChanged, row, sync);
+            QWidget *editor = row->findChild<QWidget *>("value-" + viewKey);
+            auto sync = [editor, key](const QString &updated, const QVariant &value) {
+                if (!editor || updated != key) return;
+                const QSignalBlocker blocker(editor);
+                if (auto *font = qobject_cast<QFontComboBox *>(editor)) font->setCurrentFont(QFont(value.toString()));
+                else if (auto *combo = qobject_cast<QComboBox *>(editor))
+                {
+                    int index = combo->findData(value);
+                    if (index < 0) index = combo->findText(value.toString());
+                    if (index < 0) { combo->addItem(value.toString().isEmpty() ?
+                        qtr(key=="mmdevice-audio-device" ? "System default" : "Default") : value.toString(), value); index = combo->count()-1; }
+                    if(combo->itemText(index).isEmpty())combo->setItemText(index,
+                        qtr(key=="mmdevice-audio-device" ? "System default" : "Default"));
+                    combo->setCurrentIndex(index);
+                }
+                else if (auto *spin = qobject_cast<QSpinBox *>(editor)) spin->setValue(value.toInt());
+                else if (auto *spin = qobject_cast<QDoubleSpinBox *>(editor)) spin->setValue(value.toDouble());
+                else if (auto *button = qobject_cast<QAbstractButton *>(editor); button && button->isCheckable())
+                    button->setChecked(value.toBool());
+                else if (auto *line = qobject_cast<QLineEdit *>(editor)) line->setText(value.toString());
+            };
+            sync(key, draftValue(key));
+            connect(this, &PrefsDialog::draftChanged, row, sync);
+        }
     }
     auto *help = new QToolButton(row);
     help->setIcon(settingsSvgIcon(":/redesign/icons/settings-info.svg", palette().text().color()));
@@ -1240,7 +1352,8 @@ void PrefsDialog::addReferenceRows(QVBoxLayout *form, int category, bool advance
             auto *title = new QLabel(group, this);
             title->setProperty("redesignSection", true);
             title->setStyleSheet("font-size:16px;font-weight:500;");
-            title->setContentsMargins(0, 20, 0, 8);
+            if(form->count())form->addSpacing(20);
+            title->setContentsMargins(0, 10, 0, 10);
             form->addWidget(title);
         }
         if (entry.editor == PreferencesCatalog::Editor::Action) addReferenceAction(form, entry);
@@ -1267,8 +1380,8 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     row->setProperty("editorId",QStringLiteral("editor-%1").arg(viewKey));
     row->setProperty("referenceView", QString::fromLatin1(entry.key));
     auto *grid = new QGridLayout(row);
-    grid->setContentsMargins(0, 0, 0, 0);
-    grid->setRowMinimumHeight(0,34);
+    grid->setContentsMargins(0, 5, 0, 5);
+    grid->setRowMinimumHeight(0,32);
     grid->setHorizontalSpacing(0);
     grid->setColumnMinimumWidth(1,10);
     grid->setColumnStretch(0, 454);
@@ -1323,15 +1436,16 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         editor->setProperty("preferenceEditorGroup",true);
         auto *layout=new QVBoxLayout(editor);
         layout->setContentsMargins(0,0,0,0);
-        layout->setSpacing(3);
+        grid->setContentsMargins(0,10,0,10);
+        layout->setSpacing(2);
         auto *remember=new QPushButton(qtr("Remember last volume"),editor);
         remember->setObjectName("value-"+viewKey);
         remember->setCheckable(true);
-        remember->setFixedHeight(34);
+        remember->setFixedHeight(38);
         auto *fixed=new QPushButton(qtr("Always starts at:"),editor);
         fixed->setObjectName("preferencesStartupVolumeFixed");
         fixed->setCheckable(true);
-        fixed->setFixedHeight(34);
+        fixed->setFixedHeight(38);
         auto *group=new QButtonGroup(editor);
         group->addButton(remember,1);
         group->addButton(fixed,0);
@@ -1348,7 +1462,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         amount->setRange(0,300);
         amount->setDecimals(0);
         amount->setSuffix(qtr(" %"));
-        amount->setFixedHeight(34);
+        amount->setFixedHeight(38);
         amount->setMaximumWidth(140);
         fixedRow->addWidget(amount,1);
         layout->addLayout(fixedRow);
@@ -1381,7 +1495,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         {
             auto *button=new QPushButton(i ? qtr("Pixels") : qtr("Relative"),editor);
             button->setCheckable(true);
-            button->setFixedHeight(34);
+            button->setFixedHeight(entry.editorHeight ? entry.editorHeight : 36);
             button->setAccessibleName(qtr("Subtitle size in %1").arg(button->text()));
             group->addButton(button,i);
             layout->addWidget(button,1);
@@ -1402,7 +1516,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         auto *value = new QSpinBox(row);
         value->setObjectName("value-" + viewKey);
         value->setAccessibleName(label->text());
-        value->setFixedHeight(34);
+        value->setFixedHeight(36);
         grid->addWidget(value,0,10);
         auto sync = [this,value,key](const QString &,const QVariant &) {
             const QSignalBlocker blocker(value);
@@ -1424,7 +1538,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         editor->setProperty("preferenceEditorGroup", true);
         auto *layout = new QVBoxLayout(editor);
         layout->setContentsMargins(0,0,0,0);
-        layout->setSpacing(3);
+        layout->setSpacing(8);
         const bool real = CONFIG_CLASS(config->i_type) == CONFIG_ITEM_FLOAT;
         const double scale = key == "sub-delay" ? 0.1 :
             key == "qt-opacity" || key == "qt-fs-opacity" || key == "mmdevice-volume" ? 100.0 :
@@ -1443,7 +1557,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         if(picture && key!="gamma" && key!="saturation")interval=0;
         slider->referenceTickInterval=interval>0 ? qMax(1,qRound(1000*interval/(entry.maximum-entry.minimum))) : 0;
         slider->setSingleStep(qMax(1,real ? 10 : qRound(1000/(entry.maximum-entry.minimum))));
-        slider->setFixedHeight(picture ? 28 : 24);
+        slider->setFixedHeight(!picture && entry.editorHeight ? entry.editorHeight-25 : 32);
         layout->addWidget(slider);
         if (!picture)
         {
@@ -1464,6 +1578,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
                 if (ticks->count()) ticks->addStretch();
                 auto *text = new QLabel(label,editor);
                 text->setStyleSheet("font-size:12px;");
+                text->setFixedHeight(17);
                 ticks->addWidget(text);
             }
             layout->addLayout(ticks);
@@ -1532,7 +1647,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         auto *combo = new QComboBox(row);
         combo->setObjectName("value-" + viewKey);
         combo->setAccessibleName(label->text());
-        combo->setFixedHeight(34);
+        combo->setFixedHeight(36);
         combo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
         combo->setMinimumContentsLength(8);
         combo->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
@@ -1664,8 +1779,13 @@ void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog:
     const QString action = QString::fromLatin1(entry.key).mid(1);
     auto *row = new QWidget(this);
     row->setObjectName("preference-action-" + action);
-    auto *layout = new QHBoxLayout(row);
-    layout->setContentsMargins(0,0,0,0);
+    const bool fullWidth = action=="equalizer";
+    auto *layout = new QGridLayout(row);
+    layout->setContentsMargins(0,5,0,5);
+    layout->setHorizontalSpacing(0);
+    layout->setColumnMinimumWidth(1,10);
+    layout->setColumnStretch(0,454);
+    layout->setColumnStretch(10,320);
     QLabel *description=nullptr;
     if(*entry.label)
     {
@@ -1702,13 +1822,18 @@ void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog:
             }
         }
         labels->addStretch();
-        layout->addWidget(group,1);
+        layout->addWidget(group,0,0);
     }
     auto *button = new QPushButton(qtr(entry.choices),row);
     button->setObjectName("preferencesAction-" + action);
-    button->setFixedHeight(34);
+    button->setFixedHeight(fullWidth ? 36 : 32);
     button->setMinimumWidth(100);
-    layout->addWidget(button);
+    const bool fullField=action=="shortcuts" || action=="reset-shortcuts" || action=="rescan-plugins";
+    button->setSizePolicy(fullField || fullWidth ? QSizePolicy::Expanding : QSizePolicy::Fixed,QSizePolicy::Fixed);
+    if(fullWidth)
+        layout->addWidget(button,0,0,1,12);
+    else
+        layout->addWidget(button,0,10,fullField ? Qt::Alignment() : Qt::Alignment(Qt::AlignRight));
     if(action=="equalizer")
     {
         button->setCheckable(true);
@@ -1837,14 +1962,14 @@ QWidget *PrefsDialog::createCategory(int category)
 {
     auto *page = new QWidget(this);
     auto *outer = new QVBoxLayout(page);
-    outer->setContentsMargins(32, 10, 0, 4);
+    outer->setContentsMargins(32, 20, 0, 4);
     auto *scroll = new QScrollArea(page);
     scroll->setObjectName("preferencesScroll"+QString::number(category));
     scroll->setWidgetResizable(true);
     auto *body = new QWidget;
     auto *form = new QVBoxLayout(body);
     form->setContentsMargins(0, 0, 16, 20);
-    form->setSpacing(8);
+    form->setSpacing(0);
     scroll->setWidget(body);
     // The reference reserves sixteen pixels to the card edge. Let the native
     // scrollbar occupy that reserve without moving every value field left.
@@ -1860,20 +1985,22 @@ QWidget *PrefsDialog::createCategory(int category)
         auto *title = new QLabel(qtr("Add-ons"), this);
         title->setProperty("redesignSection", true);
         title->setStyleSheet("font-size:16px;font-weight:500;");
+        title->setContentsMargins(0,10,0,10);
         form->addWidget(title);
-        auto *toolbar = new QHBoxLayout;
-        auto *extensionSearch = new QLineEdit(this);
+        auto *toolbarWidget=new QWidget(page);
+        toolbarWidget->setObjectName("preferencesExtensionsToolbar");
+        auto *toolbar = new QGridLayout(toolbarWidget);
+        toolbar->setContentsMargins(0,0,0,0);
+        auto *extensionSearch = new QLineEdit(toolbarWidget);
         extensionSearch->setObjectName("preferencesExtensionSearch");
         extensionSearch->setAccessibleName(qtr("Search installed extensions"));
         extensionSearch->setPlaceholderText(qtr("Search"));
         extensionSearch->setClearButtonEnabled(true);
-        toolbar->addWidget(extensionSearch, 1);
-        auto *findMore = new QPushButton(qtr("Find more extensions"), this);
+        auto *findMore = new QPushButton(qtr("Find more extensions"), toolbarWidget);
         findMore->setObjectName("preferencesFindExtensions");
         connect(findMore, &QPushButton::clicked, this, [this] {
             DialogsProvider::getInstance(p_intf)->pluginDialog();
         });
-        toolbar->addWidget(findMore);
         // Keep the native catalogue, delegate and install/remove owner. Only
         // its view is embedded here; the source manager still owns its model.
         auto *addons = new AddonsTab(p_intf);
@@ -1888,17 +2015,25 @@ QWidget *PrefsDialog::createCategory(int category)
         list->setAlternatingRowColors(false);
         addons->m_model->setStateFilter(AddonsModel::State::STATE_INSTALLED);
         form->addWidget(list);
-        extensionSearch->setFixedWidth(140);
-        toolbar->setSpacing(6);
-        toolbar->insertStretch(1);
-        auto *add = new QPushButton(qtr("Add"),page);
+        extensionSearch->setMaximumWidth(210);
+        extensionSearch->setFixedHeight(36);
+        findMore->setMaximumWidth(186);
+        findMore->setFixedHeight(32);
+        toolbar->setSpacing(8);
+        auto *add = new QPushButton(qtr("Add"),toolbarWidget);
         add->setObjectName("preferencesAddExtension");
-        auto *remove = new QPushButton(qtr("Remove"),page);
+        auto *remove = new QPushButton(qtr("Remove"),toolbarWidget);
         remove->setObjectName("preferencesRemoveExtension");
         remove->setEnabled(false);
-        toolbar->addWidget(add);
-        toolbar->addWidget(remove);
-        form->addLayout(toolbar);
+        for(auto *button : {add,remove})
+        {
+            button->setMaximumWidth(100);
+            button->setFixedHeight(32);
+            button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+        }
+        form->addSpacing(8);
+        form->addWidget(toolbarWidget);
+        form->addSpacing(12);
         connect(extensionSearch,&QLineEdit::textChanged,addons->m_model.get(),&AddonsModel::setSearchPattern);
         disconnect(findMore,nullptr,this,nullptr);
         connect(findMore,&QPushButton::clicked,addons,[addons]{
@@ -1940,15 +2075,17 @@ QWidget *PrefsDialog::createCategory(int category)
         f.setWeight(QFont::Medium);
         title->setFont(f);
         title->setStyleSheet("font-size:16px;font-weight:500;");
-        title->setContentsMargins(0, 20, 0, 8);
+        title->setContentsMargins(0, 10, 0, 10);
         form->addWidget(title);
 #ifdef _WIN32
         auto *languageRow = new QHBoxLayout;
+        languageRow->setContentsMargins(0,5,0,5);
         languageRow->addWidget(new QLabel(qtr("Interface language"), this), 1);
         language = new QComboBox(this);
         language->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
         language->setMinimumContentsLength(10);
         language->setMaximumWidth(320);
+        language->setFixedHeight(36);
         language->setObjectName("preferencesLanguage");
         language->setAccessibleName(qtr("Interface language"));
         for (const auto &entry : language_map)
@@ -1979,6 +2116,7 @@ QWidget *PrefsDialog::createCategory(int category)
         if (p_intf->p_mi)
         {
             auto *themeRow = new QHBoxLayout;
+            themeRow->setContentsMargins(0,5,0,5);
             themeRow->addWidget(new QLabel(qtr("Theme"), this), 1);
             auto *themeOptions = new QWidget(this);
             themeOptions->setMaximumWidth(320);
@@ -2000,7 +2138,7 @@ QWidget *PrefsDialog::createCategory(int category)
                                                                                   : "System"),
                                             this);
                         button->setCheckable(true);
-                        button->setFixedHeight(34);
+                        button->setFixedHeight(36);
                         const QColor accent = palette().color(QPalette::Highlight);
                         button->setStyleSheet(
                             QString("QPushButton:checked{background:%1;color:%2;}")
@@ -2021,23 +2159,25 @@ QWidget *PrefsDialog::createCategory(int category)
     advanced->setObjectName("preferencesAdvanced" + QString::number(category));
     advanced->setText(qtr("Advanced Options"));
     advanced->setCheckable(true);
-    advanced->setIcon(settingsSvgIcon(":/redesign/icons/chevron-down.svg", palette().text().color()));
+    advanced->setIcon(settingsSvgIcon(":/redesign/icons/chevron-right.svg", palette().text().color()));
     advanced->setIconSize(QSize(24,24));
     advanced->setLayoutDirection(Qt::RightToLeft);
     advanced->setFixedHeight(38);
     advanced->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    form->addSpacing(20);
     form->addWidget(advanced);
     auto *advancedBody = new QWidget;
     auto *advancedForm = new QVBoxLayout(advancedBody);
     advancedForm->setContentsMargins(0, 0, 0, 0);
+    advancedForm->setSpacing(0);
     advancedBody->hide();
     form->addWidget(advancedBody);
     // Build once on demand and retain editors, so unsaved edits survive navigation.
     connect(advanced, &QPushButton::toggled, this,
             [this, advanced, advancedBody, advancedForm, category](bool open)
             {
-                advanced->setIcon(settingsSvgIcon(open ? ":/redesign/icons/native-chevron-up-dark.svg"
-                                                      : ":/redesign/icons/chevron-down.svg",palette().text().color()));
+                advanced->setIcon(settingsSvgIcon(open ? ":/redesign/icons/chevron-down.svg"
+                                                      : ":/redesign/icons/chevron-right.svg",palette().text().color()));
                 if (open && !advancedBody->property("built").toBool())
                 {
                     addReferenceRows(advancedForm,category,true);
@@ -2237,6 +2377,13 @@ void PrefsDialog::editShortcut(const QString &option)
 void PrefsDialog::save()
 {
     if (pluginScan) return;
+    for(auto *value : findChildren<QLineEdit *>())
+        if(value->property("preferenceColorValue").toBool() && !value->hasAcceptableInput())
+        {
+            QMessageBox::warning(this,qtr("Invalid color"),qtr("Enter a six-digit hexadecimal color, for example #FFFFFF."));
+            value->setFocus();
+            return;
+        }
     if (draftValues.contains("extra-options"))
     {
         char *error = nullptr;

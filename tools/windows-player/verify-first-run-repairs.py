@@ -26,6 +26,7 @@ import uuid
 from PIL import Image
 from app_icon_checks import executable_icon, window_icon
 from isolated_desktop import IsolatedProcess, input_desktop, u, k
+from settings_layout_checks import check_settings_layout
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--runtime', type=Path, required=True)
@@ -209,18 +210,25 @@ class Case:
         try:
             if k.WaitForSingleObject(self.player.handle, 0) != 0: self.inspect('quit', 'quit')
         finally:
-            self.record['exit_code'] = self.player.wait()
-            active_cases.remove(self)
-            self.closed = True
-            self.stdout.close(); self.stderr.close()
+            try:
+                self.player.wait()
+            finally:
+                # A user/screensaver transition can fail the preservation
+                # assertion after native exit and handle closure. Retain that
+                # failure, but still record known exit and release our profile.
+                if self.player.resources_closed:
+                    self.record['exit_code'] = self.player.exit_code
+                    active_cases.remove(self)
+                    self.closed = True
+                    self.stdout.close(); self.stderr.close()
+                    target = self.path / 'profile'
+                    assert not target.exists() and portable.resolve().is_relative_to(root) and target.resolve().is_relative_to(root)
+                    portable.rename(target)
+                    portable.mkdir()
+                    self.record['input_desktop_preserved'] = input_desktop() == self.player.before
+                    self.record['passed'] = passed and self.player.exit_code == 0 and self.record['input_desktop_preserved']
+                    save()
             assert self.record['exit_code'] == 0, self.record
-            target = self.path / 'profile'
-            assert not target.exists() and portable.resolve().is_relative_to(root) and target.resolve().is_relative_to(root)
-            portable.rename(target)
-            portable.mkdir()
-            self.record['input_desktop_preserved'] = True
-            self.record['passed'] = passed
-            save()
 
 def nodes(snapshot, identity): return [node for node in snapshot['tree'] if node['id'] == identity and node['visible']]
 def service(snapshot, name='redesignMediaTools'): return snapshot['media_tools'][name]
@@ -251,8 +259,14 @@ def owned_native_read(case, reader):
     def read():
         original=u.GetThreadDesktop(k.GetCurrentThreadId())
         assert original and u.SetThreadDesktop(case.player.desktop),ctypes.WinError(ctypes.get_last_error())
+        u.SetThreadDpiAwarenessContext.argtypes=[W.HANDLE]
+        u.SetThreadDpiAwarenessContext.restype=W.HANDLE
+        dpi_context=u.SetThreadDpiAwarenessContext(W.HANDLE(-4))
+        assert dpi_context,ctypes.WinError(ctypes.get_last_error())
         try:return reader()
-        finally:assert u.SetThreadDesktop(original),ctypes.WinError(ctypes.get_last_error())
+        finally:
+            assert u.SetThreadDpiAwarenessContext(dpi_context),ctypes.WinError(ctypes.get_last_error())
+            assert u.SetThreadDesktop(original),ctypes.WinError(ctypes.get_last_error())
     with ThreadPoolExecutor(max_workers=1) as worker:
         result=worker.submit(read).result()
     assert input_desktop()==before
@@ -287,6 +301,8 @@ def settings_window_region(case, dialog):
             assert gdi.GetRgnBox(region,ctypes.byref(bounds))==3
             width,height=bounds.right,bounds.bottom
             assert bounds.left==0 and bounds.top==0 and width>0 and height>0
+            expected=[round(dialog['width']*dialog['dpr']),round(dialog['height']*dialog['dpr'])]
+            assert abs(width-expected[0])<=1 and abs(height-expected[1])<=1,('Native clipping bounds do not match physical window',width,height,expected)
             corners=[bool(gdi.PtInRegion(region,x,y)) for x,y in
                 ((0,0),(width-1,0),(0,height-1),(width-1,height-1))]
             assert not any(corners),('Native backdrop includes exterior corners',corners)
@@ -921,12 +937,21 @@ def settings():
         assert len(matches)==1,(identity,matches)
         return matches[0]
     def select(case,index,label):
-        case.native(label+'-nav','preferencesCategories')
-        result=case.inspect(label+'-home','widget_key','--target','preferencesCategories','--key','0x1000010')
-        for step in range(index):
-            result=case.inspect(label+'-down-'+str(step),'widget_key','--target','preferencesCategories','--key','0x1000015')
-        selected=[row['columns'][0] for row in widget(result,'preferencesCategories')['rendered_rows'] if row['selected']]
-        assert selected==[categories[index]['category']],selected
+        result=case.native(label+'-nav','preferencesCategories')
+        names=[row['category'] for row in categories]
+        seen=set()
+        while True:
+            selected=[row['columns'][0] for row in widget(result,'preferencesCategories')['rendered_rows'] if row['selected']]
+            assert len(selected)==1 and selected[0] in names,selected
+            current=names.index(selected[0])
+            if current==index:break
+            assert current not in seen,('category keyboard navigation did not advance',label,selected)
+            seen.add(current)
+            # Home targets the disabled section heading at model row0 in Qt's
+            # QListView. Use real Up/Down navigation, which skips section rows,
+            # and terminate from the observed selection rather than a key count.
+            result=case.inspect(label+'-navigate-'+str(len(seen)),'widget_key',
+                '--target','preferencesCategories','--key','0x1000013' if current>index else '0x1000015')
         return result
     def check_labels(snapshot,index,expanded):
         frames=categories[index]['frames']
@@ -982,6 +1007,7 @@ def settings():
         dialog=widget(result,'redesignPreferences')
         assert abs(dialog['dpr']-float(case.record['scale']))<0.01
         native_region=settings_window_region(case,dialog)
+        layout_fields=check_settings_layout(result,index,compact=dialog['width']<900)
         file=next(row for row in result['widget_captures'] if row['widget']==dialog['node'])
         assert file['saved']
         with Image.open(case.evidence/file['file']) as original:
@@ -990,13 +1016,13 @@ def settings():
             rgb=image.getpixel((round(image.width*0.7),round(30*dialog['dpr'])))[:3]
             expected=(7,7,7) if dark else (213,213,213)
             assert max(abs(a-b) for a,b in zip(rgb,expected))<=1,('header band',label,rgb)
-        case.record.setdefault('settings_views',[]).append({'label':label,'category':categories[index]['category'],'capture':file['file'],'dpr':dialog['dpr'],'native_region':native_region})
+        case.record.setdefault('settings_views',[]).append({'label':label,'category':categories[index]['category'],'capture':file['file'],'dpr':dialog['dpr'],'native_region':native_region,'reference_fields_checked':layout_fields})
         return result
     def edit(case,label,target,value,scroll):
         case.reveal(label+'-reveal',target,scroll)
         case.native(label+'-focus',target)
         case.inspect(label+'-select','widget_key','--target',target,'--key','0x41','--modifiers','0x4000000')
-        case.inspect(label+'-type','widget_key','--target',target,'--key','0','--text',str(value))
+        case.inspect(label+'-type','widget_key','--target',target,'--key','0','--text='+str(value))
         return case.inspect(label+'-commit','widget_key','--target',target,'--key','0x1000001')
     def behaviour(case):
         opened=case.inspect('behaviour-open','key','--key','0x50','--modifiers','0x4000000')
@@ -1028,6 +1054,14 @@ def settings():
         case.inspect('reopen-after-cancel','key','--key','0x50','--modifiers','0x4000000')
         scoped=select(case,2,'cancelled-privacy')
         assert not widget(scoped,'value-extraintf-audioscrobbler')['checked']
+        select(case,7,'color-subtitles')
+        edit(case,'color-invalid','value-freetype-color','#12','preferencesScroll7')
+        invalid=case.native('color-invalid-save','preferencesSave')
+        assert any('six-digit hexadecimal' in row.get('text','') for row in invalid['widgets'])
+        case.inspect('color-invalid-dismiss','widget_click','--widget-text','OK')
+        edit(case,'color-correct','value-freetype-color','#A1B2C3','preferencesScroll7')
+        edit(case,'language-custom','value-sub-language','jpn,eng','preferencesScroll7')
+        select(case,2,'privacy-after-color')
         edit(case,'history-exclusion','value-history-exclude','private-*;*.secret','preferencesScroll2')
         case.reveal('position-off-reveal','value-save-playback-position','preferencesScroll2')
         case.native('position-off','value-save-playback-position')
@@ -1088,6 +1122,9 @@ def settings():
         assert not widget(scoped,'value-save-playback-position')['checked']
         scoped=select(case,3,'saved-controls')
         assert widget(scoped,'value-short-jump-size')['value']==7
+        scoped=select(case,7,'saved-subtitles-color')
+        assert widget(scoped,'value-freetype-color')['text']=='#A1B2C3'
+        assert widget(scoped,'value-sub-language')['current_text']=='jpn,eng'
         select(case,6,'saved-audio')
         case.reveal('saved-equalizer-reveal','preferencesAction-equalizer','preferencesScroll6')
         scoped=case.native('saved-equalizer-open','preferencesAction-equalizer')
@@ -1101,7 +1138,8 @@ def settings():
         case.native('behaviour-close','preferencesClose')
         case.record['settings_behaviour']={'shared_native_and_reference_draft':True,'cancel':True,
             'invalid_save_preserves_draft':True,'locked_save_rolls_back_native_memory_and_file':True,
-            'failed_save_preserves_draft_for_retry':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True}
+            'failed_save_preserves_draft_for_retry':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True,
+            'invalid_color_rejected':True,'color_and_custom_language_readback':True}
     for scale in ('1','1.5','2'):
         case=Case('settings-'+scale.replace('.','-'),scale=scale,media=fixtures/'control.mkv')
         try:
@@ -1165,6 +1203,9 @@ def settings():
                     result=select(restarted,2,'restart-privacy')
                     assert widget(result,'value-history-exclude')['text']=='private-*;*.secret'
                     assert not widget(result,'value-save-playback-position')['checked']
+                    result=select(restarted,7,'restart-subtitles')
+                    assert widget(result,'value-freetype-color')['text']=='#A1B2C3'
+                    assert widget(result,'value-sub-language')['current_text']=='jpn,eng'
                     restarted.native('restart-close-settings','preferencesClose')
                     restarted.close(True)
                 finally:restarted.close()
