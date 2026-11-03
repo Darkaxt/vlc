@@ -76,6 +76,13 @@ def main():
         destination=root/'source'/relative
         destination.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(source/relative,destination)
+        for name in ('settings-info.svg','search.svg','settings-general-active.svg'):
+            relative=Path('modules/gui/qt/pixmaps/redesign')/name
+            destination=root/'source'/relative
+            destination.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source/relative,destination)
+            assert sha_file(destination)==sha_file(source/relative)
+        (root/'icon-evidence').mkdir()
     if not resuming:
         shutil.copytree(args.runtime / 'plugins', root / 'modules')
     for folder in ('bin', 'tmp', 'appdata', 'localappdata', 'logs'):
@@ -112,6 +119,8 @@ def main():
         assert chrome.is_file()
         assert sha_file(chrome)==sha_file(tools_root/'work/src/modules/gui/qt/player/qml/PlayerChromeState.qml')
         environment['VLC_TEST_PLAYER_CHROME_QML']=str(chrome)
+        environment['VLC_TEST_SETTINGS_SVG_ROOT']=str(root/'source/modules/gui/qt/pixmaps/redesign')
+        environment['VLC_TEST_SETTINGS_ICON_EVIDENCE']=str(root/'icon-evidence')
     result = {'schema': 'vlc_redesign.native_suite.v1', 'source_commit': build['source_commit'],
         'native_build_helper_sha256': build['native_build_helper_sha256'],
         'platform_header_sha256': build['platform_header_sha256'],

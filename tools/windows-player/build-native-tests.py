@@ -76,7 +76,11 @@ def main():
                 'NATIVE_QT_OFFSCREEN_ARCHIVE=' + str(offscreen)]
             command.append('QT_QTEST_COMMON_cppflags=$(libqt_plugin_la_CPPFLAGS) -I$(builddir)/tests '
                 '-DTOP_BUILDDIR=\\"' + args.windows_layout + '\\"')
-        code = subprocess.call(command)
+        build_log=args.receipt.with_name('native-build-'+relative.replace('/','-')+'.log')
+        print('NATIVE BUILD '+relative+' | log='+str(build_log),flush=True)
+        with build_log.open('w') as log:
+            code=subprocess.call(command,stdout=log,stderr=subprocess.STDOUT)
+        print('NATIVE BUILD '+relative+' | exit='+str(code)+' | log='+str(build_log),flush=True)
         if relative == 'test':
             with args.receipt.with_name('native-potfiles.log').open('w') as log:
                 script_code = subprocess.call(['/bin/sh', str(args.source / 'test/check_POTFILES.sh')],
@@ -84,7 +88,7 @@ def main():
             if script_code:
                 failures.append({'check': 'check_POTFILES.sh', 'exit_code': script_code})
         if code:
-            failures.append({'directory': relative, 'targets': names, 'exit_code': code})
+            failures.append({'directory': relative, 'targets': names, 'exit_code': code,'log':str(build_log)})
             continue
         records = []
         for name in names:
@@ -95,7 +99,7 @@ def main():
             with binary.open('rb') as stream:
                 digest = hashlib.file_digest(stream, 'sha256').hexdigest()
             records.append({'name': name, 'file': str(binary), 'sha256': digest})
-        suites.append({'directory': relative, 'programs': records, 'cases': cases,
+        suites.append({'directory': relative, 'programs': records, 'cases': cases,'build_log':str(build_log),
             'configured_programs': configured_programs,
             'linux_script_checks': ['check_POTFILES.sh'] if relative == 'test' else []})
     assert not failures, failures
@@ -107,9 +111,9 @@ def main():
         'make_fragment_sha256': sha_file(args.make_fragment),
         'qt_platform_source_sha256': sha_file(args.qt_platform_source),
         'native_input_state_sha256': sha_file(input_state),
-        'qt_platform': 'Existing static SDK offscreen integration, explicitly imported for the CSD model test',
+        'qt_platform': 'Existing static SDK offscreen integration, explicitly imported for native CSD and chrome/SVG tests; no windows or OS input',
         'native_timeout_contract': 'VLC_TEST_TIMEOUT=0 required; any POSIX alarm request exits with failure instead of being ignored',
-        'scope': ('M4 affected history exclusions, saved-option parser and real chrome state machine. The complete native settings/player acceptance owns integrated behavior and pixels.' if args.scope=='settings' else
+        'scope': ('M4 history exclusions, saved-option parser, real chrome state machine and original SVG icons at requested size/DPR. The complete native settings/player acceptance owns integrated behavior and pixels.' if args.scope=='settings' else
             'Focused regressions added by this upstream merge. The fork full Windows acceptance matrix owns broad product regression. The complete upstream C suite includes POSIX /tmp assumptions and is not claimed as a native Windows suite.'),
         'execution': 'Not run; execute these exact binaries natively on owned inactive Windows desktops'}
     args.receipt.write_text(json.dumps(receipt, indent=2) + '\n')

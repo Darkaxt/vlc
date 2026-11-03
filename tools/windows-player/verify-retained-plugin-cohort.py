@@ -24,7 +24,7 @@ def main():
     subprocess.run(['git', '-C', str(source), 'merge-base', '--is-ancestor', baseline, head], check=True)
     source_changes = subprocess.check_output(['git', '-C', str(source), 'diff', '--name-only', baseline, head], text=True).splitlines()
     # This shared smoke-test header is not an input to runtime plugins.
-    changes = [name for name in source_changes if name != 'test/libvlc/test.h'
+    changes = [name for name in source_changes if name not in ('test/libvlc/test.h', 'README.md')
                and not name.startswith(('doc/redesign/', 'tools/windows-player/', 'tools/design-source/'))]
     assert all(name.startswith('modules/gui/qt/') for name in changes), changes
     assert original['schema'] == 'vlc_redesign.full_plugin_build.v1'

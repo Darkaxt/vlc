@@ -51,7 +51,7 @@ Managed assembly177 (`8f96080bd4ad4446a82a9f9e7ccb1c70`) bound source
 explicitly stopped before player compilation after source comparison identified
 remaining slider help glyphs, equalizer spacing and scrollbar field alignment.
 Its closed report records exit137, OOM0 and an empty Linux group. These source
-corrections and a native Windows region check are being integrated before
+corrections and a native Windows region check were integrated before
 resuming the same candidate/pipeline, preserving all retained dependency objects.
 No native acceptance or final release is claimed.
 
@@ -81,6 +81,19 @@ source syntax diagnostics pass; they are not native acceptance. Report179 is
 closed with exit1, OOM0, empty group and released cache/private mounts. Preserve
 all successful objects and resume only the failed player step after binding the
 correction. Configuration remains passed; no SDK/dependency rebuild is required.
+
+Continuation180 (`0a2389b2fd794d39bcb8b224dcbe9671`) completed the optimized
+player and full410-plugin assembly at `8626b9016d9ceb9326c3700f932584dcac70213e`.
+The appended native chrome test build failed because QSignalSpy was undeclared;
+its correction waits directly for the existing state-change event. Report180
+is closed with exit1, OOM0, an empty group and released private mounts. Native
+acceptance has not run. A confirmed remaining settings-icon resampling path
+(fixed24px pixmap reused at18px) is corrected by rendering the original SVG at
+Qt's requested size/DPR, with original/old/current pixel comparisons. Continue
+this same candidate through the guarded Qt-only incremental path, retaining
+all409 non-Qt plugins and the completed core/SDK/MPV/codecs. This does not
+reopen configuration or authorize rebuilding unchanged dependencies. Complete
+native behavior and visual acceptance remains an internal M4 blocker.
 
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was

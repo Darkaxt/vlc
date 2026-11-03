@@ -396,6 +396,7 @@ libqt_plugin_la_SOURCES = \
 	widgets/native/qvlcframe.cpp \
 	widgets/native/qvlcframe.hpp \
 	widgets/native/redesign_style.hpp \
+	widgets/native/settings_svg_icon.hpp \
 	widgets/native/searchlineedit.cpp widgets/native/searchlineedit.hpp \
 	widgets/native/viewblockingrectangle.cpp widgets/native/viewblockingrectangle.hpp \
 	widgets/native/doubleclickignoringitem.hpp

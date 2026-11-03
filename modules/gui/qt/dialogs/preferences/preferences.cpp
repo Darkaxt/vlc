@@ -32,6 +32,7 @@
 #include "util/registry.hpp"
 #endif
 #include "widgets/native/redesign_style.hpp"
+#include "widgets/native/settings_svg_icon.hpp"
 #include "dialogs/plugins/plugins.hpp"
 #include <QTabWidget>
 #include "dialogs/dialogs_provider.hpp"
@@ -225,18 +226,6 @@ const char *const categoryTitles[] = {N_("Global Settings"),
                                       N_("Performance Settings"),
                                       N_("Recording, Casting & Streaming Out"),
                                       N_("Add-ons & Scripts")};
-QPixmap sourceMask(const QString &path, const QColor &color, qreal dpr)
-{
-    QPixmap pixmap(QSize(24, 24) * dpr);
-    pixmap.setDevicePixelRatio(dpr);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    QSvgRenderer svg(path);
-    svg.render(&painter, QRectF(0, 0, 24, 24));
-    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    painter.fillRect(QRectF(0, 0, 24, 24), color);
-    return pixmap;
-}
 using Basic = PreferencesCatalog::Row;
 constexpr auto &basicOptions = PreferencesCatalog::rows;
 QString optionKey(const Basic &row)
@@ -386,8 +375,8 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
     search->setAccessibleName(qtr("Search all settings"));
     search->setClearButtonEnabled(true);
     search->installEventFilter(this);
-    search->addAction(QIcon(sourceMask(":/redesign/icons/search.svg", palette().text().color(),
-                                       devicePixelRatioF())), QLineEdit::LeadingPosition)->setObjectName("preferencesSearchIcon");
+    search->addAction(settingsSvgIcon(":/redesign/icons/search.svg", palette().text().color()),
+                      QLineEdit::LeadingPosition)->setObjectName("preferencesSearchIcon");
     search->setFixedWidth(200);
     layout->addWidget(search, 0, 0);
     heading = new QLabel(qtr(categoryTitles[0]), this);
@@ -408,8 +397,7 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
     closeButton->setFixedSize(32, 32);
     closeButton->setStyleSheet("QPushButton{padding:4px;background:transparent;}QPushButton:hover{background:#222222;}");
     closeButton->setIconSize(QSize(24, 24));
-    closeButton->setIcon(QIcon(
-        sourceMask(":/redesign/icons/close.svg", palette().text().color(), devicePixelRatioF())));
+    closeButton->setIcon(settingsSvgIcon(":/redesign/icons/close.svg", palette().text().color()));
     connect(closeButton, &QPushButton::clicked, this, &QDialog::reject);
     layout->addWidget(closeButton, 0, 2);
     categories = new QListWidget(this);
@@ -464,12 +452,8 @@ PrefsDialog::PrefsDialog(QWindow *parent, qt_intf_t *intf) : QVLCDialog(parent, 
         const QString activePath = ":/redesign/icons/" + QString::fromLatin1(activeIcons[i]) + ".svg";
         item->setData(Qt::UserRole+1,path);
         item->setData(Qt::UserRole+2,activePath);
-        icon.addPixmap(
-            sourceMask(path, property("figmaDark").toBool() ? QColor("#8f8f8f") : QColor("#2e2e2e"),
-                       devicePixelRatioF()),
-            QIcon::Normal);
-        icon.addPixmap(sourceMask(activePath, palette().color(QPalette::Highlight), devicePixelRatioF()),
-                       QIcon::Selected);
+        icon = settingsSvgIcon(path, property("figmaDark").toBool() ? QColor("#8f8f8f") : QColor("#2e2e2e"),
+                               activePath, palette().color(QPalette::Highlight));
         item->setIcon(icon);
     }
     categoryContainer = new QWidget(this);
@@ -607,15 +591,12 @@ void PrefsDialog::refreshAppearance()
         auto *item=categories->item(i);
         const auto path=item->data(Qt::UserRole+1).toString();
         if(path.isEmpty())continue;
-        QIcon icon;
-        icon.addPixmap(sourceMask(path,foreground,devicePixelRatioF()),QIcon::Normal);
-        icon.addPixmap(sourceMask(item->data(Qt::UserRole+2).toString(),accent,devicePixelRatioF()),QIcon::Selected);
-        item->setIcon(icon);
+        item->setIcon(settingsSvgIcon(path,foreground,item->data(Qt::UserRole+2).toString(),accent));
     }
     if(auto *icon=search->findChild<QAction *>("preferencesSearchIcon"))
-        icon->setIcon(QIcon(sourceMask(":/redesign/icons/search.svg",foreground,devicePixelRatioF())));
+        icon->setIcon(settingsSvgIcon(":/redesign/icons/search.svg",foreground));
     if(auto *close=findChild<QPushButton *>("preferencesClose"))
-        close->setIcon(QIcon(sourceMask(":/redesign/icons/close.svg",foreground,devicePixelRatioF())));
+        close->setIcon(settingsSvgIcon(":/redesign/icons/close.svg",foreground));
     for(auto *check:findChildren<QCheckBox *>())
         if(auto *toggle=dynamic_cast<SettingsSwitch *>(check))toggle->setAppearance(dark,accent);
     for(auto *button:findChildren<QToolButton *>()){
@@ -1181,8 +1162,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         connect(this, &PrefsDialog::draftChanged, row, sync);
     }
     auto *help = new QToolButton(row);
-    help->setIcon(QIcon(sourceMask(":/redesign/icons/settings-info.svg", palette().text().color(),
-                                   devicePixelRatioF())));
+    help->setIcon(settingsSvgIcon(":/redesign/icons/settings-info.svg", palette().text().color()));
     help->setIconSize(QSize(18, 18));
     help->setStyleSheet("padding:0;background:transparent");
     help->setObjectName("help-" + viewKey);
@@ -1302,7 +1282,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     auto *help = new QToolButton(labelGroup);
     help->setObjectName("help-" + viewKey);
     help->setFixedSize(18,18);
-    help->setIcon(QIcon(sourceMask(":/redesign/icons/settings-info.svg", palette().text().color(), devicePixelRatioF())));
+    help->setIcon(settingsSvgIcon(":/redesign/icons/settings-info.svg", palette().text().color()));
     help->setIconSize(QSize(18,18));
     help->setStyleSheet("padding:0;background:transparent");
     help->setAccessibleName(qtr("Help for %1").arg(label->text()));
@@ -1706,7 +1686,7 @@ void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog:
                 auto *help=new QToolButton(group);
                 help->setObjectName("help-action-"+action);
                 help->setAccessibleName(qtr("Help for %1").arg(label->text()));
-                help->setIcon(QIcon(sourceMask(":/redesign/icons/settings-info.svg",palette().text().color(),devicePixelRatioF())));
+                help->setIcon(settingsSvgIcon(":/redesign/icons/settings-info.svg",palette().text().color()));
                 help->setIconSize(QSize(18,18));
                 help->setFixedSize(18,18);
                 help->setStyleSheet("padding:0;background:transparent");
@@ -1735,8 +1715,7 @@ void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog:
         button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
         button->setStyleSheet(QString("QPushButton{background:%1;border:0;}")
             .arg(property("figmaDark").toBool() ? "#070707" : "#eeeeee"));
-        const auto disclosure=sourceMask(":/redesign/icons/chevron-down.svg",palette().text().color(),devicePixelRatioF());
-        button->setIcon(QIcon(disclosure));
+        button->setIcon(settingsSvgIcon(":/redesign/icons/chevron-down.svg",palette().text().color()));
         button->setIconSize(QSize(24,24));
         button->setLayoutDirection(Qt::RightToLeft);
         auto *editor=new QWidget(this);
@@ -2041,8 +2020,7 @@ QWidget *PrefsDialog::createCategory(int category)
     advanced->setObjectName("preferencesAdvanced" + QString::number(category));
     advanced->setText(qtr("Advanced Options"));
     advanced->setCheckable(true);
-    const QPixmap disclosure = sourceMask(":/redesign/icons/chevron-down.svg", palette().text().color(), devicePixelRatioF());
-    advanced->setIcon(QIcon(disclosure));
+    advanced->setIcon(settingsSvgIcon(":/redesign/icons/chevron-down.svg", palette().text().color()));
     advanced->setIconSize(QSize(24,24));
     advanced->setLayoutDirection(Qt::RightToLeft);
     advanced->setFixedHeight(38);

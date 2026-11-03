@@ -7,6 +7,7 @@ selected. No OS input, activation, desktop switching or execution-kill deadline.
 import argparse
 import ctypes
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from ctypes import wintypes as W
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hashlib
@@ -1194,6 +1195,75 @@ def settings():
         legacy.record['missing_native_fonts_preserved']=families
         save()
     finally:legacy.close()
+
+    # Seed history through real playback, then use the new native Privacy
+    # action. Its cancel/confirm paths must update the existing ML owner rather
+    # than merely clearing a rendered list or deleting media records/files.
+    media=fixtures/'control.mkv'
+    media_hash=hashlib.sha256(media.read_bytes()).hexdigest()
+    history=Case('settings-clear-history',media=media,extra=('--media-library','--save-recentplay'))
+    try:
+        history.inspect('history-paused','snapshot','--await-core','state','--await-value','3')
+        history.click('history-play','playButton','--await-core','state','--await-value','2')
+        ended=history.inspect('history-natural-eof','snapshot','--await-core','state','--await-value','0')
+        library='qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml'
+        if not any(row['id']=='viewLoader' and row.get('source')==library for row in ended['tree']):
+            history.inspect('history-open-library','click','--name','Back to media',
+                '--await-target','viewLoader','--await-property','source','--await-value',json.dumps(library))
+        history.inspect('history-library-mounted','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
+        before=history.click('history-recent','libraryNav_recent','--await-target','fullLibrary',
+            '--await-property','itemCount','--await-value','1','--await-comparison','at_least')
+        assert before['library']['id']=='fullLibrary'
+        count=before['library']['indexed_model_count']
+        history.inspect('history-open-settings','key','--key','0x50','--modifiers','0x4000000')
+        select(history,2,'history-privacy')
+        history.reveal('history-clear-reveal','preferencesAction-clear-history','preferencesScroll2')
+        history.native('history-clear-request','preferencesAction-clear-history')
+        history.inspect('history-clear-cancel','widget_click','--widget-text','Cancel')
+        preserved=history.native('history-cancel-close','preferencesClose','--await-target','fullLibrary',
+            '--await-property','itemCount','--await-value',str(count))
+        assert preserved['library']['indexed_model_count']==count
+        history.inspect('history-confirm-open-settings','key','--key','0x50','--modifiers','0x4000000')
+        select(history,2,'history-confirm-privacy')
+        history.reveal('history-confirm-reveal','preferencesAction-clear-history','preferencesScroll2')
+        history.native('history-confirm-request','preferencesAction-clear-history')
+        history.inspect('history-clear-confirm','widget_click','--widget-text','Yes','--await-target','fullLibrary',
+            '--await-property','itemCount','--await-value','0')
+        cleared=history.native('history-confirm-close','preferencesClose')
+        assert cleared['library']['indexed_model_count']==0
+        history.close(True)
+        databases=[]
+        for path in (history.path/'profile').rglob('*.db'):
+            with path.open('rb') as stream:
+                if stream.read(16)!=b'SQLite format 3\0':continue
+            with closing(sqlite3.connect(path.as_uri()+'?mode=ro',uri=True)) as database:
+                if not database.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='Media'").fetchone():continue
+                rows=database.execute('SELECT id_media,play_count,last_played_date FROM Media').fetchall()
+                assert rows and all(row[1]==0 and row[2] is None for row in rows),rows
+                databases.append({'database':str(path.relative_to(history.path/'profile')),'retained_media':len(rows)})
+        assert len(databases)==1,databases
+        assert hashlib.sha256(media.read_bytes()).hexdigest()==media_hash
+        history.record['native_history_clear']={'cancel_retains_recent_count':count,
+            'confirmed_recent_count':0,'native_database':databases[0],'media_sha256_unchanged':media_hash}
+        save()
+    finally:history.close()
+
+    # Documentation uses an empty owned library and no file-logging path. Keep
+    # the native pixels unchanged; do not put test paths or media in the README.
+    documentation=Case('settings-readme',extra=('--no-file-logging','--logfile='))
+    try:
+        documentation.inspect('documentation-open-settings','key','--key','0x50','--modifiers','0x4000000')
+        select(documentation,0,'documentation-general')
+        documentation.native('documentation-dark-theme','preferencesTheme2')
+        documentation.native('documentation-save-theme','preferencesSave')
+        documentation.inspect('documentation-reopen-settings','key','--key','0x50','--modifiers','0x4000000')
+        select(documentation,0,'documentation-final-general')
+        documentation.inspect('documentation-reference-size','widget_resize','--target','redesignPreferences',
+            '--width','1048','--height','865')
+        capture(documentation,'readme-general',0,True)
+        documentation.native('documentation-close-settings','preferencesClose')
+        documentation.close(True)
+    finally:documentation.close()
 
 
 def seek_policy():

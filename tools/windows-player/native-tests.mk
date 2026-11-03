@@ -21,4 +21,7 @@ $(native_qt_platform_object): $(NATIVE_QT_PLATFORM_SOURCE) $(NATIVE_TEST_INPUT_S
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_qt_csd_button_model_CPPFLAGS) $(CPPFLAGS) $(test_qt_csd_button_model_CXXFLAGS) $(CXXFLAGS) -c -o $@ $<
 test_qt_csd_button_model_LDADD = $(native_qt_platform_object) $(NATIVE_QT_OFFSCREEN_ARCHIVE) $(QT_QTEST_COMMON_ldadd)
 test_qt_csd_button_model.exe: $(native_qt_platform_object) $(NATIVE_QT_OFFSCREEN_ARCHIVE) $(native_test_recipe)
+
+test_player_chrome_LDADD = $(native_qt_platform_object) $(NATIVE_QT_OFFSCREEN_ARCHIVE) $(QT_INDIRECT_LIBS) $(QT_QTEST_COMMON_ldadd)
+test_player_chrome.exe: $(native_qt_platform_object) $(NATIVE_QT_OFFSCREEN_ARCHIVE) $(native_test_recipe)
 endif
