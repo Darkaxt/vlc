@@ -709,9 +709,12 @@ void PrefsDialog::updateResponsiveLayout()
         auto *grid=qobject_cast<QGridLayout *>(toolbar->layout());
         const char *ids[]={"preferencesExtensionSearch","preferencesFindExtensions",
                            "preferencesAddExtension","preferencesRemoveExtension"};
+        const int widths[]={210,186,100,100};
         for(int i=0;i<4;++i)
         {
             auto *editor=toolbar->findChild<QWidget *>(ids[i]);
+            editor->setMinimumWidth(compact ? 0 : widths[i]);
+            editor->setMaximumWidth(widths[i]);
             grid->removeWidget(editor);
             grid->addWidget(editor,compact ? i/2 : 0,compact ? i%2 : i==0 ? 0 : i+1);
         }

@@ -35,6 +35,17 @@ def check_settings_layout(snapshot, category, *, compact):
             swatch = next(row for row in widgets.values() if row['parent'] == editor['node'] and row['id'].startswith('color-'))
             assert value['type'] == 'QLineEdit' and len(value['text']) == 7 and value['text'].startswith('#')
             assert swatch['width'] == swatch['height'] == 24
+    if category == 12:
+        for identity, expected in (('preferencesExtensionSearch',210), ('preferencesFindExtensions',186),
+                                   ('preferencesAddExtension',100), ('preferencesRemoveExtension',100)):
+            editor=next(row for row in widgets.values() if row['id']==identity)
+            if not editor['center_visible']:
+                continue
+            if not compact:
+                assert editor['width']==expected,('Reference extension toolbar width',identity,editor['width'],expected)
+            toolbar=widgets[editor['parent']]
+            assert editor['x']>=0 and editor['x']+editor['width']<=toolbar['width']
+            checked.append(identity)
     if category == 0 and not compact and area['scroll_value'] == 0:
         # These original positions are independent of native option values.
         # The log path is a grouped editor, not a shrunken Browse button.
