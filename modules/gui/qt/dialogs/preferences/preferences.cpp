@@ -77,6 +77,7 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QSizeGrip>
 #include <QStackedWidget>
 #include <QToolButton>
@@ -743,7 +744,7 @@ void PrefsDialog::updateResponsiveLayout()
                         compact ? 12 : 1, Qt::AlignRight);
         if (description) grid->addWidget(description, compact ? 2 : 1, 0, 1, 12);
         grid->setColumnStretch(0, compact || accent ? 1 : 454);
-        grid->setColumnStretch(10, compact || accent ? 0 : 318);
+        grid->setColumnStretch(10, compact || accent ? 0 : 320);
         row->setProperty("compactPreference", compact);
     }
     if (auto *bands=findChild<QWidget *>("preferencesEqualizerBands"))
@@ -751,6 +752,14 @@ void PrefsDialog::updateResponsiveLayout()
         auto *grid=qobject_cast<QGridLayout *>(bands->layout());
         const int columns=compact ? 5 : 11;
         for(int i=0;i<11;++i)grid->setColumnStretch(i,i<columns ? 1 : 0);
+        for(int row=0;row<18;++row)grid->setRowMinimumHeight(row,0);
+        for(int group=0;group<(11+columns-1)/columns;++group)
+        {
+            const int base=6*group;
+            grid->setRowMinimumHeight(base+1,33);
+            grid->setRowMinimumHeight(base+3,12);
+            if(group+1<(11+columns-1)/columns)grid->setRowMinimumHeight(base+5,24);
+        }
         for(int i=-1;i<10;++i)
         {
             const QString suffix=i<0 ? QStringLiteral("Preamp") : QString::number(i);
@@ -758,10 +767,10 @@ void PrefsDialog::updateResponsiveLayout()
             auto *slider=bands->findChild<QSlider *>(i<0 ? "preferencesEqualizerPreamp" : "preferencesEqualizerBand"+suffix);
             auto *value=bands->findChild<QDoubleSpinBox *>("equalizerValue"+suffix);
             grid->removeWidget(label);grid->removeWidget(slider);grid->removeWidget(value);
-            const int column=(i+1)%columns,base=3*((i+1)/columns);
+            const int column=(i+1)%columns,base=6*((i+1)/columns);
             grid->addWidget(slider,base,column,Qt::AlignHCenter);
-            grid->addWidget(label,base+1,column);
-            grid->addWidget(value,base+2,column);
+            grid->addWidget(label,base+2,column);
+            grid->addWidget(value,base+4,column);
         }
     }
 }
@@ -911,9 +920,12 @@ void PrefsDialog::addEqualizer(QVBoxLayout *form)
     auto *bandsWidget=new QWidget(this);
     bandsWidget->setObjectName("preferencesEqualizerBands");
     auto *grid=new QGridLayout(bandsWidget);
-    grid->setContentsMargins(0,0,0,0);
+    // Original 784px reference: eleven 60px columns, 8px gutters and
+    // 22px exterior margins. Wrapped groups keep each slider/label/value
+    // together without changing the native equalizer's band identities.
+    grid->setContentsMargins(22,12,22,20);
     grid->setHorizontalSpacing(8);
-    grid->setVerticalSpacing(20);
+    grid->setVerticalSpacing(0);
     const char *frequencies[]={"60 Hz","170 Hz","310 Hz","600 Hz","1 kHz","3 kHz","6 kHz","12 kHz","14 kHz","16 kHz"};
     for(int i=-1;i<10;++i)
     {
@@ -928,6 +940,7 @@ void PrefsDialog::addEqualizer(QVBoxLayout *form)
         auto *name=new QLabel(i<0 ? qtr("Preamp") : QString::fromLatin1(frequencies[i]),bandsWidget);
         name->setObjectName("equalizerFrequency"+suffix);
         name->setAlignment(Qt::AlignCenter);
+        name->setFixedHeight(17);
         name->setStyleSheet("font-size:14px;");
         auto *value=new QDoubleSpinBox(bandsWidget);
         value->setObjectName("equalizerValue"+suffix);
@@ -938,10 +951,11 @@ void PrefsDialog::addEqualizer(QVBoxLayout *form)
         value->setButtonSymbols(QAbstractSpinBox::NoButtons);
         value->setStyleSheet("padding:2px;font-size:12px;");
         value->setMinimumWidth(0);
+        value->setFixedHeight(34);
         value->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);
         grid->addWidget(slider,0,i+1,Qt::AlignHCenter);
-        grid->addWidget(name,1,i+1);
-        grid->addWidget(value,2,i+1);
+        grid->addWidget(name,2,i+1);
+        grid->addWidget(value,4,i+1);
         grid->setColumnStretch(i+1,1);
         auto sync=[this,i,slider,value](const QString &key,const QVariant &) {
             if(key!=(i<0 ? "equalizer-preamp" : "equalizer-bands"))return;
@@ -983,9 +997,9 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     // Native controls use column 10. Empty legacy columns must not each add
     // another gap; retain one deliberate label/value gutter.
     grid->setHorizontalSpacing(0);
-    grid->setColumnMinimumWidth(1, 12);
+    grid->setColumnMinimumWidth(1, 10);
     grid->setColumnStretch(0, 454);
-    grid->setColumnStretch(10, 318);
+    grid->setColumnStretch(10, 320);
     ConfigControl *control = nullptr;
     if (key == "qt-accent-color")
     {
@@ -1066,7 +1080,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         delete row;
         return;
     }
-    grid->setColumnMinimumWidth(1, 12);
+    grid->setColumnMinimumWidth(1, 10);
     if (o.config->i_type == CONFIG_ITEM_FONT)
         if (auto *font = row->findChild<QFontComboBox *>())
         {
@@ -1263,9 +1277,10 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     auto *grid = new QGridLayout(row);
     grid->setContentsMargins(0, 0, 0, 0);
     grid->setRowMinimumHeight(0,34);
-    grid->setHorizontalSpacing(12);
+    grid->setHorizontalSpacing(0);
+    grid->setColumnMinimumWidth(1,10);
     grid->setColumnStretch(0, 454);
-    grid->setColumnStretch(10, 318);
+    grid->setColumnStretch(10, 320);
     auto *labelGroup = new QWidget(row);
     auto *labels = new QHBoxLayout(labelGroup);
     labels->setContentsMargins(0,0,0,0);
@@ -1288,6 +1303,12 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     description->setText(found == options.cend() ? qtr("This capability is not available in this build.")
         : qfut(found->config->psz_longtext ? found->config->psz_longtext : found->config->psz_text));
     description->setText(description->text()+playbackScope(key));
+    if(entry.editor==Editor::Slider)
+    {
+        help->hide();
+        label->setToolTip(description->text());
+        label->setAccessibleDescription(description->text());
+    }
     description->hide();
     grid->addWidget(description,2,0,1,12);
     connect(help,&QToolButton::clicked,description,[description]{ description->setVisible(!description->isVisible()); });
@@ -1794,6 +1815,12 @@ QWidget *PrefsDialog::createCategory(int category)
     form->setContentsMargins(0, 0, 16, 20);
     form->setSpacing(8);
     scroll->setWidget(body);
+    // The reference reserves sixteen pixels to the card edge. Let the native
+    // scrollbar occupy that reserve without moving every value field left.
+    connect(scroll->verticalScrollBar(),&QScrollBar::rangeChanged,body,[scroll,form](int minimum,int maximum){
+        const int extent=maximum>minimum ? scroll->verticalScrollBar()->sizeHint().width() : 0;
+        form->setContentsMargins(0,0,16-extent,20);
+    });
     scroll->viewport()->setAutoFillBackground(false);
     body->setAutoFillBackground(false);
     outer->addWidget(scroll);
@@ -1890,7 +1917,7 @@ QWidget *PrefsDialog::createCategory(int category)
         language = new QComboBox(this);
         language->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
         language->setMinimumContentsLength(10);
-        language->setMaximumWidth(318);
+        language->setMaximumWidth(320);
         language->setObjectName("preferencesLanguage");
         language->setAccessibleName(qtr("Interface language"));
         for (const auto &entry : language_map)
@@ -1923,7 +1950,7 @@ QWidget *PrefsDialog::createCategory(int category)
             auto *themeRow = new QHBoxLayout;
             themeRow->addWidget(new QLabel(qtr("Theme"), this), 1);
             auto *themeOptions = new QWidget(this);
-            themeOptions->setMaximumWidth(318);
+            themeOptions->setMaximumWidth(320);
             themeOptions->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             auto *themeChoices = new QHBoxLayout(themeOptions);
             themeChoices->setContentsMargins(0, 0, 0, 0);

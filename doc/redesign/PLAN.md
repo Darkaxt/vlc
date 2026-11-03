@@ -46,6 +46,15 @@ handover/picture checks, final release and independent delivery/binding/cleanup.
 No deferrals or second ACTIVE stage are introduced. Version1.1.5 is reserved for
 the final verified outcome; no M4 release has been published.
 
+Managed assembly177 (`8f96080bd4ad4446a82a9f9e7ccb1c70`) bound source
+`3fcb63600b0783666a500e850e5cd8ffbd7fea9a` and reached configuration. It was
+explicitly stopped before player compilation after source comparison identified
+remaining slider help glyphs, equalizer spacing and scrollbar field alignment.
+Its closed report records exit137, OOM0 and an empty Linux group. These source
+corrections and a native Windows region check are being integrated before
+resuming the same candidate/pipeline, preserving all retained dependency objects.
+No native acceptance or final release is claimed.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is

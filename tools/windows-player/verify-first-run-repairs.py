@@ -262,6 +262,40 @@ def verify_window_icon(case, snapshot):
     case.record['native_window_icon']=owned_native_read(case,lambda:window_icon(owned_main_window(case,snapshot),case.player.pid,
         repo/'modules/gui/qt/pixmaps/redesign/app.png',case.evidence/'native-window-icon.png'))
 
+
+def settings_window_region(case, dialog):
+    """Read Windows' actual clipping region, beyond the Qt paint capture."""
+    def read():
+        hwnd=W.HWND(int(dialog['native_id'],16))
+        pid=W.DWORD()
+        u.GetWindowThreadProcessId(hwnd,ctypes.byref(pid))
+        assert pid.value==case.player.pid
+        gdi=ctypes.WinDLL('gdi32',use_last_error=True)
+        gdi.CreateRectRgn.argtypes=[ctypes.c_int]*4
+        gdi.CreateRectRgn.restype=W.HANDLE
+        gdi.PtInRegion.argtypes=[W.HANDLE,ctypes.c_int,ctypes.c_int]
+        gdi.PtInRegion.restype=W.BOOL
+        gdi.GetRgnBox.argtypes=[W.HANDLE,ctypes.POINTER(W.RECT)]
+        gdi.DeleteObject.argtypes=[W.HANDLE]
+        u.GetWindowRgn.argtypes=[W.HWND,W.HANDLE]
+        region=gdi.CreateRectRgn(0,0,0,0)
+        assert region
+        try:
+            assert u.GetWindowRgn(hwnd,region)==3,'Settings native window has no rounded clipping region'
+            bounds=W.RECT()
+            assert gdi.GetRgnBox(region,ctypes.byref(bounds))==3
+            width,height=bounds.right,bounds.bottom
+            assert bounds.left==0 and bounds.top==0 and width>0 and height>0
+            corners=[bool(gdi.PtInRegion(region,x,y)) for x,y in
+                ((0,0),(width-1,0),(0,height-1),(width-1,height-1))]
+            assert not any(corners),('Native backdrop includes exterior corners',corners)
+            assert gdi.PtInRegion(region,width//2,height//2)
+            return {'native_id':dialog['native_id'],'region':'COMPLEXREGION',
+                'bounds':[width,height],'exterior_corners_clipped':True}
+        finally:gdi.DeleteObject(region)
+    return owned_native_read(case,read)
+
+
 def assert_window(case, snapshot):
     return owned_native_read(case,lambda:assert_window_on_desktop(case,snapshot))
 
@@ -935,6 +969,7 @@ def settings():
         result=case.inspect(label,'snapshot','--capture')
         dialog=widget(result,'redesignPreferences')
         assert abs(dialog['dpr']-float(case.record['scale']))<0.01
+        native_region=settings_window_region(case,dialog)
         file=next(row for row in result['widget_captures'] if row['widget']==dialog['node'])
         assert file['saved']
         with Image.open(case.evidence/file['file']) as original:
@@ -943,7 +978,7 @@ def settings():
             rgb=image.getpixel((round(image.width*0.7),round(30*dialog['dpr'])))[:3]
             expected=(7,7,7) if dark else (213,213,213)
             assert max(abs(a-b) for a,b in zip(rgb,expected))<=1,('header band',label,rgb)
-        case.record.setdefault('settings_views',[]).append({'label':label,'category':categories[index]['category'],'capture':file['file'],'dpr':dialog['dpr']})
+        case.record.setdefault('settings_views',[]).append({'label':label,'category':categories[index]['category'],'capture':file['file'],'dpr':dialog['dpr'],'native_region':native_region})
         return result
     def edit(case,label,target,value,scroll):
         case.reveal(label+'-reveal',target,scroll)
