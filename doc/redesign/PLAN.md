@@ -95,6 +95,17 @@ all409 non-Qt plugins and the completed core/SDK/MPV/codecs. This does not
 reopen configuration or authorize rebuilding unchanged dependencies. Complete
 native behavior and visual acceptance remains an internal M4 blocker.
 
+Continuation181 (`438579acc3884b0b86f6b86911572dec`) retained409 non-Qt
+plugins, then rejected two stale bitmap captures in the new vector disclosure
+buttons. Both now select the existing source-derived up/down SVGs before native
+rasterization. The failed player step took576.9s wall/33.4s CPU; the closed
+whole-group report records605.7s wall/35.3s CPU, no throttling/OOM and released
+private mounts. Read-only inspection directly observed cc1plus in disk sleep at
+`p9_client_rpc`, with `/mnt/d` on9p/DrvFS. This explains the dominant I/O wait;
+Qt Makefile changes also regenerated unchanged QML dependency/resource steps.
+Preserve those generated outputs and completed objects while resuming the same
+failed step. Native acceptance and the final normal release remain unverified.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is

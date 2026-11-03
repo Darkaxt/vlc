@@ -1725,10 +1725,11 @@ void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog:
         editor->hide();
         form->addWidget(row);
         form->addWidget(editor);
-        connect(button,&QPushButton::toggled,this,[this,editor,body,button,disclosure](bool open){
+        connect(button,&QPushButton::toggled,this,[this,editor,body,button](bool open){
             if(open && !editor->property("built").toBool()) { addEqualizer(body);editor->setProperty("built",true); }
             button->setText(open ? qtr("Close Equalizer") : qtr("Open Equalizer"));
-            button->setIcon(QIcon(open ? disclosure.transformed(QTransform().rotate(180)) : disclosure));
+            button->setIcon(settingsSvgIcon(open ? ":/redesign/icons/native-chevron-up-dark.svg"
+                                                : ":/redesign/icons/chevron-down.svg",palette().text().color()));
             editor->setVisible(open);
             updateResponsiveLayout();
         });
@@ -2033,9 +2034,10 @@ QWidget *PrefsDialog::createCategory(int category)
     form->addWidget(advancedBody);
     // Build once on demand and retain editors, so unsaved edits survive navigation.
     connect(advanced, &QPushButton::toggled, this,
-            [this, advanced, advancedBody, advancedForm, category, disclosure](bool open)
+            [this, advanced, advancedBody, advancedForm, category](bool open)
             {
-                advanced->setIcon(QIcon(open ? disclosure.transformed(QTransform().rotate(180)) : disclosure));
+                advanced->setIcon(settingsSvgIcon(open ? ":/redesign/icons/native-chevron-up-dark.svg"
+                                                      : ":/redesign/icons/chevron-down.svg",palette().text().color()));
                 if (open && !advancedBody->property("built").toBool())
                 {
                     addReferenceRows(advancedForm,category,true);
