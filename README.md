@@ -1,8 +1,54 @@
-# VLC media player
+# Modern VLC Fork
 
-## Darkaxt redesign fork
+A Windows desktop fork of VLC that brings Juxtopposed's redesign to a working
+Qt/QML player, while retaining VLC's playback capabilities and an optional MPV
+engine. This is an independent community fork, not an official VideoLAN release.
 
-This fork currently registers the [VLC desktop redesign specification](doc/redesign/SPECIFICATION.md), [stage plan](doc/redesign/PLAN.md), and [Figma and screenshot references](doc/redesign/resources/README.md). Product implementation has not started. The original upstream project information follows.
+## Download
+
+Get the Windows x64 portable package from the
+[latest release](https://github.com/Darkaxt/vlc/releases/latest).
+Extract the portable ZIP and run `vlc.exe`. Corresponding source, optional debug
+symbols and SHA-256 checksums are provided separately with each release.
+
+## The player
+
+- Redesigned player, media library, first-run guide and settings.
+- VLC and MPV playback engines, with in-session switching that preserves position
+  and play/pause state.
+- MPV playback with integrated libplacebo/libdovi processing for supported
+  Dolby Vision sources, converted to the verified Windows SDR output path.
+- Seek previews, subtitle timing/navigation and a subtitle timeline for supported
+  text tracks.
+- Native VLC specialist options remain available through Advanced Options and
+  the searchable All VLC options view.
+
+See the [specification](doc/redesign/SPECIFICATION.md),
+[stage plan and verification](doc/redesign/PLAN.md) and
+[reproduction instructions](doc/redesign/REPRODUCTION.md) for scope and evidence.
+
+## Design and project credits
+
+The interface is based on **Juxtopposed's**
+[I Redesigned VLC After 25 Years](https://www.youtube.com/watch?v=ERFeOgqk324)
+video and [interactive VLC Redesign Figma project](https://www.figma.com/community/file/1691465999134370980/vlc-redesign).
+The original design is credited under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+This implementation adapts it to working desktop controls, responsive layouts
+and native settings; it also adds the engine switcher. Design attribution does
+not replace the separate software, font and bundled dependency licenses.
+
+The player builds on [VideoLAN VLC](https://www.videolan.org/vlc/),
+[MPV](https://mpv.io/), [libplacebo](https://code.videolan.org/videolan/libplacebo)
+and [libdovi](https://github.com/quietvoid/dovi_tool/tree/main/dolby_vision).
+The Dolby Vision integration uses
+[Darkaxt/mpv-android-libdovi](https://github.com/Darkaxt/mpv-android-libdovi)
+as its source reference. The [resource index](doc/redesign/resources/README.md)
+and release manifests record design assets, licenses and pinned runtime provenance.
+
+## Upstream VLC
+
+The original upstream project information follows.
 
 **VLC** is a libre and open source **media player** and **multimedia engine**,
 focused on **playing everything**, and **running everywhere**.

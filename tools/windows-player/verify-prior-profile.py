@@ -225,7 +225,7 @@ def main():
                         reveal_general('reveal-general-advanced','preferencesAdvanced0')
                         inspect('expand-general-commands', 'widget_click', '--target', 'preferencesAdvanced0')
                         reveal_general('reveal-native-commands','preferencesAction-vlc-commands')
-                        inspect('open-native-commands', 'widget_click', '--target', 'preferencesAction-vlc-commands')
+                        inspect('open-native-commands', 'widget_click', '--target', 'preferencesAction-vlc-commands', '--capture')
                         inspect('reopen-existing-profile-setup', 'widget_click', '--menu-action', 'Welcome / Appearance Setup…')
                         snapshot = inspect('skip-existing-profile-setup', 'click', '--target', 'onboardingSkip')
                         assert not snapshot['customization']['onboardingVisible']

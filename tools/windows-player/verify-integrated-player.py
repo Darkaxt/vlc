@@ -264,15 +264,37 @@ def main():
         inspect('restore-silent-test-volume', 'click', '--target', 'volumeSlider', '--fraction-x', 0,
             '--await-core', 'audio_session_volume', '--await-value', 0, '--await-tolerance', 0.001)
 
+    def idle_commands(label):
+        snapshot, _ = inspect(label+'-settings','key','--key','0x50','--modifiers','0x4000000')
+        for target in ('preferencesAdvanced0','preferencesAction-vlc-commands'):
+            seen=set()
+            while True:
+                widgets={item['node']:item for item in snapshot['widgets']}
+                found=[item for item in widgets.values() if item['id']==target]
+                assert len(found)==1,(target,found)
+                if found[0]['center_visible']:break
+                area=next(item for item in widgets.values() if item['id']=='preferencesScroll0')
+                assert area['scroll_value'] not in seen,('Cannot reveal General control',target,area)
+                seen.add(area['scroll_value'])
+                def y(item):
+                    result=item['y']
+                    while item['parent']>=0:
+                        item=widgets[item['parent']];result+=item['y']
+                    return result
+                delta=120 if y(found[0])<y(area) else -120
+                snapshot, _ = inspect(label+'-'+target+'-scroll-'+str(len(seen)),
+                    'widget_scroll','--target','preferencesScroll0','--delta',str(delta))
+            snapshot, _ = inspect(label+'-'+target,'widget_click','--target',target)
+
     def idle_handovers():
         before, _ = inspect('before-idle-stop', 'snapshot')
         stopped, _ = inspect('stop-for-idle-switch', 'key', '--key', '0x53', '--text', 's',
             '--await-core', 'state', '--await-value', 0)
         records['idle_engine_handovers'] = []
         for engine in ('mpv', 'vlc') if args.engine == 'vlc' else ('vlc', 'mpv'):
-            # Stop returns to Home. Its native Playback menu deliberately owns
-            # idle engine selection; the in-player tools popup is not visible.
-            inspect('idle-home-menu-' + engine, 'click', '--target', 'menuBtn')
+            # Stop returns to Home. Native Playback commands remain reachable
+            # through General's themed advanced route while no player is shown.
+            idle_commands('idle-home-menu-'+engine)
             inspect('idle-playback-menu-' + engine, 'widget_click', '--menu-action', 'Playback')
             inspect('idle-engine-menu-' + engine, 'widget_click', '--menu-action', 'Playback engine')
             inspect('idle-engine-choice-' + engine, 'widget_click', '--menu-action', 'MPV' if engine == 'mpv' else 'VLC')
@@ -280,10 +302,12 @@ def main():
                 '--await-core', 'engine_switching', '--await-value', 'false')
             assert selected['core']['engine'] == engine and selected['core']['state'] == 0, selected['core']
             records['idle_engine_handovers'].append({'engine': engine, 'state': selected['core']['state']})
-        inspect('idle-home-play-menu', 'click', '--target', 'menuBtn')
+            inspect('idle-close-settings-'+engine,'widget_click','--target','preferencesClose')
+        idle_commands('idle-home-play-menu')
         inspect('idle-playback-play-menu', 'widget_click', '--menu-action', 'Playback')
         restarted, _ = inspect('restart-same-queue-item-after-idle-switch', 'widget_click', '--menu-action', 'Play',
             '--await-core', 'state', '--await-value', 2)
+        inspect('idle-close-play-settings','widget_click','--target','preferencesClose')
         assert unquote(restarted['core']['url']) == unquote(before['core']['url']), restarted['core']
         clock('advancing-after-idle-switch', 1)
         click_state('pause-after-idle-switch', 3)
@@ -510,8 +534,13 @@ def main():
             assert len(dialogs) == 1, dialogs
             assert dialogs[0]['font_family'].startswith('Inter'), dialogs[0]
             records['native_preferences'] = dialogs[0]
-            inspect('cancel-preferences', 'widget_click', '--widget-text', translate('Cancel'))
-            records['localized_cancel_text'] = translate('Cancel')
+            # The reference keeps Save/Cancel hidden until an edit is staged.
+            # Exercise a real draft edit before testing its native cancellation.
+            edited, _ = inspect('stage-preference-before-cancel','widget_click','--target','value-interact')
+            cancel=next(widget for widget in edited['widgets'] if widget['id']=='preferencesCancel')
+            assert cancel['text'].replace('&','')==translate('Cancel'),cancel
+            inspect('cancel-preferences', 'widget_click', '--target', 'preferencesCancel')
+            records['localized_cancel_text'] = cancel['text']
             if args.with_media_library:
                 inspect('open-compact-library', 'click', '--target', 'mediaBrowserButton')
                 compact, compact_output = inspect('compact-library', 'snapshot',

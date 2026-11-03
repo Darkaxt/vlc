@@ -740,3 +740,17 @@ the actual before/after names and process-exit evidence. Actual offscreen
 presentation retains its stricter continuous Default/input-desktop and fresh
 placement-proof requirements. This verifier distinction does not authorize
 desktop controls, forced focus, OS transparency changes or repeated unlock prompts.
+
+Continuation188 verified the actual manual-setup route through General,
+Advanced Options, VLC commands, Welcome / Appearance Setup. Opening it cancels
+the settings draft before requesting the existing onboarding owner. Idle engine
+selection remains in the native Playback submenu of that same themed route.
+The complete affected native pass on d214 includes both engines' saved-profile
+restarts, MPV history/privacy/volume and paused/playing/idle handovers. Playing
+position bounds use observed application-clock elapsed time and playback rate;
+paused handovers still require preserved position within decoder precision.
+Settings intentionally hides Save/Cancel until an edit is staged. The integrated
+verifier stages the captured native `value-interact` checkbox before testing
+Cancel; an untouched dialog closes through `preferencesClose`. Original failed
+verifier receipts are preserved, not relabeled as passed. These native and raw
+paint checks still do not establish the DWM-composed Settings backdrop.

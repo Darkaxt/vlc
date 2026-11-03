@@ -7,7 +7,7 @@ evidence, not acceptance of the newly identified settings/menu defects.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Guarded optimized assembly187; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review; staged edits/rollback, VLC/MPV restart persistence, missing-font preservation and native history clearing; menu/onboarding, playback/subtitles and actual4K previews on70dd. Deferred Recent model reaches Ready; the no-library player and paused handovers now load. Native rounded clipping and95% surface alpha verified separately. | R83/R84: restore the existing manual setup action through themed advanced commands; complete the affected menu/handover/prior-profile acceptance and actual composed backdrop/picture verification; then optimized normal package, final release, independent delivery and retained/weekly binding. These remain advancement blockers. | None. |
+| M4 Settings and menu parity | ACTIVE | Optimized assembly188; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review, staged edits/rollback, restart persistence, missing-font/native history, onboarding, playback/subtitles and actual4K previews on70dd under reviewed d214 applicability. Fresh d214 menu/Recent, manual setup via themed advanced commands, paused/playing/idle handovers and both prior profiles pass, including MPV history/privacy/volume. Native rounded clipping and95% surface alpha verified separately. README credits added; original upstream text preserved. | R83/R84: actual composed Settings backdrop and final normal-package picture acceptance; optimized normal four-asset release, independent delivery and retained/weekly binding/cleanup. These remain advancement blockers. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Finish the cohesive settings/menu implementation before compiling. Reuse retained
@@ -41,9 +41,9 @@ engine boundary. Shared speed/delay defaults also initialize MPV.
 C/C++ history/parser portability diagnostics and the catalog declaration/unique
 identities pass. All-category native layout/scroll/theme/DPI and settings
 behavior/rollback/restart acceptance subsequently passed on70dd, with original
-producer identities retained. Remaining blockers are the corrected Recent-model
-dependency and affected handover/profile checks, actual composed backdrop and
-normal-package picture checks, final release and independent delivery/binding/cleanup.
+producer identities retained. Fresh affected menu/handover/profile checks passed
+on d214. Remaining blockers are actual composed backdrop and normal-package
+picture checks, final release and independent delivery/binding/cleanup.
 No deferrals or second ACTIVE stage are introduced. Version1.1.5 is reserved for
 the final verified outcome; no M4 release has been published.
 
@@ -58,6 +58,24 @@ exact paused-position criterion. Both prior-profile cases also exposed the
 existing manual setup action missing from the redesigned menu route. Restore
 it inside General's themed advanced commands, then recheck these affected paths;
 the original passed settings matrix remains bound to70dd and unchanged rendering.
+
+Continuation188 (`bff94711ca7c4139acdc7790b59df726`) closed0 from
+`d214cc6f2c95f0616500d226b8e2da4fcd7eb280`, with409 non-Qt plugins retained,
+empty Linux group, released mounts and no OOM/max events. The complete affected
+native outcome passed: twelve-row menu/Recent, direct Settings, manual setup in
+both engines, paused/playing and idle handovers, saved profiles, MPV history,
+privacy and volume. The integrated verifier was corrected to follow the themed
+advanced route and stage the actual native `interact` checkbox before testing
+the reference's conditionally visible Save/Cancel footer. Earlier terminal
+verifier failures remain false records; final owned session67713 exited0 with
+clean player shutdown. Fresh native menu/Playback/advanced-popup captures were
+manually inspected. Original settings proof retains its70dd producer identity.
+
+README now credits/links the YouTube video, interactive Figma project and
+upstream foundations, preserving the upstream text. Optional comparison images
+are omitted because the available widget captures cannot prove the composed
+backdrop. Normal packaging and actual composed-picture verification remain
+required; no1.1.5 release has been published and M4 remains ACTIVE.
 
 Managed assembly177 (`8f96080bd4ad4446a82a9f9e7ccb1c70`) bound source
 `3fcb63600b0783666a500e850e5cd8ffbd7fea9a` and reached configuration. It was
