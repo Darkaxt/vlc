@@ -39,6 +39,13 @@ verify delivery and retained/weekly rebinding before obsolete-output retirement.
 No Rust work, additional upstream integration, SDK recreation or release-folder
 reorganization is authorized by this scope.
 
+README delivery addition, authorized3 November2026: after verification, update
+the project README with clear attribution and direct links to the original
+YouTube redesign video, the Figma community project and the relevant upstream
+foundations. A side-by-side reference/current-player screenshot is permitted
+when it illustrates the verified result; exclude private media and unfinished
+captures. This documentation belongs to M4's final delivery, without a new stage.
+
 **M3 delivery reconciliation: COMPLETE.** Normal release
 [1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4), app source
 `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`, satisfies the maintenance R71/R72

@@ -55,6 +55,20 @@ corrections and a native Windows region check are being integrated before
 resuming the same candidate/pipeline, preserving all retained dependency objects.
 No native acceptance or final release is claimed.
 
+Final M4 delivery also includes the user's3 November README request: credit/link
+the original YouTube redesign video, Figma project and upstream foundations.
+Prepare a reference/current-player screenshot comparison only from the finished
+verified UI, excluding private media. Complete this before the final release.
+
+Continuation178 (`3158d645aea64ff6b9f20ce752c08991`) completed configuration
+successfully, then failed compiling the new primary subtitle alignment guard:
+absolute placement belongs to `subpicture_region_t`, not `subpicture_t`. The
+guard now reads the same region owner as existing placement/overlap code, so
+authored absolute regions remain unaffected. Its closed report records exit1,
+OOM0, an empty group and released private mounts. Resume the original candidate
+at the failed player step; do not regenerate the passed configuration or discard
+completed objects. Native acceptance remains pending.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is

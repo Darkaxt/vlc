@@ -1036,7 +1036,7 @@ static struct subpicture_region_rendered *SpuRenderRegion(spu_t *spu,
     if (channel_order == VLC_VOUT_ORDER_SECONDARY && sys->secondary_alignment >= 0)
         i_align = sys->secondary_alignment;
     else if (channel_order == VLC_VOUT_ORDER_PRIMARY && sys->primary_alignment >= 0 &&
-             subpic->b_subtitle && !subpic->b_absolute)
+             subpic->b_subtitle && !region->b_absolute)
         i_align = sys->primary_alignment;
     else
         i_align = region->i_align;
