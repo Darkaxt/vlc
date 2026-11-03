@@ -943,10 +943,13 @@ def settings():
             return result
         rows=[row for row in widgets.values() if belongs(row)]
         # Lazy hidden sections are not substitutes for the category under test.
-        labels=[text(row.get('text','')) for row in sorted(rows,key=lambda row:(y(row),row['x']))
+        label_rows=[row for row in sorted(rows,key=lambda row:(y(row),row['x']))
                 if row['type']=='QLabel' and not row['id'].startswith(('description-','equalizerValue'))
                 and (not row['id'].startswith('equalizerFrequency') or row['id']=='equalizerFrequencyPreamp')]
+        labels=[text(row.get('text','')) for row in label_rows]
         for frame in frames[:2 if expanded else 1]:
+            information={text(row['text']):row['information'] for row in frame['labels']}
+            if index==2:information['last.fm password']=information.get('last.fm username',True)
             expected=[row['text'] for row in frame['labels']]
             if not expanded and categories[index]['category']=='Performance':expected=expected[:expected.index('Developer')]
             expected=[text(label) for label in expected if label not in ('Search','12.0 dB')]
@@ -959,7 +962,15 @@ def settings():
             position=0
             for label in expected:
                 assert label in labels[position:],(categories[index]['category'],frame['source_frame'],label,labels[position:])
-                position=labels.index(label,position)+1
+                position=labels.index(label,position)
+                caption=label_rows[position]
+                owner=caption
+                while owner['parent']>=0 and not owner['id'].startswith('preference-'):
+                    owner=widgets[owner['parent']]
+                if owner['id'].startswith('preference-'):
+                    observed=any(row['id'].startswith('help-') and row['parent']==caption['parent'] for row in rows)
+                    assert observed==information[label],('Reference information glyph differs',categories[index]['category'],label,observed,information[label])
+                position+=1
         ids=[row['id'] for row in snapshot['widgets'] if row['id'].startswith(('preference-','value-'))]
         assert len(ids)==len(set(ids)),('duplicate settings view identities',ids)
         if index==2:
@@ -987,7 +998,8 @@ def settings():
         case.inspect(label+'-type','widget_key','--target',target,'--key','0','--text',str(value))
         return case.inspect(label+'-commit','widget_key','--target',target,'--key','0x1000001')
     def behaviour(case):
-        case.inspect('behaviour-open','key','--key','0x50','--modifiers','0x4000000')
+        opened=case.inspect('behaviour-open','key','--key','0x50','--modifiers','0x4000000')
+        original_config=opened['settings_config']
         first=select(case,2,'behaviour-privacy')
         assert widget(first,'value-save-playback-position')['checked']
         case.reveal('scrobbler-reveal','value-extraintf-audioscrobbler','preferencesScroll2')
@@ -1038,7 +1050,24 @@ def settings():
         assert widget(scoped,'value-history-exclude')['text']=='private-*;*.secret'
         select(case,0,'correct-extra-general')
         edit(case,'valid-extra','value-extra-options','--rate=1.5','preferencesScroll0')
-        case.native('save-settings-draft','preferencesSave')
+        config_file=portable/'vlcrc'
+        original_file=hashlib.sha256(config_file.read_bytes()).hexdigest()
+        k.CreateFileW.argtypes=[W.LPCWSTR,W.DWORD,W.DWORD,W.LPVOID,W.DWORD,W.DWORD,W.HANDLE]
+        k.CreateFileW.restype=W.HANDLE
+        held=k.CreateFileW(str(config_file),0x80000000,1,None,3,0x80,None)
+        assert held and held!=ctypes.c_void_p(-1).value,ctypes.WinError(ctypes.get_last_error())
+        try:
+            failed=case.native('locked-save-rejected','preferencesSave')
+            assert any('staged edits remain' in row.get('text','') for row in failed['widgets'])
+            assert failed['settings_config']==original_config,('Native configuration was not rolled back',failed['settings_config'],original_config)
+            assert hashlib.sha256(config_file.read_bytes()).hexdigest()==original_file
+        finally:assert k.CloseHandle(held)
+        case.inspect('locked-save-dismiss','widget_click','--widget-text','OK')
+        retained=select(case,2,'locked-save-retains-privacy-draft')
+        assert widget(retained,'value-history-exclude')['text']=='private-*;*.secret'
+        assert not widget(retained,'value-save-playback-position')['checked']
+        saved=case.native('save-settings-draft','preferencesSave')
+        assert saved['settings_config']=={'save-playback-position':0,'short-jump-size':7,'playlist-tree':1}
         case.click('tree-queue-open','playqueueToggle')
         queue=case.inspect('tree-queue-ready','snapshot','--await-target','playlistpopup','--await-property','width',
             '--await-value','300','--await-comparison','at_least','--capture')
@@ -1070,7 +1099,8 @@ def settings():
         case.inspect('plugin-rescan-dismiss','widget_click','--widget-text','OK')
         case.native('behaviour-close','preferencesClose')
         case.record['settings_behaviour']={'shared_native_and_reference_draft':True,'cancel':True,
-            'invalid_save_preserves_draft':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True}
+            'invalid_save_preserves_draft':True,'locked_save_rolls_back_native_memory_and_file':True,
+            'failed_save_preserves_draft_for_retry':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True}
     for scale in ('1','1.5','2'):
         case=Case('settings-'+scale.replace('.','-'),scale=scale,media=fixtures/'control.mkv')
         try:
@@ -1137,6 +1167,34 @@ def settings():
                     restarted.native('restart-close-settings','preferencesClose')
                     restarted.close(True)
                 finally:restarted.close()
+
+    # A displayed font fallback must not replace the user's unavailable font
+    # when the new menu saves an unrelated native setting.
+    seed=root/'settings-missing-font-seed'
+    seed.mkdir()
+    families={'freetype-font':'M4 Missing Family 20261103',
+              'freetype-monofont':'M4 Missing Mono Family 20261103'}
+    (seed/'vlcrc').write_text('metadata-network-access=0\n'+
+        ''.join(key+'='+value+'\n' for key,value in families.items()),encoding='utf-8')
+    legacy=Case('settings-missing-font-preservation',media=fixtures/'control.mkv',reused_profile=seed)
+    try:
+        legacy.inspect('legacy-font-open','key','--key','0x50','--modifiers','0x4000000')
+        select(legacy,7,'legacy-font-subtitles')
+        legacy.reveal('legacy-font-advanced-reveal','preferencesAdvanced7','preferencesScroll7')
+        legacy.native('legacy-font-advanced','preferencesAdvanced7')
+        select(legacy,2,'legacy-font-unrelated-privacy')
+        legacy.reveal('legacy-font-position-reveal','value-save-playback-position','preferencesScroll2')
+        legacy.native('legacy-font-unrelated-edit','value-save-playback-position')
+        legacy.native('legacy-font-save','preferencesSave')
+        legacy.close(True)
+        saved=(legacy.path/'profile/vlcrc').read_text(encoding='utf-8')
+        for key,value in families.items():
+            found=re.search(r'^'+re.escape(key)+r'=(.*)$',saved,re.M)
+            assert found and found.group(1).strip()==value,('Missing font was replaced',key,found.group(1) if found else None)
+        legacy.record['missing_native_fonts_preserved']=families
+        save()
+    finally:legacy.close()
+
 
 def seek_policy():
     """Diagnostic comparison of VLC's public absolute-time seek and cue position seek."""

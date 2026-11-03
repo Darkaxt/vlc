@@ -69,6 +69,19 @@ OOM0, an empty group and released private mounts. Resume the original candidate
 at the failed player step; do not regenerate the passed configuration or discard
 completed objects. Native acceptance remains pending.
 
+Continuation179 (`1b6d635dea154e08b34deb3a83579360`) linked core/libVLC and
+executables and completed the full frontend object/QML error census. Seven
+preferences errors shared one cause: QStringBuilder expressions were not
+materialized as QString at QVariant/conditional boundaries. The cohesive source
+correction uses concrete QString values. Original-frame comparison additionally
+corrected per-row information glyphs, the 320x36 rounded accent housing and
+per-view custom-color identities; native acceptance now checks glyph presence,
+locked-file rollback/retry and missing-font preservation. Catalog C++17 and
+source syntax diagnostics pass; they are not native acceptance. Report179 is
+closed with exit1, OOM0, empty group and released cache/private mounts. Preserve
+all successful objects and resume only the failed player step after binding the
+correction. Configuration remains passed; no SDK/dependency rebuild is required.
+
 **M3 Weekly upstream maintenance (2 November 2026): COMPLETE.** Remotes/default
 branch and exact revisions were refreshed: local/remote master was
 `b155f371592ca830678624b457e79c134b671a5a`, upstream master is

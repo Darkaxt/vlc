@@ -621,7 +621,7 @@ void PrefsDialog::refreshAppearance()
     for(auto *button:findChildren<QToolButton *>()){
         if(!button->property("redesignAccentSwatch").toBool())continue;
         button->setStyleSheet(QString("QToolButton{background:transparent;padding:0;border:0;}"
-            "QToolButton:checked{background:%1;}QToolButton:focus{border:1px solid %2;}")
+            "QToolButton:checked{background:%1;border-radius:4px;}QToolButton:focus{border:1px solid %2;}")
             .arg(accent.darker(400).name(),accent.name()));
     }
     for(auto *button:findChildren<QPushButton *>()){
@@ -639,6 +639,7 @@ void PrefsDialog::applySettingsStyle()
         "PrefsDialog#redesignPreferences{background:transparent;}"
         "PrefsDialog#redesignPreferences QLineEdit{background:%1;border:2px solid %2;padding:6px 12px;}"
         "PrefsDialog#redesignPreferences QLineEdit#preferencesSearch{background:%2;border:0;}"
+        "PrefsDialog#redesignPreferences QWidget[redesignAccentPalette=\"true\"]{background:%1;border-radius:6px;}"
         "PrefsDialog#redesignPreferences QComboBox{border:2px solid %1;padding-top:6px;padding-bottom:6px;}"
         "PrefsDialog#redesignPreferences QAbstractSpinBox QLineEdit,PrefsDialog#redesignPreferences QComboBox QLineEdit{border:0;background:transparent;padding:0;min-height:0;}"
         "PrefsDialog#redesignPreferences QSlider::groove:horizontal{height:14px;background:%1;border-radius:4px;}"
@@ -731,10 +732,10 @@ void PrefsDialog::updateResponsiveLayout()
         QWidget *editor = item->widget();
         auto *help = grid->itemAtPosition(stacked ? 2 : 1, 0);
         QWidget *description = help ? help->widget() : nullptr;
-        const bool accent = row->objectName() == "preference-qt-accent-color";
+        const bool accent = row->property("preferenceKey").toString() == "qt-accent-color";
         if (accent)
         {
-            auto *custom = row->findChild<QLineEdit *>("value-qt-accent-color");
+            auto *custom = row->findChild<QLineEdit *>(row->property("valueId").toString());
             grid->removeWidget(custom);
             grid->addWidget(custom, compact ? 3 : 2, 0, 1, 12);
         }
@@ -764,7 +765,9 @@ void PrefsDialog::updateResponsiveLayout()
         {
             const QString suffix=i<0 ? QStringLiteral("Preamp") : QString::number(i);
             auto *label=bands->findChild<QLabel *>("equalizerFrequency"+suffix);
-            auto *slider=bands->findChild<QSlider *>(i<0 ? "preferencesEqualizerPreamp" : "preferencesEqualizerBand"+suffix);
+            const QString sliderId=i<0 ? QStringLiteral("preferencesEqualizerPreamp")
+                : QStringLiteral("preferencesEqualizerBand%1").arg(suffix);
+            auto *slider=bands->findChild<QSlider *>(sliderId);
             auto *value=bands->findChild<QDoubleSpinBox *>("equalizerValue"+suffix);
             grid->removeWidget(label);grid->removeWidget(slider);grid->removeWidget(value);
             const int column=(i+1)%columns,base=6*((i+1)/columns);
@@ -931,7 +934,9 @@ void PrefsDialog::addEqualizer(QVBoxLayout *form)
     {
         const QString suffix=i<0 ? QStringLiteral("Preamp") : QString::number(i);
         auto *slider=new SettingsSlider(bandsWidget,Qt::Vertical);
-        slider->setObjectName(i<0 ? "preferencesEqualizerPreamp" : "preferencesEqualizerBand"+suffix);
+        const QString sliderId=i<0 ? QStringLiteral("preferencesEqualizerPreamp")
+            : QStringLiteral("preferencesEqualizerBand%1").arg(suffix);
+        slider->setObjectName(sliderId);
         slider->setAccessibleName(i<0 ? qtr("Equalizer preamp") : qtr("Equalizer %1").arg(frequencies[i]));
         slider->setRange(-200,200);
         slider->setFixedHeight(320);
@@ -988,8 +993,8 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     auto *row = new QWidget(this);
     row->setObjectName("preference-" + viewKey);
     row->setProperty("preferenceKey",key);
-    row->setProperty("valueId","value-"+viewKey);
-    row->setProperty("editorId","editor-"+viewKey);
+    row->setProperty("valueId",QStringLiteral("value-%1").arg(viewKey));
+    row->setProperty("editorId",QStringLiteral("editor-%1").arg(viewKey));
     row->setFocusPolicy(Qt::StrongFocus);
     auto *grid = new QGridLayout(row);
     grid->setContentsMargins(0, 0, 0, 0);
@@ -1008,14 +1013,17 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         auto *label = new QLabel(qtr("Accent color"), row);
         grid->addWidget(label, 0, 0);
         auto *value = new QLineEdit(row);
-        value->setObjectName("value-qt-accent-color");
+        value->setObjectName("value-" + viewKey);
         value->setAccessibleName(qtr("Custom accent color or system / default"));
         value->hide();
         grid->addWidget(value, 2, 0, 1, 12);
         control = new StringConfigControl(o.config, label, value);
         auto *palette = new QWidget(row);
+        palette->setProperty("redesignAccentPalette",true);
+        palette->setFixedSize(320,36);
+        // Original: 2px exterior padding, nine equal cells and 4px gutters.
         auto *swatches = new QHBoxLayout(palette);
-        swatches->setContentsMargins(0, 0, 0, 0);
+        swatches->setContentsMargins(2, 2, 2, 2);
         swatches->setSpacing(4);
         auto *selection = new QButtonGroup(row);
         for (const char *color : {"#d37918", "#a4381f", "#8d7c16", "#167329", "#0e7d95", "#1b4e9d",
@@ -1023,7 +1031,9 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         {
             auto *button = new QToolButton(palette);
             button->setProperty("redesignAccentSwatch",true);
-            button->setFixedSize(32, 34);
+            button->setFixedHeight(32);
+            button->setMinimumWidth(0);
+            button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
             button->setCheckable(true);
             button->setAccessibleName(qtr("Accent color %1").arg(color));
             QPixmap square(20, 20);
@@ -1032,14 +1042,14 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
             button->setIconSize(QSize(20, 20));
             button->setStyleSheet(
                 QString("QToolButton{background:transparent;padding:0;border:0;}"
-                        "QToolButton:checked{background:%1;}"
+                        "QToolButton:checked{background:%1;border-radius:4px;}"
                         "QToolButton:focus{border:1px solid %2;}")
                     .arg(accent.darker(400).name(), accent.name()));
             selection->addButton(button);
             button->setChecked(QColor(color) == accent);
             connect(button, &QToolButton::clicked, row,
                     [value, color]() { value->setText(QString::fromLatin1(color)); });
-            swatches->addWidget(button);
+            swatches->addWidget(button,1);
         }
         grid->addWidget(palette, 0, 10, Qt::AlignRight);
     }
@@ -1173,11 +1183,12 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     auto *help = new QToolButton(row);
     help->setIcon(QIcon(sourceMask(":/redesign/icons/settings-info.svg", palette().text().color(),
                                    devicePixelRatioF())));
-    help->setIconSize(QSize(16, 16));
+    help->setIconSize(QSize(18, 18));
     help->setStyleSheet("padding:0;background:transparent");
     help->setObjectName("help-" + viewKey);
     help->setAccessibleName(qtr("Help for %1").arg(optionLabel(o.config)));
-    help->setFixedSize(16, 16);
+    help->setFixedSize(18, 18);
+    if(presentation && !presentation->information)help->hide();
     if (auto *label = qobject_cast<QLabel *>(
             grid->itemAtPosition(0, 0) ? grid->itemAtPosition(0, 0)->widget() : nullptr))
     {
@@ -1186,7 +1197,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         auto *labelGroup = new QWidget(row);
         auto *labelLayout = new QHBoxLayout(labelGroup);
         labelLayout->setContentsMargins(0, 0, 0, 0);
-        labelLayout->setSpacing(8);
+        labelLayout->setSpacing(10);
         auto *sourceLabel = new SettingsLabel(label->text(), row);
         sourceLabel->setToolTip(label->toolTip());
         sourceLabel->setBuddy(label->buddy());
@@ -1216,6 +1227,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
                 "restarting VLC.")
                 .arg(key, o.module);
     text += playbackScope(key);
+    row->setAccessibleDescription(text);
     auto *description = new QLabel(text, row);
     description->setObjectName("description-" + viewKey);
     description->setTextFormat(Qt::PlainText);
@@ -1224,12 +1236,12 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     description->hide();
     grid->addWidget(description, 1, 0, 1, 12);
     connect(help, &QToolButton::clicked, description,
-            [description, row, key]()
+            [description, row, key, viewKey]()
             {
                 const bool visible = !description->isVisible();
                 description->setVisible(visible);
                 if (key == "qt-accent-color")
-                    row->findChild<QLineEdit *>("value-qt-accent-color")->setVisible(visible);
+                    row->findChild<QLineEdit *>("value-"+viewKey)->setVisible(visible);
             });
     parent->addWidget(row);
     updateReferenceDependencies();
@@ -1271,8 +1283,8 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     auto *row = new QWidget(this);
     row->setObjectName("preference-" + viewKey);
     row->setProperty("preferenceKey",key);
-    row->setProperty("valueId","value-"+viewKey);
-    row->setProperty("editorId","editor-"+viewKey);
+    row->setProperty("valueId",QStringLiteral("value-%1").arg(viewKey));
+    row->setProperty("editorId",QStringLiteral("editor-%1").arg(viewKey));
     row->setProperty("referenceView", QString::fromLatin1(entry.key));
     auto *grid = new QGridLayout(row);
     grid->setContentsMargins(0, 0, 0, 0);
@@ -1284,14 +1296,14 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     auto *labelGroup = new QWidget(row);
     auto *labels = new QHBoxLayout(labelGroup);
     labels->setContentsMargins(0,0,0,0);
-    labels->setSpacing(8);
+    labels->setSpacing(10);
     auto *label = new SettingsLabel(qtr(entry.label), labelGroup);
     labels->addWidget(label);
     auto *help = new QToolButton(labelGroup);
     help->setObjectName("help-" + viewKey);
-    help->setFixedSize(16,16);
+    help->setFixedSize(18,18);
     help->setIcon(QIcon(sourceMask(":/redesign/icons/settings-info.svg", palette().text().color(), devicePixelRatioF())));
-    help->setIconSize(QSize(16,16));
+    help->setIconSize(QSize(18,18));
     help->setStyleSheet("padding:0;background:transparent");
     help->setAccessibleName(qtr("Help for %1").arg(label->text()));
     labels->addWidget(help);
@@ -1303,7 +1315,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     description->setText(found == options.cend() ? qtr("This capability is not available in this build.")
         : qfut(found->config->psz_longtext ? found->config->psz_longtext : found->config->psz_text));
     description->setText(description->text()+playbackScope(key));
-    if(entry.editor==Editor::Slider)
+    if(!entry.information)
     {
         help->hide();
         label->setToolTip(description->text());
@@ -1613,7 +1625,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
             {
                 const int width=draftValue(key).toInt(),height=draftValue("snapshot-height").toInt();
                 if ((width==0 && height==0) || (width>0 && height==width*9/16))return width;
-                return QString::number(width)+QStringLiteral(" × ")+QString::number(height);
+                return QStringLiteral("%1 × %2").arg(width).arg(height);
             }
             return draftValue(key);
         };
@@ -1669,12 +1681,50 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
 }
 void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog::Row &entry)
 {
+    const QString action = QString::fromLatin1(entry.key).mid(1);
     auto *row = new QWidget(this);
+    row->setObjectName("preference-action-" + action);
     auto *layout = new QHBoxLayout(row);
     layout->setContentsMargins(0,0,0,0);
-    if(*entry.label)layout->addWidget(new SettingsLabel(qtr(entry.label),row),1);
+    QLabel *description=nullptr;
+    if(*entry.label)
+    {
+        auto *group=new QWidget(row);
+        auto *labels=new QHBoxLayout(group);
+        labels->setContentsMargins(0,0,0,0);
+        labels->setSpacing(10);
+        auto *label=new SettingsLabel(qtr(entry.label),group);
+        labels->addWidget(label);
+        if(entry.information)
+        {
+            QString text;
+            if(action=="clear-history")text=qtr("Clear the playback history for this profile after confirmation. Media files remain on disk.");
+            else if(action=="config-folder")text=qtr("Open the folder containing VLC's configuration files.");
+            else if(action=="reset-preferences")text=qtr("Restore VLC preference defaults after confirmation.");
+            if(!text.isEmpty())
+            {
+                auto *help=new QToolButton(group);
+                help->setObjectName("help-action-"+action);
+                help->setAccessibleName(qtr("Help for %1").arg(label->text()));
+                help->setIcon(QIcon(sourceMask(":/redesign/icons/settings-info.svg",palette().text().color(),devicePixelRatioF())));
+                help->setIconSize(QSize(18,18));
+                help->setFixedSize(18,18);
+                help->setStyleSheet("padding:0;background:transparent");
+                labels->addWidget(help);
+                description=new QLabel(text,this);
+                description->setObjectName("description-action-"+action);
+                description->setWordWrap(true);
+                description->setTextFormat(Qt::PlainText);
+                description->hide();
+                label->setToolTip(text);
+                label->setAccessibleDescription(text);
+                connect(help,&QToolButton::clicked,description,[description]{description->setVisible(!description->isVisible());});
+            }
+        }
+        labels->addStretch();
+        layout->addWidget(group,1);
+    }
     auto *button = new QPushButton(qtr(entry.choices),row);
-    const QString action = QString::fromLatin1(entry.key).mid(1);
     button->setObjectName("preferencesAction-" + action);
     button->setFixedHeight(34);
     button->setMinimumWidth(100);
@@ -1778,6 +1828,7 @@ void PrefsDialog::addReferenceAction(QVBoxLayout *form,const PreferencesCatalog:
     });
     if (action == "clear-history") button->setEnabled(p_intf->p_mi && p_intf->p_mi->getMediaLibrary());
     form->addWidget(row);
+    if(description)form->addWidget(description);
 }
 void PrefsDialog::showVlcCommands(QWidget *anchor)
 {

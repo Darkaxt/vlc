@@ -14,84 +14,96 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Interface language",
               "position": {
                 "x": 240,
                 "y": 123.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Theme",
               "position": {
                 "x": 240,
                 "y": 169.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Accent color",
               "position": {
                 "x": 240,
                 "y": 215.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Startup",
               "position": {
                 "x": 240,
                 "y": 277
-              }
+              },
+              "information": false
             },
             {
               "text": "Show confirmation and error dialogs",
               "position": {
                 "x": 240,
                 "y": 318.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Check for updates automatically",
               "position": {
                 "x": 240,
                 "y": 360.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Diagnostics",
               "position": {
                 "x": 240,
                 "y": 420
-              }
+              },
+              "information": false
             },
             {
               "text": "Developer mode",
               "position": {
                 "x": 240,
                 "y": 461.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Save a log",
               "position": {
                 "x": 240,
                 "y": 503.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Log file",
               "position": {
                 "x": 240,
                 "y": 547.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Log details",
               "position": {
                 "x": 240,
                 "y": 593.5
-              }
+              },
+              "information": true
             }
           ]
         },
@@ -103,161 +115,184 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Interface language",
               "position": {
                 "x": 240,
                 "y": 123.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Theme",
               "position": {
                 "x": 240,
                 "y": 169.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Accent color",
               "position": {
                 "x": 240,
                 "y": 215.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Startup",
               "position": {
                 "x": 240,
                 "y": 277
-              }
+              },
+              "information": false
             },
             {
               "text": "Show confirmation and error dialogs",
               "position": {
                 "x": 240,
                 "y": 318.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Check for updates automatically",
               "position": {
                 "x": 240,
                 "y": 360.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Diagnostics",
               "position": {
                 "x": 240,
                 "y": 420
-              }
+              },
+              "information": false
             },
             {
               "text": "Developer mode",
               "position": {
                 "x": 240,
                 "y": 461.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Save a log",
               "position": {
                 "x": 240,
                 "y": 503.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Log file",
               "position": {
                 "x": 240,
                 "y": 547.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Log details",
               "position": {
                 "x": 240,
                 "y": 593.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show minor warnings",
               "position": {
                 "x": 240,
                 "y": 715.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Additional command line options",
               "position": {
                 "x": 240,
                 "y": 759.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Log format",
               "position": {
                 "x": 240,
                 "y": 805.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Collect playback statistics",
               "position": {
                 "x": 240,
                 "y": 849.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Open configurations folder",
               "position": {
                 "x": 240,
                 "y": 891.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Reset all settings",
               "position": {
                 "x": 240,
                 "y": 933.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Developer Options",
               "position": {
                 "x": 240,
                 "y": 993
-              }
+              },
+              "information": false
             },
             {
               "text": "Write to the system log",
               "position": {
                 "x": 240,
                 "y": 1034.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Include debug messages in the system log",
               "position": {
                 "x": 240,
                 "y": 1076.5
-              }
+              },
+              "information": true
             },
             {
               "text": "System log identity",
               "position": {
                 "x": 240,
                 "y": 1118.5
-              }
+              },
+              "information": true
             },
             {
               "text": "System log facility",
               "position": {
                 "x": 240,
                 "y": 1162.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -274,161 +309,184 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Use a custom skin",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Skin file",
               "position": {
                 "x": 240,
                 "y": 165.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Window",
               "position": {
                 "x": 240,
                 "y": 227
-              }
+              },
+              "information": false
             },
             {
               "text": "Play video inside main window",
               "position": {
                 "x": 240,
                 "y": 268.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Resize window to fit video",
               "position": {
                 "x": 240,
                 "y": 312.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Remember window size and position",
               "position": {
                 "x": 240,
                 "y": 356.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Keep window above other windows",
               "position": {
                 "x": 240,
                 "y": 398.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show window decorations",
               "position": {
                 "x": 240,
                 "y": 440.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show the file name in the title bar",
               "position": {
                 "x": 240,
                 "y": 482.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Open fullscreen on",
               "position": {
                 "x": 240,
                 "y": 526.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Playback Controls",
               "position": {
                 "x": 240,
                 "y": 588
-              }
+              },
+              "information": false
             },
             {
               "text": "Start in compact mode",
               "position": {
                 "x": 240,
                 "y": 629.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Auto-hide the controls",
               "position": {
                 "x": 240,
                 "y": 673.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Hide after",
               "position": {
                 "x": 240,
                 "y": 725
-              }
+              },
+              "information": false
             },
             {
               "text": "Show controls in fullscreen",
               "position": {
                 "x": 240,
                 "y": 774.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Notifications and System Tray",
               "position": {
                 "x": 240,
                 "y": 834
-              }
+              },
+              "information": false
             },
             {
               "text": "Show a system tray icon",
               "position": {
                 "x": 240,
                 "y": 875.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Start minimized to the tray",
               "position": {
                 "x": 240,
                 "y": 917.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show a popup when the track changew",
               "position": {
                 "x": 240,
                 "y": 961.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Popup duration",
               "position": {
                 "x": 240,
                 "y": 1013
-              }
+              },
+              "information": false
             },
             {
               "text": "Playlist",
               "position": {
                 "x": 240,
                 "y": 1080
-              }
+              },
+              "information": false
             },
             {
               "text": "Show the playlist as a tree",
               "position": {
                 "x": 240,
                 "y": 1121.5
-              }
+              },
+              "information": true
             }
           ]
         },
@@ -440,217 +498,248 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Use a custom skin",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Skin file",
               "position": {
                 "x": 240,
                 "y": 165.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Window",
               "position": {
                 "x": 240,
                 "y": 227
-              }
+              },
+              "information": false
             },
             {
               "text": "Play video inside main window",
               "position": {
                 "x": 240,
                 "y": 268.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Resize window to fit video",
               "position": {
                 "x": 240,
                 "y": 312.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Remember window size and position",
               "position": {
                 "x": 240,
                 "y": 356.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Keep window above other windows",
               "position": {
                 "x": 240,
                 "y": 398.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show window decorations",
               "position": {
                 "x": 240,
                 "y": 440.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show the file name in the title bar",
               "position": {
                 "x": 240,
                 "y": 482.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Open fullscreen on",
               "position": {
                 "x": 240,
                 "y": 526.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Playback Controls",
               "position": {
                 "x": 240,
                 "y": 588
-              }
+              },
+              "information": false
             },
             {
               "text": "Start in compact mode",
               "position": {
                 "x": 240,
                 "y": 629.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Auto-hide the controls",
               "position": {
                 "x": 240,
                 "y": 673.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Hide after",
               "position": {
                 "x": 240,
                 "y": 725
-              }
+              },
+              "information": false
             },
             {
               "text": "Show controls in fullscreen",
               "position": {
                 "x": 240,
                 "y": 774.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Notifications and System Tray",
               "position": {
                 "x": 240,
                 "y": 834
-              }
+              },
+              "information": false
             },
             {
               "text": "Show a system tray icon",
               "position": {
                 "x": 240,
                 "y": 875.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Start minimized to the tray",
               "position": {
                 "x": 240,
                 "y": 917.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show a popup when the track changew",
               "position": {
                 "x": 240,
                 "y": 961.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Popup duration",
               "position": {
                 "x": 240,
                 "y": 1013
-              }
+              },
+              "information": false
             },
             {
               "text": "Playlist",
               "position": {
                 "x": 240,
                 "y": 1080
-              }
+              },
+              "information": false
             },
             {
               "text": "Show the playlist as a tree",
               "position": {
                 "x": 240,
                 "y": 1121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Window opacity",
               "position": {
                 "x": 240,
                 "y": 1249
-              }
+              },
+              "information": false
             },
             {
               "text": "Pause video when window is minimized",
               "position": {
                 "x": 240,
                 "y": 1298.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Bring VLC to the front when playback starts",
               "position": {
                 "x": 240,
                 "y": 1342.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show cover art in the window when playing audio",
               "position": {
                 "x": 240,
                 "y": 1386.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Show the file browser inside the open dialog",
               "position": {
                 "x": 240,
                 "y": 1428.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Allow the app icon to change",
               "position": {
                 "x": 240,
                 "y": 1470.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Fullscreen controls opacity",
               "position": {
                 "x": 240,
                 "y": 1520
-              }
+              },
+              "information": false
             },
             {
               "text": "Fullscreen controls sensitivity",
               "position": {
                 "x": 240,
                 "y": 1572
-              }
+              },
+              "information": false
             }
           ]
         }
@@ -667,77 +756,88 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Save recently played items",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Remember the playback position",
               "position": {
                 "x": 240,
                 "y": 163.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Never remember items matching",
               "position": {
                 "x": 240,
                 "y": 207.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Clear history now",
               "position": {
                 "x": 240,
                 "y": 251.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Network",
               "position": {
                 "x": 240,
                 "y": 311
-              }
+              },
+              "information": false
             },
             {
               "text": "Fetch titles and cover art from the internet",
               "position": {
                 "x": 240,
                 "y": 352.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Submit played tracks to last.fm",
               "position": {
                 "x": 240,
                 "y": 394.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Last.fm username",
               "position": {
                 "x": 240,
                 "y": 438.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Last.fm username",
               "position": {
                 "x": 240,
                 "y": 484.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Last.fm submission URL",
               "position": {
                 "x": 240,
                 "y": 530.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -754,140 +854,160 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Defaults",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Reset all shortcuts",
               "position": {
                 "x": 240,
                 "y": 163.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Skip Amounts",
               "position": {
                 "x": 240,
                 "y": 223
-              }
+              },
+              "information": false
             },
             {
               "text": "Very short skip",
               "position": {
                 "x": 240,
                 "y": 267.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Short skip",
               "position": {
                 "x": 240,
                 "y": 315.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Medium skip",
               "position": {
                 "x": 240,
                 "y": 363.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Long skip",
               "position": {
                 "x": 240,
                 "y": 411.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Mouse",
               "position": {
                 "x": 240,
                 "y": 474
-              }
+              },
+              "information": false
             },
             {
               "text": "Single click on the video",
               "position": {
                 "x": 240,
                 "y": 517.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Double click on the video",
               "position": {
                 "x": 240,
                 "y": 563.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Scroll wheel",
               "position": {
                 "x": 240,
                 "y": 609.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Horizontal scroll",
               "position": {
                 "x": 240,
                 "y": 655.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Reverse scroll direction",
               "position": {
                 "x": 240,
                 "y": 699.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Remotes",
               "position": {
                 "x": 240,
                 "y": 759
-              }
+              },
+              "information": false
             },
             {
               "text": "Web remote control",
               "position": {
                 "x": 240,
                 "y": 800.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Port",
               "position": {
                 "x": 240,
                 "y": 845.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Scroll wheel",
               "position": {
                 "x": 240,
                 "y": 892.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Horizontal scroll",
               "position": {
                 "x": 240,
                 "y": 938.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Reverse scroll direction",
               "position": {
                 "x": 240,
                 "y": 982.5
-              }
+              },
+              "information": false
             }
           ]
         }
@@ -904,154 +1024,176 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Continue where you left off",
               "position": {
                 "x": 240,
                 "y": 123.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Start playing as soon as a file opens",
               "position": {
                 "x": 240,
                 "y": 167.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Default playback speed",
               "position": {
                 "x": 240,
                 "y": 222
-              }
+              },
+              "information": false
             },
             {
               "text": "Pause when another app uses audio",
               "position": {
                 "x": 240,
                 "y": 276.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Tracks",
               "position": {
                 "x": 240,
                 "y": 336
-              }
+              },
+              "information": false
             },
             {
               "text": "Preferred video quality",
               "position": {
                 "x": 240,
                 "y": 379.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Preferred menu language",
               "position": {
                 "x": 240,
                 "y": 425.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Default audio track",
               "position": {
                 "x": 240,
                 "y": 471.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Default subtitle track",
               "position": {
                 "x": 240,
                 "y": 517.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Order",
               "position": {
                 "x": 240,
                 "y": 579
-              }
+              },
+              "information": false
             },
             {
               "text": "Repeat",
               "position": {
                 "x": 240,
                 "y": 622.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Shuffle",
               "position": {
                 "x": 240,
                 "y": 666.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Stop after each item",
               "position": {
                 "x": 240,
                 "y": 708.5
-              }
+              },
+              "information": true
             },
             {
               "text": "When playback finishes",
               "position": {
                 "x": 240,
                 "y": 752.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Seeking",
               "position": {
                 "x": 240,
                 "y": 814
-              }
+              },
+              "information": false
             },
             {
               "text": "Seek precisely",
               "position": {
                 "x": 240,
                 "y": 855.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show thumbnail while scrubbing",
               "position": {
                 "x": 240,
                 "y": 897.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Files & Discs",
               "position": {
                 "x": 240,
                 "y": 957
-              }
+              },
+              "information": false
             },
             {
               "text": "Default optical drive",
               "position": {
                 "x": 240,
                 "y": 1000.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Repair damaged AVI files",
               "position": {
                 "x": 240,
                 "y": 1046.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Load matching .mkv files from the same folder",
               "position": {
                 "x": 240,
                 "y": 1090.5
-              }
+              },
+              "information": true
             }
           ]
         },
@@ -1063,168 +1205,192 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Continue where you left off",
               "position": {
                 "x": 240,
                 "y": 123.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Start playing as soon as a file opens",
               "position": {
                 "x": 240,
                 "y": 167.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Default playback speed",
               "position": {
                 "x": 240,
                 "y": 222
-              }
+              },
+              "information": false
             },
             {
               "text": "Pause when another app uses audio",
               "position": {
                 "x": 240,
                 "y": 276.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Tracks",
               "position": {
                 "x": 240,
                 "y": 336
-              }
+              },
+              "information": false
             },
             {
               "text": "Preferred video quality",
               "position": {
                 "x": 240,
                 "y": 379.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Preferred menu language",
               "position": {
                 "x": 240,
                 "y": 425.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Default audio track",
               "position": {
                 "x": 240,
                 "y": 472.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Default subtitle track",
               "position": {
                 "x": 240,
                 "y": 519.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Order",
               "position": {
                 "x": 240,
                 "y": 581
-              }
+              },
+              "information": false
             },
             {
               "text": "Repeat",
               "position": {
                 "x": 240,
                 "y": 624.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Shuffle",
               "position": {
                 "x": 240,
                 "y": 668.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Stop after each item",
               "position": {
                 "x": 240,
                 "y": 710.5
-              }
+              },
+              "information": true
             },
             {
               "text": "When playback finishes",
               "position": {
                 "x": 240,
                 "y": 754.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Seeking",
               "position": {
                 "x": 240,
                 "y": 816
-              }
+              },
+              "information": false
             },
             {
               "text": "Seek precisely",
               "position": {
                 "x": 240,
                 "y": 857.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show thumbnail while scrubbing",
               "position": {
                 "x": 240,
                 "y": 899.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Files & Discs",
               "position": {
                 "x": 240,
                 "y": 959
-              }
+              },
+              "information": false
             },
             {
               "text": "Default optical drive",
               "position": {
                 "x": 240,
                 "y": 1002.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Repair damaged AVI files",
               "position": {
                 "x": 240,
                 "y": 1048.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Load matching .mkv files from the same folder",
               "position": {
                 "x": 240,
                 "y": 1092.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Time-shift buffer folder",
               "position": {
                 "x": 240,
                 "y": 1212.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Time-shift buffer size",
               "position": {
                 "x": 240,
                 "y": 1256.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -1241,196 +1407,224 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Enable video",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Start videos in fullscreen",
               "position": {
                 "x": 240,
                 "y": 163.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Stop the screensaver during playback",
               "position": {
                 "x": 240,
                 "y": 205.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Play video as desktop wallpaper",
               "position": {
                 "x": 240,
                 "y": 247.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Picture",
               "position": {
                 "x": 240,
                 "y": 307
-              }
+              },
+              "information": false
             },
             {
               "text": "Hue",
               "position": {
                 "x": 240,
                 "y": 348.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Brightness",
               "position": {
                 "x": 240,
                 "y": 390.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Contrast",
               "position": {
                 "x": 240,
                 "y": 432.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Saturation",
               "position": {
                 "x": 240,
                 "y": 474.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Gamma",
               "position": {
                 "x": 240,
                 "y": 516.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Reset picture",
               "position": {
                 "x": 240,
                 "y": 558.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Deinterlacing",
               "position": {
                 "x": 240,
                 "y": 618
-              }
+              },
+              "information": false
             },
             {
               "text": "Deinterlacing",
               "position": {
                 "x": 240,
                 "y": 661.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Method",
               "position": {
                 "x": 240,
                 "y": 707.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Framing",
               "position": {
                 "x": 240,
                 "y": 769
-              }
+              },
+              "information": false
             },
             {
               "text": "Aspect ratio",
               "position": {
                 "x": 240,
                 "y": 812.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Crop",
               "position": {
                 "x": 240,
                 "y": 858.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Scale video to the window",
               "position": {
                 "x": 240,
                 "y": 902.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Zoom",
               "position": {
                 "x": 240,
                 "y": 946.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Position in the window",
               "position": {
                 "x": 240,
                 "y": 992.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Snapshots",
               "position": {
                 "x": 240,
                 "y": 1054
-              }
+              },
+              "information": false
             },
             {
               "text": "Save to",
               "position": {
                 "x": 240,
                 "y": 1095.5
-              }
+              },
+              "information": true
             },
             {
               "text": "File name prefix",
               "position": {
                 "x": 240,
                 "y": 1137.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Format",
               "position": {
                 "x": 240,
                 "y": 1181.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Size",
               "position": {
                 "x": 240,
                 "y": 1227.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Number files sequentially",
               "position": {
                 "x": 240,
                 "y": 1271.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show a preview after capture",
               "position": {
                 "x": 240,
                 "y": 1313.5
-              }
+              },
+              "information": true
             }
           ]
         },
@@ -1442,224 +1636,256 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Enable video",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Start videos in fullscreen",
               "position": {
                 "x": 240,
                 "y": 163.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Stop the screensaver during playback",
               "position": {
                 "x": 240,
                 "y": 205.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Play video as desktop wallpaper",
               "position": {
                 "x": 240,
                 "y": 247.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Picture",
               "position": {
                 "x": 240,
                 "y": 307
-              }
+              },
+              "information": false
             },
             {
               "text": "Hue",
               "position": {
                 "x": 240,
                 "y": 348.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Brightness",
               "position": {
                 "x": 240,
                 "y": 390.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Contrast",
               "position": {
                 "x": 240,
                 "y": 432.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Saturation",
               "position": {
                 "x": 240,
                 "y": 474.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Gamma",
               "position": {
                 "x": 240,
                 "y": 516.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Reset picture",
               "position": {
                 "x": 240,
                 "y": 558.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Deinterlacing",
               "position": {
                 "x": 240,
                 "y": 618
-              }
+              },
+              "information": false
             },
             {
               "text": "Deinterlacing",
               "position": {
                 "x": 240,
                 "y": 661.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Method",
               "position": {
                 "x": 240,
                 "y": 707.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Framing",
               "position": {
                 "x": 240,
                 "y": 769
-              }
+              },
+              "information": false
             },
             {
               "text": "Aspect ratio",
               "position": {
                 "x": 240,
                 "y": 812.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Crop",
               "position": {
                 "x": 240,
                 "y": 858.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Scale video to the window",
               "position": {
                 "x": 240,
                 "y": 902.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Zoom",
               "position": {
                 "x": 240,
                 "y": 946.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Position in the window",
               "position": {
                 "x": 240,
                 "y": 992.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Snapshots",
               "position": {
                 "x": 240,
                 "y": 1054
-              }
+              },
+              "information": false
             },
             {
               "text": "Save to",
               "position": {
                 "x": 240,
                 "y": 1095.5
-              }
+              },
+              "information": true
             },
             {
               "text": "File name prefix",
               "position": {
                 "x": 240,
                 "y": 1137.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Format",
               "position": {
                 "x": 240,
                 "y": 1181.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Size",
               "position": {
                 "x": 240,
                 "y": 1227.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Number files sequentially",
               "position": {
                 "x": 240,
                 "y": 1271.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show a preview after capture",
               "position": {
                 "x": 240,
                 "y": 1313.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Custom aspect ratios",
               "position": {
                 "x": 240,
                 "y": 1433.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Custom crop ratios",
               "position": {
                 "x": 240,
                 "y": 1475.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Monitor pixel aspect ratio",
               "position": {
                 "x": 240,
                 "y": 1517.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Time-shift buffer size",
               "position": {
                 "x": 240,
                 "y": 1561.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -1676,210 +1902,240 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Enable audio",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Output device",
               "position": {
                 "x": 240,
                 "y": 165.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Speaker setup",
               "position": {
                 "x": 240,
                 "y": 211.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Volume",
               "position": {
                 "x": 240,
                 "y": 273
-              }
+              },
+              "information": false
             },
             {
               "text": "Maximum volume",
               "position": {
                 "x": 240,
                 "y": 327
-              }
+              },
+              "information": false
             },
             {
               "text": "Startup volume",
               "position": {
                 "x": 240,
                 "y": 409.4999990463257
-              }
+              },
+              "information": true
             },
             {
               "text": "Volume step",
               "position": {
                 "x": 240,
                 "y": 482.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Loudness",
               "position": {
                 "x": 240,
                 "y": 545
-              }
+              },
+              "information": false
             },
             {
               "text": "Normalize loudness",
               "position": {
                 "x": 240,
                 "y": 586.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Target level",
               "position": {
                 "x": 240,
                 "y": 631.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Night mode",
               "position": {
                 "x": 240,
                 "y": 676.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Replay gain",
               "position": {
                 "x": 240,
                 "y": 720.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Replay gain preamp",
               "position": {
                 "x": 240,
                 "y": 767.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Effects",
               "position": {
                 "x": 240,
                 "y": 830
-              }
+              },
+              "information": false
             },
             {
               "text": "Equalizer",
               "position": {
                 "x": 240,
                 "y": 871.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Equalizer preset",
               "position": {
                 "x": 240,
                 "y": 916.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Two-pass",
               "position": {
                 "x": 240,
                 "y": 1007.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Spatial audio",
               "position": {
                 "x": 240,
                 "y": 1049.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Spatial audio mode",
               "position": {
                 "x": 240,
                 "y": 1093.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Stereo widening",
               "position": {
                 "x": 240,
                 "y": 1137.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Compressor",
               "position": {
                 "x": 240,
                 "y": 1179.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Pitch shift",
               "position": {
                 "x": 240,
                 "y": 1221.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Chorus/flanger",
               "position": {
                 "x": 240,
                 "y": 1263.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Karaoke",
               "position": {
                 "x": 240,
                 "y": 1305.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Tracks",
               "position": {
                 "x": 240,
                 "y": 1365
-              }
+              },
+              "information": false
             },
             {
               "text": "Preferred audio language",
               "position": {
                 "x": 240,
                 "y": 1408.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Audio delay",
               "position": {
                 "x": 240,
                 "y": 1454.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Visualization",
               "position": {
                 "x": 240,
                 "y": 1516
-              }
+              },
+              "information": false
             },
             {
               "text": "Visualizer",
               "position": {
                 "x": 240,
                 "y": 1559.5
-              }
+              },
+              "information": true
             }
           ]
         },
@@ -1891,161 +2147,184 @@
               "position": {
                 "x": 240,
                 "y": 68.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Equalizer",
               "position": {
                 "x": 240,
                 "y": 110
-              }
+              },
+              "information": true
             },
             {
               "text": "Equalizer preset",
               "position": {
                 "x": 240,
                 "y": 155
-              }
+              },
+              "information": true
             },
             {
               "text": "Preamp",
               "position": {
                 "x": 262,
                 "y": 599.5
-              }
+              },
+              "information": false
             },
             {
               "text": "12.0 dB",
               "position": {
                 "x": 271,
                 "y": 638
-              }
+              },
+              "information": false
             },
             {
               "text": "Two-pass",
               "position": {
                 "x": 240,
                 "y": 699
-              }
+              },
+              "information": true
             },
             {
               "text": "Spatial audio",
               "position": {
                 "x": 240,
                 "y": 741
-              }
+              },
+              "information": true
             },
             {
               "text": "Spatial audio mode",
               "position": {
                 "x": 240,
                 "y": 785
-              }
+              },
+              "information": true
             },
             {
               "text": "Stereo widening",
               "position": {
                 "x": 240,
                 "y": 829
-              }
+              },
+              "information": true
             },
             {
               "text": "Compressor",
               "position": {
                 "x": 240,
                 "y": 871
-              }
+              },
+              "information": true
             },
             {
               "text": "Pitch shift",
               "position": {
                 "x": 240,
                 "y": 913
-              }
+              },
+              "information": true
             },
             {
               "text": "Chorus/flanger",
               "position": {
                 "x": 240,
                 "y": 955
-              }
+              },
+              "information": true
             },
             {
               "text": "Karaoke",
               "position": {
                 "x": 240,
                 "y": 997
-              }
+              },
+              "information": true
             },
             {
               "text": "Tracks",
               "position": {
                 "x": 240,
                 "y": 1056.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Preferred audio language",
               "position": {
                 "x": 240,
                 "y": 1100
-              }
+              },
+              "information": true
             },
             {
               "text": "Audio delay",
               "position": {
                 "x": 240,
                 "y": 1146
-              }
+              },
+              "information": true
             },
             {
               "text": "Visualization",
               "position": {
                 "x": 240,
                 "y": 1207.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Visualizer",
               "position": {
                 "x": 240,
                 "y": 1251
-              }
+              },
+              "information": true
             },
             {
               "text": "Pass compressed audio to the receiver",
               "position": {
                 "x": 240,
                 "y": 1373
-              }
+              },
+              "information": true
             },
             {
               "text": "Detect Dolby Surround",
               "position": {
                 "x": 240,
                 "y": 1417
-              }
+              },
+              "information": true
             },
             {
               "text": "Resampling quality",
               "position": {
                 "x": 240,
                 "y": 1463
-              }
+              },
+              "information": true
             },
             {
               "text": "Media role",
               "position": {
                 "x": 240,
                 "y": 1509
-              }
+              },
+              "information": true
             },
             {
               "text": "Visualization size",
               "position": {
                 "x": 240,
                 "y": 1555
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -2062,210 +2341,240 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Enable subtitles",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Preferred language",
               "position": {
                 "x": 240,
                 "y": 165.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Text encoding",
               "position": {
                 "x": 240,
                 "y": 211.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Loading Subtitles",
               "position": {
                 "x": 240,
                 "y": 273
-              }
+              },
+              "information": false
             },
             {
               "text": "Load subtitle files automatically",
               "position": {
                 "x": 240,
                 "y": 314.5
-              }
+              },
+              "information": true
             },
             {
               "text": "File name matching",
               "position": {
                 "x": 240,
                 "y": 358.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Appearance",
               "position": {
                 "x": 240,
                 "y": 420
-              }
+              },
+              "information": false
             },
             {
               "text": "Font",
               "position": {
                 "x": 240,
                 "y": 464.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Size values",
               "position": {
                 "x": 240,
                 "y": 512.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Font size",
               "position": {
                 "x": 240,
                 "y": 559.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Bold",
               "position": {
                 "x": 240,
                 "y": 603.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Text color",
               "position": {
                 "x": 240,
                 "y": 645.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Text opacity",
               "position": {
                 "x": 240,
                 "y": 700
-              }
+              },
+              "information": false
             },
             {
               "text": "Outline thickness",
               "position": {
                 "x": 240,
                 "y": 756.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Outline color",
               "position": {
                 "x": 240,
                 "y": 800.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Shadow",
               "position": {
                 "x": 240,
                 "y": 842.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Shadow color",
               "position": {
                 "x": 240,
                 "y": 884.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Shadow distance",
               "position": {
                 "x": 240,
                 "y": 928.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Background",
               "position": {
                 "x": 240,
                 "y": 974.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Background color",
               "position": {
                 "x": 240,
                 "y": 1018.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Background opacity",
               "position": {
                 "x": 240,
                 "y": 1073
-              }
+              },
+              "information": false
             },
             {
               "text": "Vertical position",
               "position": {
                 "x": 240,
                 "y": 1129.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Timing",
               "position": {
                 "x": 240,
                 "y": 1191
-              }
+              },
+              "information": false
             },
             {
               "text": "Subtitle delay",
               "position": {
                 "x": 240,
                 "y": 1245
-              }
+              },
+              "information": false
             },
             {
               "text": "On-Screen Messages",
               "position": {
                 "x": 240,
                 "y": 1317
-              }
+              },
+              "information": false
             },
             {
               "text": "Show feedback for shortcuts",
               "position": {
                 "x": 240,
                 "y": 1358.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show feedback for",
               "position": {
                 "x": 240,
                 "y": 1413
-              }
+              },
+              "information": false
             },
             {
               "text": "Show filename when a video starts",
               "position": {
                 "x": 240,
                 "y": 1467.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show filename for",
               "position": {
                 "x": 240,
                 "y": 1522
-              }
+              },
+              "information": false
             }
           ]
         },
@@ -2277,252 +2586,288 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Enable subtitles",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Preferred language",
               "position": {
                 "x": 240,
                 "y": 165.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Text encoding",
               "position": {
                 "x": 240,
                 "y": 211.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Loading Subtitles",
               "position": {
                 "x": 240,
                 "y": 273
-              }
+              },
+              "information": false
             },
             {
               "text": "Load subtitle files automatically",
               "position": {
                 "x": 240,
                 "y": 314.5
-              }
+              },
+              "information": true
             },
             {
               "text": "File name matching",
               "position": {
                 "x": 240,
                 "y": 358.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Appearance",
               "position": {
                 "x": 240,
                 "y": 420
-              }
+              },
+              "information": false
             },
             {
               "text": "Font",
               "position": {
                 "x": 240,
                 "y": 464.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Size values",
               "position": {
                 "x": 240,
                 "y": 512.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Font size",
               "position": {
                 "x": 240,
                 "y": 559.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Bold",
               "position": {
                 "x": 240,
                 "y": 603.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Text color",
               "position": {
                 "x": 240,
                 "y": 645.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Text opacity",
               "position": {
                 "x": 240,
                 "y": 700
-              }
+              },
+              "information": false
             },
             {
               "text": "Outline thickness",
               "position": {
                 "x": 240,
                 "y": 756.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Outline color",
               "position": {
                 "x": 240,
                 "y": 800.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Shadow",
               "position": {
                 "x": 240,
                 "y": 842.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Shadow color",
               "position": {
                 "x": 240,
                 "y": 884.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Shadow distance",
               "position": {
                 "x": 240,
                 "y": 928.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Background",
               "position": {
                 "x": 240,
                 "y": 974.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Background color",
               "position": {
                 "x": 240,
                 "y": 1018.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Background opacity",
               "position": {
                 "x": 240,
                 "y": 1073
-              }
+              },
+              "information": false
             },
             {
               "text": "Vertical position",
               "position": {
                 "x": 240,
                 "y": 1129.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Timing",
               "position": {
                 "x": 240,
                 "y": 1191
-              }
+              },
+              "information": false
             },
             {
               "text": "Subtitle delay",
               "position": {
                 "x": 240,
                 "y": 1245
-              }
+              },
+              "information": false
             },
             {
               "text": "On-Screen Messages",
               "position": {
                 "x": 240,
                 "y": 1317
-              }
+              },
+              "information": false
             },
             {
               "text": "Show feedback for shortcuts",
               "position": {
                 "x": 240,
                 "y": 1358.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show feedback for",
               "position": {
                 "x": 240,
                 "y": 1413
-              }
+              },
+              "information": false
             },
             {
               "text": "Show filename when a video starts",
               "position": {
                 "x": 240,
                 "y": 1467.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show filename for",
               "position": {
                 "x": 240,
                 "y": 1522
-              }
+              },
+              "information": false
             },
             {
               "text": "Load subtitles from these folders",
               "position": {
                 "x": 240,
                 "y": 1657.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Ignore styling in ASS and SSA subtitles",
               "position": {
                 "x": 240,
                 "y": 1702.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Shadow angle",
               "position": {
                 "x": 240,
                 "y": 1747.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Text direction",
               "position": {
                 "x": 240,
                 "y": 1794.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Monospace font",
               "position": {
                 "x": 240,
                 "y": 1841.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Visualization size",
               "position": {
                 "x": 240,
                 "y": 1888.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -2539,63 +2884,72 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Only allow one VLC window",
               "position": {
                 "x": 240,
                 "y": 121.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Apply to files opened from the file manager",
               "position": {
                 "x": 240,
                 "y": 163.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Add to the playlist instead of replacing it",
               "position": {
                 "x": 240,
                 "y": 205.5
-              }
+              },
+              "information": true
             },
             {
               "text": "When opening a folder",
               "position": {
                 "x": 240,
                 "y": 249.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Show hidden files",
               "position": {
                 "x": 240,
                 "y": 293.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Metadata & Artwork",
               "position": {
                 "x": 240,
                 "y": 353
-              }
+              },
+              "information": false
             },
             {
               "text": "Fetch titles and artwork",
               "position": {
                 "x": 240,
                 "y": 396.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Use the media library",
               "position": {
                 "x": 240,
                 "y": 440.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -2612,84 +2966,96 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Buffering",
               "position": {
                 "x": 240,
                 "y": 123.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Local files",
               "position": {
                 "x": 240,
                 "y": 170.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Discs",
               "position": {
                 "x": 240,
                 "y": 218.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Network streams",
               "position": {
                 "x": 240,
                 "y": 266.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Live capture",
               "position": {
                 "x": 240,
                 "y": 314.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Proxy",
               "position": {
                 "x": 240,
                 "y": 377
-              }
+              },
+              "information": false
             },
             {
               "text": "HTTP proxy",
               "position": {
                 "x": 240,
                 "y": 421.5
-              }
+              },
+              "information": true
             },
             {
               "text": "HTTP proxy password",
               "position": {
                 "x": 240,
                 "y": 469.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Security",
               "position": {
                 "x": 240,
                 "y": 532
-              }
+              },
+              "information": false
             },
             {
               "text": "Verify certificates against the system trust store",
               "position": {
                 "x": 240,
                 "y": 573.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Cipher preference",
               "position": {
                 "x": 240,
                 "y": 617.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -2706,112 +3072,128 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Hardware-accelerated decoding",
               "position": {
                 "x": 240,
                 "y": 123.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Video post-processing",
               "position": {
                 "x": 240,
                 "y": 169.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Skip the H.264 loop filter",
               "position": {
                 "x": 240,
                 "y": 215.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Decoding threads",
               "position": {
                 "x": 240,
                 "y": 262.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Smooth Playback",
               "position": {
                 "x": 240,
                 "y": 325
-              }
+              },
+              "information": false
             },
             {
               "text": "Drop frames when the system can't keep up",
               "position": {
                 "x": 240,
                 "y": 366.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Give VLC real-time priority",
               "position": {
                 "x": 240,
                 "y": 408.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Process priority",
               "position": {
                 "x": 240,
                 "y": 453.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Rescan plugins",
               "position": {
                 "x": 240,
                 "y": 498.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Developer",
               "position": {
                 "x": 240,
                 "y": 616
-              }
+              },
+              "information": false
             },
             {
               "text": "Encoder",
               "position": {
                 "x": 240,
                 "y": 659.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Decoder",
               "position": {
                 "x": 240,
                 "y": 705.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Clock synchronisation",
               "position": {
                 "x": 240,
                 "y": 751.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Clock jitter",
               "position": {
                 "x": 240,
                 "y": 798.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Clock reference averaging",
               "position": {
                 "x": 240,
                 "y": 846.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -2828,91 +3210,104 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Save recordings to",
               "position": {
                 "x": 240,
                 "y": 124.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Record without re-encoding when possible",
               "position": {
                 "x": 240,
                 "y": 169.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Casting",
               "position": {
                 "x": 240,
                 "y": 229
-              }
+              },
+              "information": false
             },
             {
               "text": "Discover cast devices",
               "position": {
                 "x": 240,
                 "y": 270.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Cast quality",
               "position": {
                 "x": 240,
                 "y": 314.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Streaming",
               "position": {
                 "x": 240,
                 "y": 376
-              }
+              },
+              "information": false
             },
             {
               "text": "Play locally while streaming",
               "position": {
                 "x": 240,
                 "y": 417.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Include audio",
               "position": {
                 "x": 240,
                 "y": 459.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Include video",
               "position": {
                 "x": 240,
                 "y": 501.5
-              }
+              },
+              "information": false
             },
             {
               "text": "include subtitles",
               "position": {
                 "x": 240,
                 "y": 543.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Encoding preset",
               "position": {
                 "x": 240,
                 "y": 587.5
-              }
+              },
+              "information": true
             },
             {
               "text": "Tuning",
               "position": {
                 "x": 240,
                 "y": 633.5
-              }
+              },
+              "information": true
             }
           ]
         }
@@ -2929,21 +3324,24 @@
               "position": {
                 "x": 240,
                 "y": 80
-              }
+              },
+              "information": false
             },
             {
               "text": "Search",
               "position": {
                 "x": 254,
                 "y": 318.5
-              }
+              },
+              "information": false
             },
             {
               "text": "Load add-ons on startup",
               "position": {
                 "x": 240,
                 "y": 368.5
-              }
+              },
+              "information": false
             }
           ]
         }

@@ -33,6 +33,7 @@
 #include <QDragLeaveEvent>
 #include <QDropEvent>
 #include <QWidget>
+#include <vlc_configuration.h>
 #ifdef QT_GUI_PRIVATE
 #include <qpa/qwindowsysteminterface.h>
 #include <QtGui/private/qhighdpiscaling_p.h>
@@ -367,6 +368,12 @@ private:
             {QStringLiteral("tree"), tree}, {QStringLiteral("images"), images},
             {QStringLiteral("qml_errors"), m_errors}, {QStringLiteral("truncated"), m_items.size() >= 8000},
             {QStringLiteral("coverage"), QStringLiteral("Instantiated Qt Quick items; native menus/video surfaces are separate. Capture is app-rendered UI, not desktop presentation.")}};
+        // Bounded, non-secret native values let the owned settings workflow
+        // distinguish a retained editor draft from real save-failure rollback.
+        QJsonObject settingsConfig;
+        for (const char *key : {"save-playback-position", "short-jump-size", "playlist-tree"})
+            settingsConfig[QString::fromLatin1(key)] = double(config_GetInt(key));
+        result.insert(QStringLiteral("settings_config"), settingsConfig);
         if(auto *engine=qmlEngine(m_root)){
             const int type=qmlTypeId("VLC.Player",1,0,"PlayerCustomization");
             if(type>=0)if(auto *owner=engine->singletonInstance<QObject *>(type)){
