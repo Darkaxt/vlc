@@ -125,7 +125,7 @@ class SettingsCategoryDelegate final : public QStyledItemDelegate
         auto state = option;
         // The reference's selected background/icon is the mouse selection
         // treatment. Keep the additional focus outline for keyboard traversal.
-        if (!view->testAttribute(Qt::WA_KeyboardFocusChange))
+        if (!view->window()->testAttribute(Qt::WA_KeyboardFocusChange))
             state.state &= ~QStyle::State_HasFocus;
         QStyledItemDelegate::paint(painter, state, index);
     }

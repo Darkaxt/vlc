@@ -1175,6 +1175,63 @@ def settings():
             assert max(abs(a-b) for a,b in zip(surface,expected_surface))<=1,('Reference translucent surface',label,surface,expected_surface)
         case.record.setdefault('settings_views',[]).append({'label':label,'category':categories[index]['category'],'capture':file['file'],'dpr':dialog['dpr'],'native_region':native_region,'reference_fields_checked':layout_fields})
         return result
+    def selection_focus(case):
+        # Exercise Qt's real mouse/Tab path and inspect the painted item edge.
+        # Qt stores keyboard focus-change state on the top-level window.
+        def outline(label):
+            snapshot=case.inspect(label,'snapshot','--capture')
+            nav=widget(snapshot,'preferencesCategories')
+            assert nav['focused'],('Category view did not receive real focus',label)
+            selected=[row for row in nav['rendered_rows'] if row['selected']]
+            assert len(selected)==1,(label,selected)
+            row=selected[0]
+            viewport=next(item for item in snapshot['widgets'] if item['parent']==nav['node']
+                and item['id']=='qt_scrollarea_viewport')
+            nodes={item['node']:item for item in snapshot['widgets']}
+            dialog=widget(snapshot,'redesignPreferences')
+            x=y=0
+            current=viewport
+            while current['node']!=dialog['node']:
+                x+=current['x'];y+=current['y']
+                current=nodes[current['parent']]
+            dpr=dialog['dpr']
+            left=round((x+row['x']+row['width']-8)*dpr)
+            right=round((x+row['x']+row['width'])*dpr)
+            top=round((y+row['y']+row['height']/3)*dpr)
+            bottom=round((y+row['y']+row['height']*2/3)*dpr)
+            capture=next(item for item in snapshot['widget_captures'] if item['widget']==dialog['node'])
+            assert capture['saved']
+            accent=tuple(bytes.fromhex(nav['palette_highlight'].removeprefix('#')))
+            with Image.open(case.evidence/capture['file']) as original:
+                image=original.convert('RGB')
+                assert 0<=left<right<=image.width and 0<=top<bottom<=image.height
+                pixels=sum(max(abs(a-b) for a,b in zip(image.getpixel((px,py)),accent))<=2
+                    for px in range(left,right) for py in range(top,bottom))
+            return snapshot,pixels,capture['file']
+        case.native('category-focus-mouse','preferencesCategories')
+        mouse,mouse_pixels,mouse_capture=outline('category-focus-mouse-painted')
+        assert mouse_pixels==0,('Mouse selection has a keyboard outline',mouse_pixels)
+        snapshot=case.native('category-focus-tab-start','preferencesSearch')
+        seen=set()
+        while not widget(snapshot,'preferencesCategories')['focused']:
+            focused=[item for item in snapshot['widgets'] if item['focused']]
+            assert len(focused)==1,('Expected one native Tab target',focused)
+            target=focused[0]
+            identity=(target['node'],target['id'])
+            assert identity not in seen,('Tab traversal never reached categories',seen)
+            seen.add(identity)
+            snapshot=case.inspect('category-focus-tab-'+str(len(seen)),'widget_key',
+                '--node',str(target['node']),'--key','0x1000001')
+        keyboard,keyboard_pixels,keyboard_capture=outline('category-focus-keyboard-painted')
+        assert keyboard_pixels>0,'Keyboard category selection lost its visible focus outline'
+        case.native('category-focus-mouse-return','preferencesCategories')
+        returned,returned_pixels,returned_capture=outline('category-focus-mouse-return-painted')
+        assert returned_pixels==0,('Mouse did not clear the keyboard-only outline',returned_pixels)
+        case.record['category_selection_focus']={'mouse_outline_pixels':mouse_pixels,
+            'keyboard_outline_pixels':keyboard_pixels,'mouse_return_outline_pixels':returned_pixels,
+            'captures':[mouse_capture,keyboard_capture,returned_capture],
+            'scope':'Actual painted item-edge pixels after mouse/Tab/mouse events on the owned inactive desktop.'}
+        save()
     def edit(case,label,target,value,scroll):
         case.reveal(label+'-reveal',target,scroll)
         case.native(label+'-focus',target)
@@ -1352,6 +1409,8 @@ def settings():
                 case.native('stage-theme-'+str(dark),'preferencesTheme'+('2' if dark else '1'))
                 case.native('save-theme-'+str(dark),'preferencesSave')
                 case.inspect('reopen-theme-'+str(dark),'key','--key','0x50','--modifiers','0x4000000')
+                if dark and scale=='1' and not survey:
+                    selection_focus(case)
                 for narrow in ((False,) if survey else (False,True)):
                     case.inspect('viewport-'+str(dark)+'-'+str(narrow),'widget_resize','--target','redesignPreferences',
                                  '--width','740' if narrow else '1048','--height','700' if narrow else '865')

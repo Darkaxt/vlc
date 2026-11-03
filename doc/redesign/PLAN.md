@@ -18,6 +18,16 @@ commands. Finish this coherent repair before the affected Qt assembly/native
 acceptance. Reuse the core, codecs, MPV and409 non-Qt plugins; no second stage,
 SDK initialization or full dependency rebuild is needed.
 
+The original rendering continuation190 was deliberately stopped after source
+review found a keyboard-focus regression in the mouse-selection delegate. Qt6.8.3
+stores `WA_KeyboardFocusChange` on the top-level window; the child-view query
+would suppress the keyboard outline. Correct that owner and include actual
+mouse/Tab/mouse item-edge pixel checks in the complete native acceptance.
+190 closed137 with an empty Linux group and no max/OOM events; retain its log,
+completed objects and original pipeline identity. Resume its interrupted player
+step through `--after-interruption`, without resetting the SDK or object graph.
+No native acceptance or new normal release is claimed by that stopped assembly.
+
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
 | M4 Settings and menu parity | ACTIVE | Optimized normal assembly189; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review, staged edits/rollback, restart persistence, missing-font/native history, onboarding, playback/subtitles and actual4K previews on70dd under reviewed d214 applicability. Fresh d214 menu/Recent, manual setup via themed advanced commands, paused/playing/idle handovers and both prior profiles pass, including MPV history/privacy/volume. Native rounded clipping and95% surface alpha verified separately. Normal VLC with/without media library, normal MPV SDR/P5 actual presentation, EOF/release and nonactivation pass. All four local artifacts and unsigned/symbol/source checks pass. README credits added; original upstream text preserved. | R83/R84: current alpha/corner, field/popup and disclosure repairs; renewed affected native/composed acceptance; normal release publication, independent delivery and retained/weekly binding/cleanup. These remain advancement blockers. | None. |

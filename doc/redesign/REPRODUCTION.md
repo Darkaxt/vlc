@@ -1,5 +1,17 @@
 # Windows x64 reproduction and recovery
 
+M4 rendering continuation190 (`8609e71bc56441a4b21aa79f741d9d16`) was
+deliberately stopped, closing137 with an empty Linux group and no max/OOM events,
+to correct the category delegate's focus-state owner before acceptance. Preserve
+its completed objects and original pipeline attempt. The supported continuation
+is the same `diagnostics-mpv-current` player step with `--resume` and
+`--after-interruption` pointing to that original closed supervisor report.
+This is not a compiler/OOM failure or a new SDK build. The pinned Qt6.8.3
+[style option implementation](https://raw.githubusercontent.com/qt/qtbase/v6.8.3/src/widgets/styles/qstyleoption.cpp)
+reads `WA_KeyboardFocusChange` from the top-level window. Native acceptance must
+inspect actual mouse/Tab/mouse item-edge pixels, alongside the complete
+Settings repair, before normal freeze/delivery.
+
 Current delivery is [Modern VLC Fork 1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4),
 application source `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`, upstream
 `8a47770f6333df6b60181329db5fdaad318bdb44`. This maintenance integrates the
