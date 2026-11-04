@@ -68,8 +68,14 @@ runtime = root / 'runtime'
 if resume_input:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['source_commit']=='c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18'
-    assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
-    assert set(previous['failures'])=={'settings'}
+    assert previous['scope']=='settings' and not previous['passed']
+    if not previous['protected_profiles_unchanged']:
+        witness_path=root/'external-nuvio-change.json'
+        witness=json.loads(witness_path.read_text(encoding='utf-8'))
+        assert witness['source_result_sha256']==hashlib.sha256((root/'result.json').read_bytes()).hexdigest()
+        assert witness['no_vlc_processes'] and witness['all_owned_native_cases_closed0'] and witness['vlc_profiles_and_windows_language_unchanged']
+        assert set(previous['failures'])=={'settings','protected_profiles'}
+    else:assert set(previous['failures'])=={'settings'}
     input_disclosure_recovery=previous['failures']['settings']=="AssertionError(('value-extra-options', []))"
     assert len(previous['cases'])==(2 if input_disclosure_recovery else 1)
     completed=previous['cases'][0]
@@ -207,6 +213,10 @@ if resume_input:
         'source_commit':records['source_commit'],'case':'settings-1','original_case_passed':False,
         'scope':'Completed100% Privacy layout/scroll/theme and category mouse/Tab/mouse paint checks. Original failed overall/cases remain false. Canonical focus ownership and observed disclosure state replace invalid checker assumptions; fresh complete behaviour/save/restart and remaining DPI workflows follow.'}
     if input_disclosure_recovery:records['reused_input_layouts']['previous_recovery']=previous['reused_input_layouts']
+    if not previous['protected_profiles_unchanged']:
+        records['external_profile_rebaseline']={'witness':str(witness_path),
+            'witness_sha256':hashlib.sha256(witness_path.read_bytes()).hexdigest(),
+            'scope':'Original failed full comparison remains false. External Nuvio changes continued after VLC exit. A fresh full protected-profile baseline is required and is compared normally at this continuation end; no path is excluded.'}
 elif collect_layouts:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases']
