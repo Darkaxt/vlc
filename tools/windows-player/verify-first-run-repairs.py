@@ -1127,6 +1127,8 @@ def menus():
             assert matches, label
             positions.append(min(item['y'] for item in matches))
         assert positions==sorted(positions), positions
+        case.inspect('timer-dropdown-glass','click','--name','Sleep timer','--capture')
+        case.inspect('timer-dropdown-dismiss','key','--key','0x1000000')
         timer=case.inspect('timer-focus','focus','--name','Sleep timer')
         case.inspect('timer-arm','key','--key','0x1000015','--await-service','redesignMediaTools','--await-property','sleepMinutes','--await-value','1')
         case.inspect('timer-cancel','key','--key','0x1000010','--await-service','redesignMediaTools','--await-property','sleepMinutes','--await-value','0')
@@ -1141,7 +1143,16 @@ def menus():
         case.inspect('speed-reset-select','key','--key','0x41','--modifiers','0x4000000','--text','a')
         case.inspect('speed-reset-input','key','--key','0','--text','1x')
         case.inspect('speed-reset-apply','key','--key','0x1000004','--await-core','rate','--await-value','1','--await-tolerance','.001')
+        for engine in ('mpv','vlc'):
+            case.inspect('menu-engine-'+engine,'click','--name','MPV' if engine=='mpv' else 'VLC')
+            settled=case.inspect('menu-engine-settled-'+engine,'snapshot',
+                '--await-core','engine_switching','--await-value','false','--capture')
+            assert settled['core']['engine']==engine and settled['core']['state']==3
         case.inspect('close-playback-panel','key','--key','0x1000000')
+        for panel,identity in (('audio','audioButton'),('subtitles','subtitleButton'),('queue','playqueueToggle')):
+            case.click(panel+'-panel-glass',identity,'--capture')
+            if panel=='queue':case.click(panel+'-panel-dismiss',identity)
+            else:case.inspect(panel+'-panel-dismiss','key','--key','0x1000000')
         commands=open_vlc_commands(case,'native-command-glass')
         native_menus=[widget for widget in commands['widgets'] if widget['type']=='QMenu' and widget['visible']]
         assert native_menus,'The themed native commands menu did not open'
