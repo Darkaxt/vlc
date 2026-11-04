@@ -1475,6 +1475,8 @@ def settings():
         assert widget(scoped,'value-audio-track')['text']=='0'
         scoped=select(case,5,'saved-snapshot-size')
         assert widget(scoped,'value-snapshot-width-size')['current_text']=='Original size'
+        case.reveal('saved-snapshot-picture-reveal','value-snapshot-width-size','preferencesScroll5')
+        case.inspect('saved-snapshot-picture','snapshot','--capture')
         saved_text=config_file.read_text(encoding='utf-8')
         for key in ('snapshot-width','snapshot-height'):
             # Native Save comments values equal to the compiled default.
@@ -1483,6 +1485,8 @@ def settings():
         assert widget(scoped,'value-freetype-color')['text']=='#A1B2C3'
         assert widget(scoped,'value-sub-language')['current_text']=='jpn,eng'
         assert widget(scoped,'value-sub-text-scale-size')['current_text']=='125%'
+        case.reveal('saved-font-picture-reveal','value-sub-text-scale-size','preferencesScroll7')
+        case.inspect('saved-font-picture','snapshot','--capture')
         select(case,6,'saved-audio')
         case.reveal('saved-equalizer-reveal','preferencesAction-equalizer','preferencesScroll6')
         scoped=case.native('saved-equalizer-open','preferencesAction-equalizer')
