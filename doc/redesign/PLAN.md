@@ -5,32 +5,47 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
+**4 November repair acceptance:** managed192
+(`038e53e23ca24049ad584a3d09dc8d2f`) compiled source
+`c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18` and closed0 with an empty Linux
+group, released private mounts and no max/OOM events. The affected native
+Settings workflow and manual widget review now pass: formatted font-size
+Save/restart, native original snapshot dimensions, mouse/Tab/mouse focus,
+Privacy without an extra disclosure, staged Save/Cancel/locked-file rollback,
+both-engine restart persistence, missing fonts and history. The fresh full
+protected-profile comparison passes. Successful unchanged category layouts,
+menu/profile/playback/policy evidence retain their original producer identities.
+Original focus-proxy/disclosure checker failures and a concurrent external
+Nuvio profile-write comparison remain false in preserved receipts; they were
+diagnosed without another player build or excluding protected paths. Prepare
+one normal assembly and complete its normal playback/artifact/composed-picture
+and delivery gates. Actual composed blur remains unverified and1.1.5 unpublished.
+
 **3 November actual-window rejection:** M4 remains ACTIVE. The user's composed
 General/Controls/Playback captures reject the gray corners, absent blur, wrong
 track/font input types, numeric alignment/steppers, popup foreground, action
 typography and expanded Advanced Options treatment. Earlier paint/layout checks
 remain historical evidence with their original producer identity; they do not
 establish current visual acceptance. The normal1.1.5 candidate remains unpublished.
-Current source repair configures native alpha before handle creation, restores
+The verified source repair configures native alpha before handle creation, restores
 the reference field/disclosure styles and input types, preserves editable native
 values and exposes extra native settings through Search and General's themed
-commands. Finish this coherent repair before the affected Qt assembly/native
-acceptance. Reuse the core, codecs, MPV and409 non-Qt plugins; no second stage,
+commands. Reuse the core, codecs, MPV and409 non-Qt plugins; no second stage,
 SDK initialization or full dependency rebuild is needed.
 
 The original rendering continuation190 was deliberately stopped after source
 review found a keyboard-focus owner error. Its supported continuation191
 (`8aaae126db2d4a179ee6188682aa257b`, source `ef1ac620`) closed0 with an empty
 Linux group, released private mounts and no max/OOM events, retaining the409
-non-Qt plugins and SDK/core/codec/MPV inputs. Fresh native mouse/Tab/mouse pixels
-are0/14/14: keyboard focus is visible, but mouse return wrongly retains its
+non-Qt plugins and SDK/core/codec/MPV inputs. Its native mouse/Tab/mouse pixels
+were0/14/14: keyboard focus was visible, but mouse return wrongly retained its
 outline. The Qt window attribute is sticky, so querying its correct owner is
-insufficient. Track the category view's actual focus/key/mouse events locally;
-keep the native failure until that correction passes. The remaining native
-Settings collection continues before another bounded Qt assembly. The menu and
+insufficient.192 tracks the category view's actual focus/key/mouse events locally;
+fresh100/150/200% checks now clear the mouse outline while preserving keyboard
+focus. The original failed receipt is retained. The menu and
 both prior-profile workflows pass on191; the popup checker now observes the
 actual roll-animation/list-visibility transition without a fixed delay. No
-current complete Settings acceptance or normal1.1.5 release is claimed.
+normal1.1.5 release is claimed by those historical191 results.
 
 The same assembly's custom125% font-size value fails a later Save because its
 numeric-only validator/parser rejects the displayed unit. Manual review of all
@@ -46,17 +61,18 @@ history checks have now finished with clean native exits; the original font and
 focus failures remain false. All13 basic pages,12 applicable expanded pages and
 representative DPI/theme/popup images have been manually inspected. The four
 bounded source corrections and affected input/save/focus/Privacy regression are
-prepared for one retained Qt-only assembly; they are not yet natively verified.
+verified through192 and the affected native continuation. Composed normal
+presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Optimized normal assembly189; native policy/SVG proof; all-category dark/light normal/narrow100/150/200% layout/scroll and manual reference review, staged edits/rollback, restart persistence, missing-font/native history, onboarding, playback/subtitles and actual4K previews on70dd under reviewed d214 applicability. Fresh d214 menu/Recent, manual setup via themed advanced commands, paused/playing/idle handovers and both prior profiles pass, including MPV history/privacy/volume. Native rounded clipping and95% surface alpha verified separately. Normal VLC with/without media library, normal MPV SDR/P5 actual presentation, EOF/release and nonactivation pass. All four local artifacts and unsigned/symbol/source checks pass. README credits added; original upstream text preserved. | R83/R84: current alpha/corner, field/popup and disclosure repairs; renewed affected native/composed acceptance; normal release publication, independent delivery and retained/weekly binding/cleanup. These remain advancement blockers. | None. |
+| M4 Settings and menu parity | ACTIVE |192/c1380668 affected native Settings input/save/rollback/restart/focus/Privacy and manual widget review pass, with a fresh full profile-preservation comparison. All13 category layout/theme/width/DPI and unchanged menu/profile/playback/policy evidence retain their reviewed original identities. README credits are present. Earlier normal189 artifacts/presentation remain historical and do not qualify192's normal package. | R83/R84: actual normal composed blur/corners; new normal assembly, playback/picture/artifact/source/symbol checks; final release publication, independent retrieval and retained/weekly binding/cleanup. These remain advancement blockers. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
-Finish the cohesive settings/menu implementation before compiling. Reuse retained
-SDK/MPV/codecs/objects. The integrated settings owners now also affect core
-history, saved options, subtitle rendering and MMDevice volume, so use the full
-incremental MPV path rather than the Qt-only reuse guard. The new libass style
+Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core
+history, saved options, subtitle rendering and MMDevice volume and used the full
+incremental MPV path. The current bounded Preferences.cpp repair uses the
+verified Qt-only409-plugin reuse guard. The integrated libass style
 API requires the documented 0.13.0 minimum; the pinned 0.17.5 input already
 satisfies it. Refresh only affected configuration inputs; do not initialize
 the VM or rebuild unchanged dependencies. Final

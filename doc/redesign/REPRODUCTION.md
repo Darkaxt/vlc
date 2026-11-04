@@ -1,5 +1,24 @@
 # Windows x64 reproduction and recovery
 
+M4 repair192 (`038e53e23ca24049ad584a3d09dc8d2f`) assembled
+`c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18` through the retained Qt-only path.
+Player compilation/link completed0 in1143.5s; the whole Linux group closed0 in
+1173.3s with peak1715027968 bytes, no max/OOM events, `populated=false` and
+released private mounts. The409 non-Qt plugins, configured SDK, core/codec/MPV
+inputs and completed Qt objects were reused. Live linker evidence identified
+9p disk wait; this was not a dependency rebuild or memory failure.
+
+The affected native Settings continuation and manual widget review pass on that
+exact application source. Preserve original failed focus-proxy/disclosure
+checker reports and the concurrent Nuvio comparison: additional Nuvio changes
+were observed after VLC exit, while installed VLC settings/language remained
+unchanged. A fresh full baseline subsequently passed with no exclusions or
+restored user files. Reuse the completed unchanged13-category layout evidence
+under its explicit producer/delta limits; `--settings-input-repair` verifies the
+affected input/save/restart/focus/Privacy paths. Normal assembly, actual composed
+blur/corners, final artifacts/publication and retained/weekly delivery verification
+remain pending. Do not restart SDK setup or repeat the accepted native matrix.
+
 M4 continuation191 (`8aaae126db2d4a179ee6188682aa257b`, source `ef1ac620`)
 successfully resumed190's retained objects through `--resume` and
 `--after-interruption`. It closed0 with an empty Linux group, released private
@@ -14,8 +33,8 @@ sets it on keyboard navigation and
 resets it when showing a widget; it does not represent the last input device.
 Actual item-edge pixels on191 are mouse0, Tab14, mouse-return14. Preserve this
 native failure and use category-local focus/key/mouse events for the repair.
-Complete the remaining Settings collection before rebuilding that bounded
-change with unchanged diagnostic flags. The dropdown check's original failure
+That remaining collection completed before192 rebuilt the bounded change with
+unchanged diagnostic flags. The dropdown check's original failure
 captured a real `QRollEffect` while the list remained hidden; observe its actual
 transition rather than inventing a delay or replaying the click. Fresh native
 alpha-format/round-region checks pass, but composed blur remains unverified.
@@ -25,7 +44,7 @@ font-size label. Use one parser for preset/custom values and their displayed
 units; a numeric-only QIntValidator cannot validate Automatic or percentage
 labels. Original Privacy frame3062:11911 contains no disclosure. Original-size
 snapshots are the native -1/-1 pair (`src/libvlc-module.c`), not0/0. These source
-repairs remain uncompiled/unverified. The remaining collection is now closed,
+repairs were then verified through192's affected continuation. The collection is closed,
 including150/200% layouts, missing-font preservation and history. Retain its
 original font/focus failures; `--settings-input-repair` checks the affected
 focus/Privacy/input/save/restart paths while reusing reviewed unchanged layouts.
