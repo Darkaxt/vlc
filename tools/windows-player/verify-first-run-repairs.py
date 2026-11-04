@@ -599,12 +599,19 @@ def settings_window_region(case, dialog):
             assert dwm.DwmGetWindowAttribute(hwnd,33,ctypes.byref(corners),ctypes.sizeof(corners))==0
             assert corners.value==1,'A second system corner clip is still enabled'
             border=W.DWORD()
-            assert dwm.DwmGetWindowAttribute(hwnd,34,ctypes.byref(border),ctypes.sizeof(border))==0
-            assert border.value==0xfffffffe,'A system border still paints outside the content clip'
+            border_hr=dwm.DwmGetWindowAttribute(hwnd,34,ctypes.byref(border),ctypes.sizeof(border))
+            # Windows accepts setting DWMWA_BORDER_COLOR but this host rejects
+            # its getter with E_INVALIDARG (independently reproduced). An
+            # unavailable readback is not a failed setter or pixel evidence.
+            assert border_hr in (0,ctypes.c_long(0x80070057).value),hex(border_hr&0xffffffff)
+            if border_hr==0:
+                assert border.value==0xfffffffe,'A system border still paints outside the content clip'
             return {'native_id':dialog['native_id'],'region':'none','extended_style':hex(style),
-                'system_corner_preference':corners.value,'system_border_color':hex(border.value),
+                'system_corner_preference':corners.value,
+                'system_border_color':hex(border.value) if border_hr==0 else None,
+                'system_border_query_hresult':hex(border_hr&0xffffffff),
                 'single_content_clip':content,'actual_corner_pixels_verified':False,
-                'limit':'Native composition configuration; actual composed picture remains a separate gate.'}
+                'limit':'Native composition configuration; border getter may be unsupported. Actual composed corner/border pixels remain a separate required gate.'}
         finally:gdi.DeleteObject(region)
     return owned_native_read(case,read)
 
@@ -1245,8 +1252,9 @@ def menus_normal():
             'paint_dispatch_ms':menu['redesignMenuPaintDispatchedMs'],
             'composition':composition,'pixel_proof':'Separate composed capture required'})
         opened=case.inspect('video-context-submenu-'+engine,'widget_click','--menu-action','Video','--capture')
-        menus=[row for row in opened['widgets'] if row['type']=='QMenu']
-        assert len(menus)>=2,'Deferred video submenu did not open'
+        menus=[row for row in opened['widgets'] if row['type'] in ('QMenu','VLCMenu')]
+        assert len({row['native_id'] for row in menus})>=2,'Deferred video submenu did not open'
+        assert any(row['type']=='QMenu' and row['actions'] for row in menus),'Deferred video submenu is empty'
         for row in menus:settings_window_region(case,row)
         case.inspect('video-context-submenu-close-'+engine,'key','--key','0x1000000')
         case.inspect('video-context-close-'+engine,'key','--key','0x1000000')

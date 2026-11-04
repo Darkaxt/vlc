@@ -10,6 +10,31 @@ show mismatched native/painted radii with white edge pixels, a slow blank opaque
 video context menu, absent content blur and classic cone artwork. Preserve
 `D:/Temp/vlc-s8-settings-1.1.5-20261102/composed-rejection-826438e2/review.json`.
 These are internal R83/R84 repair/acceptance blockers; no user approval is pending.
+Focused209 (`ec97458032ea41e39a46ec4196151eff`, source20265f45) now closes0,
+Linux group empty/private mounts released, peak1715535872bytes, no max/OOM.
+Current diagnostic Qt is14387b6263ad5075f8abb3266832691da44ba609ae1338f1b9202ef8deacaff6.
+Original native session71930 now closes0: both-engine context/deferred-submenu,
+live handover, real WASAPI volume and menu teardown pass. Complete Settings at
+100/150/200%, icons and both-engine idle/customization/audio/video/EOF pass.
+All three current category contact sheets, full General at each scale, Controls
+and Playback at100%, the populated context bitmap and four idle/audio/video
+captures were inspected. These establish widget layouts, not compositor pixels.
+Current reconciliation is `native-content-checker-acceptance.json` plus
+`native-content-widget-picture-review.json` in the existing M4 control directory.
+Unchanged policy/playback/profile/preview/first-run/lifetime receipts retain their
+producer identities; guarded source equality and fresh affected workflows bind
+them to20265f45. No duplicate native acceptance is needed for this unchanged code.
+The checker corrections are test-only: this Windows host rejects border-color
+readback although setting it returns S_OK, and the context parent is VLCMenu,
+not QMenu. The standalone border probe and original failed results are retained.
+The attempted composed capture remains FAILED: its inactive-desktop preflight
+finds missing WS_EX_NOACTIVATE on the test dialog, so no input-desktop launch or
+capture occurs. Preserve `native-content-composed/private-metadata-fix/result.json`.
+The user-started `backdrop-review-native-current/review-settings.cmd` binds the
+current optimized diagnostic-source runtime with diagnostic transport disabled
+and its own profile. It is a visual review input, not normal release qualification.
+Normal package preparation and its exact actual composed-picture gate remain required;
+neither native graph readiness nor QWidget PNGs qualify actual blur/corners.
 Build207 (sourcee4d65439) closed0, group empty and private mounts released,
 peak1718808576bytes, no max/OOM, with409 retained non-Qt plugins. Its first
 complete menu workflow verifies real WASAPI controls and live MPV handover,
@@ -268,7 +293,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE |203/aa654113 complete menu/native submenu/quit-with-menu-open and real volume/handover pass. Six successful202 workflows retain guarded producer identities. Affected widget/menu pictures inspected; unchanged13-category/layout/profile/playback/policy proofs retained. README credits present. | R83/R84: current stripped normal package and fresh safe SDR/P5 placement/presentation; actual Windows-composited Settings/menu blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. The old review package remains rejected. | None. |
+| M4 Settings and menu parity | ACTIVE |209/20265f45 complete menus/submenus/teardown, real WASAPI volume/live handover, Settings100/150/200%, icon and both-engine idle workflows pass. Current category/contact/full-size and idle pictures inspected. Unchanged functional receipts retain guarded producer identities. README credits present. | R83/R84: current stripped normal package and fresh safe SDR/P5 placement/presentation; actual Windows-composited Settings/context/submenu blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. The old normal826 review remains rejected. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

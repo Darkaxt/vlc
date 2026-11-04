@@ -38,6 +38,28 @@ the complete new tree atomically and preserve the inverse ownership order on
 release. The small MSVC probe did not rebuild Qt/VLC or touch the input desktop.
 The original failed native result remains retained; it is not accepted evidence.
 
+Focused209 (`ec97458032ea41e39a46ec4196151eff`) closes0/group empty/private
+mounts released after the explicit QString conversion repair. Source20265f45,
+Qt14387b6263ad5075f8abb3266832691da44ba609ae1338f1b9202ef8deacaff6 now commits
+the live context/submenu backdrops in both engines. Native getter34 is unsupported
+on this host despite setter34 returning S_OK; the independent border-readback
+probe records both HRESULTs. Record an unavailable query, never invent a border
+readback or substitute it for the mandatory actual-pixel check. Count VLCMenu
+parents alongside QMenu children and require populated deferred child actions.
+Original native71930 closes0 with all four cases passing: menus in both engines,
+all Settings at100/150/200%, icons and idle/audio/video/customization/EOF.
+`native-content-checker-acceptance.json` binds source20265f45, Qt14387b62, checker
+694b18a9 and each result hash. Current widget/contact-sheet pictures were inspected;
+`native-content-widget-picture-review.json` records their precise visual scope.
+The reconciled native/visual receipts preserve previous producer records and
+verify unchanged owner sources, including whole MPV source equality after removing
+only the newly tested right-click forwarding branch. They explicitly leave actual
+Windows-composited blur/corners unverified. Reuse that evidence for unchanged code.
+The private composed-capture proof remains failed because the test dialog lacks
+native WS_EX_NOACTIVATE. No input-desktop launch follows that failure. Reuse the
+normal package review procedure for the exact normal binary; preparation is not
+acceptance or publication, and the composed-picture gate remains mandatory.
+
 Standalone probe206 (`ae1b5e7bb18544d4bff77267507a7ae9`, original session49270)
 closed0, Linux group empty and private mounts released, peak697901056bytes, no
 max/OOM. It compiled/linked only the menu diagnostic. Its direct popup first
