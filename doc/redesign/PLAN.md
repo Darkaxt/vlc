@@ -19,14 +19,34 @@ acceptance. Reuse the core, codecs, MPV and409 non-Qt plugins; no second stage,
 SDK initialization or full dependency rebuild is needed.
 
 The original rendering continuation190 was deliberately stopped after source
-review found a keyboard-focus regression in the mouse-selection delegate. Qt6.8.3
-stores `WA_KeyboardFocusChange` on the top-level window; the child-view query
-would suppress the keyboard outline. Correct that owner and include actual
-mouse/Tab/mouse item-edge pixel checks in the complete native acceptance.
-190 closed137 with an empty Linux group and no max/OOM events; retain its log,
-completed objects and original pipeline identity. Resume its interrupted player
-step through `--after-interruption`, without resetting the SDK or object graph.
-No native acceptance or new normal release is claimed by that stopped assembly.
+review found a keyboard-focus owner error. Its supported continuation191
+(`8aaae126db2d4a179ee6188682aa257b`, source `ef1ac620`) closed0 with an empty
+Linux group, released private mounts and no max/OOM events, retaining the409
+non-Qt plugins and SDK/core/codec/MPV inputs. Fresh native mouse/Tab/mouse pixels
+are0/14/14: keyboard focus is visible, but mouse return wrongly retains its
+outline. The Qt window attribute is sticky, so querying its correct owner is
+insufficient. Track the category view's actual focus/key/mouse events locally;
+keep the native failure until that correction passes. The remaining native
+Settings collection continues before another bounded Qt assembly. The menu and
+both prior-profile workflows pass on191; the popup checker now observes the
+actual roll-animation/list-visibility transition without a fixed delay. No
+current complete Settings acceptance or normal1.1.5 release is claimed.
+
+The same assembly's custom125% font-size value fails a later Save because its
+numeric-only validator/parser rejects the displayed unit. Manual review of all
+thirteen100% category pages also identified an extra Privacy disclosure (absent
+from original frame3062:11911) and Snapshot Original size incorrectly rendered
+as Custom(-1×-1); upstream documents -1/-1 as the original dimensions. Correct
+these with the focus treatment in the same Preferences.cpp batch. The native
+browser's1542 rows correctly exclude231 source-declared shortcut options from
+the1773-key inventory; its earlier equality assertion was a checker error, not
+a missing native setting. Preserve completed layout evidence and the original
+failed results. The remaining150/200% matrix, missing-font preservation and
+history checks have now finished with clean native exits; the original font and
+focus failures remain false. All13 basic pages,12 applicable expanded pages and
+representative DPI/theme/popup images have been manually inspected. The four
+bounded source corrections and affected input/save/focus/Privacy regression are
+prepared for one retained Qt-only assembly; they are not yet natively verified.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|

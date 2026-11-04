@@ -66,6 +66,7 @@
 #include <QFontComboBox>
 #include <QFontMetrics>
 #include <QKeyEvent>
+#include <QFocusEvent>
 #include <QtMath>
 #include <QGridLayout>
 #include <QGuiApplication>
@@ -100,7 +101,6 @@
 #include <QPersistentModelIndex>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
-#include <QIntValidator>
 #include <algorithm>
 
 namespace
@@ -108,26 +108,62 @@ namespace
 QVariant fontSizeChoice(const QComboBox *combo)
 {
     bool valid=false;
-    const int value=combo->currentIndex()>=0 && combo->currentText()==combo->itemText(combo->currentIndex())
-        ? combo->currentData().toInt(&valid) : combo->currentText().trimmed().toInt(&valid);
     const bool pixels=combo->property("referenceFontSizePixels").toBool();
+    QString text=combo->currentText().trimmed();
+    int value;
+    if (combo->currentIndex()>=0 && text==combo->itemText(combo->currentIndex()))
+        value=combo->currentData().toInt(&valid);
+    else if (!pixels && text==qtr("Automatic"))
+    {
+        value=100;
+        valid=true;
+    }
+    else
+    {
+        if (!pixels && text.endsWith('%'))text.chop(1);
+        value=text.trimmed().toInt(&valid);
+    }
     return valid && value>=(pixels ? 1 : 10) && value<=(pixels ? 1024 : 500)
         ? QVariant(value) : QVariant();
 }
 class SettingsCategoryDelegate final : public QStyledItemDelegate
 {
-    QWidget *view;
+    QListWidget *view;
+    bool keyboardFocus = false;
   public:
-    explicit SettingsCategoryDelegate(QWidget *view) : QStyledItemDelegate(view), view(view) {}
+    explicit SettingsCategoryDelegate(QListWidget *view) : QStyledItemDelegate(view), view(view)
+    {
+        view->installEventFilter(this);
+        view->viewport()->installEventFilter(this);
+    }
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const override
     {
         auto state = option;
         // The reference's selected background/icon is the mouse selection
         // treatment. Keep the additional focus outline for keyboard traversal.
-        if (!view->window()->testAttribute(Qt::WA_KeyboardFocusChange))
+        if (!keyboardFocus)
             state.state &= ~QStyle::State_HasFocus;
         QStyledItemDelegate::paint(painter, state, index);
+    }
+  protected:
+    bool eventFilter(QObject *, QEvent *event) override
+    {
+        const bool previous = keyboardFocus;
+        if (event->type() == QEvent::FocusIn)
+        {
+            const auto reason = static_cast<QFocusEvent *>(event)->reason();
+            keyboardFocus = reason == Qt::TabFocusReason || reason == Qt::BacktabFocusReason
+                         || reason == Qt::ShortcutFocusReason;
+        }
+        else if (event->type() == QEvent::KeyPress)
+            keyboardFocus = true;
+        else if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::FocusOut)
+            keyboardFocus = false;
+        if (previous != keyboardFocus)
+            view->viewport()->update();
+        // These are view/viewport events, not delegate editor events.
+        return false;
     }
 };
 class SettingsLabel final : public QLabel
@@ -1762,15 +1798,9 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
             int index=value->findData(current);
             if(index<0) { value->addItem(QString::number(current),current);index=value->count()-1; }
             value->setCurrentIndex(index);
-            auto *validator=value->findChild<QIntValidator *>("referenceFontSizeValidator");
-            if(!validator)
-            {
-                auto *created=new QIntValidator(value);
-                created->setObjectName("referenceFontSizeValidator");
-                value->lineEdit()->setValidator(created);
-                validator=created;
-            }
-            validator->setRange(pixels ? 1 : 10,pixels ? 1024 : 500);
+            // Numeric-only QIntValidator rejects our own "Automatic" and
+            // percentage labels. One parser owns preset/custom validation at
+            // editingFinished and Save, preserving invalid text for correction.
             value->setToolTip(pixels ? qtr("Font size in pixels (1–1024).") : qtr("Font scale in percent (10–500). Automatic is 100%."));
         };
         sync(key,{});
@@ -1915,7 +1945,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
         else if (mode == "finish-policy")
         { combo->addItem(qtr("Continue"),0);combo->addItem(qtr("Stop"),1);combo->addItem(qtr("Quit VLC"),2); }
         else if (mode == "snapshot-size")
-        { combo->addItem(qtr("Original size"),0);combo->addItem("1920 × 1080",1920);combo->addItem("1280 × 720",1280);combo->addItem("640 × 360",640); }
+        { combo->addItem(qtr("Original size"),-1);combo->addItem("1920 × 1080",1920);combo->addItem("1280 × 720",1280);combo->addItem("640 × 360",640); }
         else if (mode == "startup-volume")
         { combo->addItem(qtr("Remember last volume"),1);combo->addItem(qtr("Always start at the selected volume"),0); }
         else if (mode == "fullscreen-screen")
@@ -1972,7 +2002,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
             if (mode == "snapshot-size")
             {
                 const int width=draftValue(key).toInt(),height=draftValue("snapshot-height").toInt();
-                if ((width==0 && height==0) || (width>0 && height==width*9/16))return width;
+                if ((width==-1 && height==-1) || (width>0 && height==width*9/16))return width;
                 return QStringLiteral("%1 × %2").arg(width).arg(height);
             }
             return draftValue(key);
@@ -2020,7 +2050,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
             {
                 if (mode == "font-size-mode" && value.toInt() && draftValue(key).toInt()) return;
                 stageValue(key,value);
-                if (mode == "snapshot-size") stageValue("snapshot-height",value.toInt()*9/16);
+                if (mode == "snapshot-size") stageValue("snapshot-height",value.toInt()<0 ? -1 : value.toInt()*9/16);
             }
         });
     }
@@ -2439,7 +2469,7 @@ QWidget *PrefsDialog::createCategory(int category)
         }
     }
     addReferenceRows(form, category, false);
-    auto *advanced = new QPushButton(this);
+    auto *advanced = new QPushButton(page);
     advanced->setObjectName("preferencesAdvanced" + QString::number(category));
     advanced->setText(qtr("Advanced Options"));
     advanced->setCheckable(true);
@@ -2449,8 +2479,15 @@ QWidget *PrefsDialog::createCategory(int category)
     advanced->setLayoutDirection(Qt::RightToLeft);
     advanced->setFixedHeight(38);
     advanced->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    form->addSpacing(20);
-    form->addWidget(advanced);
+    // The original Privacy frame has no disclosure. Keep its lazy native
+    // browser reachable from Search without adding a reference-menu row.
+    if (category == 2)
+        advanced->hide();
+    else
+    {
+        form->addSpacing(20);
+        form->addWidget(advanced);
+    }
     auto *advancedBody = new QWidget;
     auto *advancedForm = new QVBoxLayout(advancedBody);
     advancedForm->setContentsMargins(0, 20, 0, 0);
@@ -2556,6 +2593,8 @@ void PrefsDialog::selectCategory(int category)
     grid->removeWidget(pages);
     grid->addWidget(pages, 1, 1, 1, 2);
     pages->setCurrentWidget(categoryPages[category]);
+    if (category == 2)
+        categoryPages[category]->findChild<QPushButton *>("preferencesAdvanced2")->setChecked(false);
     if(auto *all=categoryPages[category]->findChild<QToolButton *>("preferencesAllOptions"+QString::number(category)))
     {
         all->setChecked(false);

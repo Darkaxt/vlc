@@ -39,20 +39,61 @@ parser.add_argument('--resume-settings-after-desktop-change', action='store_true
     help='Resume the closed settings pass after its completed150%% matrix lost the input-desktop preservation check')
 parser.add_argument('--resume-settings-history', action='store_true',
     help='Continue the closed settings pass at its unfinished history workflow')
+parser.add_argument('--resume-settings-behaviour', action='store_true',
+    help='Retain the completed100%% matrix and continue after the native option-browser count check')
+parser.add_argument('--collect-settings-layouts', action='store_true',
+    help='Keep the reproduced font/focus failures; collect remaining DPI/font/history checks without replaying100%% layouts')
+parser.add_argument('--settings-input-repair', action='store_true',
+    help='Verify repaired focus/input/save workflows and Privacy at all DPI values; reuse the reviewed unchanged category layouts')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
 resume_empty_survey=args.case=='settings-survey' and (root/'result.json').is_file()
 resume_settings=args.resume_settings_after_desktop_change
 resume_history=args.resume_settings_history
-assert not (resume_settings and resume_history)
-assert not (resume_settings or resume_history) or args.case=='settings'
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history
+resume_behaviour=args.resume_settings_behaviour
+collect_layouts=args.collect_settings_layouts
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts))<=1
+assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
+assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if resume_history:
+if collect_layouts:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert previous['failures']=={'settings-category-focus':['Mouse did not clear the keyboard-only outline'],'settings':'AssertionError()'}
+    assert len(previous['cases'])==2 and previous['cases'][-1]['name']=='settings-1-behaviour-resumed'
+    assert all(case['exit_code']==0 and case['owned_desktop_never_observed_as_input'] for case in previous['cases'])
+    stopped=previous['cases'][-1]
+    assert stopped['steps'][-2]['label']=='native-track-invalid-save'
+    response=json.loads((root/stopped['steps'][-2]['response']).read_text(encoding='utf-8'))
+    assert any(row['type']=='QMessageBox' and row['name']=='Invalid font size' for row in response['widgets'])
+    assert any(row['id']=='value-audio-track' and row['text']=='-' for row in response['widgets'])
+    completed=previous['cases'][0]
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
+    historical=root/'result-before-font-size-blocker.json'
+    assert not historical.exists(),'Keep the original remaining-layout collection'
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_behaviour:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert previous['failures']=={'settings-category-focus':['Mouse did not clear the keyboard-only outline'],'settings':'AssertionError()'}
+    assert len(previous['cases'])==1
+    completed=previous['cases'][0]
+    assert completed['name']=='settings-1' and completed['exit_code']==0 and completed['owned_desktop_never_observed_as_input']
+    assert completed['steps'][-2]['label']=='all-settings-browser' and completed['steps'][-1]['label']=='quit'
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
+    historical=root/'result-before-native-browser-count.json'
+    assert not historical.exists(),'Continue the original behaviour recovery instead of duplicating it'
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_history:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
     failure=previous['failures']
@@ -124,7 +165,24 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
-if resume_history:
+if collect_layouts:
+    assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
+    records['cases']=previous['cases']
+    records['failures']=previous['failures']
+    records['reused_settings_rendering']=previous['reused_settings_rendering']
+    records['incomplete_behaviour_preserved']={'historical_result':str(historical),
+        'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'source_commit':records['source_commit'],
+        'reason':'The displayed125% custom font value is rejected on later Save. Preserve the actual font/focus failures and collect only independent remaining DPI/font/history checks before one coherent source rebuild.'}
+elif resume_behaviour:
+    assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
+    records['cases']=previous['cases']
+    records['failures']={'settings-category-focus':previous['failures']['settings-category-focus']}
+    records['reused_settings_rendering']={'historical_result':str(historical),
+        'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'case':'settings-1','rendering_assertions_completed':True,'original_case_passed':False,
+        'limits':'The complete100% theme/viewport/category matrix is retained. Mouse-return focus remains failed; the later browser-count assertion is corrected against native shortcut declarations. Resume behaviour and remaining DPI/font/history workflows without replaying that matrix.'}
+elif resume_history:
     assert previous['source_commit']==records['source_commit']
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases'][:-1]
@@ -1066,11 +1124,12 @@ def settings():
     corrections={key.casefold():value for key,value in reference['copy_corrections'].items()}
     categories=reference['categories']
     survey=args.case=='settings-survey'
-    if resume_settings:
+    if resume_settings or resume_behaviour or collect_layouts:
         labels={row['label'] for row in completed['settings_views']}
         required={theme+'-'+width+'-'+str(index)+'-'+kind
             for theme in ('dark','light') for width in ('normal','narrow')
-            for index in range(len(categories)) for kind in ('basic','expanded','page-0')}
+            for index in range(len(categories))
+            for kind in (('basic','expanded','page-0') if categories[index].get('advanced_disclosure',True) else ('basic','page-0'))}
         assert required<=labels,(required-labels)
         assert all((root/completed['name']/'evidence'/row['capture']).is_file()
             for row in completed['settings_views'])
@@ -1149,6 +1208,9 @@ def settings():
             assert password.get('text')=='[redacted]'
     def capture(case,label,index,dark):
         result=case.inspect(label,'snapshot','--capture')
+        if not categories[index].get('advanced_disclosure',True):
+            assert not any(row['id']=='preferencesAdvanced'+str(index)
+                for row in result['widgets']),('Unexpected reference disclosure',categories[index]['category'])
         dialog=widget(result,'redesignPreferences')
         assert abs(dialog['dpr']-float(case.record['scale']))<0.01
         native_region=settings_window_region(case,dialog)
@@ -1177,7 +1239,7 @@ def settings():
         return result
     def selection_focus(case):
         # Exercise Qt's real mouse/Tab path and inspect the painted item edge.
-        # Qt stores keyboard focus-change state on the top-level window.
+        # Verify the input-device transition, including returning to the mouse.
         def outline(label):
             snapshot=case.inspect(label,'snapshot','--capture')
             nav=widget(snapshot,'preferencesCategories')
@@ -1201,7 +1263,7 @@ def settings():
             bottom=round((y+row['y']+row['height']*2/3)*dpr)
             capture=next(item for item in snapshot['widget_captures'] if item['widget']==dialog['node'])
             assert capture['saved']
-            accent=tuple(bytes.fromhex(nav['palette_highlight'].removeprefix('#')))
+            accent=tuple(bytes.fromhex(dialog['palette_highlight'].removeprefix('#')))
             with Image.open(case.evidence/capture['file']) as original:
                 image=original.convert('RGB')
                 assert 0<=left<right<=image.width and 0<=top<bottom<=image.height
@@ -1210,7 +1272,6 @@ def settings():
             return snapshot,pixels,capture['file']
         case.native('category-focus-mouse','preferencesCategories')
         mouse,mouse_pixels,mouse_capture=outline('category-focus-mouse-painted')
-        assert mouse_pixels==0,('Mouse selection has a keyboard outline',mouse_pixels)
         snapshot=case.native('category-focus-tab-start','preferencesSearch')
         seen=set()
         while not widget(snapshot,'preferencesCategories')['focused']:
@@ -1223,14 +1284,22 @@ def settings():
             snapshot=case.inspect('category-focus-tab-'+str(len(seen)),'widget_key',
                 '--node',str(target['node']),'--key','0x1000001')
         keyboard,keyboard_pixels,keyboard_capture=outline('category-focus-keyboard-painted')
-        assert keyboard_pixels>0,'Keyboard category selection lost its visible focus outline'
         case.native('category-focus-mouse-return','preferencesCategories')
         returned,returned_pixels,returned_capture=outline('category-focus-mouse-return-painted')
-        assert returned_pixels==0,('Mouse did not clear the keyboard-only outline',returned_pixels)
+        failures=[]
+        if mouse_pixels:failures.append('Mouse selection has a keyboard outline')
+        if not keyboard_pixels:failures.append('Keyboard category selection lost its visible focus outline')
+        if returned_pixels:failures.append('Mouse did not clear the keyboard-only outline')
         case.record['category_selection_focus']={'mouse_outline_pixels':mouse_pixels,
             'keyboard_outline_pixels':keyboard_pixels,'mouse_return_outline_pixels':returned_pixels,
             'captures':[mouse_capture,keyboard_capture,returned_capture],
+            'failures':failures,'passed':not failures,
             'scope':'Actual painted item-edge pixels after mouse/Tab/mouse events on the owned inactive desktop.'}
+        if failures:
+            # Preserve this failure while collecting the remaining independent
+            # category/layout/behavior checks from the same completed assembly.
+            # It still rejects both this case and the overall acceptance result.
+            records.setdefault('failures',{})['settings-category-focus']=failures
         save()
     def edit(case,label,target,value,scroll):
         case.reveal(label+'-reveal',target,scroll)
@@ -1274,7 +1343,24 @@ def settings():
         case.reveal('all-settings-commands-reveal','preferencesAction-vlc-commands','preferencesScroll0')
         case.native('all-settings-commands','preferencesAction-vlc-commands')
         browser=case.inspect('all-settings-browser','widget_click','--menu-action','All VLC settings…')
-        assert widget(browser,'preferencesResults')['model_count']==widget(browser,'redesignPreferences')['option_count']
+        inventory=widget(browser,'redesignPreferences')
+        keys=set(inventory['option_keys'])
+        assert len(keys)==inventory['option_count']
+        # CONFIG_ITEM_KEY entries use the dedicated shortcut editor. Derive
+        # their exact names from this runtime's pinned native declarations,
+        # including the fork's qt-key-* entries; a key-name prefix is not a type.
+        declared_shortcuts=set()
+        for name in ('src/libvlc-module.c','modules/gui/qt/qt.cpp'):
+            native_source=subprocess.check_output(['git','-C',str(repo),'show',records['source_commit']+':'+name],text=True)
+            for key in re.findall(r'\badd_key\(\s*"([^"]+)"',native_source):
+                declared_shortcuts.update((key,'global-'+key))
+            declared_shortcuts.update(re.findall(r'add_string_inner\(\s*CONFIG_ITEM_KEY\s*,\s*"([^"]+)"',native_source))
+        shortcut_keys=keys & declared_shortcuts
+        count=widget(browser,'preferencesResults')['model_count']
+        assert count==len(keys-shortcut_keys),('Native non-shortcut option coverage',count,len(keys),sorted(shortcut_keys))
+        case.record['native_option_browser']={'public_native_options':len(keys),
+            'non_shortcut_browser_rows':count,'dedicated_shortcut_option_keys':sorted(shortcut_keys),
+            'shortcut_route':'Controls / Edit Keyboard Shortcuts; preserved native hotkey editor'}
         case.native('engine-search-focus','preferencesSearch')
         case.inspect('engine-search-type','widget_key','--target','preferencesSearch','--key','0','--text','qt-playback-engine')
         case.native('engine-search-results','preferencesResults')
@@ -1294,9 +1380,20 @@ def settings():
         invalid=case.native('font-size-invalid-save','preferencesSave')
         assert any('10–500' in row.get('text','') for row in invalid['widgets'])
         case.inspect('font-size-invalid-dismiss','widget_click','--widget-text','OK')
+        automatic=edit(case,'font-size-automatic','value-sub-text-scale-size','Automatic','preferencesScroll7')
+        assert widget(automatic,'value-sub-text-scale-size')['current_text']=='Automatic'
+        literal=edit(case,'font-size-percent-label','value-sub-text-scale-size','150%','preferencesScroll7')
+        assert widget(literal,'value-sub-text-scale-size')['current_text']=='150%'
         resized=edit(case,'font-size-custom','value-sub-text-scale-size','125','preferencesScroll7')
         assert widget(resized,'value-sub-text-scale-size')['current_text']=='125%'
         assert widget(resized,'value-sub-text-scale-size')['item_count']>=5
+        select(case,5,'snapshot-dimensions')
+        case.reveal('snapshot-dimensions-reveal','value-snapshot-width-size','preferencesScroll5')
+        case.inspect('snapshot-original-first','widget_key','--target','value-snapshot-width-size','--key','0x1000010')
+        preset=case.inspect('snapshot-preset','widget_key','--target','value-snapshot-width-size','--key','0x1000015')
+        assert widget(preset,'value-snapshot-width-size')['current_text']=='1920 × 1080'
+        original=case.inspect('snapshot-original-restore','widget_key','--target','value-snapshot-width-size','--key','0x1000010')
+        assert widget(original,'value-snapshot-width-size')['current_text']=='Original size'
         select(case,4,'native-track-chooser')
         edit(case,'native-track-invalid','value-audio-track','-','preferencesScroll4')
         invalid=case.native('native-track-invalid-save','preferencesSave')
@@ -1366,6 +1463,12 @@ def settings():
         assert widget(scoped,'value-short-jump-size')['value']==7
         scoped=select(case,4,'saved-native-track')
         assert widget(scoped,'value-audio-track')['text']=='0'
+        scoped=select(case,5,'saved-snapshot-size')
+        assert widget(scoped,'value-snapshot-width-size')['current_text']=='Original size'
+        saved_text=config_file.read_text(encoding='utf-8')
+        for key in ('snapshot-width','snapshot-height'):
+            # Native Save comments values equal to the compiled default.
+            assert re.search(r'^#?'+key+r'=-1\s*$',saved_text,re.M),('Original snapshot dimensions were not saved',key)
         scoped=select(case,7,'saved-subtitles-color')
         assert widget(scoped,'value-freetype-color')['text']=='#A1B2C3'
         assert widget(scoped,'value-sub-language')['current_text']=='jpn,eng'
@@ -1384,7 +1487,37 @@ def settings():
         case.record['settings_behaviour']={'shared_native_and_reference_draft':True,'cancel':True,
             'invalid_save_preserves_draft':True,'locked_save_rolls_back_native_memory_and_file':True,
             'failed_save_preserves_draft_for_retry':True,'typed_save_readback':True,'equalizer':True,'native_plugin_rescan':True,
-            'invalid_color_rejected':True,'color_and_custom_language_readback':True,'native_track_validation_readback':True}
+            'invalid_color_rejected':True,'color_and_custom_language_readback':True,'native_track_validation_readback':True,
+            'formatted_font_size_readback':True,'original_snapshot_dimensions_readback':True}
+    def check_saved_startup(case):
+        for name,engine,extra,rate in [(name+'-'+engine,engine,extra,rate) for engine in ('vlc','mpv')
+                for name,extra,rate in [('saved-extra-startup',(),1.5),('explicit-extra-priority',('--rate=1.75',),1.75)]]:
+            restarted=Case(name,engine=engine,media=fixtures/'control.mkv',reused_profile=case.path/'profile',extra=extra)
+            try:
+                result=restarted.inspect('saved-rate-effective','snapshot','--await-core','rate','--await-value',str(rate))
+                assert abs(result['core']['rate']-rate)<0.001
+                restarted.inspect('restart-settings','key','--key','0x50','--modifiers','0x4000000')
+                result=select(restarted,2,'restart-privacy')
+                assert widget(result,'value-history-exclude')['text']=='private-*;*.secret'
+                assert not widget(result,'value-save-playback-position')['checked']
+                result=select(restarted,7,'restart-subtitles')
+                assert widget(result,'value-freetype-color')['text']=='#A1B2C3'
+                assert widget(result,'value-sub-language')['current_text']=='jpn,eng'
+                assert widget(result,'value-sub-text-scale-size')['current_text']=='125%'
+                result=select(restarted,5,'restart-snapshot-size')
+                assert widget(result,'value-snapshot-width-size')['current_text']=='Original size'
+                result=select(restarted,4,'restart-track')
+                assert widget(result,'value-audio-track')['text']=='0'
+                restarted.native('restart-close-settings','preferencesClose')
+                restarted.close(True)
+            finally:restarted.close()
+    if resume_behaviour:
+        recovery=Case('settings-1-behaviour-resumed',scale='1',media=fixtures/'control.mkv',reused_profile=root/'settings-1/profile')
+        try:
+            behaviour(recovery)
+            recovery.close(True)
+        finally:recovery.close()
+        check_saved_startup(recovery)
     if resume_settings:
         lifecycle=Case('settings-1-5-lifecycle-resumed' if resume_external_transition else 'settings-1-5-lifecycle',scale='1.5',media=fixtures/'control.mkv')
         try:
@@ -1400,7 +1533,7 @@ def settings():
         finally:lifecycle.close()
         records['reused_settings_rendering']['fresh_lifecycle_case']=lifecycle.record['name']
         assert lifecycle.record['passed'] and lifecycle.record['owned_desktop_never_observed_as_input']
-    for scale in (() if resume_history else ('2',) if resume_settings else ('1',) if survey else ('1','1.5','2')):
+    for scale in (() if resume_history else ('1.5','2') if resume_behaviour or collect_layouts else ('2',) if resume_settings else ('1',) if survey else ('1','1.5','2')):
         case=Case('settings-'+scale.replace('.','-'),scale=scale,media=fixtures/'control.mkv')
         try:
             for dark in ((True,) if survey else (True,False)):
@@ -1409,16 +1542,20 @@ def settings():
                 case.native('stage-theme-'+str(dark),'preferencesTheme'+('2' if dark else '1'))
                 case.native('save-theme-'+str(dark),'preferencesSave')
                 case.inspect('reopen-theme-'+str(dark),'key','--key','0x50','--modifiers','0x4000000')
-                if dark and scale=='1' and not survey:
+                if dark and (scale=='1' or args.settings_input_repair) and not survey:
                     selection_focus(case)
                 for narrow in ((False,) if survey else (False,True)):
                     case.inspect('viewport-'+str(dark)+'-'+str(narrow),'widget_resize','--target','redesignPreferences',
                                  '--width','740' if narrow else '1048','--height','700' if narrow else '865')
                     for index,category in enumerate(categories):
+                        if args.settings_input_repair and index!=2:continue
                         label=('dark' if dark else 'light')+('-narrow-' if narrow else '-normal-')+str(index)
                         snapshot=select(case,index,label)
-                        button=widget(snapshot,'preferencesAdvanced'+str(index))
-                        if button.get('checked'):
+                        disclosure=category.get('advanced_disclosure',True)
+                        if not disclosure:
+                            assert not any(row['id']=='preferencesAdvanced'+str(index) for row in snapshot['widgets']),('Unexpected Privacy disclosure',index)
+                        button=widget(snapshot,'preferencesAdvanced'+str(index)) if disclosure else None
+                        if disclosure and button.get('checked'):
                             case.reveal(label+'-reveal-collapse',button['id'],'preferencesScroll'+str(index))
                             case.native(label+'-collapse',button['id'])
                         if index==6:
@@ -1430,22 +1567,34 @@ def settings():
                         snapshot=capture(case,label+'-basic',index,dark)
                         check_labels(snapshot,index,False)
                         if index==0 and not narrow and not survey:
-                            popup=case.native(label+'-language-popup','preferencesLanguage','--capture')
+                            popup=case.native(label+'-language-popup-open','preferencesLanguage')
+                            animation_observations=0
+                            while not any(item['id']=='preferencesLanguage-choices' for item in popup['widgets']):
+                                # Qt's combo roll effect temporarily owns the
+                                # visible surface while the real list is hidden.
+                                # Observe its actual transition, without another
+                                # click, a fixed delay or repeated image captures.
+                                assert any(item['type']=='QRollEffect' for item in popup['widgets']),('Choice list absent outside popup animation',label)
+                                animation_observations+=1
+                                popup=case.inspect(label+'-language-popup-transition-'+str(animation_observations),'snapshot')
+                            popup=case.inspect(label+'-language-popup','snapshot','--capture')
                             choices=widget(popup,'preferencesLanguage-choices')
                             assert choices['rendered_rows'],('No actual choice rows rendered',label)
                             assert choices['palette_text'].lower()==('#8f8f8f' if dark else '#2e2e2e'),('Popup text does not follow the settings palette',label,choices['palette_text'])
                             assert all(any(column for column in row['columns']) for row in choices['rendered_rows'])
                             case.inspect(label+'-language-popup-close','widget_key','--target',choices['id'],'--key','0x1000000')
                             case.record.setdefault('settings_choice_popups',[]).append({'label':label,'palette_text':choices['palette_text'],'visible_rows':len(choices['rendered_rows'])})
-                        case.reveal(label+'-reveal-advanced','preferencesAdvanced'+str(index),'preferencesScroll'+str(index))
-                        expanded=case.native(label+'-expand','preferencesAdvanced'+str(index))
+                        if disclosure:
+                            case.reveal(label+'-reveal-advanced','preferencesAdvanced'+str(index),'preferencesScroll'+str(index))
+                            expanded=case.native(label+'-expand','preferencesAdvanced'+str(index))
                         if index==6:
                             eq=widget(expanded,'preferencesAction-equalizer')
                             if not eq.get('checked'):
                                 case.reveal(label+'-reveal-equalizer',eq['id'],'preferencesScroll6')
                                 case.native(label+'-equalizer',eq['id'])
-                        snapshot=capture(case,label+'-expanded',index,dark)
-                        check_labels(snapshot,index,True)
+                        if disclosure:
+                            snapshot=capture(case,label+'-expanded',index,dark)
+                            check_labels(snapshot,index,True)
                         case.inspect(label+'-expanded-top','widget_scroll','--target','preferencesScroll'+str(index),'--delta','24000')
                         seen=set()
                         while not survey:
@@ -1460,29 +1609,12 @@ def settings():
                             case.inspect(label+'-scroll-'+str(len(seen)),'widget_scroll','--target',area['id'],'--delta','-480')
                 case.native('close-settings-'+str(dark),'preferencesClose')
             if scale=='1' and not survey:behaviour(case)
-            case.close(True)
+            case.close(not case.record.get('category_selection_focus',{}).get('failures'))
         finally:case.close()
         if survey:
             return # A bounded all-category diagnosis, never stage acceptance.
         if scale=='1':
-            for name,engine,extra,rate in [(name+'-'+engine,engine,extra,rate) for engine in ('vlc','mpv')
-                    for name,extra,rate in [('saved-extra-startup',(),1.5),('explicit-extra-priority',('--rate=1.75',),1.75)]]:
-                restarted=Case(name,engine=engine,media=fixtures/'control.mkv',reused_profile=case.path/'profile',extra=extra)
-                try:
-                    result=restarted.inspect('saved-rate-effective','snapshot','--await-core','rate','--await-value',str(rate))
-                    assert abs(result['core']['rate']-rate)<0.001
-                    restarted.inspect('restart-settings','key','--key','0x50','--modifiers','0x4000000')
-                    result=select(restarted,2,'restart-privacy')
-                    assert widget(result,'value-history-exclude')['text']=='private-*;*.secret'
-                    assert not widget(result,'value-save-playback-position')['checked']
-                    result=select(restarted,7,'restart-subtitles')
-                    assert widget(result,'value-freetype-color')['text']=='#A1B2C3'
-                    assert widget(result,'value-sub-language')['current_text']=='jpn,eng'
-                    result=select(restarted,4,'restart-track')
-                    assert widget(result,'value-audio-track')['text']=='0'
-                    restarted.native('restart-close-settings','preferencesClose')
-                    restarted.close(True)
-                finally:restarted.close()
+            check_saved_startup(case)
 
     # A displayed font fallback must not replace the user's unavailable font
     # when the new menu saves an unrelated native setting.

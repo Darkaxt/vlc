@@ -1,16 +1,37 @@
 # Windows x64 reproduction and recovery
 
-M4 rendering continuation190 (`8609e71bc56441a4b21aa79f741d9d16`) was
-deliberately stopped, closing137 with an empty Linux group and no max/OOM events,
-to correct the category delegate's focus-state owner before acceptance. Preserve
-its completed objects and original pipeline attempt. The supported continuation
-is the same `diagnostics-mpv-current` player step with `--resume` and
-`--after-interruption` pointing to that original closed supervisor report.
-This is not a compiler/OOM failure or a new SDK build. The pinned Qt6.8.3
+M4 continuation191 (`8aaae126db2d4a179ee6188682aa257b`, source `ef1ac620`)
+successfully resumed190's retained objects through `--resume` and
+`--after-interruption`. It closed0 with an empty Linux group, released private
+mounts and no max/OOM events.190's intentional137 closure remains historical;
+neither result requires SDK initialization or dependency/configuration reset.
+The pinned Qt6.8.3
 [style option implementation](https://raw.githubusercontent.com/qt/qtbase/v6.8.3/src/widgets/styles/qstyleoption.cpp)
-reads `WA_KeyboardFocusChange` from the top-level window. Native acceptance must
-inspect actual mouse/Tab/mouse item-edge pixels, alongside the complete
-Settings repair, before normal freeze/delivery.
+reads `WA_KeyboardFocusChange` from the top-level window, but
+[QApplication](https://raw.githubusercontent.com/qt/qtbase/v6.8.3/src/widgets/kernel/qapplication.cpp)
+sets it on keyboard navigation and
+[QWidget](https://raw.githubusercontent.com/qt/qtbase/v6.8.3/src/widgets/kernel/qwidget.cpp)
+resets it when showing a widget; it does not represent the last input device.
+Actual item-edge pixels on191 are mouse0, Tab14, mouse-return14. Preserve this
+native failure and use category-local focus/key/mouse events for the repair.
+Complete the remaining Settings collection before rebuilding that bounded
+change with unchanged diagnostic flags. The dropdown check's original failure
+captured a real `QRollEffect` while the list remained hidden; observe its actual
+transition rather than inventing a delay or replaying the click. Fresh native
+alpha-format/round-region checks pass, but composed blur remains unverified.
+
+The191 Settings pass also reproduced a later Save rejecting the displayed125%
+font-size label. Use one parser for preset/custom values and their displayed
+units; a numeric-only QIntValidator cannot validate Automatic or percentage
+labels. Original Privacy frame3062:11911 contains no disclosure. Original-size
+snapshots are the native -1/-1 pair (`src/libvlc-module.c`), not0/0. These source
+repairs remain uncompiled/unverified. The remaining collection is now closed,
+including150/200% layouts, missing-font preservation and history. Retain its
+original font/focus failures; `--settings-input-repair` checks the affected
+focus/Privacy/input/save/restart paths while reusing reviewed unchanged layouts.
+The native browser covers1542 non-shortcut options;231 CONFIG_ITEM_KEY names
+derived from the pinned core/Qt declarations account for the1773-key inventory.
+Keep their dedicated hotkey-editor route and avoid a name-prefix guess.
 
 Current delivery is [Modern VLC Fork 1.1.4](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.4),
 application source `6288be3623fdeefb505f3f0c5ea5fd24bf0fcf2d`, upstream

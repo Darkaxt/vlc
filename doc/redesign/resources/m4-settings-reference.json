@@ -747,6 +747,7 @@
     },
     {
       "category": "Privacy",
+      "advanced_disclosure": false,
       "frames": [
         {
           "source_frame": "3062:11911",

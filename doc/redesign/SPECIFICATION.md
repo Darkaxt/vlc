@@ -52,6 +52,13 @@ themed VLC commands / All VLC settings browser, rather than appending generic
 option-browser/engine rows to the reference category layout. Preserve the live
 VLC/MPV switcher and every native setting's staged/save/cancel behavior.
 
+Further source/reference reconciliation,4 November2026: Privacy frame3062:11911
+has no Advanced Options disclosure; preserve its extra native options through
+Search without adding that row to the reference page. Font-size editing must
+accept its own displayed percentage/Automatic labels through later Save and
+restart. Snapshot Original size must use the existing native -1/-1 dimensions,
+preserving custom dimensions and distinguishing0's aspect-ratio semantics.
+
 R84 (M4): strengthen acceptance to reject unexpected primary-menu rows and verify
 all thirteen settings categories, their sections/control types, dependent states,
 native behavior and persistence. Compare actual native pixels with the reference
