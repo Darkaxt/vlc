@@ -22,11 +22,81 @@
 #include <QWindow>
 #include <QRegion>
 #include <QVariant>
+#include <QAbstractNativeEventFilter>
+#include <QCoreApplication>
+#include <QHash>
+#include <QPointer>
+#include <QPlatformSurfaceEvent>
+#include <QWidget>
 
 #include <cassert>
 
 #include <dwmapi.h>
 #include <winuser.h>
+
+static void setBlurBehind(QWindow *window, bool enable, const QRegion& region);
+
+namespace {
+constexpr LONG_PTR noRedirectionBitmap = 0x00200000L;
+
+// Qt regenerates GWL_EXSTYLE when its window flags change. Own only the two
+// composition bits for windows using this effect, at that native transition;
+// setting them once in QWidget::showEvent is overwritten by Qt afterwards.
+class BackdropStyles final : public QObject, public QAbstractNativeEventFilter
+{
+    QHash<HWND, QPointer<QWindow>> m_windows;
+public:
+    explicit BackdropStyles(QObject *parent) : QObject(parent)
+    {
+        QCoreApplication::instance()->installNativeEventFilter(this);
+    }
+    void watch(QWindow *window, bool enabled)
+    {
+        window->setProperty("redesignOwnsBackdropStyle", enabled);
+        const auto hwnd = reinterpret_cast<HWND>(window->winId());
+        if (enabled) {
+            m_windows.insert(hwnd, window);
+            window->installEventFilter(this);
+        } else {
+            m_windows.remove(hwnd);
+            window->removeEventFilter(this);
+        }
+    }
+    bool nativeEventFilter(const QByteArray&, void *message, qintptr*) override
+    {
+        auto *event = static_cast<MSG *>(message);
+        if (event->message != WM_STYLECHANGING || event->wParam != WPARAM(GWL_EXSTYLE))
+            return false;
+        auto owner = m_windows.find(event->hwnd);
+        if (owner == m_windows.end()) return false;
+        if (!owner.value() || !owner.value()->handle() ||
+            reinterpret_cast<HWND>(owner.value()->winId()) != event->hwnd ||
+            !owner.value()->property("redesignOwnsBackdropStyle").toBool()) {
+            m_windows.erase(owner);
+            return false;
+        }
+        auto *style = reinterpret_cast<STYLESTRUCT *>(event->lParam);
+        style->styleNew = (style->styleNew & ~WS_EX_LAYERED) | noRedirectionBitmap;
+        return false; // Preserve Qt's handling of every other style bit/event.
+    }
+    bool eventFilter(QObject *object, QEvent *event) override
+    {
+        auto *window = qobject_cast<QWindow *>(object);
+        if (window && event->type() == QEvent::PlatformSurface &&
+            static_cast<QPlatformSurfaceEvent *>(event)->surfaceEventType() == QPlatformSurfaceEvent::SurfaceCreated &&
+            window->property("redesignOwnsBackdropStyle").toBool())
+            setBlurBehind(window, true, {});
+        return false;
+    }
+};
+
+BackdropStyles *backdropStyles()
+{
+    static QPointer<BackdropStyles> styles;
+    if (!styles) styles = new BackdropStyles(QCoreApplication::instance());
+    return styles;
+}
+}
 
 static bool isEffectAvailable(const QWindow* window, const WindowEffectsModule::Effect effect)
 {
@@ -71,7 +141,7 @@ static bool isEffectAvailable(const QWindow* window, const WindowEffectsModule::
     };
 }
 
-static void setBlurBehind(QWindow* const window, const bool enable = true, const QRegion& region = {})
+static void setBlurBehind(QWindow* const window, const bool enable, const QRegion& region)
 {
     Q_UNUSED(region);
 
@@ -79,6 +149,10 @@ static void setBlurBehind(QWindow* const window, const bool enable = true, const
     assert(window->winId()); // use QWindow::create() before calling this function
 
     const auto hwnd = reinterpret_cast<HWND>(window->winId());
+    // Quick's existing compositor owns its own native style. Keep this repair
+    // restricted to accelerated QWidget menus/dialogs, including recreated HWNDs.
+    if (window->property("redesignOwnsBackdropStyle").toBool() || QWidget::find(WId(hwnd)))
+        backdropStyles()->watch(window, enable);
     if (enable)
     {
         assert(window->surfaceType() == QSurface::Direct3DSurface);
@@ -87,7 +161,7 @@ static void setBlurBehind(QWindow* const window, const bool enable = true, const
         // backdrop. The swapchain owns alpha; DWM owns the outer native clip.
         auto style = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
         SetWindowLongPtr(hwnd, GWL_EXSTYLE,
-                         (style & ~WS_EX_LAYERED) | 0x00200000L /* WS_EX_NOREDIRECTIONBITMAP */);
+                         (style & ~WS_EX_LAYERED) | noRedirectionBitmap);
         const MARGINS margins{-1, -1, -1, -1};
         DwmExtendFrameIntoClientArea(hwnd, &margins);
         const DWORD corners = 2; // DWMWCP_ROUND

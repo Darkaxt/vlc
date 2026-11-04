@@ -32,7 +32,10 @@ Rectangle {
             ShaderEffectSource {
                 id: libraryBackdrop
                 width: glass.width+glass.blurPadding*2; height: glass.height+glass.blurPadding*2
-                sourceItem: glass.active ? glass.backgroundSource : null
+                // Loader owns the whole chain's lifetime. Do not detach its
+                // source or switch DualKawase into its non-live buffer-release
+                // sequence while this live popup chain is being destroyed.
+                sourceItem: glass.backgroundSource
                 sourceRect: {
                     if (!sourceItem || !glass.parent) return Qt.rect(0,0,width,height)
                     // Track the popup item's placement as well as its size. mapToItem
@@ -42,12 +45,12 @@ Rectangle {
                     return Qt.rect(origin.x-glass.blurPadding,origin.y-glass.blurPadding,width,height)
                 }
                 textureSize: Qt.size(Math.ceil(width*glass.eDPR),Math.ceil(height*glass.eDPR))
-                live: glass.active; visible: false
+                live: true; visible: false
             }
             Widgets.DualKawaseBlur {
                 id: blurredBackdrop
                 width: libraryBackdrop.width; height: libraryBackdrop.height
-                source: libraryBackdrop; live: glass.active
+                source: libraryBackdrop; live: true
                 mode: Widgets.DualKawaseBlur.Mode.FourPass
                 // Four-pass variance is (175/6)*(radius-0.5)^2. Match the source's
                 // 50px backdrop radius (Gaussian sigma 25px), scaled by actual DPR.
@@ -59,7 +62,7 @@ Rectangle {
                 sourceItem: blurredBackdrop
                 sourceRect: Qt.rect(glass.blurPadding,glass.blurPadding,width,height)
                 textureSize: Qt.size(Math.ceil(width*glass.eDPR),Math.ceil(height*glass.eDPR))
-                hideSource: true; live: glass.active; visible: false
+                hideSource: true; live: true; visible: false
             }
             Widgets.EnhancedImageExt { id: roundedBackdrop; anchors.fill: parent; targetTextureProvider: blurredTexture; radius: glass.radius; z: -1 }
         }

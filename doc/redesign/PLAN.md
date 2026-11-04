@@ -40,6 +40,23 @@ same numeric flag value already used by this module. Retain all successful
 objects and resume this failed step under its original pipeline; do not reset
 the SDK or replay acceptance before the complete assembly exists.
 
+**Build198 native repair reconciliation:**198
+(`e11275d257224055894824bb9354cd3f`, session94754, source4a195f2968)
+closed0, group empty/private mounts released, peak1715757056 bytes, no max/OOM.
+Real WASAPI keyboard/mouse volume and paused VLC→MPV→VLC handover pass in the
+menu workflow; both-engine paused/playing sidebar transitions pass. The first
+volume observation was a checker-focus error (Right sought ten seconds under
+OtherFocus), cancelled explicitly with clean exit and preserved; real Tab focus
+corrected it without an application rebuild. The complete affected native pass
+then identified two internal blockers: Qt regenerates the native extended style,
+discarding the one-time no-redirection bit; the shared blur switches into its
+non-live buffer-release path before its Loader destroys it, detaching texture
+sources during popup/view teardown. Preserve all original failed receipts. Own
+only the registered windows' composition bits during native style changes and
+keep the entire live blur chain owned by its Loader lifetime. Rebuild these
+connected repairs together; actual native/composed and final delivery gates
+remain unsatisfied.1.1.5 is still unpublished.
+
 **4 November normal-package qualification:** application source
 `67fb8cd807d4cdaf010ed7706561eab380699513` has passed packaged VLC playback
 with/without the media library, normal MPV lifecycle, fresh inactive placement
