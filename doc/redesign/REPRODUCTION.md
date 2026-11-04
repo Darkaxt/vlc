@@ -1,5 +1,25 @@
 # Windows x64 reproduction and recovery
 
+4 November idle-player correction: build204
+`8daad442430e4df88f37fc51febbadb5` (original managed session9612) closed0,
+group empty/private mounts released, sourcee5558c75, Qt
+`235a1dcfb9ab2977f106c03b40f418e75145c32108ac66f11b37836ceb7fb0ec`.
+Only Player.qml changed production behavior: absent embedded video no longer
+means audio. Started audio-only tracks select artwork; empty/stopped inputs
+select the black canvas and existing cone. Native idle acceptance is at
+`E:/Temp/vlc-settings-implementation-20261102/idle-player-native-acceptance.json`;
+the four inspected captures and their limits are in idle-player-picture-notes.
+Both engines verify empty Cancel/Escape/Save, paused audio, video replacement,
+Stop and EOF. Keep original checker failures and their explicit resume chain;
+the successful VLC case was retained while unfinished MPV terminal checks were
+resumed on the identical binary. Observe MPV EOF through mpv_video_ready's
+explicit changed subscription, then assert stopped state at the later idle
+capture. The older await-core state path can miss idle-active's later cache
+notification, and the source helper verifies a URL rather than waiting for a
+future URL. No production workaround or timeout was added. The native/raw
+canonical proof retains203's unchanged owners; normal composed picture and
+final delivery remain required.
+
 4 November: the user rejected the actual Qt63bb Settings composition. Preserve
 that normal package while its review process is open; do not overwrite it or
 call its successful DWM readback a visual pass. The cohesive M4 repair removes

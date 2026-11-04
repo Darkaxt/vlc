@@ -24,10 +24,18 @@ package and all applicable prior evidence until the qualified replacement exists
 The user reported the music placeholder after leaving Customize Player without
 media. Player.qml selected audio solely from the absence of embedded video;
 require started audio tracks without video tracks and provide the black/cone
-idle canvas. This is an internal M4 acceptance blocker until the complete
-idle/customization/audio/video/stop workflow passes in both engines. Preserve
-the applicable203 menu/settings/texture evidence under an explicit source guard;
-the new player-state selection needs fresh native evidence before normal freeze.
+idle canvas. Build204 (`8daad442430e4df88f37fc51febbadb5`, sourcee5558c75)
+closed0/group empty/private mounts released, peak1715175424 bytes, no max/OOM.
+The complete both-engine idle/customization/audio/video/Stop/EOF acceptance now
+passes. Cancel/Escape/Save show the cone when empty; paused audio keeps its
+artwork. Four focused native pictures were manually inspected. MPV video pixels
+are outside its Qt Quick grab and still require the normal presentation gate.
+Original pre-dispatch target, MPV terminal-notification and clipped-viewport
+checker failures remain recorded; only unfinished closed cases were resumed,
+without rebuilding the unchanged binary. The canonical acceptance binds the
+fresh idle proof and unchanged203 menu/settings/texture owners explicitly.
+Normal optimized assembly, actual composed blur/corners and final delivery
+remain M4 blockers;1.1.5 is unpublished.
 
 **Build203 native/widget reconciliation:**203
 (`0929686267e2488684f6fb180b5140a0`, session53743, sourceaa654113)

@@ -78,7 +78,8 @@ if resume_idle:
     assert previous['scope']=='idle' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert set(previous['failures'])=={'idle'}
     resume_idle_stop='observation_cancelled_action_not_undone' in previous['failures']['idle']
-    resume_idle_eof='Rendered loader source differs from the expected URL' in previous['failures']['idle']
+    resume_idle_eof_viewport='clipped_target_rejected_before_dispatch' in previous['failures']['idle'] and 'after-eof-editor' in previous['failures']['idle']
+    resume_idle_eof='Rendered loader source differs from the expected URL' in previous['failures']['idle'] or resume_idle_eof_viewport
     if resume_idle_stop or resume_idle_eof:
         assert len(previous['cases'])==2
         assert previous['cases'][0]['engine']=='vlc' and previous['cases'][0]['passed']
@@ -89,8 +90,12 @@ if resume_idle:
             assert proof['core']['state']==0 and not proof['core']['audio_tracks'] and not proof['core']['video_tracks']
             assert proof['observation_boundary']=='UI dispatcher during pending observation; no new frame awaited'
         else:
-            assert 'natural-eof' in previous['failures']['idle'] and previous['cases'][1]['steps'][-2]['label']=='play-to-eof'
-            assert {'empty-cancel-cone','empty-escape-cone','empty-save-cone','paused-artwork','video-surface','stopped-video-cone'} <= {row['label'] for row in previous['cases'][1]['steps']}
+            if resume_idle_eof_viewport:
+                assert previous['cases'][1]['steps'][-2]['label']=='after-eof-menu'
+                assert any(row['label']=='natural-eof' for row in previous['cases'][1]['steps'])
+            else:
+                assert 'natural-eof' in previous['failures']['idle'] and previous['cases'][1]['steps'][-2]['label']=='play-to-eof'
+                assert {'empty-cancel-cone','empty-escape-cone','empty-save-cone','paused-artwork','video-surface','stopped-video-cone'} <= {row['label'] for row in previous['cases'][1]['steps']}
     else:
         assert 'Expected one observation target; matched 0' in previous['failures']['idle']
         assert len(previous['cases'])==1 and previous['cases'][0]['steps'][-2]['label']=='empty-cancel-menu'
@@ -98,7 +103,7 @@ if resume_idle:
     assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
     assert not any((runtime/'portable').iterdir())
     assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
-    historical=root/('result-before-idle-eof-observer.json' if resume_idle_eof else 'result-before-idle-stop-observer.json' if resume_idle_stop else 'result-before-idle-checker.json')
+    historical=root/('result-before-idle-eof-viewport.json' if resume_idle_eof_viewport else 'result-before-idle-eof-observer.json' if resume_idle_eof else 'result-before-idle-stop-observer.json' if resume_idle_stop else 'result-before-idle-checker.json')
     assert not historical.exists(),'Continue original idle checker repair'
     historical.write_bytes((root/'result.json').read_bytes())
 elif resume_menu_quit:
@@ -883,7 +888,7 @@ def idle():
     """Idle customization must not masquerade as an audio-only input."""
     for engine in ('vlc', 'mpv'):
         if resume_idle and (resume_idle_stop or resume_idle_eof) and engine=='vlc':continue
-        suffix='-eof-resumed' if resume_idle and resume_idle_eof else '-stop-observer-resumed' if resume_idle and resume_idle_stop else '-resumed' if resume_idle else ''
+        suffix='-eof-viewport-resumed' if resume_idle and resume_idle_eof_viewport else '-eof-resumed' if resume_idle and resume_idle_eof else '-stop-observer-resumed' if resume_idle and resume_idle_stop else '-resumed' if resume_idle else ''
         eof_only=resume_idle and resume_idle_eof
         case=Case('idle-customization-'+engine+suffix, engine=engine,media=fixtures/'wide.mkv' if eof_only else None)
         def customize(label, action):
@@ -920,6 +925,7 @@ def idle():
             assert idle_canvas('after-eof-cone')['core']['state']==0
         try:
             if eof_only:
+                case.inspect('reference-viewport','resize','--width','1280','--height','900')
                 case.inspect('paused-video','snapshot','--await-core','state','--await-value','3')
                 finish_eof()
                 case.record['reused_idle_audio_stop']=records['resumed_idle_checker']
