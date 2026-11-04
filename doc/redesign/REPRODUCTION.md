@@ -19,9 +19,12 @@ Windows host preserves NOREDIRECTIONBITMAP from CreateWindowEx: neither a later
 SetWindowLongPtr nor a WM_STYLECHANGING filter can add/remove it. Create only the
 affected D3D11 translucent QWidget under Qt's existing scoped
 QT_QPA_DISABLE_REDIRECTION_SURFACE policy, then restore the exact prior value;
-never enable it globally for ordinary or GL windows. QWidget polish runs before
-QVLCDialog's createWinId path and Qt's ordinary first-show creation. Reuse the
-pinned Qt6.8.3 RHI surface selection; no Qt patch/rebuild is required.
+never enable it globally for ordinary or GL windows. QVLCDialog explicitly
+polishes before createWinId and Qt's QMenu polishes before popup. Generic QWidget
+show can create before polish, so prepare a combo's fully constructed popup
+container from the combo's own Show event, before mouse/key/accessibility popup
+actions. Reuse the pinned Qt6.8.3 RHI surface selection; no Qt patch/rebuild is
+required.
 
 The matching retained-object native texture probe independently reproduces an
 old-window beforeSynchronizing consumer left behind on source detachment and

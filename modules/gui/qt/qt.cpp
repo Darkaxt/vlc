@@ -102,6 +102,7 @@ extern "C" char **environ;
 #include "util/dismiss_popup_event_filter.hpp"
 #include "maininterface/windoweffects_module.hpp"
 #include <QMenu>
+#include <QComboBox>
 #include <QAbstractItemView>
 #include <vlc_modules.h>
 #include "maininterface/compositor.hpp"
@@ -155,7 +156,16 @@ public:
     bool eventFilter(QObject *object, QEvent *event) override
     {
         auto *menu = qobject_cast<QWidget *>(object);
-        if (!menu || !menu->isWindow() || !var_InheritBool(m_intf, "qt-backdrop-blur"))
+        if (!menu || !var_InheritBool(m_intf, "qt-backdrop-blur"))
+            return false;
+        // QWidget's generic show path can create its HWND before polishing.
+        // QMenu polishes before popup(), and QVLCDialog explicitly polishes
+        // before createWinId(). Prepare a combo's fully constructed container
+        // when the combo is shown, before any mouse/key/accessibility popup.
+        if (event->type() == QEvent::Show)
+            if (auto *combo = qobject_cast<QComboBox *>(menu))
+                combo->view()->window()->ensurePolished();
+        if (!menu->isWindow())
             return false;
         const bool popup = menu->windowType() == Qt::Popup;
         if (!popup && !menu->testAttribute(Qt::WA_TranslucentBackground))
