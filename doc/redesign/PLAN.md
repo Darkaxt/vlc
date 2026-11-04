@@ -15,7 +15,8 @@ Hide empty reference disclosures in Library/Recording and every equivalent
 category, preserving native Search. Trace the real volume widget with a real
 audio output; the isolated visual launcher currently selects a dummy output.
 These are internal implementation/acceptance blockers, not a wait for another
-copy of the rejected screenshot. No compilation or release is running. Preserve
+copy of the rejected screenshot. The incremental repair is in compilation;
+no release is running. Preserve
 the user's currently open review package and all applicable prior evidence.
 
 **Build196 locality correction:** original196
@@ -29,6 +30,15 @@ those reverted files, verify original Git-blob identities and normalize their
 source timestamps to their last content commit, recording that restoration.
 Preserve every completed object and resume the same failed player step after
 the exact closed196 interruption; no SDK/configuration/cache reset.
+
+**Build197 compiler repair:** original197
+(`fcf4b17cc1ba4b4897a18c264c90279a`, session30205) closed1 with an empty
+group, released private mounts, peak1501159424 bytes and no max/OOM events.
+The failed player step reports the pinned MinGW headers' missing
+`WS_EX_NOREDIRECTIONBITMAP` macro in win32windoweffects_module.cpp. Use the
+same numeric flag value already used by this module. Retain all successful
+objects and resume this failed step under its original pipeline; do not reset
+the SDK or replay acceptance before the complete assembly exists.
 
 **4 November normal-package qualification:** application source
 `67fb8cd807d4cdaf010ed7706561eab380699513` has passed packaged VLC playback

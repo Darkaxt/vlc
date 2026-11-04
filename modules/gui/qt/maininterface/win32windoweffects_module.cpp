@@ -87,7 +87,7 @@ static void setBlurBehind(QWindow* const window, const bool enable = true, const
         // backdrop. The swapchain owns alpha; DWM owns the outer native clip.
         auto style = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
         SetWindowLongPtr(hwnd, GWL_EXSTYLE,
-                         (style & ~WS_EX_LAYERED) | WS_EX_NOREDIRECTIONBITMAP);
+                         (style & ~WS_EX_LAYERED) | 0x00200000L /* WS_EX_NOREDIRECTIONBITMAP */);
         const MARGINS margins{-1, -1, -1, -1};
         DwmExtendFrameIntoClientArea(hwnd, &margins);
         const DWORD corners = 2; // DWMWCP_ROUND
