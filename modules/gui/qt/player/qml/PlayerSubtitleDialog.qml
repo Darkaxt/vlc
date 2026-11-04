@@ -19,7 +19,7 @@ T.Popup {
         if (!query.text.length) query.text = Player.title
         if (!online && MediaTools.matches.length === 0) MediaTools.prepareMatches([Player.url], [])
     }
-    background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(10) }
+    background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened; radius: PlayerStyle.px(10) }
     component Label: Text {
         color: PlayerStyle.trackForeground
         font.family: PlayerStyle.fontFamily

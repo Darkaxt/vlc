@@ -21,7 +21,7 @@ T.Popup {
     focus: true
     closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutside
     onAboutToShow: currentPage = subtitles ? 2 : 1
-    background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(10) }
+    background: LibraryGlass { backgroundSource: popup.parent; active: popup.opened; radius: PlayerStyle.px(10) }
 
     function addTrackFile() {
         popup.close()

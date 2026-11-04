@@ -25,9 +25,82 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QStyle>
+#include <QMenu>
+#include <QAbstractItemView>
+#include <vlc_modules.h>
 
 #include "qvlcframe.hpp"
 #include "maininterface/compositor.hpp"
+#include "maininterface/mainctx.hpp"
+#include "maininterface/windoweffects_module.hpp"
+
+namespace {
+// QMenu also creates plain QMenu children for native VLC subcommands. Observe
+// their real lifecycle in one place, before polishing creates their HWNDs.
+class MenuBackdrops final : public QObject
+{
+    qt_intf_t *m_intf;
+    WindowEffectsModule *m_effects = nullptr;
+public:
+    explicit MenuBackdrops(qt_intf_t *intf) : QObject(intf->p_mi), m_intf(intf)
+    {
+        qApp->installEventFilter(this);
+    }
+    ~MenuBackdrops() override
+    {
+        if (m_effects) {
+            if (m_effects->p_module) module_unneed(m_effects, m_effects->p_module);
+            vlc_object_delete(m_effects);
+        }
+    }
+    bool eventFilter(QObject *object, QEvent *event) override
+    {
+        auto *menu = qobject_cast<QWidget *>(object);
+        if (!menu || menu->windowType() != Qt::Popup ||
+            !var_InheritBool(m_intf, "qt-backdrop-blur"))
+            return false;
+        if (event->type() == QEvent::Polish) {
+            menu->setWindowFlag(Qt::FramelessWindowHint);
+            menu->setAttribute(Qt::WA_TranslucentBackground);
+            menu->setAutoFillBackground(false);
+        } else if (event->type() == QEvent::Show) {
+            if (!m_effects) {
+                m_effects = vlc_object_create<WindowEffectsModule>(m_intf);
+                if (m_effects)
+                    m_effects->p_module = module_need(m_effects, "qtwindoweffects", nullptr, false);
+            }
+            auto *window = menu->windowHandle();
+            const bool available = m_effects && m_effects->p_module && window &&
+                m_effects->isEffectAvailable(window, WindowEffectsModule::BlurBehind);
+            menu->setProperty("redesignGlassMenu", available);
+            // Re-polish this menu only; existing native menu models, commands,
+            // focus and submenu ownership remain unchanged.
+            menu->style()->unpolish(menu);
+            menu->style()->polish(menu);
+            menu->setAutoFillBackground(false);
+            menu->clearMask();
+            for (auto *view : menu->findChildren<QAbstractItemView *>()) {
+                view->style()->unpolish(view);
+                view->style()->polish(view);
+                view->viewport()->setAutoFillBackground(false);
+            }
+            if (available) m_effects->setBlurBehind(window, true, {});
+        } else if (event->type() == QEvent::Hide && m_effects && m_effects->p_module &&
+                   menu->property("redesignGlassMenu").toBool() && menu->windowHandle()) {
+            m_effects->setBlurBehind(menu->windowHandle(), false, {});
+        }
+        return false;
+    }
+};
+}
+
+void QVLCTools::installMenuBackdrops(qt_intf_t *intf)
+{
+    if (intf->p_mi && !intf->p_mi->property("menuBackdropsInstalled").toBool()) {
+        intf->p_mi->setProperty("menuBackdropsInstalled", true);
+        new MenuBackdrops(intf);
+    }
+}
 
 void QVLCTools::saveWidgetPosition(QSettings *settings, QWidget *widget)
 {

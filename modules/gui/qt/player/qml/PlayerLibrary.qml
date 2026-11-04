@@ -203,7 +203,7 @@ FocusScope {
     }
     component LibraryMenu: T.Popup {
         id: menu
-        property bool ready: true
+        readonly property bool ready: !opened || background.ready
         default property alias actions: menuColumn.children
         implicitWidth: Math.min(PlayerStyle.px(265),root.width-PlayerStyle.px(16))
         implicitHeight: Math.min(menuColumn.implicitHeight + padding * 2,root.height-PlayerStyle.px(24))
@@ -221,11 +221,7 @@ FocusScope {
                 menuViewport.contentY = Math.min(Math.max(0,menuViewport.contentHeight-menuViewport.height),rect.y+rect.height-menuViewport.height)
         }
         onOpened: { menuViewport.contentY = 0; keepFocusVisible() }
-        background: Rectangle {
-            // Sorting Options 856:2215: solid fill, 10px corners, 4/13.8px shadow.
-            color: PlayerStyle.dark ? "#191919" : "#d5d5d5"; radius: PlayerStyle.px(10)
-            Widgets.RoundedRectangleShadow { color: Qt.rgba(0,0,0,0.35); yOffset: PlayerStyle.px(4); blurRadius: PlayerStyle.px(13.8); hollow: true }
-        }
+        background: LibraryGlass { backgroundSource: root; active: menu.opened; radius: PlayerStyle.px(10) }
         contentItem: Flickable {
             id: menuViewport
             readonly property bool ready: menu.ready
@@ -693,7 +689,6 @@ FocusScope {
     }
     LibraryMenu {
         id: itemMenu
-        ready: !opened || background.ready
         background: LibraryGlass {
             backgroundSource: root; active: itemMenu.opened; radius: PlayerStyle.px(10)
             color: PlayerStyle.dark ? Qt.rgba(25/255,25/255,25/255,0.95) : Qt.rgba(213/255,213/255,213/255,0.95)
@@ -727,7 +722,7 @@ FocusScope {
         x: Math.max(0, (root.width-width)/2); y: PlayerStyle.px(100)
         width: Math.min(root.width,PlayerStyle.px(320)); height: Math.min(root.height-y,PlayerStyle.px(400))
         padding: PlayerStyle.px(12); modal: true; focus: true
-        background: Rectangle { color: PlayerStyle.chrome; radius: PlayerStyle.px(8); border.width: 1; border.color: PlayerStyle.hover }
+        background: LibraryGlass { backgroundSource: root; active: playlistPicker.opened; radius: PlayerStyle.px(8) }
         contentItem: ColumnLayout {
             Label { text: qsTr("Add selection to playlist"); Layout.fillWidth: true }
             ListView {
@@ -742,7 +737,7 @@ FocusScope {
         parent: root; x: Math.max(0,(root.width-width)/2); y: PlayerStyle.px(100)
         width: Math.min(root.width,PlayerStyle.px(320)); height: contentItem.implicitHeight + padding*2
         modal: true; focus: true; padding: PlayerStyle.px(16)
-        background: Rectangle { color: PlayerStyle.chrome; radius: PlayerStyle.px(8) }
+        background: LibraryGlass { backgroundSource: root; active: deleteDialog.opened; radius: PlayerStyle.px(8) }
         contentItem: ColumnLayout {
             Label { text: qsTr("Delete selected stored playlists? Media files and the playback queue are kept."); wrapMode: Text.WordWrap; elide: Text.ElideNone; Layout.fillWidth: true }
             Action { text: qsTr("Delete playlists"); onClicked: { root.selectedIds().then(ids => { if (ids.length) allPlaylists.deletePlaylists(ids) }); deleteDialog.close(); root.selectedRows = [] } }

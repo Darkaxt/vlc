@@ -1167,8 +1167,11 @@ FocusScope {
             positionTab:rootPlayer.layoutQueueTab
             padding: 0
 
-            background: Rectangle {
-                color: PlayerStyle.panel
+            background: LibraryGlass {
+                // Capture only the content under this in-scene panel. Capturing
+                // rootPlayer here would include the queue itself recursively.
+                backgroundSource: playerSpecializationLoader
+                active: playlistpopup.visible
                 radius: PlayerStyle.px(10)
             }
 

@@ -36,6 +36,19 @@ An alpha242 tint or a successful native acrylic request alone is not actual
 composed-picture acceptance. Verify the composed result without changing the
 user's OS transparency setting or using desktop controls.
 
+4 November user review accepts the remaining Settings presentation as close
+enough, but rejects the actual window's gray/jagged corners and opaque backdrop.
+Repair that composition before delivery. Apply the same rounded, content-blurred
+background treatment consistently to all application menus, including player
+panels, main/context/submenus and native command menus; preserve their reviewed
+layouts and functional controls. Inspect the real volume widget as part of the
+same outcome; the silent review launcher's dummy audio output is not a mockup
+and must not stand in for functional volume acceptance with a real audio output.
+Hide Advanced Options in every category without reference advanced controls,
+including Library and Recording, even where the prototype shows an empty
+disclosure. Preserve extra native settings through Search and the existing
+themed All VLC settings route. This is an explicit correction to the reference.
+
 Actual-window rejection,3 November2026: the user's General, Controls and
 Playback screenshots reject the current corners/backdrop and several field
 types/styles. Keep M4 ACTIVE and treat those as internal repair blockers.

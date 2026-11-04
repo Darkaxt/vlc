@@ -18,7 +18,7 @@ T.Popup {
     padding: PlayerStyle.px(20)
     modal: true; focus: true
     onOpened: { field.text = ""; field.forceActiveFocus() }
-    background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(10); border.width: 1; border.color: PlayerStyle.hover }
+    background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened; radius: PlayerStyle.px(10) }
     contentItem: ColumnLayout {
         spacing: PlayerStyle.px(16)
         Text { text: dialog.title; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(18); color: PlayerStyle.foreground; Layout.fillWidth: true; textFormat: Text.PlainText }

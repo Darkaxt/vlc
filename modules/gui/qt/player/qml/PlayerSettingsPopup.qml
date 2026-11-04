@@ -35,7 +35,7 @@ T.Popup {
     padding: 0
     focus: true
     closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutside
-    background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(10) }
+    background: LibraryGlass { backgroundSource: settingsPopup.parent; active: settingsPopup.opened; radius: PlayerStyle.px(10) }
     function showPage(index) { page = index; expanded = ""; open() }
     onOpened: pixelSizes = Number(MediaTools.value("freetype-absolute-fontsize")) > 0
     onPageChanged: body.contentY = 0
@@ -192,7 +192,7 @@ T.Popup {
                 padding: PlayerStyle.px(8)
                 onClicked: model.checked = true
                 contentItem: Label { text: parent.text }
-                background: Rectangle { color: parent.hovered ? PlayerStyle.hover : PlayerStyle.panel }
+                background: Rectangle { color: parent.hovered ? PlayerStyle.hover : "transparent" }
             }
             function refreshSelection() {
                 const source = choiceRow.choices

@@ -1,5 +1,18 @@
 # Windows x64 reproduction and recovery
 
+4 November: the user rejected the actual Qt63bb Settings composition. Preserve
+that normal package while its review process is open; do not overwrite it or
+call its successful DWM readback a visual pass. The cohesive M4 repair removes
+the integer window mask, presents native widget windows through Qt's existing
+D3D11 RHI support, and applies backdrop/rounded native composition to Settings
+and popup lifecycles. Quick menus reuse LibraryGlass and the existing decoded
+swapchain blur, with slots allocated for actual visible menus rather than a
+four-region cap. No new decoder, desktop capture or SDK setup is involved.
+The affected acceptance must prove the selected native backend/styles, actual
+composed corners/blur, nested menu behavior, empty-disclosure suppression and
+volume changes with real WASAPI. The dummy-output visual launcher has no volume
+or mute callbacks. Keep M4 ACTIVE and1.1.5 unpublished until those gates pass.
+
 Normal193 (`eb3dc21c8da44ab8a3e529989e5cdd6e`, source67fb8cd8) successfully
 compiled/linked Qt and staged the410-plugin cohort. Its failure was the later
 symbol step: an already-stripped retained DLL contained its old GNU debuglink,
@@ -25,10 +38,10 @@ ancestry probe proved DirectUIHWND's same-process InputSwitch parent and passed
 strict placement before actual offscreen SDR/P5 Present(S_OK)/EOF/release.
 Do not repeat accepted checks or launch from the failed placement observation.
 
-Actual composed Settings blur/corners still requires the current isolated
-`backdrop-review-rendering/review-settings.cmd` launcher and its binding; no
-agent desktop controls or OS setting changes.1.1.5 remains unpublished. After
-the composed visual gate, close the existing qualification, publish/independently
+Actual composed Settings blur/corners from the isolated
+`backdrop-review-rendering/review-settings.cmd` launcher was rejected. No
+agent desktop controls or OS setting changes are authorized.1.1.5 remains
+unpublished. After the repaired composed visual gate, close qualification, publish/independently
 verify delivery and complete retained/weekly rebinding before retirement.
 
 M4 repair192 (`038e53e23ca24049ad584a3d09dc8d2f`) assembled

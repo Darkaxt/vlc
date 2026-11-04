@@ -2876,6 +2876,7 @@
     },
     {
       "category": "Library",
+      "advanced_disclosure": false,
       "frames": [
         {
           "source_frame": "6542:15251",
@@ -2958,6 +2959,7 @@
     },
     {
       "category": "Network",
+      "advanced_disclosure": false,
       "frames": [
         {
           "source_frame": "6543:15649",
@@ -3202,6 +3204,7 @@
     },
     {
       "category": "Recording",
+      "advanced_disclosure": false,
       "frames": [
         {
           "source_frame": "6571:16429",
@@ -3316,6 +3319,7 @@
     },
     {
       "category": "Extensions",
+      "advanced_disclosure": false,
       "frames": [
         {
           "source_frame": "6575:17137",

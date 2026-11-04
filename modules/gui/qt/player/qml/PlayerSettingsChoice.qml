@@ -8,6 +8,15 @@ T.ComboBox {
     id: choice
     property string label
     property bool outlined: false
+    // The popup is reparented to Qt's overlay. Capture the scene/panel below
+    // that overlay, never the overlay itself or this popup recursively.
+    readonly property Item backdropSource: {
+        let item = choice
+        const window = choice.Window.window
+        while (item.parent && item.parent !== T.Overlay.overlay &&
+               (!window || item.parent !== window.contentItem)) item = item.parent
+        return item
+    }
     implicitWidth: PlayerStyle.px(150)
     implicitHeight: PlayerStyle.px(32)
     padding: PlayerStyle.px(8)
@@ -56,7 +65,7 @@ T.ComboBox {
             verticalAlignment: Text.AlignVCenter
         }
         padding: PlayerStyle.px(8)
-        background: Rectangle { color: parent.highlighted ? PlayerStyle.hover : PlayerStyle.panel }
+        background: Rectangle { color: parent.highlighted ? PlayerStyle.hover : "transparent" }
     }
     popup: T.Popup {
         y: choice.height
@@ -72,6 +81,6 @@ T.ComboBox {
             boundsBehavior: Flickable.StopAtBounds
             T.ScrollBar.vertical: T.ScrollBar { }
         }
-        background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(4); border.color: PlayerStyle.sectionForeground }
+        background: LibraryGlass { backgroundSource: choice.backdropSource; active: choice.popup.opened; radius: PlayerStyle.px(4) }
     }
 }

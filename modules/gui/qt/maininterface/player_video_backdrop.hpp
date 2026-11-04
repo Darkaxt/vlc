@@ -12,13 +12,13 @@
 #include <QPointer>
 #include <QMutex>
 #include <QVariantList>
-#include <array>
+#include <vector>
 #include <atomic>
 
 namespace vlc {
 
 // The vout's existing SetContent call supplies the same decoded swapchain to
-// four clipped video copies (player chrome and the active library glass popup). Only
+// clipped video copies for the visible chrome and menus. Only
 // system-created visuals enter the DComp tree;
 // this forwarding interface is exclusively the vout window's content handle.
 // No second decoder, screen capture, desktop backdrop or CPU readback is used.
@@ -35,8 +35,9 @@ class PlayerVideoBackdrop final : public IDCompositionVisual
         bool visible = false;
     };
     ComPtr<IDCompositionDevice> m_device;
-    ComPtr<IDCompositionVisual> m_source, m_root;
-    std::array<Region, 4> m_regions;
+    ComPtr<IDCompositionVisual> m_source, m_root, m_ui;
+    ComPtr<IUnknown> m_contentObject;
+    std::vector<Region> m_regions;
     QMutex m_lock;
     QPointF m_videoPosition;
     bool m_content = false, m_enabled = false;
@@ -47,6 +48,31 @@ class PlayerVideoBackdrop final : public IDCompositionVisual
 #endif
 
     HRESULT check(HRESULT result) { if (FAILED(result)) m_error = result; return result; }
+
+    HRESULT addRegion()
+    {
+        ComPtr<IDCompositionDevice3> effects;
+        HRESULT hr = m_device->QueryInterface(IID_PPV_ARGS(&effects));
+        if (FAILED(hr)) return check(hr);
+        Region region;
+        if (FAILED(hr = m_device->CreateVisual(&region.clipVisual)) ||
+            FAILED(hr = m_device->CreateVisual(&region.video)) ||
+            FAILED(hr = m_device->CreateRectangleClip(&region.clip)) ||
+            FAILED(hr = region.clip->SetLeft(0.f)) ||
+            FAILED(hr = region.clip->SetTop(0.f)) ||
+            FAILED(hr = region.clip->SetRight(0.f)) ||
+            FAILED(hr = region.clip->SetBottom(0.f)) ||
+            FAILED(hr = effects->CreateGaussianBlurEffect(&region.blur)) ||
+            FAILED(hr = region.video->SetEffect(region.blur.Get())) ||
+            FAILED(hr = region.blur->SetBorderMode(D2D1_BORDER_MODE_HARD)) ||
+            FAILED(hr = region.video->SetContent(m_contentObject.Get())) ||
+            FAILED(hr = region.clipVisual->SetClip(region.clip.Get())) ||
+            FAILED(hr = region.clipVisual->AddVisual(region.video.Get(), FALSE, nullptr)) ||
+            FAILED(hr = m_root->AddVisual(region.clipVisual.Get(), FALSE, m_ui.Get())))
+            return check(hr);
+        m_regions.push_back(std::move(region));
+        return S_OK;
+    }
 
 public:
     IDCompositionVisual *bottomVisual() const { return m_regions.front().clipVisual.Get(); }
@@ -76,28 +102,10 @@ public:
     HRESULT initialize(IDCompositionDevice *device, IDCompositionVisual *source,
                        IDCompositionVisual *root, IDCompositionVisual *ui)
     {
-        m_device = device; m_source = source; m_root = root;
-        ComPtr<IDCompositionDevice3> effects;
-        HRESULT hr = device->QueryInterface(IID_PPV_ARGS(&effects));
-        if (FAILED(hr)) return hr;
-        for (auto &region : m_regions) {
-            if (FAILED(hr = device->CreateVisual(&region.clipVisual)) ||
-                FAILED(hr = device->CreateVisual(&region.video)) ||
-                FAILED(hr = device->CreateRectangleClip(&region.clip)) ||
-                // DComp defaults to +/-2^21, not a zero-origin empty clip.
-                FAILED(hr = region.clip->SetLeft(0.f)) ||
-                FAILED(hr = region.clip->SetTop(0.f)) ||
-                FAILED(hr = region.clip->SetRight(0.f)) ||
-                FAILED(hr = region.clip->SetBottom(0.f)) ||
-                FAILED(hr = effects->CreateGaussianBlurEffect(&region.blur)) ||
-                FAILED(hr = region.video->SetEffect(region.blur.Get())) ||
-                FAILED(hr = region.blur->SetBorderMode(D2D1_BORDER_MODE_HARD)) ||
-                FAILED(hr = region.clipVisual->SetClip(region.clip.Get())) ||
-                FAILED(hr = region.clipVisual->AddVisual(region.video.Get(), FALSE, nullptr)) ||
-                FAILED(hr = root->AddVisual(region.clipVisual.Get(), FALSE, ui)))
-                return hr;
-        }
-        return S_OK;
+        m_device = device; m_source = source; m_root = root; m_ui = ui;
+        // Keep a stable first visual for the compositor's stacking anchor.
+        // Further slots are created only when real visible menus need them.
+        return addRegion();
     }
 
     ~PlayerVideoBackdrop()
@@ -140,12 +148,14 @@ public:
         const auto scope = window ? window->contentItem() : root;
         auto items = scope->findChildren<QQuickItem *>(QStringLiteral("playerVideoBackdrop"));
         // Hidden popup backgrounds must not consume a slot ahead of an active
-        // one. The player has at most three chrome regions plus one glass popup.
+        // one. A submenu and the queue can be visible together with the chrome.
         items.removeIf([window](QQuickItem* item) {
             return item->window() != window || !item->isVisible() || item->opacity() <= 0
                 || item->width() <= 0 || item->height() <= 0;
         });
         QMutexLocker lock(&m_lock);
+        while (m_regions.size() < size_t(items.size()))
+            if (FAILED(addRegion())) break;
 #ifdef VLC_PLAYER_DIAGNOSTICS
         QVariantList regions;
 #endif
@@ -204,6 +214,7 @@ public:
         QMutexLocker lock(&m_lock);
         HRESULT result = m_source->SetContent(content);
         if (FAILED(result)) return result;
+        m_contentObject = content;
 #ifdef VLC_PLAYER_DIAGNOSTICS
         m_swapchain.Reset();
         if (content) content->QueryInterface(IID_PPV_ARGS(&m_swapchain));

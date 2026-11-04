@@ -535,6 +535,8 @@ private:
             {
                 row.insert(QStringLiteral("native_id"), QString::number(quintptr(widget->windowHandle()->winId()), 16));
                 row.insert(QStringLiteral("surface_alpha_bits"),widget->windowHandle()->format().alphaBufferSize());
+                row.insert(QStringLiteral("surface_type"),int(widget->windowHandle()->surfaceType()));
+                row.insert(QStringLiteral("backdrop_requested"),widget->windowHandle()->property("redesignBackdropRequested").toBool());
             }
             if(widget->objectName()==QStringLiteral("redesignPreferences")) {
                 row.insert(QStringLiteral("option_keys"),QJsonArray::fromStringList(widget->property("optionKeys").toStringList()));

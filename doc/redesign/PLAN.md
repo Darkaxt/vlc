@@ -5,6 +5,19 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
+**4 November composed-window review: REJECTED; M4 stays ACTIVE.** The user
+reviewed the current normal Qt63bb package, accepted the other Settings styling,
+and again rejected jagged gray corners and absent content blur. Read-only live
+inspection confirms a WS_EX_LAYERED raster window with a complex integer region;
+DWM type3/S_OK did not prove the required picture. Repair actual composition,
+then apply the same glass background to all application menus as now requested.
+Hide empty reference disclosures in Library/Recording and every equivalent
+category, preserving native Search. Trace the real volume widget with a real
+audio output; the isolated visual launcher currently selects a dummy output.
+These are internal implementation/acceptance blockers, not a wait for another
+copy of the rejected screenshot. No compilation or release is running. Preserve
+the user's currently open review package and all applicable prior evidence.
+
 **4 November normal-package qualification:** application source
 `67fb8cd807d4cdaf010ed7706561eab380699513` has passed packaged VLC playback
 with/without the media library, normal MPV lifecycle, fresh inactive placement
@@ -21,16 +34,17 @@ child-window observation remain preserved. A fresh ancestry probe identified
 the same-process OS indicator child and passed strict placement before any
 input-desktop launch. No accepted playback or full UI matrix was repeated.
 
-R83/R84's **actual composed Settings blur/corners remains unverified**. The
+R83/R84's **actual composed Settings blur/corners was rejected by the user**. The
 current normal package's isolated, user-operated review launcher is
 `D:/Temp/vlc-s8-settings-1.1.5-20261102/backdrop-review-rendering/review-settings.cmd`.
 Its binding records Qt SHA256
 `63bb4d2c8349a06ed5a441b4714b6f8386f8495caecc839a50152b1f8764847b`.
-It opens synthetic media using a separate profile; the user opens Settings with
-Ctrl+P and supplies its composed screenshot. No agent desktop control or real
-profile change is authorized. Raw widget alpha/DWM readback is insufficient.
-After that visual gate, resume the original qualification without repeating its
-passes, publish one normal1.1.5, independently verify delivery, and complete
+It opened synthetic media using a separate profile; the supplied composed
+screenshot is failure evidence. No agent desktop control or real profile change
+is authorized. Raw widget alpha/DWM readback is insufficient. Complete the
+cohesive rendering/menu repair before incremental Qt-only build and affected
+acceptance. Reuse unchanged qualification evidence where applicable, then
+publish one normal1.1.5, independently verify delivery, and complete
 retained/weekly rebinding and obsolete-output retirement.1.1.5 is unpublished;
 the stage and overall outcome remain incomplete.
 

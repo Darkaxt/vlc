@@ -484,8 +484,10 @@ def verify_window_icon(case, snapshot):
 
 
 def settings_window_region(case, dialog):
-    """Read Windows' actual clipping region, beyond the Qt paint capture."""
+    """Reject the legacy raster/region path without claiming composed pixels."""
     assert dialog['surface_alpha_bits']>=8,'Settings native surface was created without an alpha channel'
+    assert dialog['surface_type']==6,'Settings must present a Direct3D composition surface'
+    assert dialog['backdrop_requested'],'Native backdrop request failed'
     def read():
         hwnd=W.HWND(int(dialog['native_id'],16))
         pid=W.DWORD()
@@ -502,19 +504,21 @@ def settings_window_region(case, dialog):
         region=gdi.CreateRectRgn(0,0,0,0)
         assert region
         try:
-            assert u.GetWindowRgn(hwnd,region)==3,'Settings native window has no rounded clipping region'
-            bounds=W.RECT()
-            assert gdi.GetRgnBox(region,ctypes.byref(bounds))==3
-            width,height=bounds.right,bounds.bottom
-            assert bounds.left==0 and bounds.top==0 and width>0 and height>0
-            expected=[round(dialog['width']*dialog['dpr']),round(dialog['height']*dialog['dpr'])]
-            assert abs(width-expected[0])<=1 and abs(height-expected[1])<=1,('Native clipping bounds do not match physical window',width,height,expected)
-            corners=[bool(gdi.PtInRegion(region,x,y)) for x,y in
-                ((0,0),(width-1,0),(0,height-1),(width-1,height-1))]
-            assert not any(corners),('Native backdrop includes exterior corners',corners)
-            assert gdi.PtInRegion(region,width//2,height//2)
-            return {'native_id':dialog['native_id'],'region':'COMPLEXREGION',
-                'bounds':[width,height],'exterior_corners_clipped':True}
+            assert u.GetWindowRgn(hwnd,region)==0,'An integer region still clips the antialiased corners'
+            u.GetWindowLongPtrW.argtypes=[W.HWND,ctypes.c_int]
+            u.GetWindowLongPtrW.restype=ctypes.c_ssize_t
+            style=u.GetWindowLongPtrW(hwnd,-20)
+            assert not style & 0x80000,'Settings still uses a legacy layered bitmap'
+            assert style & 0x200000,'Settings has no composition-only native surface'
+            dwm=ctypes.WinDLL('dwmapi',use_last_error=True)
+            dwm.DwmGetWindowAttribute.argtypes=[W.HWND,W.DWORD,ctypes.c_void_p,W.DWORD]
+            dwm.DwmGetWindowAttribute.restype=ctypes.c_long
+            corners=W.DWORD()
+            assert dwm.DwmGetWindowAttribute(hwnd,33,ctypes.byref(corners),ctypes.sizeof(corners))==0
+            assert corners.value==2,'Native smooth corner preference was not applied'
+            return {'native_id':dialog['native_id'],'region':'none','extended_style':hex(style),
+                'smooth_corner_preference':corners.value,'actual_corner_pixels_verified':False,
+                'limit':'Native composition configuration; actual composed picture remains a separate gate.'}
         finally:gdi.DeleteObject(region)
     return owned_native_read(case,read)
 
@@ -1058,6 +1062,14 @@ def menus():
     try:
         case.inspect('reference-viewport','resize','--width','1280','--height','900')
         snapshot=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        # The visual review launcher used a dummy output with no volume callback.
+        # This case uses the real WASAPI owner, paused and initially silent.
+        case.inspect('volume-focus','focus','--target','volumeSlider')
+        case.inspect('volume-increase','key','--key','0x1000014',
+            '--await-core','audio_session_volume','--await-value','0.05','--await-tolerance','.005')
+        case.inspect('volume-restore-silence','key','--key','0x1000012',
+            '--await-core','audio_session_volume','--await-value','0','--await-tolerance','.005')
+        case.record['real_output_volume_control']=True
         recent_initial=next(node for node in snapshot['tree'] if node['id']=='recentSource')
         assert recent_initial.get('status') in ('Ready','Loading',1,2), ('Recent model is not loading',recent_initial)
         recent=case.inspect('recent-model-ready','snapshot','--await-target','recentSource',
@@ -1630,7 +1642,7 @@ def settings():
                         snapshot=select(case,index,label)
                         disclosure=category.get('advanced_disclosure',True)
                         if not disclosure:
-                            assert not any(row['id']=='preferencesAdvanced'+str(index) for row in snapshot['widgets']),('Unexpected Privacy disclosure',index)
+                            assert not any(row['id']=='preferencesAdvanced'+str(index) for row in snapshot['widgets']),('Unexpected empty advanced disclosure',index)
                         button=widget(snapshot,'preferencesAdvanced'+str(index)) if disclosure else None
                         if disclosure and button.get('checked'):
                             case.reveal(label+'-reveal-collapse',button['id'],'preferencesScroll'+str(index))

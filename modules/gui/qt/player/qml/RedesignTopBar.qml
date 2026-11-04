@@ -146,10 +146,10 @@ T.Pane {
         margins: PlayerStyle.px(8)
         overlap: PlayerStyle.px(4)
         delegate: MenuRow {}
-        background: Rectangle {
+        background: LibraryGlass {
+            backgroundSource: header.parent
+            active: menu.opened
             radius: PlayerStyle.px(10)
-            color: PlayerStyle.dark ? "#191919" : "#eeeeee"
-            Widgets.RoundedRectangleShadow { color: Qt.rgba(0,0,0,0.4); yOffset: PlayerStyle.px(8); blurRadius: PlayerStyle.px(20); hollow: true }
         }
         contentItem: ListView {
             implicitHeight: contentHeight

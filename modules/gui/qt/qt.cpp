@@ -100,6 +100,7 @@ extern "C" char **environ;
 #include "dialogs/help/help.hpp"     /* Launch Update */
 #include "dialogs/help/fork_release.hpp"
 #include "util/dismiss_popup_event_filter.hpp"
+#include "widgets/native/qvlcframe.hpp"
 #include "maininterface/compositor.hpp"
 #include "util/vlctick.hpp"
 #include "util/shared_input_item.hpp"
@@ -995,6 +996,15 @@ static void *Thread( void *obj )
     // at the moment, the vout is created in another thread than the rendering thread
     QApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
     QQuickWindow::setDefaultAlphaBuffer(true);
+#ifdef _WIN32
+    // Native menus and Settings need a composition swapchain as well as the
+    // Quick player. Raster UpdateLayeredWindow surfaces cannot host the DWM
+    // backdrop. Keep this process-local and respect an explicit Qt override.
+    if (!qEnvironmentVariableIsSet("QT_WIDGETS_RHI"))
+        qputenv("QT_WIDGETS_RHI", QByteArrayLiteral("1"));
+    if (!qEnvironmentVariableIsSet("QT_WIDGETS_RHI_BACKEND"))
+        qputenv("QT_WIDGETS_RHI_BACKEND", QByteArrayLiteral("d3d11"));
+#endif
 
     /* Start the QApplication here */
 #ifdef VLC_PLAYER_DIAGNOSTICS
@@ -1397,6 +1407,8 @@ static void *Thread( void *obj )
 #else
     p_intf->p_mi = new MainCtx(p_intf);
 #endif
+
+    QVLCTools::installMenuBackdrops(p_intf);
 
     if( !p_intf->b_isDialogProvider )
     {

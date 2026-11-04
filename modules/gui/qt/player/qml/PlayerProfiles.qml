@@ -13,7 +13,7 @@ T.Popup {
     modal: true; focus: true; padding: PlayerStyle.px(20)
     visible: PlayerCustomization.profilesVisible
     onClosed: PlayerCustomization.profilesVisible=false
-    background: Rectangle { color: PlayerStyle.panel; radius: PlayerStyle.px(14) }
+    background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened }
     contentItem: ColumnLayout {
         spacing: PlayerStyle.px(16)
         RowLayout {

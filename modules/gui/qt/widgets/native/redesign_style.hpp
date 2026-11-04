@@ -55,6 +55,9 @@ inline void applyRedesignDialogStyle(QWidget *widget, qt_intf_t *intf)
         QLabel#preferencesHeading { color:%7; }
         QLabel[redesignSection="true"] { color:%8; }
         QMenu { background:%1; color:%2; border:0; border-radius:10px; padding:8px; }
+        QMenu[redesignGlassMenu="true"] { background:%10; }
+        QComboBoxPrivateContainer[redesignGlassMenu="true"] { background:transparent; }
+        QComboBoxPrivateContainer[redesignGlassMenu="true"] QListView { background:%10; }
         QMenu::item { padding:8px 20px; border-radius:4px; }
         QMenu::item:selected { background:%4; }
         QMenu::separator { height:1px; background:%4; margin:8px 12px; }
@@ -91,5 +94,6 @@ inline void applyRedesignDialogStyle(QWidget *widget, qt_intf_t *intf)
         QScrollBar::handle:vertical { background:%4; border-radius:4px; min-height:24px; }
     )")
                               .arg(bg, fg, field, hover, accent.name(), f.family(),
-                                   dark ? "#969696" : "#2e2e2e", dark ? "#c6c6c6" : "#2e2e2e", dark ? "dark" : "light"));
+                                   dark ? "#969696" : "#2e2e2e", dark ? "#c6c6c6" : "#2e2e2e", dark ? "dark" : "light")
+                              .arg(dark ? "rgba(14,14,14,242)" : "rgba(231,231,231,242)"));
 }

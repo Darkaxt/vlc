@@ -102,6 +102,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 #include <algorithm>
+#include <iterator>
 
 namespace
 {
@@ -742,12 +743,13 @@ void PrefsDialog::styleChoiceEditors()
         colors.setColor(QPalette::Highlight,QColor(dark?"#222222":"#c5c5c5"));
         colors.setColor(QPalette::HighlightedText,QColor(dark?"#eaeaea":"#2e2e2e"));
         combo->view()->setPalette(colors);
+        combo->view()->viewport()->setAutoFillBackground(false);
         combo->view()->setStyleSheet(QString(
             "QAbstractItemView{background:%1;color:%2;border:2px solid %1;border-radius:6px;"
             "selection-background-color:%3;selection-color:%4;outline:0;}"
             "QAbstractItemView::item{min-height:28px;padding:2px 12px;border-radius:4px;}"
             "QAbstractItemView::item:selected{background:%3;color:%4;}")
-            .arg(dark?"#090909":"#eeeeee",dark?"#8f8f8f":"#2e2e2e",
+            .arg(dark?"rgba(9,9,9,242)":"rgba(238,238,238,242)",dark?"#8f8f8f":"#2e2e2e",
                  dark?"#222222":"#c5c5c5",dark?"#eaeaea":"#2e2e2e"));
         combo->setProperty("referencePopupDark",dark);
     }
@@ -764,7 +766,12 @@ void PrefsDialog::showEvent(QShowEvent *event)
     blurBehind = windowEffects && windowEffects->p_module && windowHandle() &&
                  windowEffects->isEffectAvailable(windowHandle(), WindowEffectsModule::BlurBehind);
     if (blurBehind)
+    {
         windowEffects->setBlurBehind(windowHandle(), true, {});
+#ifdef _WIN32
+        blurBehind = windowHandle()->property("redesignBackdropRequested").toBool();
+#endif
+    }
     update();
 }
 void PrefsDialog::hideEvent(QHideEvent *event)
@@ -798,13 +805,9 @@ void PrefsDialog::paintEvent(QPaintEvent *)
 }
 void PrefsDialog::updateDialogShape()
 {
-#ifdef _WIN32
-    // The Windows11 backdrop ignores the effect module's QRegion. Clip the
-    // native window as well as the paint, so acrylic cannot fill its corners.
-    QPainterPath shape;
-    shape.addRoundedRect(QRectF(rect()), 14, 14);
-    setMask(QRegion(shape.toFillPolygon().toPolygon()));
-#endif
+    // An integer SetWindowRgn cuts off the antialiased paint edge and prevents
+    // native rounded composition. Keep the alpha paint and native DWM clip.
+    clearMask();
 }
 void PrefsDialog::resizeEvent(QResizeEvent *event)
 {
@@ -2479,9 +2482,12 @@ QWidget *PrefsDialog::createCategory(int category)
     advanced->setLayoutDirection(Qt::RightToLeft);
     advanced->setFixedHeight(38);
     advanced->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    // The original Privacy frame has no disclosure. Keep its lazy native
-    // browser reachable from Search without adding a reference-menu row.
-    if (category == 2)
+    // A disclosure must reveal reference controls. Some prototype categories
+    // have an empty bar; keep their native browser reachable only from Search.
+    const bool hasAdvanced = std::any_of(std::begin(basicOptions), std::end(basicOptions),
+        [category](const auto &row) { return row.category == category && row.advanced; });
+    advanced->setProperty("hasReferenceAdvanced", hasAdvanced);
+    if (!hasAdvanced)
         advanced->hide();
     else
     {
@@ -2593,8 +2599,10 @@ void PrefsDialog::selectCategory(int category)
     grid->removeWidget(pages);
     grid->addWidget(pages, 1, 1, 1, 2);
     pages->setCurrentWidget(categoryPages[category]);
-    if (category == 2)
-        categoryPages[category]->findChild<QPushButton *>("preferencesAdvanced2")->setChecked(false);
+    auto *advanced = categoryPages[category]->findChild<QPushButton *>(
+        "preferencesAdvanced" + QString::number(category));
+    if (!advanced->property("hasReferenceAdvanced").toBool())
+        advanced->setChecked(false);
     if(auto *all=categoryPages[category]->findChild<QToolButton *>("preferencesAllOptions"+QString::number(category)))
     {
         all->setChecked(false);
