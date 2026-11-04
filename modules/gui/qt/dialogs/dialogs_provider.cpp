@@ -107,6 +107,10 @@ DialogsProvider::DialogsProvider( qt_intf_t *_p_intf )
 
 DialogsProvider::~DialogsProvider()
 {
+    // Preferences is a parentless window. Its native command menus observe
+    // interface variables, so destroy them here while the interface still
+    // exists rather than leaving them for QApplication's later destruction.
+    delete m_prefsDialog.data();
     /* free parentless menus  */
     VLCMenuBar::freeRendererMenu();
 }

@@ -19,6 +19,26 @@ copy of the rejected screenshot. The latest native pass remains rejected;
 root-cause repair is underway and no release is running. Preserve
 the user's currently open review package and all applicable prior evidence.
 
+**Build202 affected reconciliation:**202
+(`c2d6271488f44e3497ee53996dcb6877`, session28450, source2a9ec390)
+closed0, group empty/private mounts released, peak1713422336 bytes, no max/OOM.
+The retained-object green probe now measures attach1/detach0/old-window0/new1/
+final0. The thirteen-category native composition survey, complete affected
+Settings input/save/restart at100/150/200%, both-engine sidebar transitions,
+first-run teardown and actual reported-media preview workflows pass. The native
+menu workflow reaches real WASAPI volume, live engine switching and all Quick
+panels, then its new checker wrongly reads a visibility field absent from the
+already-visible widget list. Its resulting quit with the native commands menu
+open exposes a real teardown access violation in VLCVarChoiceModel's callback
+removal. Preserve the closed failure and dump. The parentless Preferences dialog
+survives DialogsProvider destruction and keeps interface callbacks after the
+interface-close cleanup returns; destroy that owned dialog before releasing its
+interface dependencies. Correct the checker and require quit with the native
+menu open. Reuse202's unchanged successful workflows under explicit source
+guards; repeat the affected complete menu workflow after this cohesive repair.
+Actual composed normal-package blur/corners and final delivery remain required;
+M4 stays ACTIVE and1.1.5 unpublished.
+
 **Build199 rejected native result:**199
 (`a2fb8f51b3a342e58db04517132d8f82`, session96841, source942cb9a26b)
 closed0/group empty/mounts released, peak1715392512 bytes, no max/OOM.

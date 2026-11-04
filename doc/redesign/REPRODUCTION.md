@@ -35,6 +35,19 @@ through a windowless QQuickItem base destructor. Green proof and the complete
 affected player/menu acceptance remain required; do not filter out the original
 debug recovery messages or treat a source-only change as acceptance.
 
+Build202's closed green probe and six successful affected native workflows apply
+to source2a9ec390. Preserve their producer identities when only dialog teardown
+and the menu checker change. The native widget visitor includes only visible
+widgets; it does not emit a separate visibility field.202's checker error then
+quit with the native menu open and exposed a real callback-removal crash. Keep
+that dump and failed receipt. Destroy the parentless Preferences dialog from its
+DialogsProvider owner while the interface still exists, before interface-close
+cleanup returns and core deletes its variables. The complete affected menu
+acceptance must include both nested native composition and quitting with that
+menu still open; do not hide the crash by merely dismissing it in the checker.
+Other successful202 workflows may be reused only with unchanged-owner source
+guards. Normal/composed picture and final release gates remain outstanding.
+
 Original196 was deliberately stopped to remove an accidental62-consumer shared
 header dependency. Keep its137/group-empty/no-OOM report and completed objects.
 The popup observer now belongs wholly to Qt startup. qvlcframe.cpp/.hpp return

@@ -1159,11 +1159,12 @@ def menus():
             if panel=='queue':case.click(panel+'-panel-dismiss',identity)
             else:case.inspect(panel+'-panel-dismiss','key','--key','0x1000000')
         commands=open_vlc_commands(case,'native-command-glass')
-        native_menus=[widget for widget in commands['widgets'] if widget['type']=='QMenu' and widget['visible']]
+        # The native widget visitor already excludes every hidden widget.
+        native_menus=[widget for widget in commands['widgets'] if widget['type']=='QMenu']
         assert native_menus,'The themed native commands menu did not open'
         case.record['native_command_menu_composition']=[settings_window_region(case,widget) for widget in native_menus]
         submenu=case.inspect('native-submenu-glass','widget_click','--menu-action','Subtitles','--capture')
-        native_submenus=[widget for widget in submenu['widgets'] if widget['type']=='QMenu' and widget['visible']]
+        native_submenus=[widget for widget in submenu['widgets'] if widget['type']=='QMenu']
         assert len(native_submenus)>len(native_menus),'Native submenu did not open'
         case.record['native_submenu_composition']=[settings_window_region(case,widget) for widget in native_submenus]
         case.inspect('native-submenu-dismiss','key','--key','0x1000000')
@@ -1177,6 +1178,20 @@ def menus():
         library_settings=case.click('library-direct-global-settings','mainMenuGlobalSettings','--capture')
         assert any(widget['id']=='redesignPreferences' for widget in library_settings['widgets'])
         case.native('cancel-library-global-settings','preferencesClose')
+        case.close(True)
+    finally: case.close()
+
+    # Native command menus contain variable callbacks into the interface. Quit
+    # with the parentless Settings window and its menu still open, exercising
+    # their real destruction before core interface variables are released.
+    case=Case('native-menu-open-quit',media=fixtures/'control.mkv')
+    try:
+        case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        commands=open_vlc_commands(case,'quit-native-menu')
+        native_menus=[widget for widget in commands['widgets'] if widget['type']=='QMenu']
+        assert native_menus
+        case.record['quit_with_native_menu_open']=True
+        case.record['native_command_menu_composition']=[settings_window_region(case,widget) for widget in native_menus]
         case.close(True)
     finally: case.close()
 
