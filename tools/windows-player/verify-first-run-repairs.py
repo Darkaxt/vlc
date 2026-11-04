@@ -49,6 +49,8 @@ parser.add_argument('--resume-settings-input',action='store_true',
     help='Continue the closed input repair after correcting Qt focus-proxy observation; retain completed100%% Privacy/focus evidence')
 parser.add_argument('--resume-menu-quit',action='store_true',
     help='Retain the completed menu workflow and resume its closed clipped-viewport quit check')
+parser.add_argument('--resume-idle-checker',action='store_true',
+    help='Resume the closed idle pass after correcting its pre-dispatch observation target')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -59,17 +61,32 @@ resume_behaviour=args.resume_settings_behaviour
 collect_layouts=args.collect_settings_layouts
 resume_input=args.resume_settings_input
 resume_menu_quit=args.resume_menu_quit
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit))<=1
+resume_idle=args.resume_idle_checker
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle))<=1
+assert not resume_idle or args.case=='idle'
 assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if resume_menu_quit:
+if resume_idle:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='idle' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert set(previous['failures'])=={'idle'} and 'Expected one observation target; matched 0' in previous['failures']['idle']
+    assert len(previous['cases'])==1 and previous['cases'][0]['exit_code']==0
+    assert previous['cases'][0]['owned_desktop_never_observed_as_input']
+    assert previous['cases'][0]['steps'][-2]['label']=='empty-cancel-menu'
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
+    historical=root/'result-before-idle-checker.json'
+    assert not historical.exists(),'Continue original idle checker repair'
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_menu_quit:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='menus' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert set(previous['failures'])=={'menus'} and 'clipped_target_rejected_before_dispatch' in previous['failures']['menus']
@@ -844,11 +861,15 @@ def drop_fixture(case, label, file):
 def idle():
     """Idle customization must not masquerade as an audio-only input."""
     for engine in ('vlc', 'mpv'):
-        case=Case('idle-customization-'+engine, engine=engine)
+        case=Case('idle-customization-'+engine+('-resumed' if resume_idle else ''), engine=engine)
         def customize(label, action):
             case.inspect(label+'-menu','click','--name','Main menu')
-            opened=case.inspect(label+'-editor','click','--name','Customize Player',
-                '--await-target','playerLayoutEditor','--await-property','visible','--await-value','true')
+            case.inspect(label+'-editor','click','--name','Customize Player')
+            case.inspect(label+'-player','snapshot','--await-target','viewLoader','--await-property','source',
+                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+            case.inspect(label+'-mounted','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
+            opened=case.inspect(label+'-ready','snapshot','--await-target','playerLayoutEditor',
+                '--await-property','ready','--await-value','true')
             assert opened['customization']['editing']
             if action=='escape':
                 result=case.inspect(label+'-escape','key','--key','0x1000000')
