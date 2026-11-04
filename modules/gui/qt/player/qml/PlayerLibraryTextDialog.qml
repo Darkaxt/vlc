@@ -18,6 +18,7 @@ T.Popup {
     padding: PlayerStyle.px(20)
     modal: true; focus: true
     onOpened: { field.text = ""; field.forceActiveFocus() }
+    readonly property Item retainedBackdrop: background
     background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened; radius: PlayerStyle.px(10) }
     contentItem: ColumnLayout {
         spacing: PlayerStyle.px(16)

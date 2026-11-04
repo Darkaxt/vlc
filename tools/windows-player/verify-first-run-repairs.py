@@ -1233,7 +1233,7 @@ def sidebar():
 
 def menus_normal():
     """Reference menu, real Settings route and Playback controls as one workflow."""
-    case=Case('figma-player-menus',media=fixtures/'control.mkv')
+    case=Case('figma-player-menus',media=fixtures/'control.mkv',extra=('--qt-accent-color=#2f87b5',))
     def video_context(engine):
         case.click('video-context-'+engine,'playerVideoSurface','--button','right')
         ready=case.inspect('video-context-ready-'+engine,'snapshot',
@@ -1261,6 +1261,8 @@ def menus_normal():
     try:
         case.inspect('reference-viewport','resize','--width','1280','--height','900')
         snapshot=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+        saved_presentation=snapshot['presentation']
+        assert saved_presentation['accent']=='#2f87b5' and snapshot['rendered_accent']=='#2f87b5'
         # The visual review launcher used a dummy output with no volume callback.
         # This case uses the real WASAPI owner, paused and initially silent.
         case.inspect('volume-focus','focus','--target','volumeSlider')
@@ -1324,6 +1326,7 @@ def menus_normal():
         case.inspect('close-profile-submenu','key','--key','0x1000000')
         case.inspect('close-main-menu','key','--key','0x1000000')
         playback=case.click('playback-panel','toolsButton','--capture')
+        assert len(playback['video_backdrop']['regions'])==playback['video_backdrop']['regions_bound_at_content'], 'Popup background was attached after presentation'
         labels=['Show Subtitle Timeline on Seekbar','Show Statistics','Reverse','Sleep Timer','Audio Visualizer','Speed']
         positions=[]
         for label in labels:
@@ -1352,9 +1355,23 @@ def menus_normal():
             settled=case.inspect('menu-engine-settled-'+engine,'snapshot',
                 '--await-core','engine_switching','--await-value','false','--capture')
             assert settled['core']['engine']==engine and settled['core']['state']==3
+            assert settled['rendered_accent']==('#420042' if engine=='mpv' else '#2f87b5')
+            assert settled['presentation']==saved_presentation, 'Engine selection rewrote the saved appearance'
+            glyph=nodes(settled,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
+            assert len(glyph)==1 and glyph[0]['source'].endswith('/'+('mpv' if engine=='mpv' else 'vlc')+'.svg'),glyph
+            playing=case.click('panel-play-retained-'+engine,'playButton','--await-core','state','--await-value','2')
+            assert nodes(playing,'mediaSettingsBody'), 'Play dismissed the settings panel'
+            paused=case.click('panel-pause-retained-'+engine,'playButton','--await-core','state','--await-value','3')
+            assert nodes(paused,'mediaSettingsBody'), 'Pause dismissed the settings panel'
+            case.record.setdefault('engine_presentation',[]).append({'engine':engine,'accent':settled['rendered_accent'],
+                'glyph':glyph[0]['source'],'saved_appearance_preserved':True,'play_pause_kept_panel_open':True})
             case.inspect('context-playback-close-'+engine,'key','--key','0x1000000')
             video_context(engine)
             case.click('context-playback-reopen-'+engine,'toolsButton')
+        closed=case.click('gear-closes-playback-panel','toolsButton')
+        assert not nodes(closed,'mediaSettingsBody')
+        reopened=case.click('gear-reopens-playback-panel','toolsButton')
+        assert nodes(reopened,'mediaSettingsBody')
         case.inspect('close-playback-panel','key','--key','0x1000000')
         for panel,identity in (('audio','audioButton'),('subtitles','subtitleButton'),('queue','playqueueToggle')):
             case.click(panel+'-panel-glass',identity,'--capture')
@@ -1386,6 +1403,15 @@ def menus_normal():
 def menus():
     if not resume_menu_quit:
         menus_normal()
+        initial=Case('mpv-startup-presentation',engine='mpv',media=fixtures/'control.mkv',extra=('--qt-accent-color=#2f87b5',))
+        try:
+            snapshot=initial.inspect('mpv-initial-identity','snapshot','--await-core','state','--await-value','3','--capture')
+            assert snapshot['core']['engine']=='mpv' and snapshot['rendered_accent']=='#420042'
+            assert snapshot['presentation']['accent']=='#2f87b5'
+            assert len(nodes(snapshot,'playerGlyph-mpv'))==1
+            initial.record['initial_engine_identity_verified']=True
+            initial.close(True)
+        finally: initial.close()
     # Native command menus contain variable callbacks into the interface. Quit
     # with the parentless Settings window and its menu still open, exercising
     # their real destruction before core interface variables are released.

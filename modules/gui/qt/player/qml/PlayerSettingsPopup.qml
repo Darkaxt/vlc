@@ -14,6 +14,9 @@ T.Popup {
     property bool pixelSizes: false
     property bool metadataExpanded: false
     property int settingsRevision: 0
+    required property Item layoutRoot
+    // Materialize the declared background before the first video presentation.
+    readonly property Item retainedBackdrop: background
     Connections { target: MediaTools; function onChanged() { settingsPopup.settingsRevision++ } }
     function filterEnabled(module) { const revision = settingsRevision; return MediaTools.filterEnabled(module) }
     property var presetFolder: ""
@@ -30,12 +33,12 @@ T.Popup {
     Connections { target: settingsPopup.contentItem.Window.window; function onActiveFocusItemChanged() { settingsPopup.keepFocusVisible() } }
     signal matchSubtitlesRequested()
     signal remoteSubtitlesRequested()
-    width: Math.max(0, Math.min(PlayerStyle.px(400), parent.width - PlayerStyle.px(40)))
-    height: Math.max(0, Math.min(PlayerStyle.px(946), parent.height - PlayerStyle.px(134)))
+    width: Math.max(0, Math.min(PlayerStyle.px(400), layoutRoot.width - PlayerStyle.px(40)))
+    height: Math.max(0, Math.min(PlayerStyle.px(946), layoutRoot.height - PlayerStyle.px(134)))
     padding: 0
     focus: true
-    closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutside
-    background: LibraryGlass { backgroundSource: settingsPopup.parent; active: settingsPopup.opened; radius: PlayerStyle.px(10) }
+    closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutsideParent
+    background: LibraryGlass { backgroundSource: settingsPopup.layoutRoot; active: settingsPopup.opened; radius: PlayerStyle.px(10) }
     function showPage(index) { page = index; expanded = ""; open() }
     onOpened: pixelSizes = Number(MediaTools.value("freetype-absolute-fontsize")) > 0
     onPageChanged: body.contentY = 0
@@ -58,14 +61,14 @@ T.Popup {
         Accessible.onPressAction: clicked()
         contentItem: Label {
             text: button.text
-            color: button.checked ? PlayerStyle.accent : PlayerStyle.trackForeground
+            color: button.checked ? (Player.playbackEngine === "mpv" ? PlayerStyle.accentForeground : PlayerStyle.accent) : PlayerStyle.trackForeground
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             wrapMode: Text.NoWrap
         }
         background: Rectangle {
-            color: button.hovered ? PlayerStyle.hover : PlayerStyle.timeline
+            color: button.checked && Player.playbackEngine === "mpv" ? PlayerStyle.accent : button.hovered ? PlayerStyle.hover : PlayerStyle.timeline
             radius: PlayerStyle.px(4)
             border.color: PlayerStyle.accent
             border.width: button.visualFocus || button.checked ? PlayerStyle.px(2) : 0

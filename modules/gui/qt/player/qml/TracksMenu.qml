@@ -55,6 +55,7 @@ T.Popup {
         colorSet: ColorContext.Window
     }
 
+    readonly property Item retainedBackdrop: background
     background: LibraryGlass { backgroundSource: root.parent; active: root.opened }
 
     contentItem: T.StackView {

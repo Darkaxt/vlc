@@ -30,6 +30,7 @@ T.Popup {
         else if (rect.y+rect.height > viewport.contentY+viewport.height) viewport.contentY = Math.min(Math.max(0,viewport.contentHeight-viewport.height),rect.y+rect.height-viewport.height)
     }
     Connections { target: dialog.contentItem.Window.window; function onActiveFocusItemChanged() { if (dialog.opened) dialog.keepFocusVisible() } }
+    readonly property Item retainedBackdrop: background
     background: LibraryGlass { id: glass; backgroundSource: dialog.backgroundSource; active: dialog.opened }
     MLPlaylistListModel { id: savedPlaylists; ml: MediaLib }
     component Label: Text {

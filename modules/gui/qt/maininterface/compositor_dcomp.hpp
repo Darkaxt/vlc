@@ -29,6 +29,7 @@
 #include <QMutex>
 
 #include <memory>
+#include <atomic>
 
 #include <wrl.h>
 
@@ -111,6 +112,7 @@ private:
     IDCompositionVisual *m_uiVisual = nullptr;
     Microsoft::WRL::ComPtr<PlayerVideoBackdrop> m_playerBackdrop;
     mutable QMutex m_playerBackdropLock;
+    std::atomic<size_t> m_declaredBackdrops{1};
 
     std::unique_ptr<CompositorDCompositionAcrylicSurface> m_acrylicSurface;
 };

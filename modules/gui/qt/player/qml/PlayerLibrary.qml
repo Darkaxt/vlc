@@ -202,6 +202,7 @@ FocusScope {
         contentItem: Label { text: action.text; font: action.font; verticalAlignment: Text.AlignVCenter; opacity: action.enabled ? 1 : 0.4 }
     }
     component LibraryMenu: T.Popup {
+        readonly property Item retainedBackdrop: background
         id: menu
         readonly property bool ready: !opened || background.ready
         default property alias actions: menuColumn.children
@@ -722,6 +723,7 @@ FocusScope {
         x: Math.max(0, (root.width-width)/2); y: PlayerStyle.px(100)
         width: Math.min(root.width,PlayerStyle.px(320)); height: Math.min(root.height-y,PlayerStyle.px(400))
         padding: PlayerStyle.px(12); modal: true; focus: true
+        readonly property Item retainedBackdrop: background
         background: LibraryGlass { backgroundSource: root; active: playlistPicker.opened; radius: PlayerStyle.px(8) }
         contentItem: ColumnLayout {
             Label { text: qsTr("Add selection to playlist"); Layout.fillWidth: true }
@@ -737,6 +739,7 @@ FocusScope {
         parent: root; x: Math.max(0,(root.width-width)/2); y: PlayerStyle.px(100)
         width: Math.min(root.width,PlayerStyle.px(320)); height: contentItem.implicitHeight + padding*2
         modal: true; focus: true; padding: PlayerStyle.px(16)
+        readonly property Item retainedBackdrop: background
         background: LibraryGlass { backgroundSource: root; active: deleteDialog.opened; radius: PlayerStyle.px(8) }
         contentItem: ColumnLayout {
             Label { text: qsTr("Delete selected stored playlists? Media files and the playback queue are kept."); wrapMode: Text.WordWrap; elide: Text.ElideNone; Layout.fillWidth: true }

@@ -5,6 +5,31 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
+**4 November current continuation (R83-R86): ACTIVE.** Normal211
+(`66f86108cd684ef7b46ba49cd1baec45`) was scoped-stopped after the actual gear-panel
+capture rejected sharp video under its translucent fill. Its original session
+closes137/group empty/no OOM; retained SDK, QtGui, MPV, codecs and409-plugin cohort
+remain intact. No compiler failure, second stage or release is implied.
+The user-launched observation player independently shows correct native region
+metadata but sharp paused video; after the user resumes/pauses, actual captures
+show the intended blur. The small Windows probe reproduces the exact late-copy
+failure after ResizeBuffers without Present, and proves that binding the same
+clipped background before the resize preserves its picture. Keep those receipts
+at `native-player-panel-owned-profile/manual-observation` and
+`panel-swapchain-probe/{paused-resize,early-bound}` in the existing D: task root.
+Source now materializes the declared QML backgrounds and prebinds their native
+copies before the vout's first presentation, retaining hidden instances instead
+of allocating by currently visible ordinal. This is not yet native acceptance.
+R85 source uses the unchanged official pinned MPV gradient SVG and the sampled
+reference purple#420042 as an effective accent; stored VLC/custom colors remain
+unchanged. R86 uses Qt's outside-parent dismissal rule with the control bar as
+the gear popup parent: transport retains the panel; Escape/outside/gear/another
+panel dismiss it. The original captured layout root and geometry are preserved.
+Complete the combined affected native/composed workflows, including startup/live
+engine identity, custom-color restoration, paused resize before first menu open,
+and real Play/Pause retention, then finish the normal stripped1.1.5 qualification
+and final delivery. All remain internal acceptance blockers; no deferral applies.
+
 **Latest4 November normal826 review: REJECTED.** The user's actual screenshots
 show mismatched native/painted radii with white edge pixels, a slow blank opaque
 video context menu, absent content blur and classic cone artwork. Preserve
@@ -305,7 +330,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE |209/20265f45 complete menus/submenus/teardown, real WASAPI volume/live handover, Settings100/150/200%, icon and both-engine idle workflows pass. Current category/contact/full-size and idle pictures inspected. Unchanged functional receipts retain guarded producer identities. README credits present. | R83/R84: current stripped normal package and fresh safe SDR/P5 placement/presentation; actual Windows-composited Settings/context/submenu blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. The old normal826 review remains rejected. | None. |
+| M4 Settings and menu parity | ACTIVE |209/20265f45 menus/submenus/teardown, real WASAPI volume/live handover, Settings100/150/200%, icon and both-engine idle workflows pass for their recorded source. Current category/contact/full-size and idle pictures inspected. Root cause of the new paused-panel failure reproduced separately. README credits present. | R83-R86: affected native/picture acceptance of the prebound backgrounds, MPV theme/logo and retained gear panel; current stripped normal package and fresh safe SDR/P5 placement/presentation; actual Settings/context/submenu/panel blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. Old normal826 review remains rejected. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

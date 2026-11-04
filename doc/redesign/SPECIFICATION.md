@@ -96,6 +96,31 @@ Replace classic application-brand cone references throughout the Qt interface
 with the existing original redesign cone. Preserve unrelated functional glyphs.
 These are internal R83/R84 acceptance blockers in the same ACTIVE M4 stage.
 
+R85 (M4), authorized4 November2026: selecting MPV applies the purple from the
+user's mpv.io reference as the effective interface accent and uses the official
+MPV emblem in the top-left player header. Apply the accent to both Qt Quick and
+native menus/settings through the existing theme owner. Switching back to VLC
+restores the cone and the user's existing VLC accent. Preserve stored custom
+colors, profiles and settings; do not rewrite the saved accent on engine changes.
+Use the official source artwork at native DPR rather than redrawing the logo.
+Verify initial engine selection and live VLC/MPV switching, label/icon/color
+consistency and saved-state preservation as part of this same complete M4 outcome.
+
+R86 (M4), authorized4 November2026: the gear Playback panel stays open while
+the user operates the playback control bar, including Play/Pause, seeking and
+volume. Escape, clicking elsewhere outside the panel/control bar, selecting a
+different panel, and clicking the gear again still dismiss it. Playback state
+must not be changed merely by opening, retaining or closing the panel. Verify
+the real pointer and keyboard paths in both engines.
+
+Actual overlay review,4 November2026: Settings and the native root context menu
+now show content blur and clean corners in the current review. The player-settings
+overlay remains only translucent: the synthetic video's diagonal/grid is still
+sharp beneath it. This is a failed R83/R84 actual-picture criterion, regardless
+of native region metadata or S_OK. Diagnose the existing PlayerVideoBackdrop
+video-copy path and verify the corrected actual video blur in both engines before
+normal release qualification. No new implementation stage is opened.
+
 Idle-player correction,4 November2026 (M4): entering Customize Player without
 media and leaving through Cancel, Escape or Save must show the black idle canvas
 and the usual cone (subject to the existing background-cone preference), never

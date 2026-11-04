@@ -19,6 +19,7 @@ Item {
     Rectangle{anchors.fill:parent;color:"black";opacity:0.25}
     T.Popup {
         id:panel
+        readonly property Item retainedBackdrop: background
         readonly property bool wide:width>=PlayerStyle.px(800)
         parent:editor.parent
         visible:PlayerCustomization.editing
@@ -113,7 +114,8 @@ Item {
                     contentItem:Text{text:target.displayText;color:PlayerStyle.foreground;font.family:PlayerStyle.fontFamily;font.pixelSize:PlayerStyle.px(14);verticalAlignment:Text.AlignVCenter;leftPadding:PlayerStyle.px(8)}
                     background:Rectangle{color:PlayerStyle.chrome;radius:PlayerStyle.px(6);border.width:target.visualFocus?2:0;border.color:PlayerStyle.accent}
                     delegate:T.ItemDelegate{required property string modelData;width:target.width;text:modelData;contentItem:Text{text:parent.text;color:PlayerStyle.foreground;font.family:PlayerStyle.fontFamily;font.pixelSize:PlayerStyle.px(14)} background:Rectangle{color:parent.highlighted?PlayerStyle.hover:"transparent"}}
-                    popup:T.Popup{y:target.height;width:target.width;implicitHeight:contentItem.implicitHeight;padding:PlayerStyle.px(8);contentItem:ListView{clip:true;implicitHeight:contentHeight;model:target.popup.visible?target.delegateModel:null;currentIndex:target.highlightedIndex} background:LibraryGlass{backgroundSource:panel.contentItem;active:target.popup.opened;radius:PlayerStyle.px(6)}}
+                    readonly property T.Popup retainedPopup: popup
+                    popup:T.Popup{readonly property Item retainedBackdrop: background; y:target.height;width:target.width;implicitHeight:contentItem.implicitHeight;padding:PlayerStyle.px(8);contentItem:ListView{clip:true;implicitHeight:contentHeight;model:target.popup.visible?target.delegateModel:null;currentIndex:target.highlightedIndex} background:LibraryGlass{backgroundSource:panel.contentItem;active:target.popup.opened;radius:PlayerStyle.px(6)}}
                 }
                 PlayerSetupButton{Layout.row:panel.wide?0:1;Layout.column:panel.wide?4:2;text:qsTr("Add Selected");AccessibleCompat.id:"layoutAddSelected";onClicked:PlayerCustomization.insert("palette",editor.selectedControl,Rules.zones[target.currentIndex],PlayerCustomization.layout[Rules.zones[target.currentIndex]].length)}
                 PlayerSetupButton{Layout.row:0;Layout.column:panel.wide?5:2;text:qsTr("Save");tinted:true;AccessibleCompat.id:"layoutSave";onClicked:PlayerCustomization.save()}

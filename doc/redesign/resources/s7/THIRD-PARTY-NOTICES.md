@@ -45,6 +45,12 @@ glyph inputs; no newly downloaded Fluent artwork replaces those pinned inputs.
 The combined Qt 6 application is conveyed under GNU GPL version 3, exercising
 the applicable later-version permissions of VLC's GPL-2.0-or-later components.
 Original component licenses remain in their sources and accompanying notices.
+
+The engine-specific MPV header emblem is the unchanged `etc/mpv-gradient.svg`
+from pinned MPV revision `e471496c56f0f49c133bd88b50aed62b845f1909`.
+Its original GPL-2.0-or-later provenance and hash are recorded in
+`modules/gui/qt/pixmaps/redesign/mpv-source.json`; the complete MPV source and
+license texts remain part of the corresponding-source/runtime distribution.
 Preserve the complete GPLv3 text alongside the original GPLv2/LGPL texts.
 Qt's applicable licensing is documented in the
 [Qt 6.8 licensing reference](https://doc.qt.io/qt-6.8/licensing.html);

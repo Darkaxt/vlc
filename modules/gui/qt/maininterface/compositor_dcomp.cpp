@@ -341,6 +341,10 @@ bool CompositorDirectComposition::makeMainInterface(MainCtx* mainCtx, std::funct
 
     connect(quickViewPtr, &QQuickWindow::beforeSynchronizing, this, [this] {
         QVariantMap state;
+        // QML is blocked here. Publish only the count across to the vout
+        // owner, which must not traverse GUI objects when binding its surface.
+        m_declaredBackdrops = size_t(m_quickView->contentItem()->findChildren<QQuickItem *>(
+            QStringLiteral("playerVideoBackdrop")).size());
         if (auto backdrop = playerBackdrop(); backdrop && m_quickView->rootObject())
             state = backdrop->synchronize(m_quickView->rootObject(), m_quickView->devicePixelRatio());
 #ifdef VLC_PLAYER_DIAGNOSTICS
@@ -518,7 +522,7 @@ bool CompositorDirectComposition::setupVoutWindow(vlc_window_t *p_wnd, VoutDestr
 
     Microsoft::WRL::ComPtr<PlayerVideoBackdrop> backdrop;
     backdrop.Attach(new (std::nothrow) PlayerVideoBackdrop);
-    const auto backdropResult = backdrop ? backdrop->initialize(m_dcompDevice, m_videoVisual.Get(), m_rootVisual.Get(), m_uiVisual) : E_OUTOFMEMORY;
+    const auto backdropResult = backdrop ? backdrop->initialize(m_dcompDevice, m_videoVisual.Get(), m_rootVisual.Get(), m_uiVisual, m_declaredBackdrops.load()) : E_OUTOFMEMORY;
     if (SUCCEEDED(backdropResult)) {
         p_wnd->handle.dcomp_visual = backdrop.Get();
         QMutexLocker lock(&m_playerBackdropLock);

@@ -305,6 +305,7 @@ MainCtx::MainCtx(qt_intf_t *_p_intf)
     /* and title of the Main Interface*/
     connect( THEMIM, &PlayerController::inputChanged, this, &MainCtx::onInputChanged );
     connect( THEMIM, &PlayerController::hasVideoOutputChanged, this, &MainCtx::onVOutChanged );
+    connect(THEMIM, &PlayerController::playbackEngineChanged, this, &MainCtx::redesignAccentChanged);
 
     /* END CONNECTS ON IM */
 
@@ -740,6 +741,10 @@ void MainCtx::dispatchMpvAction(int action)
 
 QColor MainCtx::getRedesignAccent() const
 {
+    // Engine identity is a presentation override, never a saved preference.
+    // Leaving MPV restores the current custom/system VLC accent immediately.
+    if (THEMIM->playbackEngine() == QStringLiteral("mpv"))
+        return QColor(QStringLiteral("#420042"));
     char *raw=var_InheritString(p_intf,"qt-accent-color");const QString value=qfu(raw).trimmed();free(raw);
     const QString effective=m_previewAccent.isNull()?value:m_previewAccent;
     if(effective==QStringLiteral("system")) {

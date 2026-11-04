@@ -80,6 +80,7 @@ T.Popup {
         if(PlayerCustomization.onboardingVisible&&!PlayerCustomization.onboardingSaving)
             PlayerCustomization.closeOnboarding(false,theme,accent,"")
     }
+    readonly property Item retainedBackdrop: background
     background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened }
     component Label: Text {
         color: PlayerStyle.foreground

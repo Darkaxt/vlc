@@ -1,5 +1,17 @@
 # Windows x64 reproduction and recovery
 
+4 November paused-overlay continuation: normal211 was stopped under its exact
+owned request66f86108cd684ef7b46ba49cd1baec45 after the actual panel rejected blur;
+its final report records exit137, empty Linux group and no max/OOM events.
+Preserve the interrupted pipeline identity and all completed objects. The current
+source repair binds declared QML backgrounds before presentation, adds the MPV
+purple/header emblem without changing the saved VLC accent, and retains the gear
+panel across transport clicks. Verify this complete delta together before normal
+qualification; do not reuse209's old widget success as proof of these new changes.
+The native probe's late-bound/early-bound paused-resize pictures and the manually
+resumed player establish the blur lifetime defect. There is no new decoder,
+CPU frame readback, sleep/retry loop or vout/core ABI change in its repair.
+
 4 November normal826 composed-picture rejection: M4 remains ACTIVE and1.1.5
 unpublished. New source work replaces system Desktop Acrylic with a live thumbnail
 of the app-owned source window, blurred on the existing native widget's own Qt

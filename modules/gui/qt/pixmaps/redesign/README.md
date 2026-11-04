@@ -1,5 +1,11 @@
 # VLC player design assets
 
+`mpv.svg` is the unchanged official gradient emblem from the pinned MPV source,
+not a Figma mask. [mpv-source.json](mpv-source.json) records its source/hash and
+GPL-2.0-or-later provenance. It retains its original colors at native DPR. While
+MPV is selected the effective accent is `#420042`, sampled from the user's
+mpv.io reference; the stored VLC/custom accent is preserved.
+
 These transparent SVG masks derive from Juxtopposed's **VLC Redesign**, licensed
 under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Attribution and
 editable reference links are in [the design resource index](../../../../../doc/redesign/resources/README.md).

@@ -35,7 +35,7 @@ T.ToolButton {
         objectName: "playerGlyph-" + button.glyph
         anchors.centerIn: parent
         source: "qrc:/redesign/icons/" + button.glyph + ".svg"
-        color: button.accented ? PlayerStyle.accentForeground : button.checked && !["sidebar","more"].includes(button.glyph) ? PlayerStyle.accent : button.foreground
+        color: button.glyph === "mpv" ? "transparent" : button.accented ? PlayerStyle.accentForeground : button.checked && !["sidebar","more"].includes(button.glyph) ? PlayerStyle.accent : button.foreground
         opacity: button.enabled ? 1 : 0.45
         // Qt rasterizes SVG sourceSize at the window's device pixel ratio.
         // Its SVG edges already contain antialiasing: applying another linear

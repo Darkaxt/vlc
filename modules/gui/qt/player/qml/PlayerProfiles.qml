@@ -13,6 +13,7 @@ T.Popup {
     modal: true; focus: true; padding: PlayerStyle.px(20)
     visible: PlayerCustomization.profilesVisible
     onClosed: PlayerCustomization.profilesVisible=false
+    readonly property Item retainedBackdrop: background
     background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened }
     contentItem: ColumnLayout {
         spacing: PlayerStyle.px(16)

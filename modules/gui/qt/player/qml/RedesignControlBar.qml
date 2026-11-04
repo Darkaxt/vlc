@@ -30,13 +30,13 @@ T.Pane {
     function activate(key,invoker){
         lastInvoker=invoker
         switch(key){
-        case "audio":subtitles.close();audio.open();break
-        case "subtitles":audio.close();subtitles.open();break
-        case "tools":audio.close();subtitles.close();settings.showPage(0);break
+        case "audio":settings.close();subtitles.close();audio.open();break
+        case "subtitles":settings.close();audio.close();subtitles.open();break
+        case "tools":audio.close();subtitles.close();if(settings.visible)settings.close();else settings.showPage(0);break
         case "speed":settings.showPage(0);break
         case "zoom":settings.showPage(1);break
-        case "more":playbackMenu.popup(invoker.mapToGlobal(0,invoker.height));break
-        case "queue":bar.toggleQueue();break
+        case "more":settings.close();playbackMenu.popup(invoker.mapToGlobal(0,invoker.height));break
+        case "queue":settings.close();bar.toggleQueue();break
         case "showQueue":if(!queueVisible)bar.toggleQueue();break
         default:externalActionRequested(key,invoker)
         }
@@ -59,7 +59,7 @@ T.Pane {
     }
     PlayerTracksPopup{id:subtitles;parent:bar.popupParent;subtitles:true;onSettingsRequested:page=>settings.showPage(page);x:parent.width-width-PlayerStyle.px(20);y:bar.y-height-PlayerStyle.px(20);onClosed:bar.restoreFocus()}
     PlayerTracksPopup{id:audio;parent:bar.popupParent;subtitles:false;onSettingsRequested:page=>settings.showPage(page);x:parent.width-width-PlayerStyle.px(20);y:bar.y-height-PlayerStyle.px(20);onClosed:bar.restoreFocus()}
-    PlayerSettingsPopup{id:settings;parent:bar.popupParent;x:Math.max(PlayerStyle.px(20),parent.width-width-PlayerStyle.px(20));y:bar.y-height-PlayerStyle.px(20)
+    PlayerSettingsPopup{id:settings;parent:bar;layoutRoot:bar.popupParent;x:Math.max(PlayerStyle.px(20),bar.width-width-PlayerStyle.px(20));y:-height-PlayerStyle.px(20)
         onMatchSubtitlesRequested:{subtitleMatching.online=false;subtitleMatching.open()}
         onRemoteSubtitlesRequested:{subtitleMatching.online=true;subtitleMatching.open()}
         onClosed:bar.restoreFocus()}

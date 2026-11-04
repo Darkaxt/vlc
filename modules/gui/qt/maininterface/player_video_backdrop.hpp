@@ -45,6 +45,7 @@ class PlayerVideoBackdrop final : public IDCompositionVisual
 #ifdef VLC_PLAYER_DIAGNOSTICS
     ComPtr<IDXGISwapChain1> m_swapchain;
     QSize m_surfaceAtPosition;
+    size_t m_regionsAtContent = 0;
 #endif
 
     HRESULT check(HRESULT result) { if (FAILED(result)) m_error = result; return result; }
@@ -100,12 +101,17 @@ public:
     }
 
     HRESULT initialize(IDCompositionDevice *device, IDCompositionVisual *source,
-                       IDCompositionVisual *root, IDCompositionVisual *ui)
+                       IDCompositionVisual *root, IDCompositionVisual *ui, size_t backgrounds)
     {
         m_device = device; m_source = source; m_root = root; m_ui = ui;
-        // Keep a stable first visual for the compositor's stacking anchor.
-        // Further slots are created only when real visible menus need them.
-        return addRegion();
+        // Bind every declared background before the vout's first presentation.
+        // A copy first attached after ResizeBuffers cannot read the paused
+        // frame retained by an older visual until another frame is presented.
+        do {
+            const HRESULT hr = addRegion();
+            if (FAILED(hr)) return hr;
+        } while (m_regions.size() < backgrounds);
+        return S_OK;
     }
 
     ~PlayerVideoBackdrop()
@@ -147,11 +153,10 @@ public:
         const auto window = root->window();
         const auto scope = window ? window->contentItem() : root;
         auto items = scope->findChildren<QQuickItem *>(QStringLiteral("playerVideoBackdrop"));
-        // Hidden popup backgrounds must not consume a slot ahead of an active
-        // one. A submenu and the queue can be visible together with the chrome.
+        // Retain hidden declared backgrounds too. Reassigning only visible
+        // slots creates late swapchain consumers after a paused resize.
         items.removeIf([window](QQuickItem* item) {
-            return item->window() != window || !item->isVisible() || item->opacity() <= 0
-                || item->width() <= 0 || item->height() <= 0;
+            return item->window() && item->window() != window;
         });
         QMutexLocker lock(&m_lock);
         while (m_regions.size() < size_t(items.size()))
@@ -165,7 +170,8 @@ public:
             auto item = i < size_t(items.size()) ? items[qsizetype(i)] : nullptr;
             QRectF rect;
             float radius = 0, sigma = 0;
-            const bool visible = m_enabled && m_content && item;
+            const bool visible = m_enabled && m_content && item && item->window() == window && item->isVisible()
+                && item->opacity() > 0 && item->width() > 0 && item->height() > 0;
             if (visible) {
                 const auto logical = item->mapRectToScene(item->boundingRect());
                 rect = QRectF(logical.topLeft() * dpr, logical.size() * dpr);
@@ -198,6 +204,7 @@ public:
         if (changed) check(m_device->Commit());
 #ifdef VLC_PLAYER_DIAGNOSTICS
         return {{QStringLiteral("video_content"), m_content}, {QStringLiteral("enabled"), m_enabled},
+                {QStringLiteral("regions_bound_at_content"), quint64(m_regionsAtContent)},
                 {QStringLiteral("surface_at_placement_px"), QVariantMap{
                     {QStringLiteral("width"), m_surfaceAtPosition.width()},
                     {QStringLiteral("height"), m_surfaceAtPosition.height()}}},
@@ -218,6 +225,7 @@ public:
 #ifdef VLC_PLAYER_DIAGNOSTICS
         m_swapchain.Reset();
         if (content) content->QueryInterface(IID_PPV_ARGS(&m_swapchain));
+        m_regionsAtContent = m_regions.size();
 #endif
         for (auto &region : m_regions) check(region.video->SetContent(content));
         m_content = content != nullptr;

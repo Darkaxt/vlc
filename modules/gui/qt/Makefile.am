@@ -813,9 +813,11 @@ ui_%.h: %.ui
 # Resources
 
 EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
-	pixmaps/redesign/manifest.json pixmaps/redesign/README.md
+	pixmaps/redesign/manifest.json pixmaps/redesign/README.md \
+	pixmaps/redesign/mpv-source.json
 
 libqt_plugin_la_RES = \
+	pixmaps/redesign/mpv.svg \
 	player/qml/PlayerLayoutRules.js \
 	pixmaps/redesign/forward10.svg \
 	pixmaps/redesign/backward10.svg \

@@ -1,0 +1,10 @@
+{
+  "source_repository": "https://github.com/mpv-player/mpv",
+  "source_commit": "e471496c56f0f49c133bd88b50aed62b845f1909",
+  "source_file": "etc/mpv-gradient.svg",
+  "sha256": "bf6082c81dcc8b8c6351326b53530f461258af9ca71c4642372654eba29c598f",
+  "license": "GPL-2.0-or-later; retained MPV Copyright and LICENSE.GPL",
+  "changes": "None; copied byte for byte",
+  "reference_accent": "#420042",
+  "reference": "User mpv.io screenshot header, RGB 66/0/66"
+}

@@ -34,7 +34,7 @@ T.Pane {
     Loader{anchors.fill:parent;active:header.showCSD&&!PlayerCustomization.editing;source:"qrc:///qt/qml/VLC/Widgets/CSDTitlebarTapNDrapHandler.qml"}
     RowLayout {
         id:left;x:PlayerStyle.px(6);height:parent.height;spacing:PlayerStyle.px(7)
-        PlayerIconButton{glyph:"vlc";description:qsTr("Back to media");foreground:PlayerStyle.accent;implicitWidth:PlayerStyle.px(38);implicitHeight:PlayerStyle.px(28);onClicked:header.backRequested()}
+        PlayerIconButton{glyph:Player.playbackEngine === "mpv" ? "mpv" : "vlc";description:qsTr("Back to media");foreground:PlayerStyle.accent;implicitWidth:PlayerStyle.px(38);implicitHeight:PlayerStyle.px(28);onClicked:header.backRequested()}
         PlayerIconButton{visible:header.libraryContext;glyph:"more";description:qsTr("Main menu");onClicked:header.showMainMenu(this)}
         PlayerIconButton{visible:header.libraryContext;glyph:"queue";description:qsTr("Show playback queue");AccessibleCompat.id:"libraryQueueButton";onClicked:header.queueRequested()}
         PlayerLayoutStrip {
@@ -138,6 +138,7 @@ T.Pane {
     }
     component PlayerMenu: T.Menu {
         id: menu
+        readonly property Item retainedBackdrop: background
         width: Math.max(0,Math.min(PlayerStyle.px(375),header.parent.width-PlayerStyle.px(16)))
         implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
         height: Math.min(implicitHeight,Math.max(0,header.parent.height-PlayerStyle.px(16)))

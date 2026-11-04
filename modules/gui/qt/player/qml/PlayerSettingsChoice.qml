@@ -67,7 +67,9 @@ T.ComboBox {
         padding: PlayerStyle.px(8)
         background: Rectangle { color: parent.highlighted ? PlayerStyle.hover : "transparent" }
     }
+    readonly property T.Popup retainedPopup: popup
     popup: T.Popup {
+        readonly property Item retainedBackdrop: background
         y: choice.height
         width: choice.width
         height: Math.min(contentItem.implicitHeight + 2, PlayerStyle.px(240))
