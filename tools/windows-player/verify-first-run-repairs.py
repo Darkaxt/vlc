@@ -1065,6 +1065,11 @@ def menus():
         # The visual review launcher used a dummy output with no volume callback.
         # This case uses the real WASAPI owner, paused and initially silent.
         case.inspect('volume-focus','focus','--target','volumeSlider')
+        # Accessibility focus deliberately leaves global player shortcuts active.
+        # Establish actual Tab focus before asking the Slider to handle arrows.
+        case.inspect('volume-backtab','key','--key','0x1000002','--modifiers','0x2000000')
+        focused=case.inspect('volume-tab','key','--key','0x1000001')
+        assert nodes(focused,'volumeSlider')[0]['focused']
         case.inspect('volume-increase','key','--key','0x1000014',
             '--await-core','audio_session_volume','--await-value','0.05','--await-tolerance','.005')
         case.inspect('volume-restore-silence','key','--key','0x1000012',
