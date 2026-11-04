@@ -100,7 +100,10 @@ extern "C" char **environ;
 #include "dialogs/help/help.hpp"     /* Launch Update */
 #include "dialogs/help/fork_release.hpp"
 #include "util/dismiss_popup_event_filter.hpp"
-#include "widgets/native/qvlcframe.hpp"
+#include "maininterface/windoweffects_module.hpp"
+#include <QMenu>
+#include <QAbstractItemView>
+#include <vlc_modules.h>
 #include "maininterface/compositor.hpp"
 #include "util/vlctick.hpp"
 #include "util/shared_input_item.hpp"
@@ -128,6 +131,65 @@ extern "C" char **environ;
 #ifndef X_DISPLAY_MISSING
 # include <vlc_xlib.h>
 #endif
+
+namespace {
+// QMenu also creates plain QMenu children for native VLC subcommands. Observe
+// their real lifecycle in one place, before polishing creates their HWNDs.
+// Keep this startup-owned implementation out of the shared dialog header.
+class MenuBackdrops final : public QObject
+{
+    qt_intf_t *m_intf;
+    WindowEffectsModule *m_effects = nullptr;
+public:
+    explicit MenuBackdrops(qt_intf_t *intf) : QObject(intf->p_mi), m_intf(intf)
+    {
+        qApp->installEventFilter(this);
+    }
+    ~MenuBackdrops() override
+    {
+        if (m_effects) {
+            if (m_effects->p_module) module_unneed(m_effects, m_effects->p_module);
+            vlc_object_delete(m_effects);
+        }
+    }
+    bool eventFilter(QObject *object, QEvent *event) override
+    {
+        auto *menu = qobject_cast<QWidget *>(object);
+        if (!menu || menu->windowType() != Qt::Popup ||
+            !var_InheritBool(m_intf, "qt-backdrop-blur"))
+            return false;
+        if (event->type() == QEvent::Polish) {
+            menu->setWindowFlag(Qt::FramelessWindowHint);
+            menu->setAttribute(Qt::WA_TranslucentBackground);
+            menu->setAutoFillBackground(false);
+        } else if (event->type() == QEvent::Show) {
+            if (!m_effects) {
+                m_effects = vlc_object_create<WindowEffectsModule>(m_intf);
+                if (m_effects)
+                    m_effects->p_module = module_need(m_effects, "qtwindoweffects", nullptr, false);
+            }
+            auto *window = menu->windowHandle();
+            const bool available = m_effects && m_effects->p_module && window &&
+                m_effects->isEffectAvailable(window, WindowEffectsModule::BlurBehind);
+            menu->setProperty("redesignGlassMenu", available);
+            menu->style()->unpolish(menu);
+            menu->style()->polish(menu);
+            menu->setAutoFillBackground(false);
+            menu->clearMask();
+            for (auto *view : menu->findChildren<QAbstractItemView *>()) {
+                view->style()->unpolish(view);
+                view->style()->polish(view);
+                view->viewport()->setAutoFillBackground(false);
+            }
+            if (available) m_effects->setBlurBehind(window, true, {});
+        } else if (event->type() == QEvent::Hide && m_effects && m_effects->p_module &&
+                   menu->property("redesignGlassMenu").toBool() && menu->windowHandle()) {
+            m_effects->setBlurBehind(menu->windowHandle(), false, {});
+        }
+        return false;
+    }
+};
+}
 
 /*****************************************************************************
  * Local prototypes.
@@ -1408,7 +1470,7 @@ static void *Thread( void *obj )
     p_intf->p_mi = new MainCtx(p_intf);
 #endif
 
-    QVLCTools::installMenuBackdrops(p_intf);
+    new MenuBackdrops(p_intf);
 
     if( !p_intf->b_isDialogProvider )
     {

@@ -18,6 +18,18 @@ These are internal implementation/acceptance blockers, not a wait for another
 copy of the rejected screenshot. No compilation or release is running. Preserve
 the user's currently open review package and all applicable prior evidence.
 
+**Build196 locality correction:** original196
+(`85c6b3fe8f0f400db79602557c11e1d0`, session56256) was stopped deliberately
+through the supported exact-owner control after dependency evidence showed an
+avoidable62-dialog invalidation from the popup helper declaration. It closed137,
+group empty, peak966803456 bytes and no max/OOM events. This is not a compiler
+failure or pause. Keep the helper wholly in Qt startup and restore the two
+shared dialog files byte-for-byte to their qualified67fb contents. For only
+those reverted files, verify original Git-blob identities and normalize their
+source timestamps to their last content commit, recording that restoration.
+Preserve every completed object and resume the same failed player step after
+the exact closed196 interruption; no SDK/configuration/cache reset.
+
 **4 November normal-package qualification:** application source
 `67fb8cd807d4cdaf010ed7706561eab380699513` has passed packaged VLC playback
 with/without the media library, normal MPV lifecycle, fresh inactive placement

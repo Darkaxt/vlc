@@ -35,7 +35,6 @@ class QKeyEvent;
 class QVLCTools
 {
    public:
-       static void installMenuBackdrops(qt_intf_t *intf);
        /*
         use this function to save a widgets screen position
         only for windows / dialogs which are floating, if a

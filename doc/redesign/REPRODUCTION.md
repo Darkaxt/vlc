@@ -13,6 +13,15 @@ composed corners/blur, nested menu behavior, empty-disclosure suppression and
 volume changes with real WASAPI. The dummy-output visual launcher has no volume
 or mute callbacks. Keep M4 ACTIVE and1.1.5 unpublished until those gates pass.
 
+Original196 was deliberately stopped to remove an accidental62-consumer shared
+header dependency. Keep its137/group-empty/no-OOM report and completed objects.
+The popup observer now belongs wholly to Qt startup. qvlcframe.cpp/.hpp return
+exactly to their qualified67fb Git blobs; only those reverted source files may
+recover their last-content-commit timestamps after hash checks. Record the
+source commit, hashes and timestamps. Every genuinely changed input retains
+normal Make dependency handling. Resume the original interrupted player step
+with closed196, the same diagnostic flags and the exact409-plugin reuse guard.
+
 Normal193 (`eb3dc21c8da44ab8a3e529989e5cdd6e`, source67fb8cd8) successfully
 compiled/linked Qt and staged the410-plugin cohort. Its failure was the later
 symbol step: an already-stripped retained DLL contained its old GNU debuglink,
