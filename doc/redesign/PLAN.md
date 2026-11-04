@@ -5,6 +5,35 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
+**4 November normal-package qualification:** application source
+`67fb8cd807d4cdaf010ed7706561eab380699513` has passed packaged VLC playback
+with/without the media library, normal MPV lifecycle, fresh inactive placement
+and actual offscreen SDR/P5 presentation with natural EOF and clean release.
+Portable/source/symbol archives, all417 stripped PE/symbol mappings, the410-plugin
+cohort,121 dependency sources, unsigned policy and full protected-profile
+comparison pass. No diagnostic hooks ship.193 completed Qt compile/link but
+failed when re-splitting an already-stripped retained plugin without its symbol
+record.195 (`25f6b217118f4e168522122b559bb73b`) resumed symbol packaging only,
+closed0 with empty group/released private mounts and no max/OOM events; no
+compiler/linker ran during recovery. The409 exact retained mappings are restored.
+Qualifier case-name/source-carrier errors and the first inactive InputSwitch
+child-window observation remain preserved. A fresh ancestry probe identified
+the same-process OS indicator child and passed strict placement before any
+input-desktop launch. No accepted playback or full UI matrix was repeated.
+
+R83/R84's **actual composed Settings blur/corners remains unverified**. The
+current normal package's isolated, user-operated review launcher is
+`D:/Temp/vlc-s8-settings-1.1.5-20261102/backdrop-review-rendering/review-settings.cmd`.
+Its binding records Qt SHA256
+`63bb4d2c8349a06ed5a441b4714b6f8386f8495caecc839a50152b1f8764847b`.
+It opens synthetic media using a separate profile; the user opens Settings with
+Ctrl+P and supplies its composed screenshot. No agent desktop control or real
+profile change is authorized. Raw widget alpha/DWM readback is insufficient.
+After that visual gate, resume the original qualification without repeating its
+passes, publish one normal1.1.5, independently verify delivery, and complete
+retained/weekly rebinding and obsolete-output retirement.1.1.5 is unpublished;
+the stage and overall outcome remain incomplete.
+
 **4 November repair acceptance:** managed192
 (`038e53e23ca24049ad584a3d09dc8d2f`) compiled source
 `c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18` and closed0 with an empty Linux
@@ -17,9 +46,9 @@ protected-profile comparison passes. Successful unchanged category layouts,
 menu/profile/playback/policy evidence retain their original producer identities.
 Original focus-proxy/disclosure checker failures and a concurrent external
 Nuvio profile-write comparison remain false in preserved receipts; they were
-diagnosed without another player build or excluding protected paths. Prepare
-one normal assembly and complete its normal playback/artifact/composed-picture
-and delivery gates. Actual composed blur remains unverified and1.1.5 unpublished.
+diagnosed without another player build or excluding protected paths. Its normal
+assembly/playback/artifact gates have subsequently passed as recorded above.
+Actual composed blur remains unverified and1.1.5 unpublished.
 
 **3 November actual-window rejection:** M4 remains ACTIVE. The user's composed
 General/Controls/Playback captures reject the gray corners, absent blur, wrong
@@ -66,7 +95,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE |192/c1380668 affected native Settings input/save/rollback/restart/focus/Privacy and manual widget review pass, with a fresh full profile-preservation comparison. All13 category layout/theme/width/DPI and unchanged menu/profile/playback/policy evidence retain their reviewed original identities. README credits are present. Earlier normal189 artifacts/presentation remain historical and do not qualify192's normal package. | R83/R84: actual normal composed blur/corners; new normal assembly, playback/picture/artifact/source/symbol checks; final release publication, independent retrieval and retained/weekly binding/cleanup. These remain advancement blockers. | None. |
+| M4 Settings and menu parity | ACTIVE |192/c1380668 affected native Settings input/save/rollback/restart/focus/Privacy and manual widget review pass, with full profile preservation. All13 category layouts and unchanged menu/profile/playback/policy evidence retain their reviewed identities.67fb8cd8 normal package, VLC/MPV SDR/P5 lifecycle and actual picture, all archives/source/symbols and unsigned policy pass. README credits are present. | R83/R84: actual normal composed Settings blur/corners; final publication, independent retrieval and retained/weekly binding/cleanup. The concrete isolated review launcher above supplies the remaining visual input. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

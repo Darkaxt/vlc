@@ -1,5 +1,36 @@
 # Windows x64 reproduction and recovery
 
+Normal193 (`eb3dc21c8da44ab8a3e529989e5cdd6e`, source67fb8cd8) successfully
+compiled/linked Qt and staged the410-plugin cohort. Its failure was the later
+symbol step: an already-stripped retained DLL contained its old GNU debuglink,
+but the new manifest had seeded only MPV mappings. Keep the original failure.
+Restore all409 byte-identical retained plugin symbol records and their matching
+sidecars, verifying runtime-image/hash/CRC identities. Exact incomplete objcopy
+outputs were retired using transaction7b91add7718d88b0a803436df3470816 (two
+files/104005 logical bytes), preserving the runtime and compiled objects.
+Packaging-only recovery195 (`25f6b217118f4e168522122b559bb73b`) closed0 in274.5s,
+peak212168704 bytes, all max/OOM counters0, group empty and private mounts
+released. No compiler or linker ran; original run20 remains failed, and run21
+records its exact symbol-only continuation. All417 mappings now verify.
+
+The current67fb8cd8 normal artifacts and real Windows VLC/MPV SDR/P5 checks pass
+in `release-operation.json` under the existing Settings scratch. Preserve the
+case-prefix preflight failure, missing former1.1.4 local source-carrier failure
+and original inactive InputSwitch child-window observation. The old verified
+candidate's source archive (SHA256
+`2e8f66821d21ba77910740bf43d09bce71ebb5f8cf9d9e9a84adfc9789df26ad`)
+supplied only unchanged dependency archives; current application Git blobs and
+all121 dependency sources were independently stream-verified. A fresh passive
+ancestry probe proved DirectUIHWND's same-process InputSwitch parent and passed
+strict placement before actual offscreen SDR/P5 Present(S_OK)/EOF/release.
+Do not repeat accepted checks or launch from the failed placement observation.
+
+Actual composed Settings blur/corners still requires the current isolated
+`backdrop-review-rendering/review-settings.cmd` launcher and its binding; no
+agent desktop controls or OS setting changes.1.1.5 remains unpublished. After
+the composed visual gate, close the existing qualification, publish/independently
+verify delivery and complete retained/weekly rebinding before retirement.
+
 M4 repair192 (`038e53e23ca24049ad584a3d09dc8d2f`) assembled
 `c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18` through the retained Qt-only path.
 Player compilation/link completed0 in1143.5s; the whole Linux group closed0 in
