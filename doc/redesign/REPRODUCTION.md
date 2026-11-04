@@ -25,6 +25,19 @@ Actual Windows-composited pixels, first-show timing, resize/lifetime behavior,
 both-engine video context menus, Settings and normal release qualification remain
 required; source readiness or a committed native visual does not establish them.
 
+Build207 closed0 with the pinned QtGui bridge archive
+`c03fd79580c85cdf9846308080d6a72f7f70c4821e45b001ec5421da09f3b357`.
+Its native menu workflow closes0 but rejects E_INVALIDARG before composition is
+ready. The owned inactive probe at
+`D:/Temp/vlc-s8-settings-1.1.5-20261102/native-content-api-updates/result.json`
+identifies the actual DirectComposition protocol: a target-root visual cannot be
+added as a child until SetRoot(nullptr), and cannot be restored as a root until
+RemoveVisual. Shared thumbnail updates require DWM_TNP_ENABLE3D on every call;
+the same update returns E_INVALIDARG without the bit and S_OK with it. Commit
+the complete new tree atomically and preserve the inverse ownership order on
+release. The small MSVC probe did not rebuild Qt/VLC or touch the input desktop.
+The original failed native result remains retained; it is not accepted evidence.
+
 Standalone probe206 (`ae1b5e7bb18544d4bff77267507a7ae9`, original session49270)
 closed0, Linux group empty and private mounts released, peak697901056bytes, no
 max/OOM. It compiled/linked only the menu diagnostic. Its direct popup first

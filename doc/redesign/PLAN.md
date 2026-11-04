@@ -10,6 +10,19 @@ show mismatched native/painted radii with white edge pixels, a slow blank opaque
 video context menu, absent content blur and classic cone artwork. Preserve
 `D:/Temp/vlc-s8-settings-1.1.5-20261102/composed-rejection-826438e2/review.json`.
 These are internal R83/R84 repair/acceptance blockers; no user approval is pending.
+Build207 (sourcee4d65439) closed0, group empty and private mounts released,
+peak1718808576bytes, no max/OOM, with409 retained non-Qt plugins. Its first
+complete menu workflow verifies real WASAPI controls and live MPV handover,
+then rejects native content composition with E_INVALIDARG. Exit0 and protected
+profiles are verified; this is a failed product acceptance, not a crash.
+The standalone Windows API probe reproduces invalid existing-root parenting,
+legacy-mode shared-thumbnail updates and restoration of a still-parented visual.
+Detaching/reparenting in one commit, retaining ENABLE3D on updates, and removing
+the UI child before restoration each return S_OK in that same probe. Apply these
+ownership/protocol corrections together, then repeat affected acceptance using
+only the changed effects object and GUI link. The repaired QtGui archive and all
+other compiled objects stay retained. No SDK/codec/configuration rebuild is needed.
+Actual native/composed acceptance and normal delivery remain required.
 The12 passed underlying normal205 checks remain historical applicable evidence,
 not acceptance of the rejected composed picture. A standalone retained-Qt probe
 compares animation with direct popup presentation; it does not rebuild VLC/Qt.

@@ -69,10 +69,14 @@ class ContentBackdrop final : public QObject
     ComPtr<IDCompositionRectangleClip> m_clip;
     ComPtr<IDCompositionGaussianBlurEffect> m_blur;
     HTHUMBNAIL m_thumbnail = nullptr;
-    bool m_queued = false, m_enabled = false;
+    bool m_queued = false, m_enabled = false, m_uiReparented = false;
 
     void release(bool restore)
     {
+        // DirectComposition forbids a visual from being a target root and a
+        // child at once. Undo the parenting before restoring Qt's root.
+        if (m_uiReparented && m_root && m_ui) m_root->RemoveVisual(m_ui.Get());
+        m_uiReparented = false;
         if (restore && m_target && m_ui) {
             m_target->SetRoot(m_ui.Get());
             m_device->Commit();
@@ -132,6 +136,7 @@ class ContentBackdrop final : public QObject
         auto *swapchain = static_cast<QD3D11SwapChain *>(native.value(QStringLiteral("swapchain")).value<QRhiSwapChain *>());
         if (!swapchain || !swapchain->dcompTarget || !swapchain->dcompVisual) return;
         HRESULT hr = S_OK;
+        const char *operation = "create_native_graph";
         if (m_target.Get() != swapchain->dcompTarget || m_ui.Get() != swapchain->dcompVisual) {
             release(true);
             m_rhi = rhi;
@@ -159,14 +164,28 @@ class ContentBackdrop final : public QObject
             properties.fVisible = TRUE;
             properties.fSourceClientAreaOnly = TRUE;
             properties.rcSource = properties.rcDestination = sourceRect;
-            if (SUCCEEDED(hr)) hr = thumbnailFunction()(reinterpret_cast<HWND>(m_window->winId()),
-                source, 2, &properties, effects.Get(),
-                reinterpret_cast<void **>(m_thumbnailVisual.GetAddressOf()), &m_thumbnail);
+            if (SUCCEEDED(hr)) {
+                operation = "create_shared_thumbnail";
+                hr = thumbnailFunction()(reinterpret_cast<HWND>(m_window->winId()),
+                    source, 2, &properties, effects.Get(),
+                    reinterpret_cast<void **>(m_thumbnailVisual.GetAddressOf()), &m_thumbnail);
+            }
+            if (SUCCEEDED(hr)) operation = "configure_shared_thumbnail";
             if (SUCCEEDED(hr)) hr = m_thumbnailVisual->SetEffect(m_blur.Get());
             if (SUCCEEDED(hr)) hr = m_blur->SetBorderMode(D2D1_BORDER_MODE_HARD);
             if (SUCCEEDED(hr)) hr = m_root->SetClip(m_clip.Get());
             if (SUCCEEDED(hr)) hr = m_root->AddVisual(m_thumbnailVisual.Get(), FALSE, nullptr);
-            if (SUCCEEDED(hr)) hr = m_root->AddVisual(m_ui.Get(), TRUE, m_thumbnailVisual.Get());
+            if (SUCCEEDED(hr)) {
+                // These commands are committed together with the new root;
+                // the displayed tree has no intermediate empty frame.
+                operation = "detach_qt_root";
+                hr = m_target->SetRoot(nullptr);
+                if (SUCCEEDED(hr)) {
+                    operation = "parent_qt_visual";
+                    hr = m_root->AddVisual(m_ui.Get(), TRUE, m_thumbnailVisual.Get());
+                    m_uiReparented = SUCCEEDED(hr);
+                }
+            }
         }
         if (SUCCEEDED(hr) && m_root) {
             const auto destination = reinterpret_cast<HWND>(m_window->winId());
@@ -176,9 +195,13 @@ class ContentBackdrop final : public QObject
             GetClientRect(destination, &rect); GetClientRect(source, &sourceRect);
             ClientToScreen(source, &sourceOrigin); ClientToScreen(destination, &targetOrigin);
             DWM_THUMBNAIL_PROPERTIES properties{};
-            properties.dwFlags = DWM_TNP_RECTDESTINATION | DWM_TNP_RECTSOURCE;
+            // Shared DComp thumbnails require ENABLE3D on updates as well as
+            // creation; omitting it selects the incompatible legacy API path.
+            properties.dwFlags = DWM_TNP_RECTDESTINATION | DWM_TNP_RECTSOURCE | DWM_TNP_ENABLE3D;
             properties.rcSource = properties.rcDestination = sourceRect;
+            operation = "update_shared_thumbnail";
             hr = DwmUpdateThumbnailProperties(m_thumbnail, &properties);
+            if (SUCCEEDED(hr)) operation = "update_content_clip";
             const float dpr = float(m_window->devicePixelRatio());
             const float radius = m_window->property("redesignBackdropRadius").toFloat() * dpr;
             if (SUCCEEDED(hr)) hr = m_thumbnailVisual->SetOffsetX(float(sourceOrigin.x-targetOrigin.x));
@@ -197,6 +220,7 @@ class ContentBackdrop final : public QObject
             if (SUCCEEDED(hr)) hr = m_clip->SetBottomRightRadiusX(radius);
             if (SUCCEEDED(hr)) hr = m_clip->SetBottomRightRadiusY(radius);
             // Qt can rebind its root while recreating a resized swapchain.
+            if (SUCCEEDED(hr)) operation = "commit_native_graph";
             if (SUCCEEDED(hr)) hr = m_target->SetRoot(m_root.Get());
             if (SUCCEEDED(hr)) hr = m_device->Commit();
 #ifdef VLC_PLAYER_DIAGNOSTICS
@@ -212,9 +236,9 @@ class ContentBackdrop final : public QObject
 #endif
         }
         if (FAILED(hr)) {
-            qWarning("Application content backdrop failed: 0x%08lx", static_cast<unsigned long>(hr));
+            qWarning("Application content backdrop %s failed: 0x%08lx", operation, static_cast<unsigned long>(hr));
             m_enabled = false;
-            m_window->setProperty("redesignContentBackdropError", QString::number(quint32(hr),16));
+            m_window->setProperty("redesignContentBackdropError", QString::fromLatin1(operation) + QLatin1Char(':') + QString::number(quint32(hr),16));
             release(true);
         } else if (m_root && !m_window->property("redesignContentBackdropReady").toBool()) {
             m_window->setProperty("redesignContentBackdropReady", true);
