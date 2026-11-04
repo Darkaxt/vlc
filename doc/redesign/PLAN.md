@@ -10,6 +10,18 @@ show mismatched native/painted radii with white edge pixels, a slow blank opaque
 video context menu, absent content blur and classic cone artwork. Preserve
 `D:/Temp/vlc-s8-settings-1.1.5-20261102/composed-rejection-826438e2/review.json`.
 These are internal R83/R84 repair/acceptance blockers; no user approval is pending.
+Current review now shows the intended underlying-content blur and clean Settings
+corners; the exact source20265f45/Qt14387b62 WGC capture is retained at
+`backdrop-review-native-current/composed-settings` with unchanged foreground.
+The user confirms it works. This is diagnostic-source visual proof, not normal
+release qualification. Context capture found the popup already closed; preserve
+the user's root-menu screenshot and still inspect the submenu/normal package.
+The same review exposes Record's magenta template color: the QAction bypasses
+the existing ColorizedSvgIcon path. Archived Record variants are gray#8f8f8f
+(default) and orange#d37918 (active). Route this action through the same palette
+colorizer as adjacent actions. Normal210 was stopped before completion using its
+exact owned ticket; exit137/group empty/no max/OOM, dependencies/objects retained.
+This new bounded icon correction must be included before final normal acceptance.
 Focused209 (`ec97458032ea41e39a46ec4196151eff`, source20265f45) now closes0,
 Linux group empty/private mounts released, peak1715535872bytes, no max/OOM.
 Current diagnostic Qt is14387b6263ad5075f8abb3266832691da44ba609ae1338f1b9202ef8deacaff6.
