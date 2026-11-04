@@ -45,6 +45,8 @@ parser.add_argument('--collect-settings-layouts', action='store_true',
     help='Keep the reproduced font/focus failures; collect remaining DPI/font/history checks without replaying100%% layouts')
 parser.add_argument('--settings-input-repair', action='store_true',
     help='Verify repaired focus/input/save workflows and Privacy at all DPI values; reuse the reviewed unchanged category layouts')
+parser.add_argument('--resume-settings-input',action='store_true',
+    help='Continue the closed input repair after correcting Qt focus-proxy observation; retain completed100%% Privacy/focus evidence')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -53,15 +55,36 @@ resume_settings=args.resume_settings_after_desktop_change
 resume_history=args.resume_settings_history
 resume_behaviour=args.resume_settings_behaviour
 collect_layouts=args.collect_settings_layouts
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts))<=1
+resume_input=args.resume_settings_input
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input))<=1
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts
+assert not resume_input or (args.case=='settings' and args.settings_input_repair)
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if collect_layouts:
+if resume_input:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['source_commit']=='c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18'
+    assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert set(previous['failures'])=={'settings'} and "Expected one snapshot Tab target" in previous['failures']['settings']
+    assert len(previous['cases'])==1
+    completed=previous['cases'][0]
+    assert completed['name']=='settings-1' and completed['exit_code']==0 and completed['owned_desktop_never_observed_as_input']
+    assert completed['category_selection_focus']['passed'] and not completed['passed']
+    assert completed['steps'][-2]['label'].startswith('snapshot-dimensions-reveal-scroll-')
+    observation=json.loads((root/completed['steps'][-2]['response']).read_text(encoding='utf-8'))
+    focused=[row for row in observation['widgets'] if row['focused']]
+    assert len(focused)==2 and focused[0]['id']=='preferencesCategories' and focused[1]['parent']==focused[0]['node']
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
+    historical=root/'result-before-focus-proxy-checker.json'
+    assert not historical.exists(),'Continue the original input-checker recovery'
+    historical.write_bytes((root/'result.json').read_bytes())
+elif collect_layouts:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert previous['failures']=={'settings-category-focus':['Mouse did not clear the keyboard-only outline'],'settings':'AssertionError()'}
@@ -165,7 +188,14 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
-if collect_layouts:
+if resume_input:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    records['cases']=previous['cases']
+    records['reused_input_layouts']={'historical_result':str(historical),
+        'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'source_commit':records['source_commit'],'case':'settings-1','original_case_passed':False,
+        'scope':'Completed100% Privacy layout/scroll/theme and category mouse/Tab/mouse paint checks. The original overall/case failure remains false. Qt focus-proxy aliases are canonicalized; fresh complete behaviour/save/restart and remaining DPI workflows follow.'}
+elif collect_layouts:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases']
     records['failures']=previous['failures']
@@ -1391,7 +1421,15 @@ def settings():
         focused=case.reveal('snapshot-dimensions-reveal','value-snapshot-width-size','preferencesScroll5')
         visited=set()
         while not widget(focused,'value-snapshot-width-size')['focused']:
-            targets=[row for row in focused['widgets'] if row['focused']]
+            rows={row['node']:row for row in focused['widgets']}
+            def focused_ancestor(row):
+                while row['parent']>=0:
+                    row=rows[row['parent']]
+                    if row['focused']:return True
+                return False
+            # A focus proxy and its owner can both report hasFocus(). Keep the
+            # outer focused owner that receives the real native Tab event.
+            targets=[row for row in rows.values() if row['focused'] and not focused_ancestor(row)]
             assert len(targets)==1,('Expected one snapshot Tab target',targets)
             target=targets[0]
             identity=(target['node'],target['id'])
@@ -1525,8 +1563,8 @@ def settings():
                 restarted.native('restart-close-settings','preferencesClose')
                 restarted.close(True)
             finally:restarted.close()
-    if resume_behaviour:
-        recovery=Case('settings-1-behaviour-resumed',scale='1',media=fixtures/'control.mkv',reused_profile=root/'settings-1/profile')
+    if resume_behaviour or resume_input:
+        recovery=Case('settings-1-input-behaviour-resumed' if resume_input else 'settings-1-behaviour-resumed',scale='1',media=fixtures/'control.mkv',reused_profile=root/'settings-1/profile')
         try:
             behaviour(recovery)
             recovery.close(True)
@@ -1547,7 +1585,7 @@ def settings():
         finally:lifecycle.close()
         records['reused_settings_rendering']['fresh_lifecycle_case']=lifecycle.record['name']
         assert lifecycle.record['passed'] and lifecycle.record['owned_desktop_never_observed_as_input']
-    for scale in (() if resume_history else ('1.5','2') if resume_behaviour or collect_layouts else ('2',) if resume_settings else ('1',) if survey else ('1','1.5','2')):
+    for scale in (() if resume_history else ('1.5','2') if resume_behaviour or collect_layouts or resume_input else ('2',) if resume_settings else ('1',) if survey else ('1','1.5','2')):
         case=Case('settings-'+scale.replace('.','-'),scale=scale,media=fixtures/'control.mkv')
         try:
             for dark in ((True,) if survey else (True,False)):
