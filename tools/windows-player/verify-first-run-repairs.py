@@ -69,19 +69,30 @@ if resume_input:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['source_commit']=='c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18'
     assert previous['scope']=='settings' and not previous['passed'] and previous['protected_profiles_unchanged']
-    assert set(previous['failures'])=={'settings'} and "Expected one snapshot Tab target" in previous['failures']['settings']
-    assert len(previous['cases'])==1
+    assert set(previous['failures'])=={'settings'}
+    input_disclosure_recovery=previous['failures']['settings']=="AssertionError(('value-extra-options', []))"
+    assert len(previous['cases'])==(2 if input_disclosure_recovery else 1)
     completed=previous['cases'][0]
     assert completed['name']=='settings-1' and completed['exit_code']==0 and completed['owned_desktop_never_observed_as_input']
     assert completed['category_selection_focus']['passed'] and not completed['passed']
-    assert completed['steps'][-2]['label'].startswith('snapshot-dimensions-reveal-scroll-')
-    observation=json.loads((root/completed['steps'][-2]['response']).read_text(encoding='utf-8'))
-    focused=[row for row in observation['widgets'] if row['focused']]
-    assert len(focused)==2 and focused[0]['id']=='preferencesCategories' and focused[1]['parent']==focused[0]['node']
+    if input_disclosure_recovery:
+        failed=previous['cases'][-1]
+        assert failed['name']=='settings-1-input-behaviour-resumed' and failed['exit_code']==0 and failed['owned_desktop_never_observed_as_input']
+        before=next(row for row in failed['steps'] if row['label']=='save-advanced-reveal-locate')
+        after=next(row for row in failed['steps'] if row['label']=='save-advanced')
+        for step,checked in ((before,True),(after,False)):
+            observed=json.loads((root/step['response']).read_text(encoding='utf-8'))
+            assert next(row for row in observed['widgets'] if row['id']=='preferencesAdvanced0')['checked'] is checked
+    else:
+        assert 'Expected one snapshot Tab target' in previous['failures']['settings']
+        assert completed['steps'][-2]['label'].startswith('snapshot-dimensions-reveal-scroll-')
+        observation=json.loads((root/completed['steps'][-2]['response']).read_text(encoding='utf-8'))
+        focused=[row for row in observation['widgets'] if row['focused']]
+        assert len(focused)==2 and focused[0]['id']=='preferencesCategories' and focused[1]['parent']==focused[0]['node']
     assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
     assert not any((runtime/'portable').iterdir())
     assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
-    historical=root/'result-before-focus-proxy-checker.json'
+    historical=root/('result-before-disclosure-checker.json' if input_disclosure_recovery else 'result-before-focus-proxy-checker.json')
     assert not historical.exists(),'Continue the original input-checker recovery'
     historical.write_bytes((root/'result.json').read_bytes())
 elif collect_layouts:
@@ -194,7 +205,8 @@ if resume_input:
     records['reused_input_layouts']={'historical_result':str(historical),
         'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
         'source_commit':records['source_commit'],'case':'settings-1','original_case_passed':False,
-        'scope':'Completed100% Privacy layout/scroll/theme and category mouse/Tab/mouse paint checks. The original overall/case failure remains false. Qt focus-proxy aliases are canonicalized; fresh complete behaviour/save/restart and remaining DPI workflows follow.'}
+        'scope':'Completed100% Privacy layout/scroll/theme and category mouse/Tab/mouse paint checks. Original failed overall/cases remain false. Canonical focus ownership and observed disclosure state replace invalid checker assumptions; fresh complete behaviour/save/restart and remaining DPI workflows follow.'}
+    if input_disclosure_recovery:records['reused_input_layouts']['previous_recovery']=previous['reused_input_layouts']
 elif collect_layouts:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases']
@@ -1368,8 +1380,9 @@ def settings():
         scoped=select(case,2,'cancelled-privacy')
         assert not widget(scoped,'value-extraintf-audioscrobbler')['checked']
         select(case,0,'all-settings-general')
-        case.reveal('all-settings-advanced-reveal','preferencesAdvanced0','preferencesScroll0')
-        case.native('all-settings-expand','preferencesAdvanced0')
+        advanced=case.reveal('all-settings-advanced-reveal','preferencesAdvanced0','preferencesScroll0')
+        if not widget(advanced,'preferencesAdvanced0')['checked']:
+            case.native('all-settings-expand','preferencesAdvanced0')
         case.reveal('all-settings-commands-reveal','preferencesAction-vlc-commands','preferencesScroll0')
         case.native('all-settings-commands','preferencesAction-vlc-commands')
         browser=case.inspect('all-settings-browser','widget_click','--menu-action','All VLC settings…')
@@ -1462,8 +1475,9 @@ def settings():
         case.reveal('tree-view-reveal','value-playlist-tree','preferencesScroll1')
         case.native('tree-view-stage','value-playlist-tree')
         select(case,0,'save-general')
-        case.reveal('save-advanced-reveal','preferencesAdvanced0','preferencesScroll0')
-        case.native('save-advanced','preferencesAdvanced0')
+        advanced=case.reveal('save-advanced-reveal','preferencesAdvanced0','preferencesScroll0')
+        if not widget(advanced,'preferencesAdvanced0')['checked']:
+            case.native('save-advanced','preferencesAdvanced0')
         edit(case,'invalid-extra','value-extra-options','--m4-invalid-option=1','preferencesScroll0')
         failed=case.native('reject-invalid-save','preferencesSave')
         assert any('m4-invalid-option' in row.get('text','') for row in failed['widgets'])
@@ -1564,7 +1578,8 @@ def settings():
                 restarted.close(True)
             finally:restarted.close()
     if resume_behaviour or resume_input:
-        recovery=Case('settings-1-input-behaviour-resumed' if resume_input else 'settings-1-behaviour-resumed',scale='1',media=fixtures/'control.mkv',reused_profile=root/'settings-1/profile')
+        recovery_name=('settings-1-input-disclosure-resumed' if input_disclosure_recovery else 'settings-1-input-behaviour-resumed') if resume_input else 'settings-1-behaviour-resumed'
+        recovery=Case(recovery_name,scale='1',media=fixtures/'control.mkv',reused_profile=root/('settings-1-input-behaviour-resumed/profile' if resume_input and input_disclosure_recovery else 'settings-1/profile'))
         try:
             behaviour(recovery)
             recovery.close(True)
