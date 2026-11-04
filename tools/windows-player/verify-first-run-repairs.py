@@ -1069,6 +1069,11 @@ def menus():
             '--await-core','audio_session_volume','--await-value','0.05','--await-tolerance','.005')
         case.inspect('volume-restore-silence','key','--key','0x1000012',
             '--await-core','audio_session_volume','--await-value','0','--await-tolerance','.005')
+        maximum=nodes(snapshot,'volumeSlider')[0]['to']
+        case.inspect('volume-mouse-wedge','click','--target','volumeSlider','--fraction-x','.5',
+            '--await-core','audio_session_volume','--await-value',maximum/2,'--await-tolerance','.03')
+        case.inspect('volume-mouse-restore','click','--target','volumeSlider','--fraction-x','0',
+            '--await-core','audio_session_volume','--await-value','0','--await-tolerance','.005')
         case.record['real_output_volume_control']=True
         recent_initial=next(node for node in snapshot['tree'] if node['id']=='recentSource')
         assert recent_initial.get('status') in ('Ready','Loading',1,2), ('Recent model is not loading',recent_initial)
@@ -1137,6 +1142,17 @@ def menus():
         case.inspect('speed-reset-input','key','--key','0','--text','1x')
         case.inspect('speed-reset-apply','key','--key','0x1000004','--await-core','rate','--await-value','1','--await-tolerance','.001')
         case.inspect('close-playback-panel','key','--key','0x1000000')
+        commands=open_vlc_commands(case,'native-command-glass')
+        native_menus=[widget for widget in commands['widgets'] if widget['type']=='QMenu' and widget['visible']]
+        assert native_menus,'The themed native commands menu did not open'
+        case.record['native_command_menu_composition']=[settings_window_region(case,widget) for widget in native_menus]
+        submenu=case.inspect('native-submenu-glass','widget_click','--menu-action','Subtitles','--capture')
+        native_submenus=[widget for widget in submenu['widgets'] if widget['type']=='QMenu' and widget['visible']]
+        assert len(native_submenus)>len(native_menus),'Native submenu did not open'
+        case.record['native_submenu_composition']=[settings_window_region(case,widget) for widget in native_submenus]
+        case.inspect('native-submenu-dismiss','key','--key','0x1000000')
+        case.inspect('native-command-dismiss','key','--key','0x1000000')
+        case.native('native-command-settings-close','preferencesClose')
         case.inspect('library-menu-route','click','--name','Back to media','--await-target','viewLoader',
             '--await-property','source','--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml'))
         case.inspect('library-menu-ready','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
