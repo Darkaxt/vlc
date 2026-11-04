@@ -238,7 +238,8 @@ class ContentBackdrop final : public QObject
         if (FAILED(hr)) {
             qWarning("Application content backdrop %s failed: 0x%08lx", operation, static_cast<unsigned long>(hr));
             m_enabled = false;
-            m_window->setProperty("redesignContentBackdropError", QString::fromLatin1(operation) + QLatin1Char(':') + QString::number(quint32(hr),16));
+            const QString failure = QString::fromLatin1(operation) + QLatin1Char(':') + QString::number(quint32(hr),16);
+            m_window->setProperty("redesignContentBackdropError", failure);
             release(true);
         } else if (m_root && !m_window->property("redesignContentBackdropReady").toBool()) {
             m_window->setProperty("redesignContentBackdropReady", true);

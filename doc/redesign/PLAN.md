@@ -23,6 +23,10 @@ ownership/protocol corrections together, then repeat affected acceptance using
 only the changed effects object and GUI link. The repaired QtGui archive and all
 other compiled objects stay retained. No SDK/codec/configuration rebuild is needed.
 Actual native/composed acceptance and normal delivery remain required.
+The focused208 continuation closes1/group empty without max/OOM before GUI
+link: Qt's QStringBuilder expression needs materializing as QString for QVariant
+property conversion. Correct that diagnostic label and resume the affected object;
+the API protocol repair and all retained dependency/object inputs remain intact.
 The12 passed underlying normal205 checks remain historical applicable evidence,
 not acceptance of the rejected composed picture. A standalone retained-Qt probe
 compares animation with direct popup presentation; it does not rebuild VLC/Qt.
