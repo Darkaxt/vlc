@@ -857,7 +857,7 @@ void QmlAudioContextMenu::popup(const QPoint & position)
     if (!p_intf)
         return;
 
-    m_menu.reset(PopupMenu(p_intf, false));
+    m_menu.reset(PopupMenu(p_intf, false, true));
     if (m_menu)
         m_menu->popup(position);
 }

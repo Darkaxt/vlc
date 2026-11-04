@@ -54,8 +54,9 @@ inline void applyRedesignDialogStyle(QWidget *widget, qt_intf_t *intf)
         QLabel { background:transparent; }
         QLabel#preferencesHeading { color:%7; }
         QLabel[redesignSection="true"] { color:%8; }
-        QMenu { background:%1; color:%2; border:0; border-radius:10px; padding:8px; }
+        QMenu { background:%1; color:%2; border:0; border-radius:14px; padding:8px; }
         QMenu[redesignGlassMenu="true"] { background:%10; }
+        QMenu[redesignNativeClip="true"] { border-radius:0; }
         QComboBoxPrivateContainer[redesignGlassMenu="true"] { background:transparent; }
         QComboBoxPrivateContainer[redesignGlassMenu="true"] QListView { background:%10; }
         QMenu::item { padding:8px 20px; border-radius:4px; }

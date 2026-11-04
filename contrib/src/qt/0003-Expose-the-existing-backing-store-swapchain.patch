@@ -1,0 +1,44 @@
+From: Modern VLC Fork
+Subject: [PATCH] Publish opted-in widget composition handles on the owning window
+
+The pinned compositor already consumes Qt's private RHI implementation. Give
+an explicitly opted-in widget window its existing RHI/swapchain pair, so VLC
+can insert a live content visual below Qt's UI. No header, class layout, API,
+virtual table or compiler flag changes. Other windows retain their old path.
+Only qplatformbackingstore.cpp and the retained QtGui archive need rebuilding.
+
+--- a/src/gui/painting/qplatformbackingstore.cpp
++++ b/src/gui/painting/qplatformbackingstore.cpp
+@@ -5,6 +5,7 @@
+ #include "qplatformbackingstore.h"
+ #include <qwindow.h>
+ #include <qpixmap.h>
++#include <qvariant.h>
+ #include <private/qbackingstorerhisupport_p.h>
+ #include <private/qbackingstoredefaultcompositor_p.h>
+ #include <private/qwindow_p.h>
+@@ -216,9 +217,15 @@ QPlatformBackingStore::FlushResult QPlatformBackingStore::rhiFlush(QWindow *window,
+                                                                    bool translucentBackground)
+ {
+     auto &surfaceSupport = d_ptr->surfaceSupport[window->surfaceType()];
++    auto *swapchain = surfaceSupport.rhiSupport.swapChainForWindow(window);
++    if (window->property("_vlc_content_backdrop").toBool()) {
++        window->setProperty("_vlc_widget_rhi", QVariantMap{
++            {QStringLiteral("rhi"), QVariant::fromValue(surfaceSupport.rhiSupport.rhi())},
++            {QStringLiteral("swapchain"), QVariant::fromValue(swapchain)}});
++    }
+     return surfaceSupport.compositor.flush(this,
+         surfaceSupport.rhiSupport.rhi(),
+-        surfaceSupport.rhiSupport.swapChainForWindow(window),
++        swapchain,
+         window, sourceDevicePixelRatio, region, offset, textures,
+         translucentBackground);
+ }
+@@ -397,6 +404,7 @@ QRhi *QPlatformBackingStore::rhi(QWindow *window) const
+ 
+ void QPlatformBackingStore::graphicsDeviceReportedLost(QWindow *window)
+ {
++    window->setProperty("_vlc_widget_rhi", QVariant());
+     auto &surfaceSupport = d_ptr->surfaceSupport[window->surfaceType()];
+     if (!surfaceSupport.rhiSupport.rhi())
+         return;

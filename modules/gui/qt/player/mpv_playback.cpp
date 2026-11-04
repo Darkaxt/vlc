@@ -277,7 +277,10 @@ public:
                     var_SetInteger(vlc_object_instance(wnd), "key-pressed", key);
                 };
                 value.mouse_event = [](vlc_window_t *wnd, const vlc_window_mouse_event_t *event) {
-                    if (event->type == VLC_WINDOW_MOUSE_DOUBLE_CLICK && event->button_mask == MOUSE_BUTTON_LEFT)
+                    if (event->button_mask == MOUSE_BUTTON_RIGHT &&
+                        (event->type == VLC_WINDOW_MOUSE_PRESSED || event->type == VLC_WINDOW_MOUSE_RELEASED))
+                        var_SetBool(vlc_object_instance(wnd), "intf-popupmenu", event->type == VLC_WINDOW_MOUSE_RELEASED);
+                    else if (event->type == VLC_WINDOW_MOUSE_DOUBLE_CLICK && event->button_mask == MOUSE_BUTTON_LEFT)
                         var_SetInteger(vlc_object_instance(wnd), "qt-mpv-action", ACTIONID_TOGGLE_FULLSCREEN);
                     else if (event->type == VLC_WINDOW_MOUSE_RELEASED && event->button_mask == MOUSE_BUTTON_LEFT)
                     {

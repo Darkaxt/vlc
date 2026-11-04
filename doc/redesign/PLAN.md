@@ -5,6 +5,27 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
+**Latest4 November normal826 review: REJECTED.** The user's actual screenshots
+show mismatched native/painted radii with white edge pixels, a slow blank opaque
+video context menu, absent content blur and classic cone artwork. Preserve
+`D:/Temp/vlc-s8-settings-1.1.5-20261102/composed-rejection-826438e2/review.json`.
+These are internal R83/R84 repair/acceptance blockers; no user approval is pending.
+The12 passed underlying normal205 checks remain historical applicable evidence,
+not acceptance of the rejected composed picture. A standalone retained-Qt probe
+compares animation with direct popup presentation; it does not rebuild VLC/Qt.
+The cohesive source repair is prepared: live app-window content beneath each
+native UI, one exact DPR-scaled clip, no system acrylic tint/border/rounding or
+Qt fade/roll substitute, deferred context submenus and MPV right-click dispatch.
+Every Qt brand alias now uses the existing flat cone; the vector preserves all
+original paths/transforms and rasterizes pixel-identically to the current app PNG.
+The Qt integration patches only one backing-store implementation file, publishing
+an opted-in typed RHI/swapchain pair; no header/API/ABI or global flags change.
+Source syntax, bounded patch applicability and the icon comparison pass. Actual
+native integration, composed picture/timing, affected regression workflows and
+normal delivery remain internal blockers. Reuse the retained QtGui object graph
+and exact409 non-Qt plugin cohort; no SDK/bootstrap or codec rebuild. M4 stays
+ACTIVE;1.1.5 is unpublished and no later stage or partial release is authorized.
+
 **4 November composed-window review: REJECTED; M4 stays ACTIVE.** The user
 reviewed the current normal Qt63bb package, accepted the other Settings styling,
 and again rejected jagged gray corners and absent content blur. Read-only live

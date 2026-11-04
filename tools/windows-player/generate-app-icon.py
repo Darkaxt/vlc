@@ -14,10 +14,11 @@ from PIL import Image
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--scratch', type=Path, required=True)
+parser.add_argument('--svg-only', action='store_true', help='Emit the matching vector without regenerating the verified PE icon')
 args = parser.parse_args()
 repo = Path(__file__).resolve().parents[2]
 scratch = args.scratch.resolve()
-assert scratch == Path('E:/Temp/vlc-first-run-1.1.2-20261101/icon')
+assert scratch.is_relative_to(Path('E:/Temp'))
 assert not scratch.exists(), 'Preserve an existing generation receipt'
 scratch.mkdir(parents=True)
 source = repo / 'modules/gui/qt/pixmaps/redesign/vlc.svg'
@@ -26,6 +27,15 @@ assert original.count('fill="white"') == 3
 colored = original.replace('fill="white"', 'fill="#d37918"')
 svg = scratch / 'app.svg'
 svg.write_text(colored, encoding='utf-8')
+if args.svg_only:
+    target = repo / 'modules/gui/qt/pixmaps/redesign/app.svg'
+    target.write_text(colored, encoding='utf-8')
+    (scratch / 'icon-generation.json').write_text(json.dumps({
+        'source': str(source), 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+        'output': str(target), 'sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+        'only_fill_changed': target.read_text().replace('fill="#d37918"', 'fill="white"') == original,
+        'color': '#d37918', 'PE_icon_unchanged': True}, indent=2) + '\n')
+    raise SystemExit(0)
 png = scratch / 'app-256.png'
 renderer = shutil.which('magick')
 assert renderer, 'Use the installed SVG renderer'

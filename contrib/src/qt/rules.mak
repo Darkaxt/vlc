@@ -60,6 +60,7 @@ qt: qtbase-everywhere-src-$(QTBASE_VERSION_FULL).tar.xz .sum-qt
 	$(APPLY) $(SRC)/qt/0001-rhi-d3d11-Use-DXGI_SWAP_EFFECT_FLIP_DISCARD-only-on-.patch
 	$(APPLY) $(SRC)/qt/0001-Mingw-own-animation-timers-in-QThreadStorage.patch
 	$(APPLY) $(SRC)/qt/0002-Mingw-own-regex-JIT-in-QThreadStorage.patch
+	$(APPLY) $(SRC)/qt/0003-Expose-the-existing-backing-store-swapchain.patch
 	$(MOVE)
 
 ifdef HAVE_WIN32

@@ -910,6 +910,7 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/subtitles.svg \
 	pixmaps/redesign/tools.svg \
 	pixmaps/redesign/vlc.svg \
+	pixmaps/redesign/app.svg \
 	pixmaps/redesign/volume.svg \
 	pixmaps/VLCIcons.ttf \
 	pixmaps/addons/addon_default.svg \

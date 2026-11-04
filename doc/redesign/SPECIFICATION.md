@@ -85,6 +85,17 @@ verify delivery and retained/weekly rebinding before obsolete-output retirement.
 No Rust work, additional upstream integration, SDK recreation or release-folder
 reorganization is authorized by this scope.
 
+Further composed-window review,4 November2026: the normal826438e2 candidate is
+rejected. Match the painted/native corner boundaries without white frame pixels;
+the video context menu must open with its actual themed contents immediately,
+without a blank opaque intermediate window. Measure construction/show/first-paint
+separately, and verify actual content blur for Settings and context/submenus.
+Both VLC and MPV video right-clicks must reach the same native popup workflow.
+Replace classic application-brand cone references throughout the Qt interface
+(idle, minimal view, banners, About/update, window/tray icons and fallback art)
+with the existing original redesign cone. Preserve unrelated functional glyphs.
+These are internal R83/R84 acceptance blockers in the same ACTIVE M4 stage.
+
 Idle-player correction,4 November2026 (M4): entering Customize Player without
 media and leaving through Cancel, Escape or Save must show the black idle canvas
 and the usual cone (subject to the existing background-cone preference), never

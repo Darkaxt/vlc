@@ -61,6 +61,9 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QSignalMapper>
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <QElapsedTimer>
+#endif
 
 using namespace vlc::playlist;
 
@@ -834,8 +837,12 @@ QMenu* VLCMenuBar::MiscPopupMenu( qt_intf_t *p_intf, bool show )
 }
 
 /* Main Menu that sticks everything together  */
-QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
+QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show, bool deferSubmenus )
 {
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    QElapsedTimer construction;
+    construction.start();
+#endif
     /* */
     QMenu* menu = new VLCMenu(p_intf);
     if (!p_intf->b_isDialogProvider && p_intf->p_mi) {
@@ -845,19 +852,34 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show )
         auto *hide=menu->addAction(qtr("Hide UI\tCtrl+Shift+H"));
         connect(hide,&QAction::triggered,p_intf->p_mi,&MainCtx::hidePlayerChromeRequested);
         menu->addSeparator();
-        auto *playback=menu->addMenu(qtr("Playback"));NavigMenu(p_intf,playback);
-        auto *video=menu->addMenu(qtr("Video"));VideoMenu(p_intf,video);
-        auto *audio=menu->addMenu(qtr("Audio"));AudioMenu(p_intf,audio);
-        auto *subtitles=menu->addMenu(qtr("Subtitle"));SubtitleMenu(p_intf,subtitles,true);
+        // Opening the context menu must not construct every unused native
+        // model/extension menu first. Populate a submenu on its real show
+        // signal, with current tracks/vout state. The keyboard command browser
+        // (show=false, default defer=false) still receives the complete tree.
+        const auto addSubmenu = [p_intf, deferred=deferSubmenus || show](QMenu *parent, const QString &title, auto build) {
+            auto *submenu = parent->addMenu(title);
+            if (deferred)
+                QObject::connect(submenu,&QMenu::aboutToShow,submenu,
+                    [p_intf,submenu,build] { build(p_intf,submenu); },Qt::SingleShotConnection);
+            else build(p_intf,submenu);
+        };
+        addSubmenu(menu,qtr("Playback"),NavigMenu);
+        addSubmenu(menu,qtr("Video"),VideoMenu);
+        addSubmenu(menu,qtr("Audio"),AudioMenu);
+        addSubmenu(menu,qtr("Subtitle"),[](qt_intf_t *ctx,QMenu *sub) { SubtitleMenu(ctx,sub,true); });
         auto *more=menu->addMenu(qtr("More Settings"));
-        auto *tools=more->addMenu(qtr("Tools"));ToolsMenu(p_intf,tools);
-        auto *view=more->addMenu(qtr("Interface"));ViewMenu(p_intf,view);
+        addSubmenu(more,qtr("Tools"),ToolsMenu);
+        addSubmenu(more,qtr("Interface"),ViewMenu);
         menu->addSeparator();
         const auto queueKeys=p_intf->p_mi->queueShortcutSequences();
         auto *queue=menu->addAction(qtr("Queue")+(queueKeys.isEmpty()?QString():QStringLiteral("\t")+queueKeys.front()));queue->setCheckable(true);
         queue->setChecked(p_intf->p_mi->getPlayqueuePanel()->isVisible());
         connect(queue,&QAction::triggered,p_intf->p_mi->getPlayqueuePanel(),&SidePanelCtx::setVisible);
         PopupMenuStaticEntries(menu);
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        menu->setProperty("redesignMenuConstructionMs",construction.nsecsElapsed()/1e6);
+        menu->setProperty("redesignMenuRequestReferenceMs",construction.msecsSinceReference());
+#endif
         if(show)menu->popup(QCursor::pos());
         return menu;
     }

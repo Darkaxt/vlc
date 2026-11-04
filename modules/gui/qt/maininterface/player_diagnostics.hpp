@@ -23,6 +23,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QQmlPropertyMap>
 #include <QJSValue>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -69,7 +70,14 @@
 class PlayerDiagnostics final : public QObject
 {
 public:
-    ~PlayerDiagnostics() override { stopCoreObservation(); }
+    ~PlayerDiagnostics() override {
+        qApp->removeEventFilter(this);
+        stopCoreObservation();
+        // A pending QML observation can refer to the member property map.
+        // Retire it before member destruction, rather than QObject's later
+        // child cleanup.
+        delete m_waitExpression.data();
+    }
 
     static void attach(QQuickItem *root, QQmlEngine *engine, PlayerController *player)
     {
@@ -85,6 +93,7 @@ private:
     QString m_directory, m_token, m_pendingId;
     QSet<QString> m_received;
     QPointer<QQmlExpression> m_waitExpression;
+    QQmlPropertyMap m_nativeBackdrop;
     QFileSystemWatcher m_watcher;
     QElapsedTimer m_clock;
     QJsonArray m_errors;
@@ -160,6 +169,8 @@ private:
         : QObject(root), m_root(root), m_player(player), m_directory(directory), m_token(token)
     {
         m_clock.start();
+        m_nativeBackdrop.insert(QStringLiteral("status"),nativeBackdropState());
+        qApp->installEventFilter(this);
         connect(engine, &QQmlEngine::warnings, this, [this](const QList<QQmlError> &errors) {
             for (const auto &error : errors)
                 if (m_errors.size() < 100) m_errors.append(error.toString());
@@ -177,6 +188,35 @@ private:
             file.write(QJsonDocument(value).toJson());
             file.commit();
         }
+    }
+
+    static QString nativeBackdropState()
+    {
+        bool seen=false,pending=false;
+        for(auto *widget : QApplication::topLevelWidgets()) {
+            auto *window=widget->windowHandle();
+            if(!widget->isVisible() || !window || !window->property("redesignBackdropSource").isValid())continue;
+            seen=true;
+            if(!window->property("redesignContentBackdropError").toString().isEmpty())return QStringLiteral("failed");
+            if(!window->property("redesignBackdropRequested").toBool())return QStringLiteral("unavailable");
+            pending|=!window->property("redesignContentBackdropReady").toBool();
+        }
+        return !seen ? QStringLiteral("absent") : pending ? QStringLiteral("pending") : QStringLiteral("ready");
+    }
+
+    bool eventFilter(QObject *object,QEvent *event) override
+    {
+        bool changed=false;
+        if(qobject_cast<QWindow *>(object) && event->type()==QEvent::DynamicPropertyChange) {
+            const auto name=static_cast<QDynamicPropertyChangeEvent *>(event)->propertyName();
+            changed=name=="redesignContentBackdropReady" || name=="redesignContentBackdropError";
+        }
+        if(changed || ((qobject_cast<QWindow *>(object) || qobject_cast<QWidget *>(object)) &&
+            (event->type()==QEvent::Show || event->type()==QEvent::Hide)))
+            QMetaObject::invokeMethod(this,[this] {
+                m_nativeBackdrop.insert(QStringLiteral("status"),nativeBackdropState());
+            },Qt::QueuedConnection);
+        return false;
     }
 
     void respond(const QString &id, const QJsonObject &value)
@@ -340,6 +380,7 @@ private:
         if (!actual.isValid() || actual.isNull()) return false;
         const QVariant expected = command.value(QStringLiteral("await_value")).toVariant();
         const QString comparison = command.value(QStringLiteral("await_comparison")).toString(QStringLiteral("equal"));
+        if (comparison == QStringLiteral("one_of")) return expected.toList().contains(actual);
         bool actualNumber = false, expectedNumber = false;
         const double a = actual.toDouble(&actualNumber), e = expected.toDouble(&expectedNumber);
         if (comparison == QStringLiteral("at_least")) return actualNumber && expectedNumber && a >= e;
@@ -389,6 +430,7 @@ private:
             }
             const int contextType=qmlTypeId("VLC.MainInterface",1,0,"MainCtx");
             if(contextType>=0)if(auto *context=engine->singletonInstance<MainCtx *>(contextType)){
+                result[QStringLiteral("native_backdrop_state")]=nativeBackdropState();
 #ifdef UPDATE_CHECK
                 if(auto *update=context->getUpdateModel())
                     result[QStringLiteral("update")]=QJsonObject{{QStringLiteral("status"),int(update->updateStatus())},
@@ -537,6 +579,12 @@ private:
                 row.insert(QStringLiteral("surface_alpha_bits"),widget->windowHandle()->format().alphaBufferSize());
                 row.insert(QStringLiteral("surface_type"),int(widget->windowHandle()->surfaceType()));
                 row.insert(QStringLiteral("backdrop_requested"),widget->windowHandle()->property("redesignBackdropRequested").toBool());
+                row.insert(QStringLiteral("content_backdrop_ready"),widget->windowHandle()->property("redesignContentBackdropReady").toBool());
+                row.insert(QStringLiteral("content_backdrop"),QJsonValue::fromVariant(widget->windowHandle()->property("redesignContentBackdropState")));
+                if (widget->property("redesignMenuConstructionMs").isValid())
+                    row.insert(QStringLiteral("menu_construction_ms"),widget->property("redesignMenuConstructionMs").toDouble());
+                for (const auto *name : {"redesignMenuShowMs","redesignMenuPaintBeginMs","redesignMenuPaintDispatchedMs"})
+                    if (widget->property(name).isValid()) row.insert(QString::fromLatin1(name),widget->property(name).toDouble());
             }
             if(widget->objectName()==QStringLiteral("redesignPreferences")) {
                 row.insert(QStringLiteral("option_keys"),QJsonArray::fromStringList(widget->property("optionKeys").toStringList()));
@@ -719,6 +767,8 @@ private:
             if(name==QStringLiteral("redesignPreferences") && awaitProperty==QStringLiteral("pluginScanActive"))
                 for(auto *widget : QApplication::topLevelWidgets())
                     if(widget->objectName()==name) { observed=widget;break; }
+            if(name==QStringLiteral("nativeBackdrop") && awaitProperty==QStringLiteral("status"))
+                observed=&m_nativeBackdrop;
             const QMap<QString, QStringList> allowed{
                 {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("timelineStatus"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
                 {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("waveformStatus")}},

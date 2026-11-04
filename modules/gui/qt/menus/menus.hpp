@@ -58,7 +58,7 @@ public:
     VLCMenuBar(QObject* parent = nullptr);
 
     /* Popups Menus */
-    static QMenu* PopupMenu( qt_intf_t *, bool );
+    static QMenu* PopupMenu( qt_intf_t *, bool, bool deferSubmenus = false );
     static QMenu* AudioPopupMenu( qt_intf_t *, bool );
     static QMenu* VideoPopupMenu( qt_intf_t *, bool );
     static QMenu* MiscPopupMenu( qt_intf_t *, bool );

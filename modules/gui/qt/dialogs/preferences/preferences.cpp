@@ -757,6 +757,10 @@ void PrefsDialog::styleChoiceEditors()
 void PrefsDialog::showEvent(QShowEvent *event)
 {
     QVLCDialog::showEvent(event);
+    if (windowHandle() && p_intf->p_mi) {
+        windowHandle()->setProperty("redesignBackdropSource", QVariant::fromValue(p_intf->p_mi->intfMainWindow()));
+        windowHandle()->setProperty("redesignBackdropRadius", 14.0);
+    }
     if (!windowEffects && var_InheritBool(p_intf, "qt-backdrop-blur"))
     {
         windowEffects = vlc_object_create<WindowEffectsModule>(p_intf);
@@ -796,17 +800,24 @@ void PrefsDialog::paintEvent(QPaintEvent *)
     // one. Unsupported/disabled effects keep an opaque, readable surface.
     if (blurBehind) fill.setAlphaF(0.95);
     painter.setBrush(fill);
-    painter.drawRoundedRect(QRectF(rect()), 14, 14);
-    QPainterPath shape;
-    shape.addRoundedRect(QRectF(rect()), 14, 14);
-    painter.setClipPath(shape);
+    const bool compositionClip = windowHandle() && windowHandle()->property("redesignContentBackdropReady").toBool();
+    if (compositionClip) {
+        // The root visual clips the tint, header, native fields and live source
+        // together. Do not multiply a second antialiased edge into that clip.
+        painter.drawRect(QRectF(rect()));
+    } else {
+        painter.drawRoundedRect(QRectF(rect()), 14, 14);
+        QPainterPath shape;
+        shape.addRoundedRect(QRectF(rect()), 14, 14);
+        painter.setClipPath(shape);
+    }
     painter.fillRect(QRect(0, 0, width(), 50),
                      property("figmaDark").toBool() ? QColor("#070707") : QColor("#d5d5d5"));
 }
 void PrefsDialog::updateDialogShape()
 {
     // An integer SetWindowRgn cuts off the antialiased paint edge and prevents
-    // native rounded composition. Keep the alpha paint and native DWM clip.
+    // native rounded composition. The composition root owns the exact clip.
     clearMask();
 }
 void PrefsDialog::resizeEvent(QResizeEvent *event)

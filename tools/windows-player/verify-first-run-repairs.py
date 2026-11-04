@@ -555,9 +555,21 @@ def verify_window_icon(case, snapshot):
 
 def settings_window_region(case, dialog):
     """Reject the legacy raster/region path without claiming composed pixels."""
+    ready=case.inspect('content-backdrop-'+dialog['native_id'],'snapshot',
+        '--await-service','nativeBackdrop','--await-property','status',
+        '--await-value','["ready","failed","unavailable"]','--await-comparison','one_of')
+    assert ready['native_backdrop_state']=='ready',ready.get('widgets')
+    dialog=next(row for row in ready['widgets'] if row.get('native_id')==dialog['native_id'])
     assert dialog['surface_alpha_bits']>=8,'Settings native surface was created without an alpha channel'
     assert dialog['surface_type']==6,'Settings must present a Direct3D composition surface'
     assert dialog['backdrop_requested'],'Native backdrop request failed'
+    assert dialog['content_backdrop_ready'],'The live content visual was not committed'
+    content=dialog['content_backdrop']
+    assert content['hresult']==0 and content['source_pid']==case.player.pid and content['live_window_content']
+    assert content['source_native_id']!=dialog['native_id'],'A backdrop must not sample itself'
+    assert abs(content['sigma_px']-25*dialog['dpr'])<.01
+    radius=14 if dialog['type'] in ('PrefsDialog','QMenu','VLCMenu') else 6
+    assert abs(content['radius_px']-radius*dialog['dpr'])<.01,(dialog['type'],content)
     def read():
         hwnd=W.HWND(int(dialog['native_id'],16))
         pid=W.DWORD()
@@ -585,9 +597,13 @@ def settings_window_region(case, dialog):
             dwm.DwmGetWindowAttribute.restype=ctypes.c_long
             corners=W.DWORD()
             assert dwm.DwmGetWindowAttribute(hwnd,33,ctypes.byref(corners),ctypes.sizeof(corners))==0
-            assert corners.value==2,'Native smooth corner preference was not applied'
+            assert corners.value==1,'A second system corner clip is still enabled'
+            border=W.DWORD()
+            assert dwm.DwmGetWindowAttribute(hwnd,34,ctypes.byref(border),ctypes.sizeof(border))==0
+            assert border.value==0xfffffffe,'A system border still paints outside the content clip'
             return {'native_id':dialog['native_id'],'region':'none','extended_style':hex(style),
-                'smooth_corner_preference':corners.value,'actual_corner_pixels_verified':False,
+                'system_corner_preference':corners.value,'system_border_color':hex(border.value),
+                'single_content_clip':content,'actual_corner_pixels_verified':False,
                 'limit':'Native composition configuration; actual composed picture remains a separate gate.'}
         finally:gdi.DeleteObject(region)
     return owned_native_read(case,read)
@@ -1211,6 +1227,29 @@ def sidebar():
 def menus_normal():
     """Reference menu, real Settings route and Playback controls as one workflow."""
     case=Case('figma-player-menus',media=fixtures/'control.mkv')
+    def video_context(engine):
+        case.click('video-context-'+engine,'playerVideoSurface','--button','right')
+        ready=case.inspect('video-context-ready-'+engine,'snapshot',
+            '--await-service','nativeBackdrop','--await-property','status',
+            '--await-value','["ready","failed","unavailable"]','--await-comparison','one_of','--capture')
+        assert ready['native_backdrop_state']=='ready',ready.get('widgets')
+        menu=next(row for row in ready['widgets'] if 'menu_construction_ms' in row)
+        labels=[row['text'].replace('&','').split('\t')[0] for row in menu['actions']]
+        for label in ('Playback','Video','Audio','Subtitle','More Settings','Queue','Open Media'):
+            assert label in labels,(engine,label,labels)
+        assert menu['redesignMenuPaintDispatchedMs']>=menu['menu_construction_ms']
+        assert menu['redesignMenuPaintDispatchedMs']<1000,('multi-second native popup latency',engine,menu)
+        composition=settings_window_region(case,menu)
+        case.record.setdefault('video_context_menus',[]).append({'engine':engine,
+            'construction_ms':menu['menu_construction_ms'],
+            'paint_dispatch_ms':menu['redesignMenuPaintDispatchedMs'],
+            'composition':composition,'pixel_proof':'Separate composed capture required'})
+        opened=case.inspect('video-context-submenu-'+engine,'widget_click','--menu-action','Video','--capture')
+        menus=[row for row in opened['widgets'] if row['type']=='QMenu']
+        assert len(menus)>=2,'Deferred video submenu did not open'
+        for row in menus:settings_window_region(case,row)
+        case.inspect('video-context-submenu-close-'+engine,'key','--key','0x1000000')
+        case.inspect('video-context-close-'+engine,'key','--key','0x1000000')
     try:
         case.inspect('reference-viewport','resize','--width','1280','--height','900')
         snapshot=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
@@ -1305,6 +1344,9 @@ def menus_normal():
             settled=case.inspect('menu-engine-settled-'+engine,'snapshot',
                 '--await-core','engine_switching','--await-value','false','--capture')
             assert settled['core']['engine']==engine and settled['core']['state']==3
+            case.inspect('context-playback-close-'+engine,'key','--key','0x1000000')
+            video_context(engine)
+            case.click('context-playback-reopen-'+engine,'toolsButton')
         case.inspect('close-playback-panel','key','--key','0x1000000')
         for panel,identity in (('audio','audioButton'),('subtitles','subtitleButton'),('queue','playqueueToggle')):
             case.click(panel+'-panel-glass',identity,'--capture')
@@ -1492,7 +1534,13 @@ def settings():
         assert file['saved']
         with Image.open(case.evidence/file['file']) as original:
             image=original.convert('RGBA')
-            assert image.getpixel((0,0))[3]==0,('opaque outside rounded settings card',label)
+            if dialog.get('content_backdrop_ready'):
+                # QWidget::grab omits the composition root. Its header is now
+                # painted once as a rectangle, then rounded together with the
+                # live blur/UI by that root. Require the separate composed gate.
+                assert image.getpixel((0,0))[3]==255,('unexpected raw header alpha',label)
+            else:
+                assert image.getpixel((0,0))[3]==0,('opaque outside rounded settings card',label)
             rgb=image.getpixel((round(image.width*0.7),round(30*dialog['dpr'])))[:3]
             expected=(7,7,7) if dark else (213,213,213)
             assert max(abs(a-b) for a,b in zip(rgb,expected))<=1,('header band',label,rgb)

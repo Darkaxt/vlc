@@ -1,5 +1,43 @@
 # Windows x64 reproduction and recovery
 
+4 November normal826 composed-picture rejection: M4 remains ACTIVE and1.1.5
+unpublished. New source work replaces system Desktop Acrylic with a live thumbnail
+of the app-owned source window, blurred on the existing native widget's own Qt
+DirectComposition target. One14-logical-pixel clip owns Settings/menu UI and blur;
+combo surfaces use6px. The header stays opaque and the body retains the reference
+95% tint over Gaussian sigma25px at the actual DPR. Disable the second DWM border,
+corner clip and Qt's temporary fade/roll windows. No desktop capture, CPU frame
+readback, second decoder, extra window or OS transparency change is introduced.
+
+The pinned Qt6.8.3 QPA accessor patch is
+`contrib/src/qt/0003-Expose-the-existing-backing-store-swapchain.patch`.
+`tools/windows-player/repair-qt-backingstore.py` applies it under the supported
+managed toolchain, rebuilds only the retained QtGui target and stages its archive.
+An opt-in, typed RHI/swapchain pair is published on the owning QWindow at flush;
+no Qt header/class layout/API/ABI changes or dependent SDK rebuild is needed.
+It records all Qt archive pre/post hashes and recovery in
+`VLC-QT-BACKINGSTORE-REPAIR.json`; packaging conveys that receipt with the source
+and portable runtime. No SDK configure/bootstrap, compiler-flag change or VLC
+core/plugin ABI change is required. The exact patch/recipe/receipt exception in
+the normal current-plugin guard retains every non-Qt plugin under its existing
+binary and source binding. Unexpected dependency changes still fail that guard.
+Actual Windows-composited pixels, first-show timing, resize/lifetime behavior,
+both-engine video context menus, Settings and normal release qualification remain
+required; source readiness or a committed native visual does not establish them.
+
+Standalone probe206 (`ae1b5e7bb18544d4bff77267507a7ae9`, original session49270)
+closed0, Linux group empty and private mounts released, peak697901056bytes, no
+max/OOM. It compiled/linked only the menu diagnostic. Its direct popup first
+paint began at487.6ms from cold construction. The first native copy mistakenly
+selected libtool's launcher rather than its`.libs` executable; that deployment
+failure is retained. The real animated case exposed a diagnostic observer gap:
+opacity can finish without another Paint. Only that exact owned probe was
+cancelled with3221225786; native resources closed and the input desktop stayed
+Default. This is not product acceptance. Transaction9270b7433caa5bc67ed244cd5071962e
+removed16 spent binary/cache members (129675905logicalbytes), without errors.
+Sources, original linked diagnostic and failure evidence remain available for
+the corrected integrated observation.
+
 4 November idle-player correction: build204
 `8daad442430e4df88f37fc51febbadb5` (original managed session9612) closed0,
 group empty/private mounts released, sourcee5558c75, Qt

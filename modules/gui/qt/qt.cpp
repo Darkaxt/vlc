@@ -127,6 +127,9 @@ extern "C" char **environ;
 #include <vlc_messages.h>
 
 #include <QQuickWindow>
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <QElapsedTimer>
+#endif
 #include <QOpenGLContext> // Available in Qt GUI, no need for Qt OpenGL module
 
 #ifndef X_DISPLAY_MISSING
@@ -144,6 +147,15 @@ class MenuBackdrops final : public QObject
 public:
     explicit MenuBackdrops(qt_intf_t *intf) : QObject(intf->p_mi), m_intf(intf)
     {
+#ifdef _WIN32
+        // Qt's Windows fade calls setWindowOpacity(), which adds WS_EX_LAYERED
+        // after we create a composition-only popup. Its roll effect instead
+        // shows a separate QWidget containing a pre-show grab. Neither is the
+        // live alpha swapchain. Present the real menu directly, without an
+        // intermediate window or a delayed opacity transition.
+        QApplication::setEffectEnabled(Qt::UI_AnimateMenu, false);
+        QApplication::setEffectEnabled(Qt::UI_FadeMenu, false);
+#endif
         qApp->installEventFilter(this);
     }
     ~MenuBackdrops() override
@@ -167,6 +179,21 @@ public:
                 combo->view()->window()->ensurePolished();
         if (!menu->isWindow())
             return false;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        if (menu->property("redesignMenuRequestReferenceMs").isValid()) {
+            QElapsedTimer now; now.start();
+            const qint64 origin=menu->property("redesignMenuRequestReferenceMs").toLongLong();
+            if (event->type()==QEvent::Show)
+                menu->setProperty("redesignMenuShowMs",double(now.msecsSinceReference()-origin));
+            if (event->type()==QEvent::Paint && !menu->property("redesignMenuPaintBeginMs").isValid()) {
+                menu->setProperty("redesignMenuPaintBeginMs",double(now.msecsSinceReference()-origin));
+                QMetaObject::invokeMethod(menu,[menu,origin] {
+                    QElapsedTimer done; done.start();
+                    menu->setProperty("redesignMenuPaintDispatchedMs",double(done.msecsSinceReference()-origin));
+                },Qt::QueuedConnection);
+            }
+        }
+#endif
         const bool popup = menu->windowType() == Qt::Popup;
         if (!popup && !menu->testAttribute(Qt::WA_TranslucentBackground))
             return false;
@@ -203,6 +230,16 @@ public:
                     m_effects->p_module = module_need(m_effects, "qtwindoweffects", nullptr, false);
             }
             auto *window = menu->windowHandle();
+            if (window) {
+                auto *source = m_intf->p_mi->intfMainWindow();
+                for (auto *owner = menu->parentWidget(); owner; owner = owner->parentWidget())
+                    if (owner->isWindow() && owner->windowType() != Qt::Popup && owner->windowHandle()) {
+                        source = owner->windowHandle();
+                        break;
+                    }
+                window->setProperty("redesignBackdropSource", QVariant::fromValue(source));
+                window->setProperty("redesignBackdropRadius", qobject_cast<QMenu *>(menu) ? 14.0 : 6.0);
+            }
             const bool available = m_effects && m_effects->p_module && window &&
                 m_effects->isEffectAvailable(window, WindowEffectsModule::BlurBehind);
             menu->setProperty("redesignGlassMenu", available);
@@ -1476,15 +1513,8 @@ static void *Thread( void *obj )
     app.setApplicationDisplayName( qtr("VLC media player") );
     app.setApplicationVersion( QString::fromLatin1(ForkRelease::currentVersion) );
 
-#ifdef _WIN32
     // Match the flat cone in the redesigned interface and the PE resource.
     app.setWindowIcon( QIcon( ":/redesign/icons/app.png" ) );
-#else
-    if( QDate::currentDate().dayOfYear() >= QT_XMAS_JOKE_DAY && var_InheritBool( p_intf, "qt-icon-change" ) )
-        app.setWindowIcon( QIcon::fromTheme( "vlc-xmas", QIcon( ":/logo/vlc128-xmas.png" ) ) );
-    else
-        app.setWindowIcon( QIcon::fromTheme( "vlc", QIcon( ":/logo/vlc256.png" ) ) );
-#endif
 
     app.setDesktopFileName( PACKAGE );
 

@@ -108,6 +108,13 @@ def main():
         (package / filename).write_bytes(subprocess.check_output(
             ['git', '-C', str(repo), 'show', args.source_commit + ':' + source_path]))
     shutil.copy2(runtime / 'RELEASE-SYMBOLS.json', package / 'RELEASE-SYMBOLS.json')
+    qt_repair=runtime/'VLC-QT-BACKINGSTORE-REPAIR.json'
+    if qt_repair.is_file():
+        repair=json.loads(qt_repair.read_text())
+        assert repair['schema']=='vlc_redesign.qt_backingstore_repair.v1'
+        patch='contrib/src/qt/'+repair['patch']
+        assert hashlib.sha256(subprocess.check_output(['git','-C',str(repo),'show',args.source_commit+':'+patch])).hexdigest()==repair['patch_sha256']
+        shutil.copy2(qt_repair,package/qt_repair.name)
     coherent = runtime / 'VLC-PLUGIN-BUILDINFO.json'
     if coherent.is_file():
         provenance = json.loads(coherent.read_text())

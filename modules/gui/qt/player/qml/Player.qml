@@ -319,7 +319,7 @@ FocusScope {
                     anchors.centerIn: parent
                     width: Math.min(PlayerStyle.px(128), parent.width / 2, parent.height / 2)
                     height: width
-                    source: "qrc:///misc/cone.svg"
+                    source: "qrc:///redesign/icons/app.svg"
                     sourceSize: Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
                     visible: MainCtx.bgCone

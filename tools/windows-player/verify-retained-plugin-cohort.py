@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 
 from release_profile import verify_release
+from repair_qt_backingstore_contract import verify_qt_accessor
 
 
 def main():
@@ -26,7 +27,8 @@ def main():
     # This shared smoke-test header is not an input to runtime plugins.
     changes = [name for name in source_changes if name not in ('test/libvlc/test.h', 'README.md')
                and not name.startswith(('doc/redesign/', 'tools/windows-player/', 'tools/design-source/'))]
-    assert all(name.startswith('modules/gui/qt/') for name in changes), changes
+    qt_accessor=verify_qt_accessor(source,args.runtime,baseline,changes)
+    assert all(name.startswith('modules/gui/qt/') or name in qt_accessor['allowed_source_paths'] for name in changes), changes
     assert original['schema'] == 'vlc_redesign.full_plugin_build.v1'
     retained = []
     for item in original['plugins']:
@@ -41,6 +43,7 @@ def main():
     result = {'schema': 'vlc_redesign.qt_only_cohort.v1', 'source_commit': head,
         'retained_from_source': baseline, 'original_manifest_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest(),
         'source_changes': source_changes, 'production_changes': changes,
+        'qt_private_accessor':qt_accessor,
         'release_profile': verify_release(args.build), 'plugins': retained}
     (args.runtime / 'VLC-PLUGIN-REUSE.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({'qt_only_source_verified': head, 'unchanged_plugin_cohort': baseline,

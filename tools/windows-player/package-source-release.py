@@ -175,6 +175,9 @@ def main():
                 codec_path = cohort_path.with_name('VLC-CODEC-BUILDINFO.json')
                 assert codec_path.is_file()
                 add_bytes(output, 'VLC-CODEC-BUILDINFO.json', codec_path.read_bytes())
+                qt_repair=cohort_path.with_name('VLC-QT-BACKINGSTORE-REPAIR.json')
+                if qt_repair.is_file():
+                    add_bytes(output,qt_repair.name,qt_repair.read_bytes())
         if args.release_symbols:
             add_bytes(output, 'RELEASE-SYMBOLS.json', args.release_symbols.read_bytes())
         readme = ('Modern VLC Fork ' + args.version + ' corresponding source\n\n'

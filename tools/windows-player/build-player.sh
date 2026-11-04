@@ -84,6 +84,8 @@ if test "$prior_qt_flags" != "$requested_qt_flags"; then
         "$source_root/modules/gui/qt/player/player_controller_mpv.cpp" \
         "$source_root/modules/gui/qt/player/mpv_playback.cpp" \
         "$source_root/modules/gui/qt/maininterface/compositor_dcomp.cpp" \
+        "$source_root/modules/gui/qt/maininterface/win32windoweffects_module.cpp" \
+        "$source_root/modules/gui/qt/menus/menus.cpp" \
         "$source_root/modules/gui/qt/dialogs/preferences/preferences.cpp"
     # The diagnostic-only controller properties also change MOC output. Generate
     # that metadata with the selected flags, without retimestamping an unchanged
