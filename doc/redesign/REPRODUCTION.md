@@ -46,7 +46,22 @@ cleanup returns and core deletes its variables. The complete affected menu
 acceptance must include both nested native composition and quitting with that
 menu still open; do not hide the crash by merely dismissing it in the checker.
 Other successful202 workflows may be reused only with unchanged-owner source
-guards. Normal/composed picture and final release gates remain outstanding.
+guards.203 (`0929686267e2488684f6fb180b5140a0`, sourceaa654113)
+closed0/group empty/private mounts released with no max/OOM events. Its native
+main/submenu composition and normal menu workflow pass. The new open-menu quit
+case initially used a clipped default viewport; preserve that failed result and
+resume only that closed case with the same1280x900 reference viewport. The
+resumed open-menu quit exits0, proving the callback lifetime fix. Widget/menu
+manual review remains explicitly separate from the actual composed normal
+picture. Normal/composed picture and final release gates remain outstanding.
+
+The normal placement observer records native parent ancestry. Only accept an
+observed DirectUIHWND when its immediate parent has the same PID, one of the
+exact InputSwitch indicator classes and the exact System32/InputSwitch.dll
+module. Wrong owner/class/module, missing parent, indicator-only grandparent and
+Qt windows remain failures. Reuse the retained observed classifier diagnostic;
+it does not establish fresh placement. Current normal SDR and P5 launches must
+still pass their own inactive-desktop placement proof before actual presentation.
 
 Original196 was deliberately stopped to remove an accidental62-consumer shared
 header dependency. Keep its137/group-empty/no-OOM report and completed objects.

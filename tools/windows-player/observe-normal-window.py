@@ -112,6 +112,27 @@ def event(hook, kind, window, object_id, child_id, thread, timestamp):
             'layered_flags': layered_flags.value if layered else None,
             'visible': bool(u.IsWindowVisible(window)), 'foreground_owner': u.GetForegroundWindow() == window,
             'bounds': [rectangle.left, rectangle.top, rectangle.right, rectangle.bottom]}
+        ancestry=[]
+        parent=u.GetAncestor(window,1)
+        seen={window}
+        while parent and parent not in seen:
+            seen.add(parent)
+            parent_pid=W.DWORD()
+            u.GetWindowThreadProcessId(parent,ctypes.byref(parent_pid))
+            parent_class=ctypes.create_unicode_buffer(256)
+            u.GetClassNameW(parent,parent_class,len(parent_class))
+            parent_module=u.GetClassLongPtrW(parent,-16)
+            parent_path=None
+            handle=k.OpenProcess(0x400|0x10,False,parent_pid.value)
+            if handle:
+                try:
+                    module_name=ctypes.create_unicode_buffer(32768)
+                    if psapi.GetModuleFileNameExW(handle,parent_module,module_name,len(module_name)):
+                        parent_path=module_name.value
+                finally:k.CloseHandle(handle)
+            ancestry.append({'class':parent_class.value,'class_module':parent_path,'pid':parent_pid.value})
+            parent=u.GetAncestor(parent,1)
+        record['parent_chain']=ancestry
         if (a.expected_icon and record['visible'] and class_name.value.startswith('Qt')
                 and rectangle.right-rectangle.left>=320 and rectangle.bottom-rectangle.top>=200
                 and u.GetAncestor(window,2)==window and not u.GetWindow(window,4)

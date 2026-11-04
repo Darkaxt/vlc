@@ -47,6 +47,8 @@ parser.add_argument('--settings-input-repair', action='store_true',
     help='Verify repaired focus/input/save workflows and Privacy at all DPI values; reuse the reviewed unchanged category layouts')
 parser.add_argument('--resume-settings-input',action='store_true',
     help='Continue the closed input repair after correcting Qt focus-proxy observation; retain completed100%% Privacy/focus evidence')
+parser.add_argument('--resume-menu-quit',action='store_true',
+    help='Retain the completed menu workflow and resume its closed clipped-viewport quit check')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -56,16 +58,34 @@ resume_history=args.resume_settings_history
 resume_behaviour=args.resume_settings_behaviour
 collect_layouts=args.collect_settings_layouts
 resume_input=args.resume_settings_input
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input))<=1
+resume_menu_quit=args.resume_menu_quit
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit))<=1
+assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if resume_input:
+if resume_menu_quit:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='menus' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert set(previous['failures'])=={'menus'} and 'clipped_target_rejected_before_dispatch' in previous['failures']['menus']
+    assert 'quit-native-menu-settings' in previous['failures']['menus'] and len(previous['cases'])==2
+    completed,clipped=previous['cases']
+    assert completed['name']=='figma-player-menus' and completed['passed'] and completed['exit_code']==0
+    assert completed['native_command_menu_composition'] and len(completed['native_submenu_composition'])>len(completed['native_command_menu_composition'])
+    assert clipped['name']=='native-menu-open-quit' and clipped['exit_code']==0 and clipped['owned_desktop_never_observed_as_input']
+    assert clipped['steps'][-2]['label']=='quit-native-menu-main-menu'
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
+    historical=root/'result-before-menu-quit-viewport.json'
+    assert not historical.exists(),'Resume the original viewport correction'
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_input:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['source_commit']=='c1380668f2f89dcc6531cd3e0e9dfe3cfa784d18'
     assert previous['scope']=='settings' and not previous['passed']
@@ -205,7 +225,14 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
-if resume_input:
+if resume_menu_quit:
+    assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
+    records['cases']=[previous['cases'][0]]
+    records['resumed_menu_quit']={'historical_result':str(historical),
+        'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'source_commit':records['source_commit'],
+        'scope':'Retain the completed full menu/native submenu/normal exit workflow. The new quit case was rejected before Settings dispatch because its viewport clipped the menu. Fresh quit with the same reference viewport follows; the failed original remains unchanged.'}
+elif resume_input:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases']
     records['reused_input_layouts']={'historical_result':str(historical),
@@ -1056,7 +1083,7 @@ def sidebar():
             case.close(True)
         finally: case.close()
 
-def menus():
+def menus_normal():
     """Reference menu, real Settings route and Playback controls as one workflow."""
     case=Case('figma-player-menus',media=fixtures/'control.mkv')
     try:
@@ -1181,11 +1208,15 @@ def menus():
         case.close(True)
     finally: case.close()
 
+def menus():
+    if not resume_menu_quit:
+        menus_normal()
     # Native command menus contain variable callbacks into the interface. Quit
     # with the parentless Settings window and its menu still open, exercising
     # their real destruction before core interface variables are released.
-    case=Case('native-menu-open-quit',media=fixtures/'control.mkv')
+    case=Case('native-menu-open-quit-resumed' if resume_menu_quit else 'native-menu-open-quit',media=fixtures/'control.mkv')
     try:
+        case.inspect('reference-viewport','resize','--width','1280','--height','900')
         case.inspect('paused','snapshot','--await-core','state','--await-value','3')
         commands=open_vlc_commands(case,'quit-native-menu')
         native_menus=[widget for widget in commands['widgets'] if widget['type']=='QMenu']

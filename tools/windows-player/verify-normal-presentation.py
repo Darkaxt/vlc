@@ -289,10 +289,18 @@ if args.mode == 'private':
         event['bounds'][2] <= display[0] or event['bounds'][0] >= display[2]
         or event['bounds'][3] <= display[1] or event['bounds'][1] >= display[3]
         for event in player_events for display in monitors)
-    checks['only_known_os_indicator_elsewhere'] = all(
-        event['class'] in {'UAC Input Indicator', 'UAC_InputIndicatorOverlayWnd'}
-        and event['class_module'].lower() == expected_indicator
-        for event in others)
+    def known_indicator(event):
+        if (event['class'] in {'UAC Input Indicator', 'UAC_InputIndicatorOverlayWnd'}
+                and (event['class_module'] or '').lower()==expected_indicator):
+            return True
+        # Accept only the observed direct child of the same-process Windows
+        # InputSwitch indicator. An unrelated DirectUI window remains a failure.
+        parents=event.get('parent_chain',[])
+        return bool(event['class']=='DirectUIHWND' and parents
+            and parents[0]['pid']==event['pid']
+            and parents[0]['class'] in {'UAC Input Indicator','UAC_InputIndicatorOverlayWnd'}
+            and (parents[0]['class_module'] or '').lower()==expected_indicator)
+    checks['only_known_os_indicator_elsewhere'] = all(known_indicator(event) for event in others)
 if args.mode == 'offscreen':
     checks['actual_picture_presented'] = result['actual_picture_presented']
 if args.mode == 'private-playback':

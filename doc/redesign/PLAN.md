@@ -14,10 +14,30 @@ then apply the same glass background to all application menus as now requested.
 Hide empty reference disclosures in Library/Recording and every equivalent
 category, preserving native Search. Trace the real volume widget with a real
 audio output; the isolated visual launcher currently selects a dummy output.
-These are internal implementation/acceptance blockers, not a wait for another
-copy of the rejected screenshot. The latest native pass remains rejected;
-root-cause repair is underway and no release is running. Preserve
-the user's currently open review package and all applicable prior evidence.
+The cohesive source repair, affected native workflows and bounded manual
+widget/menu picture review now pass as recorded below. Normal stripped assembly,
+fresh safe presentation and actual Windows-composited corners/blur remain
+acceptance blockers; no release is running. Preserve the former rejected review
+package and all applicable prior evidence until the qualified replacement exists.
+
+**Build203 native/widget reconciliation:**203
+(`0929686267e2488684f6fb180b5140a0`, session53743, sourceaa654113)
+closed0/group empty/private mounts released, peak1715171328 bytes, no max/OOM.
+The complete main/Recent/Profile/Playback/audio/subtitle/queue/native-command
+workflow passes, including real WASAPI volume and live engine handover. Nested
+native QMenus have composition-only D3D surfaces, no integer regions or legacy
+layered bitmaps, and the smooth-corner preference. The separate quit-with-menu-
+open check initially hit its own clipped default viewport before Settings
+dispatch, then resumed only that closed case using the reference viewport; exit0
+proves callback teardown is repaired. Preserve the original failed checker result.
+Six successful202 workflows retain their original producers/hashes under the
+bounded owner-only source guard. Seven affected Settings pictures and ten menu
+pictures were manually inspected, using an already settled queue capture rather
+than its transition-start frame; this is explicitly not composed blur evidence.
+The normal placement observer also records immediate native ancestry, accepting
+DirectUIHWND only as an observed same-process child of the exact System32
+InputSwitch indicator. Fresh normal SDR/P5 placement remains required. Keep M4
+ACTIVE until the normal/composed and final delivery gates pass.
 
 **Build202 affected reconciliation:**202
 (`c2d6271488f44e3497ee53996dcb6877`, session28450, source2a9ec390)
@@ -193,7 +213,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE |192/c1380668 affected native Settings input/save/rollback/restart/focus/Privacy and manual widget review pass, with full profile preservation. All13 category layouts and unchanged menu/profile/playback/policy evidence retain their reviewed identities.67fb8cd8 normal package, VLC/MPV SDR/P5 lifecycle and actual picture, all archives/source/symbols and unsigned policy pass. README credits are present. | R83/R84: actual normal composed Settings blur/corners; final publication, independent retrieval and retained/weekly binding/cleanup. The concrete isolated review launcher above supplies the remaining visual input. | None. |
+| M4 Settings and menu parity | ACTIVE |203/aa654113 complete menu/native submenu/quit-with-menu-open and real volume/handover pass. Six successful202 workflows retain guarded producer identities. Affected widget/menu pictures inspected; unchanged13-category/layout/profile/playback/policy proofs retained. README credits present. | R83/R84: current stripped normal package and fresh safe SDR/P5 placement/presentation; actual Windows-composited Settings/menu blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. The old review package remains rejected. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core
