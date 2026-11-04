@@ -1388,7 +1388,17 @@ def settings():
         assert widget(resized,'value-sub-text-scale-size')['current_text']=='125%'
         assert widget(resized,'value-sub-text-scale-size')['item_count']>=5
         select(case,5,'snapshot-dimensions')
-        case.reveal('snapshot-dimensions-reveal','value-snapshot-width-size','preferencesScroll5')
+        focused=case.reveal('snapshot-dimensions-reveal','value-snapshot-width-size','preferencesScroll5')
+        visited=set()
+        while not widget(focused,'value-snapshot-width-size')['focused']:
+            targets=[row for row in focused['widgets'] if row['focused']]
+            assert len(targets)==1,('Expected one snapshot Tab target',targets)
+            target=targets[0]
+            identity=(target['node'],target['id'])
+            assert identity not in visited,('Tab traversal never reached snapshot size',visited)
+            visited.add(identity)
+            focused=case.inspect('snapshot-focus-tab-'+str(len(visited)),'widget_key',
+                '--node',str(target['node']),'--key','0x1000001')
         case.inspect('snapshot-original-first','widget_key','--target','value-snapshot-width-size','--key','0x1000010')
         preset=case.inspect('snapshot-preset','widget_key','--target','value-snapshot-width-size','--key','0x1000015')
         assert widget(preset,'value-snapshot-width-size')['current_text']=='1920 × 1080'
