@@ -76,14 +76,23 @@ runtime = root / 'runtime'
 if resume_idle:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='idle' and not previous['passed'] and previous['protected_profiles_unchanged']
-    assert set(previous['failures'])=={'idle'} and 'Expected one observation target; matched 0' in previous['failures']['idle']
-    assert len(previous['cases'])==1 and previous['cases'][0]['exit_code']==0
-    assert previous['cases'][0]['owned_desktop_never_observed_as_input']
-    assert previous['cases'][0]['steps'][-2]['label']=='empty-cancel-menu'
+    assert set(previous['failures'])=={'idle'}
+    resume_idle_stop='observation_cancelled_action_not_undone' in previous['failures']['idle']
+    if resume_idle_stop:
+        assert 'stop-video' in previous['failures']['idle'] and len(previous['cases'])==2
+        assert previous['cases'][0]['engine']=='vlc' and previous['cases'][0]['passed']
+        assert previous['cases'][1]['engine']=='mpv' and previous['cases'][1]['steps'][-2]['label']=='video-surface'
+        proof=json.loads((root/'idle-customization-mpv-resumed/evidence/053b2d2db82143ce953167e5075feaa2.json').read_text())
+        assert proof['core']['state']==0 and not proof['core']['audio_tracks'] and not proof['core']['video_tracks']
+        assert proof['observation_boundary']=='UI dispatcher during pending observation; no new frame awaited'
+    else:
+        assert 'Expected one observation target; matched 0' in previous['failures']['idle']
+        assert len(previous['cases'])==1 and previous['cases'][0]['steps'][-2]['label']=='empty-cancel-menu'
+    assert all(row['exit_code']==0 and row['owned_desktop_never_observed_as_input'] for row in previous['cases'])
     assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
     assert not any((runtime/'portable').iterdir())
     assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
-    historical=root/'result-before-idle-checker.json'
+    historical=root/('result-before-idle-stop-observer.json' if resume_idle_stop else 'result-before-idle-checker.json')
     assert not historical.exists(),'Continue original idle checker repair'
     historical.write_bytes((root/'result.json').read_bytes())
 elif resume_menu_quit:
@@ -242,7 +251,13 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
-if resume_menu_quit:
+if resume_idle:
+    assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
+    records['resumed_idle_checker']={'historical_result':str(historical),
+        'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'stop_observer_repair':resume_idle_stop}
+    if resume_idle_stop:records['cases']=[previous['cases'][0]]
+elif resume_menu_quit:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=[previous['cases'][0]]
     records['resumed_menu_quit']={'historical_result':str(historical),
@@ -861,7 +876,9 @@ def drop_fixture(case, label, file):
 def idle():
     """Idle customization must not masquerade as an audio-only input."""
     for engine in ('vlc', 'mpv'):
-        case=Case('idle-customization-'+engine+('-resumed' if resume_idle else ''), engine=engine)
+        if resume_idle and resume_idle_stop and engine=='vlc':continue
+        suffix='-stop-observer-resumed' if resume_idle and resume_idle_stop else '-resumed' if resume_idle else ''
+        case=Case('idle-customization-'+engine+suffix, engine=engine)
         def customize(label, action):
             case.inspect(label+'-menu','click','--name','Main menu')
             case.inspect(label+'-editor','click','--name','Customize Player')
@@ -909,15 +926,21 @@ def idle():
             video=case.inspect('video-surface','snapshot','--await-target','playerVideoSurface',
                 '--await-property','visible','--await-value','true','--capture')
             assert not nodes(video,'playerAudioView') and not nodes(video,'playerIdleView')
-            case.inspect('stop-video','key','--key','0x53','--text','s','--await-core','state','--await-value','0')
+            case.inspect('stop-video','key','--key','0x53','--text','s')
             customize('stopped-video','cancel')
             idle_canvas('stopped-video-cone')
             drop_fixture(case,'reopen-video','wide.mkv')
             case.click('seek-near-end','progressSlider','--fraction-x','.95')
             case.click('play-to-eof','playButton','--await-core','state','--await-value','2')
-            case.inspect('natural-eof','snapshot','--await-core','state','--await-value','0')
+            if engine=='mpv':
+                # MPV's END_FILE/idle-active cache notifications can follow the
+                # controller's STOPPED signal. Observe its real view transition,
+                # then assert terminal core state in the later idle capture.
+                case.inspect('natural-eof','snapshot','--await-target','viewLoader','--await-property','source',
+                    '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml'))
+            else:case.inspect('natural-eof','snapshot','--await-core','state','--await-value','0')
             customize('after-eof','cancel')
-            idle_canvas('after-eof-cone')
+            assert idle_canvas('after-eof-cone')['core']['state']==0
             case.record['idle_audio_video_customization_transitions']=True
             case.close(True)
         finally: case.close()
