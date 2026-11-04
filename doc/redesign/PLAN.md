@@ -20,6 +20,15 @@ fresh safe presentation and actual Windows-composited corners/blur remain
 acceptance blockers; no release is running. Preserve the former rejected review
 package and all applicable prior evidence until the qualified replacement exists.
 
+**4 November idle/customization correction:** normal assembly has not started.
+The user reported the music placeholder after leaving Customize Player without
+media. Player.qml selected audio solely from the absence of embedded video;
+require started audio tracks without video tracks and provide the black/cone
+idle canvas. This is an internal M4 acceptance blocker until the complete
+idle/customization/audio/video/stop workflow passes in both engines. Preserve
+the applicable203 menu/settings/texture evidence under an explicit source guard;
+the new player-state selection needs fresh native evidence before normal freeze.
+
 **Build203 native/widget reconciliation:**203
 (`0929686267e2488684f6fb180b5140a0`, session53743, sourceaa654113)
 closed0/group empty/private mounts released, peak1715171328 bytes, no max/OOM.

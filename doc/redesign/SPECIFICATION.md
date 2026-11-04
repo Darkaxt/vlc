@@ -85,6 +85,14 @@ verify delivery and retained/weekly rebinding before obsolete-output retirement.
 No Rust work, additional upstream integration, SDK recreation or release-folder
 reorganization is authorized by this scope.
 
+Idle-player correction,4 November2026 (M4): entering Customize Player without
+media and leaving through Cancel, Escape or Save must show the black idle canvas
+and the usual cone (subject to the existing background-cone preference), never
+album artwork, lyrics or audio-only controls. Select the music view only for
+started audio-only media, including paused audio; preserve embedded video and
+audio visualizations. Verify idle/customization, audio/video replacement and
+stop/end-of-input transitions with both VLC and MPV before final delivery.
+
 README delivery addition, authorized3 November2026: after verification, update
 the project README with clear attribution and direct links to the original
 YouTube redesign video, the Figma community project and the relevant upstream

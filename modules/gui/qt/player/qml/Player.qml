@@ -40,6 +40,12 @@ FocusScope {
 
     readonly property int positionSliderY: controlBar.y + controlBar.sliderY
 
+    // An absent video surface does not imply audio playback (for example,
+    // Customize Player can open this view without loading any media).
+    readonly property bool audioOnly: Player.isStarted
+                                      && Player.audioTracks.count > 0
+                                      && Player.videoTracks.count === 0
+
     readonly property string coverSource: {
         if (!MainCtx.audioCoverArt && !Player.hasVideoOutput) return VLCStyle.noArtAlbumCover
         if (Player.artwork &&
@@ -239,7 +245,8 @@ FocusScope {
             bottom: (MainCtx.hasEmbededVideo && rootPlayer._controlsUnderVideo) ? controlBar.top : parent.bottom
         }
 
-        sourceComponent: MainCtx.hasEmbededVideo ? videoComponent : audioComponent
+        sourceComponent: Player.isStarted && MainCtx.hasEmbededVideo ? videoComponent
+                         : rootPlayer.audioOnly ? audioComponent : idleComponent
 
         property int cursorShape
 
@@ -296,6 +303,26 @@ FocusScope {
                     }
                 } else {
                     lastActiveTranslation = Qt.vector2d(0, 0)
+                }
+            }
+        }
+
+        Component {
+            id: idleComponent
+
+            Rectangle {
+                objectName: "playerIdleView"
+                color: "black"
+
+                Image {
+                    objectName: "playerIdleCone"
+                    anchors.centerIn: parent
+                    width: Math.min(PlayerStyle.px(128), parent.width / 2, parent.height / 2)
+                    height: width
+                    source: "qrc:///misc/cone.svg"
+                    sourceSize: Qt.size(width, height)
+                    fillMode: Image.PreserveAspectFit
+                    visible: MainCtx.bgCone
                 }
             }
         }
@@ -410,6 +437,7 @@ FocusScope {
 
             FocusScope {
                 id: audioFocusScope
+                objectName: "playerAudioView"
                 // Audio
 
                 focus: true

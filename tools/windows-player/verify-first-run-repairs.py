@@ -33,7 +33,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['idle', 'welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
     help='Resume the closed settings pass after its completed150%% matrix lost the input-desktop preservation check')
@@ -839,6 +839,67 @@ def drop_fixture(case, label, file):
                 '--await-core','state','--await-value','3')
         return case.click(label+'-pause','playButton','--await-core','state','--await-value','3')
     return case.inspect(label+'-paused','snapshot','--await-core','state','--await-value','3')
+
+
+def idle():
+    """Idle customization must not masquerade as an audio-only input."""
+    for engine in ('vlc', 'mpv'):
+        case=Case('idle-customization-'+engine, engine=engine)
+        def customize(label, action):
+            case.inspect(label+'-menu','click','--name','Main menu')
+            opened=case.inspect(label+'-editor','click','--name','Customize Player',
+                '--await-target','playerLayoutEditor','--await-property','visible','--await-value','true')
+            assert opened['customization']['editing']
+            if action=='escape':
+                result=case.inspect(label+'-escape','key','--key','0x1000000')
+            else:
+                result=case.click(label+'-'+action,'layoutSave' if action=='save' else 'layoutCancel')
+            assert not result['customization']['editing']
+        def idle_canvas(label):
+            result=case.inspect(label,'snapshot','--await-target','playerIdleCone',
+                '--await-property','status','--await-value','1','--capture')
+            assert nodes(result,'playerIdleView') and nodes(result,'playerIdleCone')
+            assert nodes(result,'playerIdleView')[0]['color']=='#000000'
+            assert not nodes(result,'playerAudioView') and not nodes(result,'audioControls')
+            assert not nodes(result,'playerVideoSurface')
+            return result
+        try:
+            case.inspect('reference-viewport','resize','--width','1280','--height','900')
+            for action in ('cancel','escape','save'):
+                customize('empty-'+action,action)
+                result=idle_canvas('empty-'+action+'-cone')
+                assert result['core']['state']==0
+            # Open real audio through the same drop path as the user, then
+            # return from the intentionally preserved library/mini-player view.
+            case.inspect('audio-drop','drop','--target','mainInterface','--url',(fixtures/'audio-only.mka').as_uri(),
+                '--await-core','url','--await-value',json.dumps((fixtures/'audio-only.mka').as_uri()))
+            mounted=case.inspect('audio-seekable','snapshot','--await-core','seekable','--await-value','true')
+            if nodes(mounted,'libraryReturnToPlayer'):
+                case.click('audio-main-view','libraryReturnToPlayer')
+            audio=case.inspect('audio-artwork','snapshot','--await-target','playerAudioView',
+                '--await-property','visible','--await-value','true','--capture')
+            assert audio['core']['audio_tracks'] and not audio['core']['video_tracks']
+            assert not nodes(audio,'playerIdleView')
+            if audio['core']['state']==2:
+                case.click('pause-audio','playButton','--await-core','state','--await-value','3')
+            customize('paused-audio','cancel')
+            assert nodes(case.inspect('paused-artwork','snapshot','--capture'),'playerAudioView')
+            drop_fixture(case,'replace-with-video','wide.mkv')
+            video=case.inspect('video-surface','snapshot','--await-target','playerVideoSurface',
+                '--await-property','visible','--await-value','true','--capture')
+            assert not nodes(video,'playerAudioView') and not nodes(video,'playerIdleView')
+            case.inspect('stop-video','key','--key','0x53','--text','s','--await-core','state','--await-value','0')
+            customize('stopped-video','cancel')
+            idle_canvas('stopped-video-cone')
+            drop_fixture(case,'reopen-video','wide.mkv')
+            case.click('seek-near-end','progressSlider','--fraction-x','.95')
+            case.click('play-to-eof','playButton','--await-core','state','--await-value','2')
+            case.inspect('natural-eof','snapshot','--await-core','state','--await-value','0')
+            customize('after-eof','cancel')
+            idle_canvas('after-eof-cone')
+            case.record['idle_audio_video_customization_transitions']=True
+            case.close(True)
+        finally: case.close()
 
 
 def subtitles(verify_navigation=True, engines=('vlc','mpv')):
@@ -1985,7 +2046,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue
