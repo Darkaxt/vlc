@@ -13,6 +13,25 @@ composed corners/blur, nested menu behavior, empty-disclosure suppression and
 volume changes with real WASAPI. The dummy-output visual launcher has no volume
 or mute callbacks. Keep M4 ACTIVE and1.1.5 unpublished until those gates pass.
 
+The199 native pass still rejects no-redirection and stale texture observations.
+The owned hidden-window probe in the current M4 controls demonstrates that this
+Windows host preserves NOREDIRECTIONBITMAP from CreateWindowEx: neither a later
+SetWindowLongPtr nor a WM_STYLECHANGING filter can add/remove it. Create only the
+affected D3D11 translucent QWidget under Qt's existing scoped
+QT_QPA_DISABLE_REDIRECTION_SURFACE policy, then restore the exact prior value;
+never enable it globally for ordinary or GL windows. QWidget polish runs before
+QVLCDialog's createWinId path and Qt's ordinary first-show creation. Reuse the
+pinned Qt6.8.3 RHI surface selection; no Qt patch/rebuild is required.
+
+The matching retained-object native texture probe independently reproduces an
+old-window beforeSynchronizing consumer left behind on source detachment and
+no new consumer after reattachment. Rebind the complete source observation on
+windowChanged before overwriting its old captured window. Keep the source's
+provider assertion at the point where a window exists, including safe teardown
+through a windowless QQuickItem base destructor. Green proof and the complete
+affected player/menu acceptance remain required; do not filter out the original
+debug recovery messages or treat a source-only change as acceptance.
+
 Original196 was deliberately stopped to remove an accidental62-consumer shared
 header dependency. Keep its137/group-empty/no-OOM report and completed objects.
 The popup observer now belongs wholly to Qt startup. qvlcframe.cpp/.hpp return

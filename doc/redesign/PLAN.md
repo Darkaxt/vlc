@@ -15,9 +15,35 @@ Hide empty reference disclosures in Library/Recording and every equivalent
 category, preserving native Search. Trace the real volume widget with a real
 audio output; the isolated visual launcher currently selects a dummy output.
 These are internal implementation/acceptance blockers, not a wait for another
-copy of the rejected screenshot. The incremental repair is in compilation;
-no release is running. Preserve
+copy of the rejected screenshot. The latest native pass remains rejected;
+root-cause repair is underway and no release is running. Preserve
 the user's currently open review package and all applicable prior evidence.
+
+**Build199 rejected native result:**199
+(`a2fb8f51b3a342e58db04517132d8f82`, session96841, source942cb9a26b)
+closed0/group empty/mounts released, peak1715392512 bytes, no max/OOM.
+The four coordinated affected workflows still reject the same native flag and
+texture-detachment paths; the source942 repair is not accepted. A never-visible
+Windows probe on an owned inactive desktop proves NOREDIRECTIONBITMAP remains
+fixed to its CreateWindowEx value: direct SetWindowLongPtr and both native
+message return paths cannot add/remove it. Replace the ineffective style filter
+with a scoped Qt creation policy before native QWidget creation, preserving
+explicit overrides and ordinary/GL windows. Source tracing also finds that the
+texture observer overwrites its old window before disconnecting its render
+callback, then never initializes one on the replacement window. A bounded
+retained-object native probe200 (`231cb71793f54aa9b2ded03fc221e311`,
+session12672) compiled, but its standalone link omitted the observer's configured
+atomic library.201 (`e119e21cbd2143fa8b2ec15c32e5a131`, session60116)
+resumed only that link, closed0/group empty/mounts released, no max/OOM. Its real
+native red result is exact:0→1 consumers on attach, still1 after detach and0
+on the replacement window. All probe windows remained hidden; native resources
+closed with the input desktop unchanged. The integrated correction scopes the
+Qt native creation policy at widget polish, restores its exact prior environment,
+and rebinds the observer before replacing its captured window. The failed style
+filter and live-QML workaround are removed. Green lifecycle proof, affected
+native/player picture acceptance and normal/composed delivery remain required.
+Preserve199's failed receipts and200/201's diagnostic producer identities. M4
+remains ACTIVE.
 
 **Build196 locality correction:** original196
 (`85c6b3fe8f0f400db79602557c11e1d0`, session56256) was stopped deliberately
@@ -48,14 +74,13 @@ menu workflow; both-engine paused/playing sidebar transitions pass. The first
 volume observation was a checker-focus error (Right sought ten seconds under
 OtherFocus), cancelled explicitly with clean exit and preserved; real Tab focus
 corrected it without an application rebuild. The complete affected native pass
-then identified two internal blockers: Qt regenerates the native extended style,
-discarding the one-time no-redirection bit; the shared blur switches into its
-non-live buffer-release path before its Loader destroys it, detaching texture
-sources during popup/view teardown. Preserve all original failed receipts. Own
-only the registered windows' composition bits during native style changes and
-keep the entire live blur chain owned by its Loader lifetime. Rebuild these
-connected repairs together; actual native/composed and final delivery gates
-remain unsatisfied.1.1.5 is still unpublished.
+then identified two internal blockers: no native no-redirection bit after show,
+and stale texture observations during popup/view teardown. The initial
+style-regeneration/non-live-chain hypotheses produced199, whose native rejection
+and corrected creation/observer diagnosis are recorded above. Preserve the
+original failed receipts rather than treating those hypotheses as acceptance.
+Actual native/composed and final delivery gates remain unsatisfied.1.1.5 is
+still unpublished.
 
 **4 November normal-package qualification:** application source
 `67fb8cd807d4cdaf010ed7706561eab380699513` has passed packaged VLC playback

@@ -73,8 +73,6 @@ void TextureProviderObserver::setSource(const QQuickItem *source, bool enforce)
 
     if (m_source)
     {
-        assert(m_source->isTextureProvider());
-
         {
             m_window = m_source->window();
 
@@ -83,14 +81,20 @@ void TextureProviderObserver::setSource(const QQuickItem *source, bool enforce)
 
             connect(m_source, &QQuickItem::windowChanged, this, [this]() {
                 assert(m_source);
-                m_window = m_source->window();
-                adjustSampleAndNotifyConnection();
+                // Disconnect the captured old window before replacing it, then
+                // acquire the provider on the new window's synchronization.
+                // Merely overwriting m_window leaks the old one-shot callback
+                // when a popup/view detaches and never binds a replacement.
+                setSource(m_source, true);
             });
         }
 
         const auto init = [this, enforce]() {
             const auto window = m_source->window();
             assert(window);
+            // A windowless source can be in QQuickItem's destruction path;
+            // only require its provider interface when it can be rendered.
+            assert(m_source->isTextureProvider());
 
             connect(window, &QQuickWindow::beforeSynchronizing, this, [this, window, source = m_source, enforce]() {
                 if (Q_UNLIKELY(source != m_source)) // either different or null pointer
@@ -144,8 +148,8 @@ void TextureProviderObserver::setSource(const QQuickItem *source, bool enforce)
 
         if (m_source->window())
             init();
-        else
-            connect(m_source, &QQuickItem::windowChanged, this, init, Qt::SingleShotConnection);
+        // windowChanged rebinds the complete observation when a currently
+        // windowless source is attached; no second pending init is needed.
     }
 }
 

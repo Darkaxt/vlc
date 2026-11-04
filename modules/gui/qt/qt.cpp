@@ -155,14 +155,38 @@ public:
     bool eventFilter(QObject *object, QEvent *event) override
     {
         auto *menu = qobject_cast<QWidget *>(object);
-        if (!menu || menu->windowType() != Qt::Popup ||
-            !var_InheritBool(m_intf, "qt-backdrop-blur"))
+        if (!menu || !menu->isWindow() || !var_InheritBool(m_intf, "qt-backdrop-blur"))
+            return false;
+        const bool popup = menu->windowType() == Qt::Popup;
+        if (!popup && !menu->testAttribute(Qt::WA_TranslucentBackground))
             return false;
         if (event->type() == QEvent::Polish) {
-            menu->setWindowFlag(Qt::FramelessWindowHint);
-            menu->setAttribute(Qt::WA_TranslucentBackground);
-            menu->setAutoFillBackground(false);
-        } else if (event->type() == QEvent::Show) {
+            if (popup) {
+                menu->setWindowFlag(Qt::FramelessWindowHint);
+                menu->setAttribute(Qt::WA_TranslucentBackground);
+                menu->setAutoFillBackground(false);
+            }
+#ifdef _WIN32
+            // QWidget::showEvent is too late: Windows cannot change the
+            // no-redirection bit after CreateWindowEx. Scope Qt's existing
+            // creation policy to this D3D11 widget, restoring the exact prior
+            // environment before any ordinary/GL window can be created.
+            constexpr auto policy = "QT_QPA_DISABLE_REDIRECTION_SURFACE";
+            const bool hadPolicy = qEnvironmentVariableIsSet(policy);
+            const QByteArray previous = qgetenv(policy);
+            const auto *window = menu->windowHandle();
+            if ((!window || !window->handle()) &&
+                qEnvironmentVariableIntValue("QT_WIDGETS_RHI") == 1 &&
+                qgetenv("QT_WIDGETS_RHI_BACKEND") == "d3d11" &&
+                (previous.isEmpty() || qEnvironmentVariableIntValue(policy)) &&
+                QOperatingSystemVersion::current() >= QOperatingSystemVersion(QOperatingSystemVersion::Windows, 10, 0, 22621)) {
+                qputenv(policy, "1");
+                menu->createWinId();
+                if (hadPolicy) qputenv(policy, previous);
+                else qunsetenv(policy);
+            }
+#endif
+        } else if (popup && event->type() == QEvent::Show) {
             if (!m_effects) {
                 m_effects = vlc_object_create<WindowEffectsModule>(m_intf);
                 if (m_effects)
@@ -182,7 +206,7 @@ public:
                 view->viewport()->setAutoFillBackground(false);
             }
             if (available) m_effects->setBlurBehind(window, true, {});
-        } else if (event->type() == QEvent::Hide && m_effects && m_effects->p_module &&
+        } else if (popup && event->type() == QEvent::Hide && m_effects && m_effects->p_module &&
                    menu->property("redesignGlassMenu").toBool() && menu->windowHandle()) {
             m_effects->setBlurBehind(menu->windowHandle(), false, {});
         }
