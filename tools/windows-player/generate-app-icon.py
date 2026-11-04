@@ -26,10 +26,10 @@ original = source.read_text(encoding='utf-8')
 assert original.count('fill="white"') == 3
 colored = original.replace('fill="white"', 'fill="#d37918"')
 svg = scratch / 'app.svg'
-svg.write_text(colored, encoding='utf-8')
+svg.write_text(colored, encoding='utf-8', newline='\n')
 if args.svg_only:
     target = repo / 'modules/gui/qt/pixmaps/redesign/app.svg'
-    target.write_text(colored, encoding='utf-8')
+    target.write_text(colored, encoding='utf-8', newline='\n')
     (scratch / 'icon-generation.json').write_text(json.dumps({
         'source': str(source), 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
         'output': str(target), 'sha256': hashlib.sha256(target.read_bytes()).hexdigest(),

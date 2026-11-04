@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 
 PATCH='contrib/src/qt/0003-Expose-the-existing-backing-store-swapchain.patch'
-PATCH_SHA256='0a11ce8fd003bbf74ebcd1f5f4e333ba629c331f9ae657edda0d73d5b2a5f610'
+PATCH_SHA256='ec33d822136e1c79faa62b5c112233e9d4cf7edf6787389d904519eabf0e758e'
 RULES='contrib/src/qt/rules.mak'
 
 def sha(path):

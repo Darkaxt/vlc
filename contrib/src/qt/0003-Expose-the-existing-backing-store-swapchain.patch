@@ -34,8 +34,7 @@ Only qplatformbackingstore.cpp and the retained QtGui archive need rebuilding.
          window, sourceDevicePixelRatio, region, offset, textures,
          translucentBackground);
  }
-@@ -397,6 +404,7 @@ QRhi *QPlatformBackingStore::rhi(QWindow *window) const
- 
+@@ -398,5 +405,6 @@ QRhi *QPlatformBackingStore::rhi(QWindow *window) const
  void QPlatformBackingStore::graphicsDeviceReportedLost(QWindow *window)
  {
 +    window->setProperty("_vlc_widget_rhi", QVariant());
