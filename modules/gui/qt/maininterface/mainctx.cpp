@@ -782,8 +782,12 @@ QVariantMap MainCtx::presentationSettings() const
         accent=QColor(accent).isValid()?QColor(accent).name():QStringLiteral("default");
     return {{QStringLiteral("theme"),m_colorScheme->currentIndex()},
             {QStringLiteral("accent"),accent},{QStringLiteral("grid"),m_gridView},
-            {QStringLiteral("remaining"),m_showRemainingTime},
-            {QStringLiteral("backgroundBlurRadius"),qBound(0,int(config_GetInt("qt-background-blur-radius")),100)}};
+            {QStringLiteral("remaining"),m_showRemainingTime}};
+}
+
+int MainCtx::backgroundBlurRadius() const
+{
+    return qBound(0,int(config_GetInt("qt-background-blur-radius")),100);
 }
 
 bool MainCtx::previewAppearance(int theme,const QString &accent)

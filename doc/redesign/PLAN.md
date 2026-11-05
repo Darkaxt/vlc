@@ -12,6 +12,13 @@ Internal blockers are these unimplemented/unverified criteria; no external block
 or tracked deferral. Reuse unaffected 1.1.6 runtime/MPV/DV evidence only after exact
 applicability checks. Preserve the user's running D:/Tools/Modern VLC instance.
 
+Finish regression traced: R87 appended blur radius to the four-field profile
+appearance snapshot, which Finish rejects. Keep that snapshot's existing contract
+and read blur through its own native getter. The M5 Finish/restart and failed-save
+flows must verify this correction alongside shortcut persistence. Owned build219
+was stopped137, group empty/no OOM; retain its objects and resume after binding
+this correction, without rebuilding dependencies or changing configuration.
+
 **M4: COMPLETE — normal1.1.6 delivered and independently verified.** Tag `redesign-v1.1.6` binds application source `bf45ca9748427279b08b995755c52f164f78e60d`. Current VLC/MPV SDR/P5 presentation, safe placement, foreground/lifecycle, all417 stripped mappings, four downloaded assets, retained/weekly binding and exact obsolete-output cleanup pass. The user explicitly waived additional manual review of minor UI details; no new Record/control pixels are claimed manually accepted. R83–R87 reconcile under that authorized release boundary. [Evidence](resources/m4-1.1.6-verification.json). Blockers0; tracked deferrals0. S8 remains COMPLETE; S9 remains NOT STARTED. Historical checkpoints below retain their original meaning.
 
 **5 November delivery instruction: target1.1.6.** The user requests full

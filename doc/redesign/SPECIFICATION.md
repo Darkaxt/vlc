@@ -11,6 +11,9 @@ page or a native capture window. Escape cancels capture before it can dismiss th
 wizard; invalid/conflicting input must not trap focus. Finish persists accepted
 edits; cancelling setup or a failed save preserves prior bindings. Verify the
 complete first-run/reopen/restart flow and actual saved action dispatch.
+Preserve the four-field profile appearance contract (theme, accent, grid,
+remaining); the Interface blur degree is read separately so it cannot invalidate
+Finish or named profile saves. Preserve the existing live blur setting behavior.
 Interface shortcuts, including Stream's Ctrl+S, must be searchable and editable
 alongside playback shortcuts, with the existing defaults preserved. Replace the
 hardcoded reservation/dispatch split with native CONFIG_ITEM_KEY bindings used by

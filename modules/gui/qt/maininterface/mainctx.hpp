@@ -261,6 +261,7 @@ public:
     MLBookmarkModel *getBookmarks();
     Q_INVOKABLE void addBookmark();
     Q_INVOKABLE QVariantMap presentationSettings() const;
+    Q_INVOKABLE int backgroundBlurRadius() const;
     Q_INVOKABLE bool previewAppearance(int theme, const QString &accent);
     Q_INVOKABLE QString saveCustomization(const QString &encoded, const QVariantMap &values);
     Q_INVOKABLE void finishRedesignOnboarding(bool finish, const QVariantMap &values, const QString &folder);
