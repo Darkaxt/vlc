@@ -51,6 +51,8 @@ parser.add_argument('--resume-menu-quit',action='store_true',
     help='Retain the completed menu workflow and resume its closed clipped-viewport quit check')
 parser.add_argument('--resume-idle-checker',action='store_true',
     help='Resume the closed idle pass after correcting its pre-dispatch observation target')
+parser.add_argument('--resume-onboarding-checker',action='store_true',
+    help='Retain passed100%% wizard/restart evidence; continue closed150%% keyboard and standalone checks')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -62,18 +64,32 @@ collect_layouts=args.collect_settings_layouts
 resume_input=args.resume_settings_input
 resume_menu_quit=args.resume_menu_quit
 resume_idle=args.resume_idle_checker
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle))<=1
+resume_onboarding=args.resume_onboarding_checker
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding))<=1
+assert not resume_onboarding or args.case=='onboarding-shortcuts'
 assert not resume_idle or args.case=='idle'
 assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if resume_idle:
+if resume_onboarding:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='onboarding-shortcuts' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert previous['cases'][0]['name']=='welcome-1' and previous['cases'][1]['name']=='restart-empty-1'
+    assert all(row['passed'] for row in previous['cases'][:2])
+    assert all(row['exit_code']==0 and row['owned_desktop_never_observed_as_input'] for row in previous['cases'])
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    assert hashlib.sha256((runtime/'plugins/gui/libqt_plugin.dll').read_bytes()).hexdigest()==previous['qt_plugin_sha256']
+    historical=root/'result-before-onboarding-checker.json'
+    assert not historical.exists(),'Resume the original onboarding checker correction'
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_idle:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='idle' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert set(previous['failures'])=={'idle'}
@@ -262,7 +278,13 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
-if resume_idle:
+if resume_onboarding:
+    assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
+    records['cases']=previous['cases'][:2]
+    records['resumed_onboarding_checker']={'historical_result':str(historical),
+        'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'scope':'Qt Quick button activation uses Space; standalone library viewport explicitly1280x800. No production change.'}
+elif resume_idle:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['resumed_idle_checker']={'historical_result':str(historical),
         'historical_result_sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
@@ -667,8 +689,9 @@ def welcome():
         result=case.inspect(label,'key','--target','onboardingShortcutCapture','--key',hex(key),'--modifiers',hex(modifiers),'--text',text)
         assert not any(w['id'] in ('redesignPreferences','keyInputDialog') for w in result['widgets'])
         return result
-    for scale in ('1', '1.5', '2'):
-        case = Case('welcome-' + scale.replace('.', ''), scale=scale, welcome=True)
+    suffix='-resumed' if resume_onboarding else ''
+    for scale in (('1.5','2') if resume_onboarding else ('1','1.5','2')):
+        case = Case('welcome-' + scale.replace('.', '')+suffix, scale=scale, welcome=True)
         try:
             initial = case.inspect('welcome', 'snapshot', '--capture')
             assert initial['customization']['onboardingVisible']
@@ -738,7 +761,7 @@ def welcome():
                 wizard_key(case,'modifier-only',0x1000021,0x4000000)
                 wizard_key(case,'tab-to-unset',0x1000001)
                 case.inspect('tab-to-cancel','key','--key','0x1000001')
-                cancelled=case.inspect('keyboard-cancel','key','--key','0x1000004')
+                cancelled=case.inspect('keyboard-cancel','key','--key','0x20','--text',' ')
                 assert cancelled['customization']['onboardingVisible']
                 assert not nodes(cancelled,'onboardingShortcutCapture')
             case.click('finish-without-root', 'onboardingNext')
@@ -748,7 +771,7 @@ def welcome():
                 with sqlite3.connect(dbfile.as_uri() + '?mode=ro', uri=True) as db:
                     tables={row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
                     if 'Folder' in tables: assert db.execute('SELECT COUNT(*) FROM Folder').fetchone()[0] == 0
-            restarted = Case('restart-empty-' + scale.replace('.', ''), scale=scale, welcome=True, reused_profile=profile)
+            restarted = Case('restart-empty-' + scale.replace('.', '')+suffix, scale=scale, welcome=True, reused_profile=profile)
             try:
                 result = restarted.inspect('second-start', 'snapshot', '--await-target', 'fullLibrary', '--await-property', 'ready', '--await-value', 'true', '--capture')
                 verify_window_icon(restarted, result)
@@ -774,7 +797,7 @@ def welcome():
                 restarted.close(True)
             finally: restarted.close()
         finally: case.close()
-    cancelled=Case('wizard-failed-save-cancel',welcome=True,reused_profile=profile,extra=('--qt-privacy-ask',))
+    cancelled=Case('wizard-failed-save-cancel'+suffix,welcome=True,reused_profile=profile,extra=('--qt-privacy-ask',))
     try:
         cancelled.inspect('welcome-ready')
         cancelled.click('theme-page','onboardingNext')
@@ -823,20 +846,38 @@ def welcome():
 
 
 def interface_shortcuts():
-    case=Case('interface-shortcuts')
+    suffix='-resumed' if resume_onboarding else ''
+    case=Case('interface-shortcuts'+suffix)
+    def widget(snapshot,identity):
+        matches=[row for row in snapshot['widgets'] if row['id']==identity]
+        assert len(matches)==1,(identity,matches)
+        return matches[0]
+    def focus_table(label):
+        # Clicking the table's centre can activate an editable hotkey cell.
+        # Follow the actual native Tab chain from the already focused search.
+        observed=case.inspect(label+'-tab','widget_key','--target','keyboardShortcutsSearch','--key','0x1000001')
+        visited=set()
+        while not any(w['id']=='keyboardShortcutsTable' and w['focused'] for w in observed['widgets']):
+            focused=[w for w in observed['widgets'] if w['focused']]
+            state=tuple((w['id'],w['type']) for w in focused)
+            assert focused and state not in visited,('Shortcut table is absent from native Tab order',state)
+            visited.add(state)
+            observed=case.inspect(label+'-tab-'+str(len(visited)),'widget_key','--node',str(focused[-1]['node']),'--key','0x1000001')
+        return observed
     try:
+        case.inspect('library-viewport','resize','--width','1280','--height','800')
         case.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
         case.inspect('shortcut-menu','click','--name','Main menu')
         case.inspect('open-shortcuts','click','--name','Keyboard Shortcuts')
         case.native('search-focus','keyboardShortcutsSearch')
         case.inspect('search-ctrl-s','widget_key','--target','keyboardShortcutsSearch','--key','0','--text','Ctrl+S')
-        case.native('filtered-table-focus','keyboardShortcutsTable')
+        focus_table('filtered-table-focus')
         result=case.inspect('filtered-interface-rows','widget_key','--target','keyboardShortcutsTable','--key','0x1000011','--capture')
         assert any(row['columns'][0]=='Stream' for row in widget(result,'keyboardShortcutsTable')['rendered_rows'])
         case.native('search-again','keyboardShortcutsSearch')
         case.inspect('select-search','widget_key','--target','keyboardShortcutsSearch','--key','0x41','--modifiers','0x4000000')
         case.inspect('search-stream','widget_key','--target','keyboardShortcutsSearch','--key','0','--text','Stream')
-        case.native('table-focus','keyboardShortcutsTable')
+        focus_table('table-focus')
         selected=case.inspect('select-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000011')
         assert [row['columns'][0] for row in widget(selected,'keyboardShortcutsTable')['rendered_rows'] if row['selected']]==['Stream']
         opened=case.inspect('edit-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000004')
@@ -850,8 +891,9 @@ def interface_shortcuts():
         case.close(True)
         profile=case.path/'profile'
         assert re.search(r'^qt-key-stream=Ctrl\+Alt\+Shift\+7$',next(profile.rglob('vlcrc')).read_text(encoding='utf-8'),re.M)
-        restarted=Case('interface-shortcuts-restart',reused_profile=profile)
+        restarted=Case('interface-shortcuts-restart'+suffix,reused_profile=profile)
         try:
+            restarted.inspect('restart-viewport','resize','--width','1280','--height','800')
             restarted.inspect('restart-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
             result=restarted.inspect('real-stream-dispatch','key','--key','0x37','--modifiers','0xe000000','--text','7','--capture')
             opened=[w for w in result['widgets'] if w['type']=='OpenDialog']
