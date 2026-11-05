@@ -6,6 +6,14 @@ import VLC.Style
 import VLC.MainInterface
 
 QtObject {
+    id: style
+    property int backgroundBlurRadius: MainCtx.backdropBlurRequested() ? MainCtx.presentationSettings().backgroundBlurRadius : 0
+    readonly property Connections settingsObserver: Connections {
+        target: MainCtx
+        function onPlaybackPreferencesChanged() {
+            style.backgroundBlurRadius = MainCtx.backdropBlurRequested() ? MainCtx.presentationSettings().backgroundBlurRadius : 0
+        }
+    }
     readonly property bool dark: VLCStyle.palette.isDark
     readonly property color chrome: dark ? "#1b1b1b" : Qt.rgba(0.8369140625, 0.8369140625, 0.8369140625, 0.75)
     readonly property color panel: dark ? "#0e0e0e" : "#e7e7e7"

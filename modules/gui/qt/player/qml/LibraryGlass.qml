@@ -11,7 +11,7 @@ Rectangle {
     required property Item backgroundSource
     property bool active: false
     readonly property bool ready: !active || (effect.item !== null && effect.item.ready)
-    readonly property real backgroundBlurRadius: PlayerStyle.px(50)
+    readonly property real backgroundBlurRadius: PlayerStyle.px(PlayerStyle.backgroundBlurRadius)
     readonly property real eDPR: MainCtx.effectiveDevicePixelRatio(Window.window) || 1
     readonly property real blurPadding: backgroundBlurRadius*1.5
     objectName: "playerVideoBackdrop"
@@ -28,7 +28,7 @@ Rectangle {
         sourceComponent: Item {
             // Qt 6.8 cached shaders can retain Uncompiled on their new manager;
             // resolved textures and absence of a shader error are authoritative.
-            readonly property bool ready: blurredBackdrop.ready && roundedBackdrop.status === Image.Ready && roundedBackdrop.shaderStatus !== ShaderEffect.Error
+            readonly property bool ready: (glass.backgroundBlurRadius === 0 || blurredBackdrop.ready) && roundedBackdrop.status === Image.Ready && roundedBackdrop.shaderStatus !== ShaderEffect.Error
             ShaderEffectSource {
                 id: libraryBackdrop
                 width: glass.width+glass.blurPadding*2; height: glass.height+glass.blurPadding*2
@@ -46,17 +46,18 @@ Rectangle {
             }
             Widgets.DualKawaseBlur {
                 id: blurredBackdrop
+                visible: glass.backgroundBlurRadius > 0
                 width: libraryBackdrop.width; height: libraryBackdrop.height
                 source: libraryBackdrop; live: glass.active
                 mode: Widgets.DualKawaseBlur.Mode.FourPass
-                // Four-pass variance is (175/6)*(radius-0.5)^2. Match the source's
-                // 50px backdrop radius (Gaussian sigma 25px), scaled by actual DPR.
+                // Four-pass variance is (175/6)*(radius-0.5)^2. Match the
+                // selected backdrop radius, scaled by actual DPR.
                 radius: Math.max(1,Math.round(0.5+glass.backgroundBlurRadius*glass.eDPR/2/Math.sqrt(175/6)))
             }
             ShaderEffectSource {
                 id: blurredTexture
                 width: glass.width; height: glass.height
-                sourceItem: blurredBackdrop
+                sourceItem: glass.backgroundBlurRadius > 0 ? blurredBackdrop : libraryBackdrop
                 sourceRect: Qt.rect(glass.blurPadding,glass.blurPadding,width,height)
                 textureSize: Qt.size(Math.ceil(width*glass.eDPR),Math.ceil(height*glass.eDPR))
                 hideSource: true; live: glass.active; visible: false

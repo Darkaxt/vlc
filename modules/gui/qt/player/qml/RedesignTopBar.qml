@@ -30,7 +30,7 @@ T.Pane {
     onForceUnlock:mainMenu.close()
     padding:0;implicitHeight:PlayerStyle.px(40);hoverEnabled:true;enabled:visible
     Accessible.name:qsTr("Player title bar");AccessibleCompat.id:"playerTopBar"
-    background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(50);color:PlayerStyle.chrome}
+    background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(PlayerStyle.backgroundBlurRadius);color:PlayerStyle.chrome}
     Loader{anchors.fill:parent;active:header.showCSD&&!PlayerCustomization.editing;source:"qrc:///qt/qml/VLC/Widgets/CSDTitlebarTapNDrapHandler.qml"}
     RowLayout {
         id:left;x:PlayerStyle.px(6);height:parent.height;spacing:PlayerStyle.px(7)

@@ -59,6 +59,7 @@ inline constexpr Row rows[] = {
 
     EDIT("intf/skins2",1,N_("Skin"),N_("Use a custom skin"),Filter,"skins2"),
     withEditorHeight(PREF("skins2-last",1,N_("Skin"),N_("Skin file")),36),
+    SLIDE("qt-background-blur-radius",1,N_("Appearance"),N_("Background blur"),0,100,25),
     PREF("embedded-video",1,N_("Window"),N_("Play video inside main window")),
     EDIT("qt-video-autoresize",1,N_("Window"),N_("Resize window to fit video"),Policy,"Never|Fit video within the screen"),
     withoutInformation(PREF("qt-remember-window",1,N_("Window"),N_("Remember window size and position"))),

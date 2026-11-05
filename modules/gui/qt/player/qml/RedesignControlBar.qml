@@ -25,7 +25,7 @@ T.Pane {
     onForceUnlock:{subtitles.close();audio.close();settings.close();subtitleMatching.close();playbackMenu.close()}
     implicitHeight:PlayerStyle.px(54)+timelineHeight;padding:0;hoverEnabled:true;enabled:visible
     Accessible.name:qsTr("Player controls");AccessibleCompat.id:"playerControlBar"
-    background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(50);color:PlayerStyle.chrome}
+    background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(PlayerStyle.backgroundBlurRadius);color:PlayerStyle.chrome}
     function restoreFocus(){if(lastInvoker)lastInvoker.forceActiveFocus(Qt.PopupFocusReason)}
     function activate(key,invoker){
         lastInvoker=invoker

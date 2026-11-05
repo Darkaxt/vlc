@@ -1044,6 +1044,7 @@ void PrefsDialog::updateReferenceDependencies()
     enabled("qt-notification-duration",tray && draftValue("qt-notification").toInt()!=NOTIFICATION_NEVER);
     enabled("mouse-hide-timeout",draftValue("qt-controls-visibility").toInt()!=2);
     enabled("qt-fs-sensitivity",draftValue("qt-fs-controller").toBool());
+    enabled("qt-background-blur-radius",draftValue("qt-backdrop-blur").toBool());
     enabled("mmdevice-volume",!draftValue("volume-save").toBool());
     enabled("effect-width",!draftValue("qt-visualization-fit").toBool());
     enabled("effect-height",!draftValue("qt-visualization-fit").toBool());
@@ -1842,8 +1843,34 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
             key == "freetype-opacity" || key == "freetype-background-opacity" ? 100.0/255.0 :
             key == "mouse-hide-timeout" || key == "qt-notification-duration" ||
             key == "qt-shortcut-feedback-duration" || key == "video-title-timeout" ? 0.001 : 1.0;
-        const QString suffix = scale==0.1 || scale==0.001 ? qtr(" s") :
+        const QString suffix = key=="qt-background-blur-radius" ? qtr(" px") :
+            scale==0.1 || scale==0.001 ? qtr(" s") :
             scale!=1 || key=="qt-max-volume" ? qtr(" %") : QString();
+        if (key == "qt-background-blur-radius")
+        {
+            auto *amount = new QSpinBox(editor);
+            amount->setObjectName("value-qt-background-blur-radius-pixels");
+            amount->setAccessibleName(qtr("Background blur radius"));
+            amount->setRange(int(entry.minimum),int(entry.maximum));
+            amount->setSuffix(suffix);
+            amount->setAlignment(Qt::AlignLeft);
+            amount->setButtonSymbols(QAbstractSpinBox::NoButtons);
+            amount->setKeyboardTracking(false);
+            amount->setFixedSize(100,36);
+            auto *amountRow = new QHBoxLayout;
+            amountRow->addStretch();
+            amountRow->addWidget(amount);
+            layout->addLayout(amountRow);
+            auto syncAmount = [amount,key](const QString &updated,const QVariant &value) {
+                if (updated != key) return;
+                const QSignalBlocker blocker(amount);
+                amount->setValue(value.toInt());
+            };
+            syncAmount(key,draftValue(key));
+            connect(this,&PrefsDialog::draftChanged,row,syncAmount);
+            connect(amount,qOverload<int>(&QSpinBox::valueChanged),row,
+                [this,key](int value) { stageValue(key,qlonglong(value)); });
+        }
         auto *slider = new SettingsSlider(editor);
         slider->setObjectName("value-" + viewKey);
         slider->setAccessibleName(label->text());
@@ -2070,6 +2097,7 @@ void PrefsDialog::addReferenceRow(QVBoxLayout *form, const PreferencesCatalog::R
     }
     int height=32;
     if(mode=="startup-volume")height=78;
+    else if(key=="qt-background-blur-radius")height=101;
     else if(entry.editor==Editor::Slider)
         height=entry.category==5 && QLatin1String(entry.group)==QLatin1String("Picture") ? 32 : entry.editorHeight ? entry.editorHeight : 57;
     else if(entry.editor==Editor::Policy || entry.editor==Editor::Choice)

@@ -22,6 +22,7 @@
 
 #include "win32windoweffects_module.hpp"
 #include "windoweffects_module.hpp"
+#include <vlc_configuration.h>
 
 #include <QOperatingSystemVersion>
 #include <QWindow>
@@ -206,7 +207,8 @@ class ContentBackdrop final : public QObject
             const float radius = m_window->property("redesignBackdropRadius").toFloat() * dpr;
             if (SUCCEEDED(hr)) hr = m_thumbnailVisual->SetOffsetX(float(sourceOrigin.x-targetOrigin.x));
             if (SUCCEEDED(hr)) hr = m_thumbnailVisual->SetOffsetY(float(sourceOrigin.y-targetOrigin.y));
-            if (SUCCEEDED(hr)) hr = m_blur->SetStandardDeviation(25.f*dpr);
+            const float sigma = qBound(0,int(config_GetInt("qt-background-blur-radius")),100)*dpr/2.f;
+            if (SUCCEEDED(hr)) hr = m_blur->SetStandardDeviation(sigma);
             if (SUCCEEDED(hr)) hr = m_clip->SetLeft(0.f);
             if (SUCCEEDED(hr)) hr = m_clip->SetTop(0.f);
             if (SUCCEEDED(hr)) hr = m_clip->SetRight(float(rect.right));
@@ -228,7 +230,7 @@ class ContentBackdrop final : public QObject
                 {QStringLiteral("source_pid"), quint32(sourcePid)},
                 {QStringLiteral("source_native_id"), QString::number(quintptr(source),16)},
                 {QStringLiteral("source_class"), QString::fromLatin1(m_source->metaObject()->className())},
-                {QStringLiteral("sigma_px"),25.f*dpr},
+                {QStringLiteral("sigma_px"),sigma},
                 {QStringLiteral("radius_px"),radius},
                 {QStringLiteral("width_px"),int(rect.right)},{QStringLiteral("height_px"),int(rect.bottom)},
                 {QStringLiteral("hresult"),quint32(hr)},

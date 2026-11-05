@@ -637,6 +637,9 @@ vlc_module_begin ()
     add_bool( "qt-close-to-system-tray", false, HIDE_WINDOW_ON_CLOSE_TEXT, HIDE_WINDOW_ON_CLOSE_LONGTEXT )
 
     add_bool( "qt-backdrop-blur", true, BACKDROP_BLUR_FILTER_TEXT, BACKDROP_BLUR_FILTER_LONGTEXT )
+    add_integer_with_range( "qt-background-blur-radius", 50, 0, 100,
+        N_( "Background blur" ),
+        N_( "Background blur radius in logical pixels for menus and panels. Zero keeps backgrounds unblurred; 50 matches the original design. Changes apply after saving without restarting." ) )
 
     add_bool( "qt-pip-mode", true, PIP_MODE_TEXT, PIP_MODE_LONGTEXT )
 

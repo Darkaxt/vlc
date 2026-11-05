@@ -1,5 +1,14 @@
 # Windows x64 reproduction and recovery
 
+5 November1.1.6 continuation: retain normal run38's objects/toolchain and seed a
+fresh incomplete split-symbol manifest with its411 verified unchanged mappings.
+Exclude the six regenerated app/Qt mappings; preserve the complete417-entry old
+manifest. A complete manifest is an immutable recovery input, not an incremental
+writer destination. Keep manually launched reviews in their own package copy:
+Windows uses the adjacent portable directory, so launching the canonical package
+pollutes later empty-profile qualification. Native acceptance clones a pristine
+package; preserve the earlier prelaunch failure and active review profile.
+
 5 November auxiliary-host correction: normal213/run0036 completed the normal
 player/assembly0. Its controller then closed1 at the terminal retained-manifest
 assertion; preserve its original report and the separate provenance reconciliation,

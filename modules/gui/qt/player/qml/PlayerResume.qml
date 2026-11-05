@@ -19,7 +19,7 @@ T.Pane {
     Accessible.role: Accessible.Dialog
     background: Rectangle {
         objectName: "playerVideoBackdrop"
-        readonly property real backgroundBlurRadius: PlayerStyle.px(50)
+        readonly property real backgroundBlurRadius: PlayerStyle.px(PlayerStyle.backgroundBlurRadius)
         color: Qt.rgba(0.0966796875, 0.0966796875, 0.0966796875, 0.95)
         radius: PlayerStyle.px(16)
     }

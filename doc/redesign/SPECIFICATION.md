@@ -4,6 +4,18 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+5 November final delivery instruction: publish normal release1.1.6 now with the
+current M4 fixes and Interface blur control. The user explicitly declines more
+manual review of minor UI details and accepts the higher-priority repairs already
+reviewed. Supersede the unreleased1.1.5 delivery target. Further manual Settings,
+context/submenu and both-engine panel review, including Record's corrected icon
+and blur-degree tuning, is waived for this delivery; do not claim those new pixels
+were manually accepted. Retain the existing composed evidence under its original
+source identity, verify the coherent optimized package, runtime identities,
+VLC/MPV/DV presentation and lifecycle, then publish and independently verify all
+four assets. This changes the release acceptance boundary, not playback safety,
+profile preservation, licensing, provenance or execution/resource requirements.
+
 **M4 settings/menu parity, authorized 2 November 2026:** implement the complete
 thirteen-category review at
 `D:/VLC-Redesign/verification/settings-parity-20261102/settings-parity-review.json`.
@@ -119,6 +131,22 @@ volume. Escape, clicking elsewhere outside the panel/control bar, selecting a
 different panel, and clicking the gear again still dismiss it. Playback state
 must not be changed merely by opening, retaining or closing the panel. Verify
 the real pointer and keyboard paths in both engines.
+
+R87 (M4), authorized5 November2026: add Background blur to Interface settings.
+Use a native integer preference from0 to100 logical pixels, default50, preserving
+the existing Figma blur strength. Provide the degree as an editable numeric value
+and slider. Save applies it without restarting to Settings, native menus/submenus,
+Qt Quick panels and library popups in both engines; retain it after restart.
+Zero removes blur while preserving the existing surface tint and rounded clip.
+Cancel and failed Save retain the previously applied value. Follow the native
+shared draft/save/reset route, and do not change Windows transparency settings.
+
+5 November actual Record-icon rejection (R84): the current normala8 candidate
+still paints magenta. The SVG contains#f0f while the existing palette substitution
+matches#FF00FF. Calling that substitution is insufficient evidence. Normalize the
+source placeholder without changing the shape, then verify actual native icon
+pixels and the composed context menu before release. Prior widget/menu results
+that did not inspect Record icon pixels do not satisfy this criterion.
 
 Actual overlay review,4 November2026: Settings and the native root context menu
 now show content blur and clean corners in the current review. The player-settings

@@ -1,9 +1,40 @@
 # VLC redesign stages and reconciliation
 
+**5 November delivery instruction: target1.1.6.** The user requests full
+publication now and declines further minor-UI review. Finish the current coherent
+Record/blur-degree delta, bump the packaged application identity, run automated
+release/native presentation checks, and publish one normal1.1.6 release with all
+four assets and independent delivery verification. New manual UI review is
+explicitly waived, not falsely recorded as passed. Earlier composed evidence
+retains its actual source identity. M4 remains the only ACTIVE stage until final
+delivery/retention verification completes;1.1.5 remains an unpublished candidate.
+
 **M4 Settings and menu parity: ACTIVE (2 November 2026).** User authorized
 implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
+
+**5 November current repair (R83-R87): ACTIVE.** Normala8 compilation/linking
+succeeded in214/run37; its completed-symbol-manifest guard failed before symbol
+processing. Exact411 unchanged mappings were verified and seeded in a new symbol
+directory. Symbol-only215/run38 completed0 without a compiler/linker, with417
+stripped mappings and group-empty/mount-release evidence. The eight artifact/native
+qualification checks passed. User-launched normal Settings now visibly shows
+content blur and smooth corners, but its context Record icon is still magenta:
+the SVG's#f0f token does not match the colorizer's#FF00FF contract. Preserve that
+actual rejection and repair the asset; strengthen native icon-pixel acceptance.
+The user also authorized R87's Interface blur-degree control. Finish both in one
+cohesive change before any further build. Verify0/default50/100, Cancel, Save,
+restart and both rendering paths; reuse unchanged evidence honestly. M4 remains
+the only ACTIVE stage, and1.1.5 is unpublished.
+
+The resumed SDR placement verifier stopped before launching: the user review
+created portable/vlc/vlc-qt-interface.ini beside its executable, so the package
+clone's empty-profile assertion correctly rejected it. Preserve the live review
+and its profile. Subsequent native qualification must clone a pristine extraction
+of the verified ZIP, never a currently running review directory. Original failed
+preflight and earlier completed checks remain evidence; no placement proof or
+actual-picture clearance was produced by that preflight.
 
 **5 November current continuation (R83-R86): ACTIVE.** Source `80a891c4`
 passed the combined native menu/engine/transport and sidebar workflows in both
@@ -353,7 +384,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Source80a891 combined native menu/engine/transport and sidebar workflows pass; MPV identity and restored VLC accent inspected. Guarded earlier Settings100/150/200%, idle, input and playback evidence remains applicable. Normal213 pipeline0 and417 stripped mappings verified; source/package/native VLC checks pass for their recorded normal output. README credits present. | Repair/verify acrylic helper owner-bound placement and cloak-before-show; fresh exact-package SDR/P5 placement/presentation and actual Settings/context/submenu/panel blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. Failed826 and normal213 SDR placement remain historical failures. | None. |
+| M4 Settings and menu parity | ACTIVE | Source80a891 combined native menu/engine/transport and sidebar workflows pass; MPV identity and restored custom VLC accent inspected. Normala8 Settings composed blur/corners inspected; its eight artifact/native checks passed. README credits present. Earlier unchanged evidence retains its actual producer identities. | Record icon actual pixels remain rejected; implement and verify R87 Interface blur degree0/50/100, Save/Cancel/restart and both engines. Fresh pristine-package SDR/P5 placement/presentation, actual context/submenu and both-engine panel pictures, final1.1.5 release, independent delivery and retained/weekly binding remain required. Failed runs/preflights remain historical failures. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

@@ -33,6 +33,11 @@ def check_settings_layout(snapshot, category, *, compact):
             # Their QWidget wrapper is sized by that child layout. Acceptance
             # concerns its rendered47px height, not QWidget's min/max mechanism.
             assert editor['height']==47,('Reference Interface slider group height',identity,editor['height'],47)
+        elif identity=='editor-qt-background-blur-radius':
+            # Authorized Interface extension: 36px value, 8px gap, 32px slider,
+            # 8px gap and 17px endpoint labels. Original rows stay unchanged.
+            assert editor['minimum_height']==editor['height']==editor['maximum_height']==101, (
+                'Background blur value/slider group height',editor)
         else:
             assert editor['minimum_height']==editor['height']==editor['maximum_height'], (
                 'Stylesheet changed the fixed reference field height',identity,
