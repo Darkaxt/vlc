@@ -1,5 +1,7 @@
 # VLC redesign stages and reconciliation
 
+**M4: COMPLETE — normal1.1.6 delivered and independently verified.** Tag `redesign-v1.1.6` binds application source `bf45ca9748427279b08b995755c52f164f78e60d`. Current VLC/MPV SDR/P5 presentation, safe placement, foreground/lifecycle, all417 stripped mappings, four downloaded assets, retained/weekly binding and exact obsolete-output cleanup pass. The user explicitly waived additional manual review of minor UI details; no new Record/control pixels are claimed manually accepted. R83–R87 reconcile under that authorized release boundary. [Evidence](resources/m4-1.1.6-verification.json). Blockers0; tracked deferrals0. S8 remains COMPLETE; S9 remains NOT STARTED. Historical checkpoints below retain their original meaning.
+
 **5 November delivery instruction: target1.1.6.** The user requests full
 publication now and declines further minor-UI review. Finish the current coherent
 Record/blur-degree delta, bump the packaged application identity, run automated
@@ -384,7 +386,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE | Source80a891 combined native menu/engine/transport and sidebar workflows pass; MPV identity and restored custom VLC accent inspected. Normala8 Settings composed blur/corners inspected; its eight artifact/native checks passed. README credits present. Earlier unchanged evidence retains its actual producer identities. | Record icon actual pixels remain rejected; implement and verify R87 Interface blur degree0/50/100, Save/Cancel/restart and both engines. Fresh pristine-package SDR/P5 placement/presentation, actual context/submenu and both-engine panel pictures, final1.1.5 release, independent delivery and retained/weekly binding remain required. Failed runs/preflights remain historical failures. | None. |
+| M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

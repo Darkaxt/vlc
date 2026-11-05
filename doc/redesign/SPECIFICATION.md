@@ -4,6 +4,8 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**M4 delivery reconciliation: COMPLETE.** Normal [1.1.6](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.6) from `bf45ca9748427279b08b995755c52f164f78e60d` is independently verified. [Reconciliation](resources/m4-1.1.6-verification.json) records current native/artifact evidence, retained original UI producers and the explicit one-release waiver of further manual minor-UI review. R83–R87 close under that authorized acceptance boundary; blockers and required deferrals are zero.
+
 5 November final delivery instruction: publish normal release1.1.6 now with the
 current M4 fixes and Interface blur control. The user explicitly declines more
 manual review of minor UI details and accepts the higher-priority repairs already

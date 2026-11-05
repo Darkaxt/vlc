@@ -1,0 +1,43 @@
+{
+  "stage": "M4",
+  "status": "COMPLETE",
+  "version": "1.1.6",
+  "source_commit": "bf45ca9748427279b08b995755c52f164f78e60d",
+  "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.6",
+  "upstream_commit": "8a47770f6333df6b60181329db5fdaad318bdb44",
+  "requirements": {
+    "R83": "Reviewed settings/menu repairs retained with their original evidence producers; current normal placement/composition lifecycle passes.",
+    "R84": "Current normal package/native presentation and independently downloaded assets verified; user waived further manual review of minor UI details.",
+    "R85": "Source80 native VLC/MPV identity/accent acceptance retained; normal current MPV runtime verified.",
+    "R86": "Source80 native transport/panel ownership acceptance retained; production path unchanged.",
+    "R87": "Interface blur0..100/default50 ships through native shared draft/Save/Cancel and both rendering paths; further manual control/pixel review explicitly waived for this release."
+  },
+  "manual_ui_review_waived_by_user": true,
+  "new_manual_ui_pixels_claimed": false,
+  "configured_plugins": 410,
+  "stripped_pe_mappings": 417,
+  "downloaded_hashes": {
+    "Modern-VLC-Fork-1.1.6-win64-portable.zip": "3ae479313a44ce756c7eb9483ee334804b15240581c84a2e5338dd8a1b52b21d",
+    "Modern-VLC-Fork-1.1.6-corresponding-source.tar.gz": "d7f38e451080be64258fec8ef14acd25a378d040fb1d4baa0c6b5b5a5238e5fa",
+    "Modern-VLC-Fork-1.1.6-win64-symbols.zip": "c6d32cef2663e02d74fc229be751bd4f2b8da4fdf209e32f0ca89a930b8ec33e"
+  },
+  "protected_profiles_unchanged": true,
+  "actual_sdr_and_p5_presentation_verified": true,
+  "retained_binding_verified": true,
+  "weekly_schedule_preserved": true,
+  "older_release_entries_retired_tags_preserved": true,
+  "blockers": [],
+  "tracked_deferrals": [],
+  "cleanup": {
+    "transaction_id": "2ea7511519421c27409e2747fb564770",
+    "state": "applied",
+    "deleted_bytes": 42103906109,
+    "result_counts": {
+      "deleted": 180172
+    }
+  },
+  "evidence_directory": "D:\\VLC-Redesign\\releases\\1.1.6\\verification",
+  "build_retention_sha256": "a4ee665071673d099a94f4396ab493627c391ad71981895c88f7b94f0d9f1256",
+  "delivery_verification_sha256": "5fca5efc0e31282ca18267372cb757e7b2b09cb314e65a972a5daa4065fc325c",
+  "refactoring_assessment": "Existing native configuration, palette substitution and rendering owners remain authoritative; no required consolidation or speculative infrastructure remains."
+}

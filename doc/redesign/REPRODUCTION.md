@@ -1,5 +1,7 @@
 # Windows x64 reproduction and recovery
 
+Normal1.1.6 is delivered from `bf45ca9748427279b08b995755c52f164f78e60d`. Canonical `D:/VLC-Redesign/build/windows-x64` runtime/pipeline/source/objects and pinned dependencies passed read-only217/62562fb08c66414f812db083f542be4a after normal216/run39. Use `build-retention.json`, the installed `verify-retained-build-1.1.6.py` and the matching optional1.1.6 symbols ZIP; seed a fresh incomplete symbol manifest for the next incremental writer. Current qualification, original failure evidence, saved isolated profiles and frozen control snapshots are retained at `D:/VLC-Redesign/releases/1.1.6/verification`. Frozen snapshots preserve original paths; they are not installed launchers. Spent D:/Temp native trees, old candidate/control roots and unpublished local1.1.5 were removed through the recorded exact cleanup transaction after consumers exited.
+
 5 November1.1.6 continuation: retain normal run38's objects/toolchain and seed a
 fresh incomplete split-symbol manifest with its411 verified unchanged mappings.
 Exclude the six regenerated app/Qt mappings; preserve the complete417-entry old
