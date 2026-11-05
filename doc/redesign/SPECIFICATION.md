@@ -21,6 +21,13 @@ Preserve explicit VLC/MPV selection and disabled-by-default video window resizin
 Use truthful platform/capability states for platform-specific operations; never
 create a decorative working-looking control or silently substitute another action.
 Correct prototype copy errors such as the duplicated Last.fm username label.
+Auxiliary acrylic-host windows must inherit their owning player window's native
+position and be cloaked before being shown, without accepting focus. A visible
+window-style bit alone does not prove composited pixels; record DWM cloaking for
+diagnosis while preserving the strict offscreen-placement requirement for all
+app-owned windows. Only the separately identified OS input indicator retains its
+existing private-desktop exception. A failed placement never permits another
+input-desktop launch without repair and fresh exact-package private proof.
 Remove the thirteenth main-menu preservation row while retaining the underlying
 VLC commands through an appropriately themed advanced route. Global Settings
 must remain directly reachable from player/library and keyboard. No default

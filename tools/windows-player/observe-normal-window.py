@@ -19,6 +19,9 @@ if a.expected_icon:
     assert a.expected_icon.is_file()
 u = ctypes.WinDLL('user32', use_last_error=True)
 k = ctypes.WinDLL('kernel32', use_last_error=True)
+dwm = ctypes.WinDLL('dwmapi', use_last_error=True)
+dwm.DwmGetWindowAttribute.argtypes = [W.HWND, W.DWORD, W.LPVOID, W.DWORD]
+dwm.DwmGetWindowAttribute.restype = W.LONG
 k.OpenEventW.argtypes = [W.DWORD, W.BOOL, W.LPCWSTR]
 k.OpenEventW.restype = W.HANDLE
 k.SetEvent.argtypes = [W.HANDLE]
@@ -105,11 +108,14 @@ def event(hook, kind, window, object_id, child_id, thread, timestamp):
                     module_path = module_name.value
             finally:
                 k.CloseHandle(native_process)
+        cloaked = W.DWORD()
+        cloak_result = dwm.DwmGetWindowAttribute(window, 14, ctypes.byref(cloaked), ctypes.sizeof(cloaked))
         record = {'pid': pid.value, 'event': kind, 'timestamp': timestamp,
             'class': class_name.value, 'title': title.value,
             'class_module': module_path, 'extended_style': extended,
             'layered_attributes_known': layered, 'alpha': alpha.value if layered else None,
             'layered_flags': layered_flags.value if layered else None,
+            'dwm_cloaked_known': cloak_result >= 0, 'dwm_cloaked': cloaked.value if cloak_result >= 0 else None,
             'visible': bool(u.IsWindowVisible(window)), 'foreground_owner': u.GetForegroundWindow() == window,
             'bounds': [rectangle.left, rectangle.top, rectangle.right, rectangle.bottom]}
         ancestry=[]

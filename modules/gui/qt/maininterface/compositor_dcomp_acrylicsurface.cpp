@@ -319,12 +319,18 @@ try
     vlc_assert(!m_dummyWindow);
     // lDwmpCreateSharedMultiWindowVisual requires a window with disabled live (thumbnail) preview
     // use a hidden dummy window to avoid disabling live preview of main window
-    m_dummyWindow = ::CreateWindowExA(WS_EX_TOOLWINDOW, "STATIC", "dummy", 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
+    RECT ownerRect {};
+    if (!GetWindowRect(hwnd(), &ownerRect))
+        throw DXError("failed to get acrylic owner geometry", HRESULT_FROM_WIN32(GetLastError()));
+    m_dummyWindow = ::CreateWindowExA(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE, "STATIC", "dummy", 0,
+                                    ownerRect.left, ownerRect.top, 0, 0, NULL, NULL, NULL, NULL);
     if (!m_dummyWindow)
         throw DXError("failed to create dummy window",  static_cast<HRESULT>(GetLastError()));
+    // Cloak before showing: the native static control has a nonzero frame even
+    // at zero size, and showing it at the desktop origin exposes that frame.
+    BOOL attr = TRUE;
+    HR(DwmSetWindowAttribute(m_dummyWindow, DWMWA_CLOAK, &attr, sizeof attr), "cloak acrylic host");
     ShowWindow(m_dummyWindow, SW_SHOWNOACTIVATE);
-    int attr = DWM_CLOAKED_APP;
-    DwmSetWindowAttribute(m_dummyWindow, DWMWA_CLOAK, &attr, sizeof attr);
 
     BOOL enable = TRUE;
     WINDOWCOMPOSITIONATTRIBDATA CompositionAttribute{};
@@ -345,6 +351,11 @@ try
 }
 catch (const DXError &err)
 {
+    if (m_dummyWindow)
+    {
+        DestroyWindow(m_dummyWindow);
+        m_dummyWindow = nullptr;
+    }
     msg_Err(m_intf, "failed to create acrylic back host visual: '%s' code: 0x%lX", err.what(), err.code());
     return false;
 }

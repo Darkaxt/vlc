@@ -5,7 +5,30 @@ implementation of the complete thirteen-category live Figma audit. This is the
 only ACTIVE stage; S9 remains NOT STARTED. M2/M3 delivery remains historical
 evidence, not acceptance of the newly identified settings/menu defects.
 
-**4 November current continuation (R83-R86): ACTIVE.** Normal211
+**5 November current continuation (R83-R86): ACTIVE.** Source `80a891c4`
+passed the combined native menu/engine/transport and sidebar workflows in both
+engines. All31 declared video backgrounds were bound before presentation; the
+MPV purple/header emblem and restored custom VLC accent were inspected. Native
+session49106 closed0 and protected profiles remained unchanged. The exact normal
+pipeline213/run0036 completed0; its terminal immediate/original plugin-manifest
+assertion closed the controller1 and was separately reconciled against all417
+stripped PE mappings without changing bytes or repeating compilation.
+
+Normal qualification26288 passed package/source/symbol checks, native VLC with
+and without the library, and fresh private SDR placement. Its actual SDR run
+presented video and closed0 but failed all-window placement: the upstream acrylic
+`Static`/`dummy` helper was observed at `[0,0,6,6]`. Do not repeat that input-desktop
+launch. Source created the helper at the origin, showed it, then cloaked it.
+The owned inactive `acrylic-host-probe` reproduces the origin placement and proves
+that owner-bound placement plus cloaking before ShowWindow succeeds. Its process
+closed0/resources closed, and its desktop never became the input desktop.
+The cohesive repair changes only that helper's production creation/cleanup and
+the passive observer/private placement check; all non-Qt plugin/SDK/MPV inputs
+remain retained. Complete one same-mode incremental normal Qt continuation,
+fresh whole-window SDR/P5 placement/presentation, actual composed menu/panel
+pictures and final1.1.5 delivery. M4 remains ACTIVE; no deferral or second stage.
+
+**4 November paused-overlay diagnosis (R83-R86).** Normal211
 (`66f86108cd684ef7b46ba49cd1baec45`) was scoped-stopped after the actual gear-panel
 capture rejected sharp video under its translucent fill. Its original session
 closes137/group empty/no OOM; retained SDK, QtGui, MPV, codecs and409-plugin cohort
@@ -19,16 +42,16 @@ at `native-player-panel-owned-profile/manual-observation` and
 `panel-swapchain-probe/{paused-resize,early-bound}` in the existing D: task root.
 Source now materializes the declared QML backgrounds and prebinds their native
 copies before the vout's first presentation, retaining hidden instances instead
-of allocating by currently visible ordinal. This is not yet native acceptance.
+of allocating by currently visible ordinal. The combined native pass above now
+covers this lifecycle; actual composed normal blur remains required.
 R85 source uses the unchanged official pinned MPV gradient SVG and the sampled
 reference purple#420042 as an effective accent; stored VLC/custom colors remain
 unchanged. R86 uses Qt's outside-parent dismissal rule with the control bar as
 the gear popup parent: transport retains the panel; Escape/outside/gear/another
 panel dismiss it. The original captured layout root and geometry are preserved.
-Complete the combined affected native/composed workflows, including startup/live
-engine identity, custom-color restoration, paused resize before first menu open,
-and real Play/Pause retention, then finish the normal stripped1.1.5 qualification
-and final delivery. All remain internal acceptance blockers; no deferral applies.
+Startup/live engine identity, custom-color restoration and real Play/Pause
+retention passed in the combined native workflow above. The remaining window,
+actual composed-picture and delivery criteria remain internal acceptance blockers.
 
 **Latest4 November normal826 review: REJECTED.** The user's actual screenshots
 show mismatched native/painted radii with white edge pixels, a slow blank opaque
@@ -330,7 +353,7 @@ presentation and final delivery remain required.
 
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
-| M4 Settings and menu parity | ACTIVE |209/20265f45 menus/submenus/teardown, real WASAPI volume/live handover, Settings100/150/200%, icon and both-engine idle workflows pass for their recorded source. Current category/contact/full-size and idle pictures inspected. Root cause of the new paused-panel failure reproduced separately. README credits present. | R83-R86: affected native/picture acceptance of the prebound backgrounds, MPV theme/logo and retained gear panel; current stripped normal package and fresh safe SDR/P5 placement/presentation; actual Settings/context/submenu/panel blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. Old normal826 review remains rejected. | None. |
+| M4 Settings and menu parity | ACTIVE | Source80a891 combined native menu/engine/transport and sidebar workflows pass; MPV identity and restored VLC accent inspected. Guarded earlier Settings100/150/200%, idle, input and playback evidence remains applicable. Normal213 pipeline0 and417 stripped mappings verified; source/package/native VLC checks pass for their recorded normal output. README credits present. | Repair/verify acrylic helper owner-bound placement and cloak-before-show; fresh exact-package SDR/P5 placement/presentation and actual Settings/context/submenu/panel blur and corners; final1.1.5 publication, independent retrieval, retained/weekly binding and cleanup. Failed826 and normal213 SDR placement remain historical failures. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

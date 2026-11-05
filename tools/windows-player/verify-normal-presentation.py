@@ -300,7 +300,12 @@ if args.mode == 'private':
             and parents[0]['pid']==event['pid']
             and parents[0]['class'] in {'UAC Input Indicator','UAC_InputIndicatorOverlayWnd'}
             and (parents[0]['class_module'] or '').lower()==expected_indicator)
-    checks['only_known_os_indicator_elsewhere'] = all(known_indicator(event) for event in others)
+    def outside_displays(event):
+        left, top, right, bottom = event['bounds']
+        return all(right <= x or left >= r or bottom <= y or top >= b for x, y, r, b in monitors)
+    # Auxiliary app windows are also required to stay offscreen. Only the
+    # independently identified Windows input indicator may occupy another rect.
+    checks['only_known_os_indicator_elsewhere'] = all(outside_displays(event) or known_indicator(event) for event in others)
 if args.mode == 'offscreen':
     checks['actual_picture_presented'] = result['actual_picture_presented']
 if args.mode == 'private-playback':

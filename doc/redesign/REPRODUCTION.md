@@ -1,5 +1,24 @@
 # Windows x64 reproduction and recovery
 
+5 November auxiliary-host correction: normal213/run0036 completed the normal
+player/assembly0. Its controller then closed1 at the terminal retained-manifest
+assertion; preserve its original report and the separate provenance reconciliation,
+not a rewritten success code. Native49106 passed the source80a891 menu/engine/
+transport/sidebar delta. Qualification26288 prepared and verified all three normal
+archives and native VLC checks, then actual SDR presented/EOF/released0 but failed
+all-window placement because `Static`/`dummy` occupied `[0,0,6,6]`. No Default
+relaunch of those bytes is permitted. Its window events identify COMCTL32, and
+the only matching creation is createBackHostVisual's show-before-cloak at0,0.
+
+`acrylic-host-probe/result.json` under the existing D: native root compares both
+creation orders on an owned inactive desktop. Owner-bound creation, nonactivation
+and cloak-before-show pass; the native process/resources close0. Apply that exact
+creation order in the player and preserve the original placement failure. Use a
+same-mode normal-mpv-current continuation: unchanged diagnostic flags permit
+reuse of all other Qt objects, SDK, MPV, codecs and409 plugins. Verify the changed
+helper plus fresh exact-package SDR/P5 placement/presentation before any composed
+review or publication. All earlier producer identities remain explicit.
+
 4 November paused-overlay continuation: normal211 was stopped under its exact
 owned request66f86108cd684ef7b46ba49cd1baec45 after the actual panel rejected blur;
 its final report records exit137, empty Linux group and no max/OOM events.
