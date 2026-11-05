@@ -168,12 +168,12 @@ T.Pane {
         parent: header.parent
         objectName: "redesignMainMenu"
         readonly property bool shown: visible
-        MenuRow { text: qsTr("Open File(s)"); glyph: "file"; shortcutText: "Ctrl + O"; onTriggered: DialogsProvider.simpleOpenDialog() }
-        MenuRow { text: qsTr("Open Folder"); glyph: "folder"; shortcutText: "Ctrl + F"; onTriggered: DialogsProvider.PLOpenDir() }
-        MenuRow { text: qsTr("Open Network Stream"); glyph: "network"; shortcutText: "Ctrl + N"; onTriggered: DialogsProvider.openNetDialog() }
-        MenuRow { text: qsTr("Open Disc"); glyph: "disc"; shortcutText: "Ctrl + D"; onTriggered: DialogsProvider.openDiscDialog() }
-        MenuRow { text: qsTr("Open Capture Device"); glyph: "capture"; shortcutText: "Ctrl + C"; onTriggered: DialogsProvider.openCaptureDialog() }
-        MenuRow { text: qsTr("Convert"); glyph: "convert"; shortcutText: "Ctrl + R"; onTriggered: DialogsProvider.openAndTranscodingDialogs() }
+        MenuRow { text: qsTr("Open File(s)"); glyph: "file"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+O"); onTriggered: DialogsProvider.simpleOpenDialog() }
+        MenuRow { text: qsTr("Open Folder"); glyph: "folder"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+F"); onTriggered: DialogsProvider.PLOpenDir() }
+        MenuRow { text: qsTr("Open Network Stream"); glyph: "network"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+N"); onTriggered: DialogsProvider.openNetDialog() }
+        MenuRow { text: qsTr("Open Disc"); glyph: "disc"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+D"); onTriggered: DialogsProvider.openDiscDialog() }
+        MenuRow { text: qsTr("Open Capture Device"); glyph: "capture"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+C"); onTriggered: DialogsProvider.openCaptureDialog() }
+        MenuRow { text: qsTr("Convert"); glyph: "convert"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+R"); onTriggered: DialogsProvider.openAndTranscodingDialogs() }
         PlayerMenu {
             id: recentMenu
             title: qsTr("Open Recent")
@@ -215,8 +215,8 @@ T.Pane {
         }
         MenuRow { text: qsTr("Keyboard Shortcuts"); glyph: "shortcuts"; onTriggered: DialogsProvider.shortcutsDialog() }
         MenuRow { text: qsTr("Customize Player"); glyph: "customize"; onTriggered: { MainCtx.playerView=true;PlayerCustomization.begin() } }
-        MenuRow { text: qsTr("Settings"); glyph: "settings"; shortcutText: "Ctrl + P"; AccessibleCompat.id: "mainMenuGlobalSettings"; onTriggered: DialogsProvider.prefsDialog() }
-        MenuRow { text: qsTr("About VLC"); glyph: "info"; shortcutText: "Shift + F1"; onTriggered: DialogsProvider.aboutDialog() }
+        MenuRow { text: qsTr("Settings"); glyph: "settings"; shortcutText: MainCtx.interfaceShortcutLabel("Ctrl+P"); AccessibleCompat.id: "mainMenuGlobalSettings"; onTriggered: DialogsProvider.prefsDialog() }
+        MenuRow { text: qsTr("About VLC"); glyph: "info"; shortcutText: MainCtx.interfaceShortcutLabel("Shift+F1"); onTriggered: DialogsProvider.aboutDialog() }
         onAboutToShow: {
             // Menu-generated parent rows keep the same original icon treatment.
             itemAt(6).glyph="recent"

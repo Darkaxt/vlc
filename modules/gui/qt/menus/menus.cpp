@@ -36,6 +36,7 @@
 #include <vlc_interface.h>
 
 #include "menus.hpp"
+#include "util/vlchotkeyconverter.hpp"
 
 #include "maininterface/mainctx.hpp"                     /* View modifications */
 #include "maininterface/mainctx_submodels.hpp"
@@ -113,7 +114,7 @@ QAction *addDPStaticEntry( QMenu *menu,
         action = menu->addAction( text, THEDP, member );
     }
     if( !EMPTY_STR( shortcut ) )
-        action->setShortcut( qfut( shortcut ) );
+        action->setShortcuts(interfaceMenuShortcuts(qfu(shortcut)));
 #ifdef __APPLE__
     action->setMenuRole( role );
 #else
@@ -354,13 +355,13 @@ void VLCMenuBar::ViewMenu(qt_intf_t *p_intf, QMenu *menu)
     /* FullScreen View */
     action = menu->addAction( qtr( "&Fullscreen Interface" ), mi,
             &MainCtx::toggleInterfaceFullScreen );
-    action->setShortcut( QString( "F11" ) );
+    action->setShortcuts(interfaceMenuShortcuts(QStringLiteral("F11")));
     action->setCheckable( true );
     action->setChecked( mi->interfaceVisibility() == QWindow::FullScreen );
 
     /*Minimal View*/
     action = menu->addAction( qtr( "&Minimal View" ) );
-    action->setShortcut(QString( "Ctrl+H" ));
+    action->setShortcuts(interfaceMenuShortcuts(QStringLiteral("Ctrl+H")));
     action->setCheckable( true );
     connect( action, &QAction::triggered, mi, &MainCtx::setMinimalView );
     action->setChecked( mi->isMinimalView() );
@@ -771,7 +772,7 @@ void VLCMenuBar::PopupMenuControlEntries( QMenu *menu, qt_intf_t *p_intf,
 #endif
 
     action = menu->addAction( qfut( I_MENU_GOTOTIME ), THEDP, &DialogsProvider::gotoTimeDialog );
-    action->setShortcut( QKeySequence( "Ctrl+T" ) );
+    action->setShortcuts(interfaceMenuShortcuts(QStringLiteral("Ctrl+T")));
 
     menu->addSeparator();
 }
@@ -849,7 +850,7 @@ QMenu* VLCMenuBar::PopupMenu( qt_intf_t *p_intf, bool show, bool deferSubmenus )
         // Figma 6065:13616: immediate media actions, media submenus, then
         // broader settings. Native builders retain the complete action set.
         PopupMenuPlaylistEntries(menu,p_intf);
-        auto *hide=menu->addAction(qtr("Hide UI\tCtrl+Shift+H"));
+        auto *hide=menu->addAction(qtr("Hide UI")+'\t'+interfaceShortcutSequences(QStringLiteral("Ctrl+Shift+H")).join(QStringLiteral(" / ")));
         connect(hide,&QAction::triggered,p_intf->p_mi,&MainCtx::hidePlayerChromeRequested);
         menu->addSeparator();
         // Opening the context menu must not construct every unused native

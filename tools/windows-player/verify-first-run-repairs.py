@@ -33,7 +33,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['idle', 'welcome', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['idle', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
     help='Resume the closed settings pass after its completed150%% matrix lost the input-desktop preservation check')
@@ -657,6 +657,16 @@ def assert_window_on_desktop(case, snapshot):
         'work': [monitor.work.left,monitor.work.top,monitor.work.right,monitor.work.bottom]})
 
 def welcome():
+    def wizard_capture(case, label, option):
+        case.inspect(label+'-reveal','focus','--target','onboardingShortcut_'+option)
+        result=case.click(label,'onboardingShortcut_'+option,'--capture')
+        assert nodes(result,'onboardingShortcutCapture')[0]['focused']
+        assert not any(w['id'] in ('redesignPreferences','keyInputDialog') for w in result['widgets'])
+        return result
+    def wizard_key(case,label,key,modifiers=0,text=''):
+        result=case.inspect(label,'key','--target','onboardingShortcutCapture','--key',hex(key),'--modifiers',hex(modifiers),'--text',text)
+        assert not any(w['id'] in ('redesignPreferences','keyInputDialog') for w in result['widgets'])
+        return result
     for scale in ('1', '1.5', '2'):
         case = Case('welcome-' + scale.replace('.', ''), scale=scale, welcome=True)
         try:
@@ -699,25 +709,38 @@ def welcome():
                 item=nodes(revealed,'onboardingShortcut_'+option)[0]
                 assert 0<=item['y'] and item['y']+item['height']<=revealed['window']['height']
             if scale == '1':
-                case.inspect('reveal-fullscreen', 'focus', '--target', 'onboardingShortcut_key-toggle-fullscreen')
-                case.click('edit-fullscreen', 'onboardingShortcut_key-toggle-fullscreen')
-                case.inspect('capture-fullscreen', 'widget_key', '--target', 'shortcutCapture', '--key', '0x39', '--modifiers', '0xe000000', '--text', '9')
-                case.native('assign-fullscreen', 'assignShortcut')
-                case.native('save-fullscreen', 'preferencesSave')
-                case.click('unset-browser', 'onboardingShortcut_qt-key-toggle-browser')
-                case.native('unset-browser-key', 'unsetShortcut')
-                case.native('save-unset', 'preferencesSave')
+                wizard_capture(case,'edit-fullscreen','key-toggle-fullscreen')
+                wizard_key(case,'capture-fullscreen',0x39,0xe000000,'9')
+                case.click('assign-fullscreen','onboardingShortcutAssign')
+                wizard_capture(case,'unset-browser','qt-key-toggle-browser')
+                case.click('unset-browser-key','onboardingShortcutUnset')
                 unassigned = case.inspect('unassigned-is-editable')
                 assert any(node['visible'] and node.get('text') == 'Unassigned' for node in unassigned['tree'])
-                case.click('assign-unassigned-browser', 'onboardingShortcut_qt-key-toggle-browser')
-                case.inspect('capture-browser', 'widget_key', '--target', 'shortcutCapture', '--key', '0x38', '--modifiers', '0xe000000', '--text', '8')
-                case.native('assign-browser', 'assignShortcut')
-                case.native('save-browser', 'preferencesSave')
-                case.click('conflicting-browser', 'onboardingShortcut_qt-key-toggle-browser')
-                conflict = case.inspect('conflict-fullscreen', 'widget_key', '--target', 'shortcutCapture', '--key', '0x39', '--modifiers', '0xe000000', '--text', '9')
-                assert any(widget['id'] == 'keyConflictWarning' and widget.get('text') for widget in conflict['widgets'])
-                case.native('cancel-conflict', 'cancelShortcut')
-                case.native('cancel-draft', 'preferencesCancel')
+                wizard_capture(case,'assign-unassigned-browser','qt-key-toggle-browser')
+                conflict=wizard_key(case,'capture-stream-conflict',0x53,0x4000000,'s')
+                assert 'Stream' in nodes(conflict,'onboardingShortcutConflict')[0]['text']
+                assert nodes(conflict,'onboardingShortcutAssign')[0]['text']=='Reassign'
+                case.click('reassign-stream-to-browser','onboardingShortcutAssign')
+                wizard_capture(case,'assign-browser','qt-key-toggle-browser')
+                wizard_key(case,'capture-browser',0x38,0xe000000,'8')
+                case.click('assign-browser','onboardingShortcutAssign')
+                wizard_capture(case,'conflicting-browser','qt-key-toggle-browser')
+                conflict=wizard_key(case,'conflict-fullscreen',0x39,0xe000000,'9')
+                assert nodes(conflict,'onboardingShortcutConflict')[0]['text']
+                case.click('cancel-conflict','onboardingShortcutCancel')
+                wizard_capture(case,'escape-capture','qt-key-toggle-browser')
+                wizard_key(case,'escape-cancels-only-capture',0x1000000)
+                unchanged=case.inspect('wizard-still-open')
+                assert unchanged['customization']['onboardingVisible']
+                assert not nodes(unchanged,'onboardingShortcutCapture')
+            else:
+                wizard_capture(case,'keyboard-cancel','key-toggle-fullscreen')
+                wizard_key(case,'modifier-only',0x1000021,0x4000000)
+                wizard_key(case,'tab-to-unset',0x1000001)
+                case.inspect('tab-to-cancel','key','--key','0x1000001')
+                cancelled=case.inspect('keyboard-cancel','key','--key','0x1000004')
+                assert cancelled['customization']['onboardingVisible']
+                assert not nodes(cancelled,'onboardingShortcutCapture')
             case.click('finish-without-root', 'onboardingNext')
             case.close(True)
             profile = case.path / 'profile'
@@ -732,6 +755,9 @@ def welcome():
                 assert not result['customization']['onboardingVisible']
                 assert not result['library']['indexing']
                 if scale == '1':
+                    config_file=next(profile.rglob('vlcrc'))
+                    saved_config=config_file.read_text(encoding='utf-8')
+                    assert re.search(r'^qt-key-stream=$',saved_config,re.M), 'Explicit reassignment must remove Stream binding'
                     drop_fixture(restarted,'shortcut-playback','control.mkv')
                     restarted.inspect('shortcut-key-focus','focus','--target','playButton')
                     restarted.inspect('saved-fullscreen-shortcut','key','--key','0x39','--modifiers','0xe000000','--text','9',
@@ -748,6 +774,34 @@ def welcome():
                 restarted.close(True)
             finally: restarted.close()
         finally: case.close()
+    cancelled=Case('wizard-failed-save-cancel',welcome=True,reused_profile=profile,extra=('--qt-privacy-ask',))
+    try:
+        cancelled.inspect('welcome-ready')
+        cancelled.click('theme-page','onboardingNext')
+        cancelled.click('font-page','onboardingNext')
+        cancelled.inspect('font-fallback-focus','focus','--target','onboardingFontFallback')
+        cancelled.click('shortcuts','onboardingFontFallback')
+        wizard_capture(cancelled,'edit-before-failure','key-toggle-fullscreen')
+        wizard_key(cancelled,'capture-before-failure',0x53,0x4000000,'s')
+        cancelled.click('stage-reassignment','onboardingShortcutAssign')
+        config=next(portable.rglob('vlcrc'))
+        original=cancelled.path/'vlcrc-before-failed-save'
+        config.rename(original)
+        config.mkdir()
+        try:
+            failed=cancelled.click('failed-finish','onboardingNext')
+            assert failed['customization']['onboardingVisible']
+            assert nodes(failed,'onboardingStatus')[0]['text']
+        finally:
+            config.rename(cancelled.path/'blocked-vlcrc-directory')
+            original.rename(config)
+        cancelled.inspect('cancel-setup-after-failure','key','--key','0x1000000')
+        cancelled.close(True)
+        text=next((cancelled.path/'profile').rglob('vlcrc')).read_text(encoding='utf-8')
+        assert not re.search(r'^qt-key-stream=$',text,re.M)
+        assert not re.search(r'^key-toggle-fullscreen=Ctrl\+s$',text,re.M|re.I)
+    finally: cancelled.close()
+    if args.case=='onboarding-shortcuts':return
     skipped = Case('skip-empty', welcome=True)
     try:
         skipped.inspect('welcome-ready')
@@ -766,6 +820,45 @@ def welcome():
         skipped.record['busy_to_idle_observed']=True
         skipped.close(True)
     finally: skipped.close()
+
+
+def interface_shortcuts():
+    case=Case('interface-shortcuts')
+    try:
+        case.inspect('library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
+        case.inspect('shortcut-menu','click','--name','Main menu')
+        case.inspect('open-shortcuts','click','--name','Keyboard Shortcuts')
+        case.native('search-focus','keyboardShortcutsSearch')
+        case.inspect('search-ctrl-s','widget_key','--target','keyboardShortcutsSearch','--key','0','--text','Ctrl+S')
+        case.native('filtered-table-focus','keyboardShortcutsTable')
+        result=case.inspect('filtered-interface-rows','widget_key','--target','keyboardShortcutsTable','--key','0x1000011','--capture')
+        assert any(row['columns'][0]=='Stream' for row in widget(result,'keyboardShortcutsTable')['rendered_rows'])
+        case.native('search-again','keyboardShortcutsSearch')
+        case.inspect('select-search','widget_key','--target','keyboardShortcutsSearch','--key','0x41','--modifiers','0x4000000')
+        case.inspect('search-stream','widget_key','--target','keyboardShortcutsSearch','--key','0','--text','Stream')
+        case.native('table-focus','keyboardShortcutsTable')
+        case.inspect('select-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000010')
+        opened=case.inspect('edit-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000004')
+        assert widget(opened,'shortcutCapture')
+        cancelled=case.inspect('cancel-standalone-capture','widget_key','--target','shortcutCapture','--key','0x1000000')
+        assert not any(w['id']=='keyInputDialog' for w in cancelled['widgets'])
+        case.inspect('edit-stream-again','widget_key','--target','keyboardShortcutsTable','--key','0x1000004')
+        case.inspect('new-stream-binding','widget_key','--target','shortcutCapture','--key','0x37','--modifiers','0xe000000','--text','7')
+        case.native('assign-stream','assignShortcut')
+        case.native('save-stream','preferencesSave')
+        case.close(True)
+        profile=case.path/'profile'
+        assert re.search(r'^qt-key-stream=Ctrl\+Alt\+Shift\+7$',next(profile.rglob('vlcrc')).read_text(encoding='utf-8'),re.M)
+        restarted=Case('interface-shortcuts-restart',reused_profile=profile)
+        try:
+            restarted.inspect('restart-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
+            result=restarted.inspect('real-stream-dispatch','key','--key','0x37','--modifiers','0xe000000','--text','7','--capture')
+            opened=[w for w in result['widgets'] if w['type']=='OpenDialog']
+            assert len(opened)==1 and 'Stream' in opened[0].get('window_title',''), opened
+            restarted.inspect('cancel-stream','widget_key','--node',str(opened[0]['node']),'--key','0x1000000')
+            restarted.close(True)
+        finally: restarted.close()
+    finally: case.close()
 
 def playback():
     for engine in ('vlc','mpv'):
@@ -1705,6 +1798,8 @@ def settings():
             for key in re.findall(r'\badd_key\(\s*"([^"]+)"',native_source):
                 declared_shortcuts.update((key,'global-'+key))
             declared_shortcuts.update(re.findall(r'add_string_inner\(\s*CONFIG_ITEM_KEY\s*,\s*"([^"]+)"',native_source))
+        catalog=subprocess.check_output(['git','-C',str(repo),'show',records['source_commit']+':modules/gui/qt/util/vlchotkeyconverter.hpp'],text=True)
+        declared_shortcuts.update('qt-key-'+key for key in re.findall(r'^\s*X\("([^"]+)"',catalog,re.M))
         shortcut_keys=keys & declared_shortcuts
         count=widget(browser,'preferencesResults')['model_count']
         assert count==len(keys-shortcut_keys),('Native non-shortcut option coverage',count,len(keys),sorted(shortcut_keys))
@@ -2192,7 +2287,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue
@@ -2209,8 +2304,9 @@ try:
         if args.case=='integration-diagnostic':
             if name not in ('welcome','playback','subtitles'):continue
             if name=='subtitles':operation=lambda:subtitles(False)
+        if args.case=='onboarding-shortcuts' and name not in ('welcome','shortcuts'):continue
         if name=='seek-policy' and args.case!='seek-policy':continue
-        if args.case not in ('all','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction','settings-survey',name): continue
+        if args.case not in ('all','onboarding-shortcuts','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction','settings-survey',name): continue
         try:
             operation()
         except Exception as failure:

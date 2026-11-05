@@ -17,9 +17,23 @@ T.Popup {
     property string accent: "default"
     property bool fontFinishing: false
     property int shortcutRevision: 0
+    property string editingShortcut: ""
+    property string editingCaption: ""
+    property string candidateShortcut: ""
+    property var candidateConflicts: []
+    property Item shortcutReturnItem: null
     Connections {
-        target: DialogsProvider
-        function onPrefsDialogVisibleChanged() { dialog.shortcutRevision++ }
+        target: MainCtx
+        function onOnboardingShortcutsChanged() { dialog.shortcutRevision++ }
+    }
+    function editShortcut(option,caption,item) {
+        editingShortcut=option;editingCaption=caption;candidateShortcut="";candidateConflicts=[]
+        shortcutReturnItem=item
+        shortcutCapture.forceActiveFocus()
+    }
+    function closeShortcutCapture() {
+        editingShortcut=""
+        if(shortcutReturnItem)shortcutReturnItem.forceActiveFocus()
     }
     function cancelFont() {
         fontFinishing=false
@@ -68,6 +82,7 @@ T.Popup {
     visible: PlayerCustomization.onboardingVisible
     enabled: !PlayerCustomization.onboardingSaving
     onOpened: {
+        editingShortcut=""
         page=0
         theme=PlayerCustomization.onboardingOriginal.theme
         accent=PlayerCustomization.onboardingOriginal.accent
@@ -92,6 +107,7 @@ T.Popup {
     component SetupButton: PlayerSetupButton { fontPixelSize: 16 }
     contentItem: Item {
         Keys.onEscapePressed: event=>{
+            if(dialog.editingShortcut!==""){dialog.closeShortcutCapture();event.accepted=true;return}
             dialog.cancelFont()
             PlayerCustomization.closeOnboarding(false,dialog.theme,dialog.accent,"")
             event.accepted=true
@@ -307,7 +323,7 @@ T.Popup {
                                     T.Button {
                                         id: shortcutButton
                                         readonly property string option: bindingRow.modelData
-                                        readonly property string bindingLabel: {dialog.shortcutRevision;return MainCtx.shortcutLabel(option)}
+                                        readonly property string bindingLabel: {dialog.shortcutRevision;return MainCtx.onboardingShortcutLabel(option)}
                                         readonly property var faces: dialog.keyFaces(bindingLabel)
                                         implicitWidth: keyFacesRow.implicitWidth
                                         implicitHeight: PlayerStyle.px(48)
@@ -317,7 +333,7 @@ T.Popup {
                                         Accessible.name: qsTr("Assign %1: %2").arg(shortcutRow.modelData.label).arg(bindingLabel)
                                         AccessibleCompat.id: "onboardingShortcut_"+option
                                         onActiveFocusChanged: if(activeFocus)body.reveal(shortcutButton)
-                                        onClicked: DialogsProvider.editShortcut(option)
+                                        onClicked: dialog.editShortcut(option,shortcutRow.modelData.label,shortcutButton)
                                         contentItem: Row {
                                             id:keyFacesRow
                                             spacing:PlayerStyle.px(4)
@@ -458,7 +474,7 @@ T.Popup {
                 }
                 }
                 }
-                Label { visible: dialog.page===2; Layout.fillWidth: true; color:PlayerStyle.sectionForeground;text: qsTr("Find the full list in the menu.") }
+                Label { visible: dialog.page===2; Layout.fillWidth: true; color:PlayerStyle.sectionForeground;text: qsTr("Find the full list in the menu. Shortcut changes apply after restarting VLC.") }
                 Item { visible:dialog.page===0||dialog.page===3;Layout.fillWidth: true }
                 SetupButton { visible: dialog.page>0; enabled:!MainCtx.legacyFont.busy;text: qsTr("Back"); onClicked: { dialog.page=dialog.page===2?3:dialog.page===3?1:0;body.contentY=0 } }
                 SetupButton {
@@ -480,6 +496,73 @@ T.Popup {
             x:PlayerStyle.px(62);anchors.bottom:parent.bottom;anchors.bottomMargin:PlayerStyle.px(12);spacing:PlayerStyle.px(12)
             PlayerSetupButton { text: qsTr("Skip"); fontWeight:Font.Normal; implicitHeight:PlayerStyle.px(24);AccessibleCompat.id: "onboardingSkip"; onClicked: {dialog.cancelFont();PlayerCustomization.closeOnboarding(false,dialog.theme,dialog.accent,"")} }
             PlayerSetupButton { visible:dialog.page===1;text:qsTr("System accent");fontWeight:Font.Normal;implicitHeight:PlayerStyle.px(24);onClicked:{dialog.accent="system";MainCtx.previewAppearance(dialog.theme,dialog.accent)} }
+        }
+        // This is an in-wizard focus scope, never another Popup or native
+        // window. The backdrop intercepts pointer input to the underlying page.
+        FocusScope {
+            id: shortcutEditor
+            anchors.fill: parent
+            visible: dialog.editingShortcut!==""
+            z: 1
+            Keys.onEscapePressed: event=>{dialog.closeShortcutCapture();event.accepted=true}
+            Rectangle { anchors.fill: parent; color: "#b3000000" }
+            MouseArea { anchors.fill: parent; onClicked: shortcutCapture.forceActiveFocus() }
+            Rectangle {
+                anchors.centerIn: parent
+                width: Math.min(parent.width-PlayerStyle.px(40),PlayerStyle.px(640))
+                height: captureLayout.implicitHeight+PlayerStyle.px(48)
+                radius: PlayerStyle.px(14)
+                color: PlayerStyle.panel
+                border.color: PlayerStyle.chrome
+                ColumnLayout {
+                    id: captureLayout
+                    anchors { left:parent.left;right:parent.right;top:parent.top;margins:PlayerStyle.px(24) }
+                    spacing: PlayerStyle.px(16)
+                    Label { Layout.fillWidth:true; text:qsTr("Assign %1").arg(dialog.editingCaption) }
+                    T.Control {
+                        id: shortcutCapture
+                        Layout.fillWidth:true
+                        implicitHeight: PlayerStyle.px(64)
+                        activeFocusOnTab:true
+                        focus:true
+                        AccessibleCompat.id:"onboardingShortcutCapture"
+                        Accessible.name:qsTr("Press a shortcut. Tab reaches Assign, Unset and Cancel; Escape cancels.")
+                        Keys.onShortcutOverride: event=>{event.accepted=true}
+                        Keys.onPressed: event=>{
+                            if(event.key===Qt.Key_Escape){dialog.closeShortcutCapture();event.accepted=true;return}
+                            if(event.key===Qt.Key_Tab||event.key===Qt.Key_Backtab){event.accepted=false;return}
+                            if(event.isAutoRepeat){event.accepted=true;return}
+                            const key=MainCtx.captureOnboardingShortcut(event.key,event.modifiers)
+                            if(key){dialog.candidateShortcut=key;dialog.candidateConflicts=MainCtx.onboardingShortcutConflicts(dialog.editingShortcut,key)}
+                            event.accepted=true
+                        }
+                        background:Rectangle { color:PlayerStyle.chrome;radius:PlayerStyle.px(6);border.width:PlayerStyle.px(2);border.color:shortcutCapture.activeFocus?PlayerStyle.accent:PlayerStyle.chrome }
+                        contentItem:Label { text:dialog.candidateShortcut||qsTr("Press the new key or combination");horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter }
+                    }
+                    Label {
+                        Layout.fillWidth:true
+                        visible:dialog.candidateConflicts.length>0
+                        AccessibleCompat.id:"onboardingShortcutConflict"
+                        text:qsTr("Already assigned to %1. Reassign to move this shortcut here, or choose another combination.").arg(dialog.candidateConflicts.join(", "))
+                    }
+                    RowLayout {
+                        Layout.fillWidth:true
+                        spacing:PlayerStyle.px(8)
+                        SetupButton {
+                            text:qsTr("Unset");AccessibleCompat.id:"onboardingShortcutUnset"
+                            onClicked:if(MainCtx.stageOnboardingShortcut(dialog.editingShortcut,"",false))dialog.closeShortcutCapture()
+                        }
+                        Item { Layout.fillWidth:true }
+                        SetupButton { text:qsTr("Cancel");AccessibleCompat.id:"onboardingShortcutCancel";onClicked:dialog.closeShortcutCapture() }
+                        SetupButton {
+                            text:dialog.candidateConflicts.length?qsTr("Reassign"):qsTr("Assign")
+                            primary:true;enabled:dialog.candidateShortcut!==""
+                            AccessibleCompat.id:"onboardingShortcutAssign"
+                            onClicked:if(MainCtx.stageOnboardingShortcut(dialog.editingShortcut,dialog.candidateShortcut,dialog.candidateConflicts.length>0))dialog.closeShortcutCapture()
+                        }
+                    }
+                }
+            }
         }
     }
 }

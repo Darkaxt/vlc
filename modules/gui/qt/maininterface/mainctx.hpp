@@ -267,6 +267,13 @@ public:
     Q_INVOKABLE QString chooseOnboardingFolder(const QString &current);
     Q_INVOKABLE QString shortcutLabel(const QString &option) const;
     Q_INVOKABLE QStringList queueShortcutSequences() const;
+    Q_INVOKABLE QStringList interfaceShortcutSequences(const QString &original) const;
+    Q_INVOKABLE QString interfaceShortcutLabel(const QString &original) const;
+    Q_INVOKABLE void beginOnboardingShortcuts();
+    Q_INVOKABLE QString onboardingShortcutLabel(const QString &option) const;
+    Q_INVOKABLE QString captureOnboardingShortcut(int key, int modifiers) const;
+    Q_INVOKABLE QStringList onboardingShortcutConflicts(const QString &option, const QString &key) const;
+    Q_INVOKABLE bool stageOnboardingShortcut(const QString &option, const QString &key, bool reassign);
     QObject *legacyFont() const;
     bool onboardingRequested() const { return m_onboardingRequested; }
     Q_INVOKABLE void requestPlayerOnboarding() {
@@ -535,6 +542,7 @@ protected:
     void initializeHotkeyFeedback();
     void feedbackForHotkey(int vlcKey);
     QHash<int, QString> m_shortcutActions;
+    QVariantMap m_onboardingShortcutDraft;
     QSet<int> m_bookmarkKeys;
     QSet<int> m_browserKeys;
     QSet<int> m_queueKeys;
@@ -697,6 +705,7 @@ signals:
     void playerProfileSaveRequested();
     void playerOnboardingRequested();
     void onboardingRequestedChanged();
+    void onboardingShortcutsChanged();
     void playerOnboardingFinished(const QString &error);
     void hidePlayerChromeRequested();
     void hotkeyFeedback(const QString &action, const QString &shortcut, int duration);

@@ -105,6 +105,7 @@ extern "C" char **environ;
 #include <QComboBox>
 #include <QAbstractItemView>
 #include <vlc_modules.h>
+#include "util/vlchotkeyconverter.hpp"
 #include "maininterface/compositor.hpp"
 #include "util/vlctick.hpp"
 #include "util/shared_input_item.hpp"
@@ -651,6 +652,11 @@ vlc_module_begin ()
             N_("Toggle the media browser beside the playing video. Shortcut changes take effect after restarting VLC."), "Ctrl+Shift+f")
     add_string_inner(CONFIG_ITEM_KEY, "qt-key-toggle-queue", N_("Show / Hide Queue"),
             N_("Toggle the playback queue. Shortcut changes take effect after restarting VLC."), "Ctrl+l")
+#define REGISTER_INTERFACE_SHORTCUT(name, label, defaults) \
+    add_string_inner(CONFIG_ITEM_KEY, "qt-key-" name, N_(label), \
+        N_("Interface command shortcut. Changes take effect after restarting VLC."), defaults)
+    VLC_INTERFACE_SHORTCUTS(REGISTER_INTERFACE_SHORTCUT)
+#undef REGISTER_INTERFACE_SHORTCUT
     add_bool("qt-shortcut-feedback", true, N_("Show feedback for shortcuts"),
              N_("Show an on-screen action message when a mapped playback shortcut is pressed."))
     add_bool("qt-shortcut-feedback-key", true, N_("Include the shortcut in feedback"),

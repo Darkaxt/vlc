@@ -422,7 +422,6 @@ class KeySelectorControl : public ConfigControl
 public:
     KeySelectorControl( QWidget * );
     void resetToDefaults() { reset_all(ANY_COL); }
-    void editShortcut(const QString &option);
     void insertInto( QGridLayout*, int row = 0 ) override;
     void doApply() override;
     void storeValue() override {}
@@ -452,7 +451,6 @@ protected:
 
 private:
     void selectKey( KeyTableItem *, enum ColumnIndex );
-    void buildAppHotkeysList( QWidget *rootWidget );
     void finish();
     QLabel *label;
     QLabel *searchLabel;
@@ -460,7 +458,6 @@ private:
     QComboBox *searchOption;
     QLabel *searchOptionLabel;
     QTreeWidget *table;
-    QSet<QString> existingkeys;
 
 private slots:
     void selectKey( QTreeWidgetItem *, int );
@@ -500,7 +497,6 @@ public:
     KeyInputDialog( QTreeWidget *, KeyTableItem *, enum KeySelectorControl::ColumnIndex );
     bool conflicts;
     QString vlckey, vlckey_tr;
-    void setExistingkeysSet( const QSet<QString> *keyset = NULL );
 
 private:
     QTreeWidget *table;
@@ -510,11 +506,10 @@ private:
     enum KeySelectorControl::ColumnIndex column;
     WheelToVLCConverter* wheelConverter;
 
-    void checkForConflicts( const QString &sequence );
+    void checkForConflicts();
     bool event(QEvent *) override;
     void keyPressEvent( QKeyEvent *);
     void wheelEvent( QWheelEvent *);
-    const QSet<QString> *existingkeys;
 
 private slots:
     void unsetAction();

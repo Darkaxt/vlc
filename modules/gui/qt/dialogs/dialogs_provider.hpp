@@ -217,7 +217,6 @@ public slots:
                                               const QMessageBox::Icon icon = QMessageBox::NoIcon);
     void prefsDialog();
     void shortcutsDialog();
-    void editShortcut(const QString &option);
     void firstRunDialog();
     void extendedDialog();
     void synchroDialog();

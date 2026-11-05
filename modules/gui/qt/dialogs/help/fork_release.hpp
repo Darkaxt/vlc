@@ -10,7 +10,7 @@
 #include <QVersionNumber>
 
 namespace ForkRelease {
-inline constexpr char currentVersion[] = "1.1.6";
+inline constexpr char currentVersion[] = "1.1.7";
 inline constexpr char endpoint[] = "https://api.github.com/repos/Darkaxt/vlc/releases/latest";
 struct Release {
     QVersionNumber version;

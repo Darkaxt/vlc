@@ -819,7 +819,16 @@ QString MainCtx::saveCustomizationImpl(const QString &encoded,const QVariantMap 
     const QByteArray oldAccent=oldRaw?QByteArray(oldRaw):QByteArray();free(oldRaw);
     const auto oldAsk=config_GetInt("qt-privacy-ask");
     const bool saveCore=apply||dismissOnboarding;
+    QVariantMap oldShortcuts;
+    if (dismissOnboarding && apply)
+        for (auto it=m_onboardingShortcutDraft.cbegin(); it!=m_onboardingShortcutDraft.cend(); ++it) {
+            char *raw=config_GetPsz(qtu(it.key()));
+            oldShortcuts.insert(it.key(),qfu(raw));free(raw);
+            config_PutPsz(qtu(it.key()),qtu(it.value().toString()));
+        }
     const auto restoreCore=[&](){
+        for (auto it=oldShortcuts.cbegin(); it!=oldShortcuts.cend(); ++it)
+            config_PutPsz(qtu(it.key()),qtu(it.value().toString()));
         if(apply)config_PutPsz("qt-accent-color",oldAccent.constData());
         if(dismissOnboarding)config_PutInt("qt-privacy-ask",oldAsk);
     };
@@ -894,6 +903,71 @@ QStringList MainCtx::queueShortcutSequences() const
     return result;
 }
 
+QStringList MainCtx::interfaceShortcutSequences(const QString &original) const
+{
+    return ::interfaceShortcutSequences(original);
+}
+
+QString MainCtx::interfaceShortcutLabel(const QString &original) const
+{
+    QStringList labels;
+    for (const auto &key : ::interfaceShortcutSequences(original))
+        labels.append(QKeySequence(key).toString(QKeySequence::NativeText).replace("+"," + "));
+    return labels.join(QStringLiteral(" / "));
+}
+
+void MainCtx::beginOnboardingShortcuts()
+{
+    m_onboardingShortcutDraft.clear();
+    emit onboardingShortcutsChanged();
+}
+
+QString MainCtx::onboardingShortcutLabel(const QString &option) const
+{
+    if (!m_onboardingShortcutDraft.contains(option)) return shortcutLabel(option);
+    const auto keys=m_onboardingShortcutDraft.value(option).toString().split('\t',Qt::SkipEmptyParts);
+    return keys.isEmpty()?qtr("Unassigned"):keys.join(QStringLiteral(" / "));
+}
+
+QString MainCtx::captureOnboardingShortcut(int key, int modifiers) const
+{
+    if (key==Qt::Key_unknown || key==Qt::Key_Tab || key==Qt::Key_Backtab ||
+        key==Qt::Key_Shift || key==Qt::Key_Control || key==Qt::Key_Meta ||
+        key==Qt::Key_Alt || key==Qt::Key_AltGr || key==Qt::Key_Escape) return {};
+    QKeyEvent event(QEvent::KeyPress,key,Qt::KeyboardModifiers(modifiers));
+    return VLCKeyToString(qtEventToVLCKey(&event),false);
+}
+
+QStringList MainCtx::onboardingShortcutConflicts(const QString &option, const QString &key) const
+{
+    QStringList result;
+    if (key.isEmpty()) return result;
+    for (const auto &entry : configuredShortcuts()) {
+        if (entry.option==option) continue;
+        const auto keys=m_onboardingShortcutDraft.value(entry.option,entry.keys).toString().split('\t',Qt::SkipEmptyParts);
+        if (std::any_of(keys.cbegin(),keys.cend(),[&key](const QString &value){return shortcutKeysEqual(value,key);}))
+            result.append(entry.action);
+    }
+    return result;
+}
+
+bool MainCtx::stageOnboardingShortcut(const QString &option, const QString &key, bool reassign)
+{
+    const auto entries=configuredShortcuts();
+    if (key.contains('\t') || std::none_of(entries.cbegin(),entries.cend(),[&option](const ConfiguredShortcut &entry){return entry.option==option;})) return false;
+    if (!reassign && !onboardingShortcutConflicts(option,key).isEmpty()) return false;
+    if (reassign && !key.isEmpty())
+        for (const auto &entry : entries) {
+            if (entry.option==option) continue;
+            auto keys=m_onboardingShortcutDraft.value(entry.option,entry.keys).toString().split('\t',Qt::SkipEmptyParts);
+            if (keys.removeIf([&key](const QString &value){return shortcutKeysEqual(value,key);}))
+                m_onboardingShortcutDraft.insert(entry.option,keys.join('\t'));
+        }
+    m_onboardingShortcutDraft.insert(option,key);
+    emit onboardingShortcutsChanged();
+    return true;
+}
+
 void MainCtx::completeRedesignOnboarding(bool finish,const QVariantMap &values,const QString &error,bool folderAdded)
 {
     if(!error.isEmpty()){emit playerOnboardingFinished(error);return;}
@@ -908,6 +982,7 @@ void MainCtx::completeRedesignOnboarding(bool finish,const QVariantMap &values,c
         m_onboardingRequested=false;
         emit onboardingRequestedChanged();
     }
+    if (failure.isEmpty()) beginOnboardingShortcuts();
     emit playerOnboardingFinished(failure);
 }
 

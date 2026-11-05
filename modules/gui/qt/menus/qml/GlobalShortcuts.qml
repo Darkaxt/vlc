@@ -22,36 +22,36 @@ import VLC.Dialogs
 
 Item {
 
-    ShortcutExt{ context: Qt.WindowShortcut; sequence:"Ctrl+O"; onActivated: DialogsProvider.simpleOpenDialog(); }
-    ShortcutExt{ sequence:"Ctrl+Shift+O"; onActivated: DialogsProvider.openFileDialog(); }
-    ShortcutExt{ context: Qt.WindowShortcut; sequence:"Ctrl+F"; onActivated: DialogsProvider.PLOpenDir(); }
-    ShortcutExt{ sequence:"Ctrl+D"; onActivated: DialogsProvider.openDiscDialog(); }
-    ShortcutExt{ sequence:"Ctrl+N"; onActivated: DialogsProvider.openNetDialog(); }
-    ShortcutExt{ sequence:"Ctrl+C"; onActivated: DialogsProvider.openCaptureDialog(); }
-    ShortcutExt{ sequences: [StandardKey.Paste]; onActivated: MainCtx.pasteFromClipboard(); }
-    ShortcutExt{ context: Qt.WindowShortcut; sequence:"Ctrl+Y"; onActivated: DialogsProvider.savePlayingToPlaylist(); }
-    ShortcutExt{ sequence:"Ctrl+R"; onActivated: DialogsProvider.openAndTranscodingDialogs(); }
-    ShortcutExt{ sequence:"Ctrl+S"; onActivated: DialogsProvider.openAndStreamingDialogs(); }
-    ShortcutExt{ sequence:"Ctrl+Q"; onActivated: DialogsProvider.quit(); }
-    ShortcutExt{ sequence:"Ctrl+E"; onActivated: DialogsProvider.extendedDialog(); }
-    ShortcutExt{ sequence:"Ctrl+I"; onActivated: DialogsProvider.mediaInfoDialog(); }
-    ShortcutExt{ sequence:"Ctrl+J"; onActivated: DialogsProvider.mediaCodecDialog(); }
-    ShortcutExt{ sequence:"Ctrl+M"; onActivated: DialogsProvider.messagesDialog(); }
-    ShortcutExt{ sequence:"Ctrl+P"; onActivated: DialogsProvider.prefsDialog(); }
-    ShortcutExt{ sequence:"Ctrl+T"; onActivated: DialogsProvider.gotoTimeDialog(); }
+    ShortcutExt{ context: Qt.WindowShortcut; sequences:MainCtx.interfaceShortcutSequences("Ctrl+O"); onActivated: DialogsProvider.simpleOpenDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+Shift+O"); onActivated: DialogsProvider.openFileDialog(); }
+    ShortcutExt{ context: Qt.WindowShortcut; sequences:MainCtx.interfaceShortcutSequences("Ctrl+F"); onActivated: DialogsProvider.PLOpenDir(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+D"); onActivated: DialogsProvider.openDiscDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+N"); onActivated: DialogsProvider.openNetDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+C"); onActivated: DialogsProvider.openCaptureDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+V"); onActivated: MainCtx.pasteFromClipboard(); }
+    ShortcutExt{ context: Qt.WindowShortcut; sequences:MainCtx.interfaceShortcutSequences("Ctrl+Y"); onActivated: DialogsProvider.savePlayingToPlaylist(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+R"); onActivated: DialogsProvider.openAndTranscodingDialogs(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+S"); onActivated: DialogsProvider.openAndStreamingDialogs(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+Q"); onActivated: DialogsProvider.quit(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+E"); onActivated: DialogsProvider.extendedDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+I"); onActivated: DialogsProvider.mediaInfoDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+J"); onActivated: DialogsProvider.mediaCodecDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+M"); onActivated: DialogsProvider.messagesDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+P"); onActivated: DialogsProvider.prefsDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+T"); onActivated: DialogsProvider.gotoTimeDialog(); }
 
-    ShortcutExt{ sequence:"Ctrl+Shift+W"; onActivated: DialogsProvider.vlmDialog(); }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+Shift+W"); onActivated: DialogsProvider.vlmDialog(); }
 
     ShortcutExt{ sequences:MainCtx.queueShortcutSequences(); onActivated: MainCtx.playqueuePanel.visible = !MainCtx.playqueuePanel.visible; }
 
-    ShortcutExt{ sequence:"F1"; onActivated: DialogsProvider.helpDialog() }
-    ShortcutExt{ sequence:"Shift+F1"; onActivated: DialogsProvider.aboutDialog() }
-    ShortcutExt{ sequence:"F10"; onActivated: MainCtx.toggleToolbarMenu() }
-    ShortcutExt{ sequence:"F11"; onActivated: MainCtx.toggleInterfaceFullScreen() }
-    ShortcutExt{ sequence:"Ctrl+H"; onActivated: MainCtx.minimalView = !MainCtx.minimalView; }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("F1"); onActivated: DialogsProvider.helpDialog() }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Shift+F1"); onActivated: DialogsProvider.aboutDialog() }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("F10"); onActivated: MainCtx.toggleToolbarMenu() }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("F11"); onActivated: MainCtx.toggleInterfaceFullScreen() }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+H"); onActivated: MainCtx.minimalView = !MainCtx.minimalView; }
 
-    ShortcutExt{ sequences: [StandardKey.ZoomIn, "Ctrl+="]; onActivated: MainCtx.incrementIntfUserScaleFactor(true) }
-    ShortcutExt{ sequences: [StandardKey.ZoomOut, "Ctrl+Shift+-"]; onActivated: MainCtx.incrementIntfUserScaleFactor(false) }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+="); onActivated: MainCtx.incrementIntfUserScaleFactor(true) }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+Shift+-"); onActivated: MainCtx.incrementIntfUserScaleFactor(false) }
 
     Loader {
         active: MainCtx.mediaLibraryAvailable

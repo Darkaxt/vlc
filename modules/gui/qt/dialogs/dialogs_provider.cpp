@@ -322,12 +322,6 @@ void DialogsProvider::firstRunDialog()
     m_firstRunDialog->show();
 }
 
-void DialogsProvider::editShortcut(const QString &option)
-{
-    if (!m_prefsDialog) prefsDialog();
-    if (m_prefsDialog) m_prefsDialog->editShortcut(option);
-}
-
 void DialogsProvider::extendedDialog()
 {
     ensureDialog(m_extendedDialog);

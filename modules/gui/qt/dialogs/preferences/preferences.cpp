@@ -2748,12 +2748,6 @@ void PrefsDialog::showShortcuts()
     heading->setText(qtr("Keyboard Shortcuts"));
     resize(width(), qMin(height(), 800));
 }
-void PrefsDialog::editShortcut(const QString &option)
-{
-    showShortcuts();
-    shortcuts->editShortcut(option);
-}
-
 void PrefsDialog::save()
 {
     if (pluginScan) return;

@@ -20,9 +20,10 @@ import QtQuick
 import VLC.MediaLibrary
 import VLC.Dialogs
 import VLC.Menus
+import VLC.MainInterface
 
 Item {
-    ShortcutExt{ sequence:"Ctrl+B"; onActivated: DialogsProvider.bookmarksDialog() }
+    ShortcutExt{ sequences:MainCtx.interfaceShortcutSequences("Ctrl+B"); onActivated: DialogsProvider.bookmarksDialog() }
 
     MLRecentMediaModel {
         id: recentModel
@@ -36,7 +37,7 @@ Item {
 
         Item {
             ShortcutExt {
-                sequence: "Ctrl+" + ((index + 1) % 10)
+                sequences: MainCtx.interfaceShortcutSequences("Ctrl+" + ((index + 1) % 10))
                 onActivated:  {
                     if (index < recentModel.count)
                     {

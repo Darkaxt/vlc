@@ -526,6 +526,7 @@ private:
                 {QStringLiteral("id"), widget->objectName()}, {QStringLiteral("type"), QString::fromLatin1(widget->metaObject()->className())},
                 {QStringLiteral("width"), widget->width()}, {QStringLiteral("height"), widget->height()},
                 {QStringLiteral("enabled"), widget->isEnabled()}, {QStringLiteral("focused"), widget->hasFocus()}};
+            if (widget->isWindow()) row.insert(QStringLiteral("window_title"),widget->windowTitle());
             if (auto accessible = QAccessible::queryAccessibleInterface(widget)) row.insert(QStringLiteral("name"), accessible->text(QAccessible::Name));
             if (widget->property("text").isValid()) row.insert(QStringLiteral("text"),
                 widget->metaObject()->indexOfProperty("echoMode") >= 0 && widget->property("echoMode").toInt() != 0

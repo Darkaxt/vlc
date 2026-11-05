@@ -21,5 +21,5 @@ import VLC.MainInterface
 
 Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: MainCtx.useGlobalShortcuts
+    enabled: MainCtx.useGlobalShortcuts && !MainCtx.onboardingRequested
 }

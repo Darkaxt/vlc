@@ -1461,13 +1461,6 @@ KeySelectorControl::KeySelectorControl( QWidget *p ) : ConfigControl( nullptr )
 
     table->installEventFilter( this );
 
-    /* Find the top most widget */
-    QWidget *parent, *rootWidget = p;
-    while( (parent = rootWidget->parentWidget()) != NULL )
-        rootWidget = parent;
-    existingkeys.unite(QSet<QString>{"Ctrl+O","Ctrl+Shift+O","Ctrl+F","Ctrl+D","Ctrl+N","Ctrl+C","Ctrl+V","Ctrl+Y","Ctrl+R","Ctrl+S","Ctrl+Q","Ctrl+E","Ctrl+I","Ctrl+J","Ctrl+Shift+W","Ctrl+M","Ctrl+P","Ctrl+H","Ctrl+T","Ctrl+B","Ctrl+Shift+H","Alt+D"});
-    buildAppHotkeysList( rootWidget );
-
     finish();
 
     connect( actionSearch, &QLineEdit::textChanged, this, &KeySelectorControl::filter );
@@ -1493,17 +1486,6 @@ void KeySelectorControl::insertInto( QGridLayout *l, int line )
     gLayout->addWidget( searchOption, 1, 3, 1, 1 );
     gLayout->addWidget( table, 2, 0, 1, 4 );
     l->addLayout( gLayout, line, 0, 1, -1 );
-}
-
-void KeySelectorControl::buildAppHotkeysList( QWidget *rootWidget )
-{
-    QList<QAction *> actionsList = rootWidget->findChildren<QAction *>();
-    foreach( const QAction *action, actionsList )
-    {
-        const QList<QKeySequence> shortcuts = action->shortcuts();
-        foreach( const QKeySequence &keySequence, shortcuts )
-            existingkeys << keySequence.toString(QKeySequence::PortableText);
-    }
 }
 
 void KeySelectorControl::finish()
@@ -1572,8 +1554,10 @@ void KeySelectorControl::finish()
 
     // The redesign's direct bookmark command is Qt-owned, with the same
     // conflict editor and persistence path as VLC's existing core shortcuts.
-    for (const auto *name : {"qt-key-add-bookmark", "qt-key-toggle-browser", "qt-key-toggle-queue"})
-    if (auto *config = config_FindConfig(name)) {
+    for (const auto &option : configuredShortcuts())
+    if (option.option.startsWith(QStringLiteral("qt-key-"))) {
+        const auto *config = config_FindConfig(qtu(option.option));
+        if (!config) continue;
         auto *item = new KeyTableItem;
         item->normal.config_name = config->psz_name;
         item->normal.default_keys = qfu(config->orig.psz);
@@ -1638,20 +1622,6 @@ void KeySelectorControl::changeVisibility( bool visible )
     if ( label ) label->setVisible( visible );
 }
 
-void KeySelectorControl::editShortcut(const QString &option)
-{
-    actionSearch->clear();
-    for (QTreeWidgetItemIterator iter(table); *iter; ++iter) {
-        if ((*iter)->type() != QTreeWidgetItem::UserType) continue;
-        auto *item = static_cast<KeyTableItem *>(*iter);
-        if (qfu(item->normal.config_name) != option) continue;
-        table->setCurrentItem(item, HOTKEY_COL);
-        table->scrollToItem(item);
-        selectKey(item, HOTKEY_COL);
-        return;
-    }
-}
-
 void KeySelectorControl::filter()
 {
     const QString &qs_search = actionSearch->text();
@@ -1705,7 +1675,6 @@ void KeySelectorControl::selectKey( KeyTableItem *item, enum ColumnIndex column 
 
     /* Launch a small dialog to ask for a new key */
     KeyInputDialog *d = new KeyInputDialog( table, item, column );
-    d->setExistingkeysSet( &existingkeys );
     d->setAttribute(Qt::WA_DeleteOnClose);
     connect(d, &QDialog::finished, this, [this, d, item, column](int result) {
         if (result == QDialog::Accepted)
@@ -1979,13 +1948,14 @@ void KeyTableItem::set_keys( QString keys, enum KeySelectorControl::ColumnIndex 
 
 bool KeyTableItem::contains_key( const QString &key, enum KeySelectorControl::ColumnIndex column )
 {
-    return get_keys( column ).split( "\t" ).contains( key );
+    const auto keys = get_keys(column).split('\t', Qt::SkipEmptyParts);
+    return std::any_of(keys.cbegin(), keys.cend(), [&key](const QString &value) { return shortcutKeysEqual(value, key); });
 }
 
 void KeyTableItem::remove_key( const QString &key, enum KeySelectorControl::ColumnIndex column )
 {
     QStringList keys_list = get_keys( column ).split( "\t" );
-    if( keys_list.removeAll( key ) )
+    if( keys_list.removeIf([&key](const QString &value) { return shortcutKeysEqual(value, key); }) )
         set_keys( keys_list.join( "\t" ), column );
 }
 
@@ -2000,14 +1970,13 @@ KeyInputDialog::KeyInputDialog( QTreeWidget *table_,
 {
     setModal( true );
     conflicts = false;
-    existingkeys = NULL;
 
     wheelConverter = new WheelToVLCConverter(this);
     connect(wheelConverter, &WheelToVLCConverter::vlcWheelKey, this, [this](int i_vlck){
         vlckey = VLCKeyToString( i_vlck, false );
         vlckey_tr = VLCKeyToString( i_vlck, true );
         selected->setText( qtr( "Key: <b>%1</b>" ).arg( vlckey_tr ) );
-        checkForConflicts( QString() );
+        checkForConflicts();
     });
 
     bool global = ( column == KeySelectorControl::GLOBAL_HOTKEY_COL );
@@ -2053,12 +2022,7 @@ KeyInputDialog::KeyInputDialog( QTreeWidget *table_,
     BUTTONACT( unset, &KeyInputDialog::unsetAction );
 }
 
-void KeyInputDialog::setExistingkeysSet( const QSet<QString> *keyset )
-{
-    existingkeys = keyset;
-}
-
-void KeyInputDialog::checkForConflicts( const QString &sequence )
+void KeyInputDialog::checkForConflicts()
 {
     conflicts = false;
     if ( vlckey == "" )
@@ -2067,10 +2031,6 @@ void KeyInputDialog::checkForConflicts( const QString &sequence )
         return;
     }
 
-    if (existingkeys && !sequence.isEmpty() && existingkeys->contains(sequence)) {
-        warning->setText(qtr("%1 is reserved by an existing interface command. Choose another shortcut.").arg(sequence.toHtmlEscaped()));
-        warning->show(); ok->show(); ok->setEnabled(false); unset->hide(); return;
-    }
     ok->setEnabled(true);
     KeyTableItem *conflict = KeySelectorControl::find_conflict( table, vlckey, keyItem, column );
     if( conflict != nullptr )
@@ -2086,20 +2046,6 @@ void KeyInputDialog::checkForConflicts( const QString &sequence )
         return;
     }
 
-    if( existingkeys && !sequence.isEmpty()
-        && existingkeys->contains( sequence ) )
-    {
-        warning->setText(
-            qtr( "Warning: <b>%1</b> is already an application menu shortcut" )
-                    .arg( sequence )
-        );
-        warning->show();
-        ok->show();
-        unset->hide();
-
-        conflicts = true;
-    }
-    else
     {
         warning->hide();
         ok->show();
@@ -2121,6 +2067,9 @@ bool KeyInputDialog::event(QEvent *event)
 
 void KeyInputDialog::keyPressEvent( QKeyEvent *e )
 {
+    // Escape always cancels capture, including after an invalid candidate or
+    // when keyboard navigation has moved focus to a dialog button.
+    if (e->key() == Qt::Key_Escape) { reject(); return; }
     if (focusWidget() && focusWidget()!=selected) {
         QDialog::keyPressEvent(e);
         return;
@@ -2133,11 +2082,10 @@ void KeyInputDialog::keyPressEvent( QKeyEvent *e )
         e->key() == Qt::Key_AltGr )
         return;
     int i_vlck = qtEventToVLCKey( e );
-    QKeySequence sequence( e->key() | e->modifiers() );
     vlckey = VLCKeyToString( i_vlck, false );
     vlckey_tr = VLCKeyToString( i_vlck, true );
     selected->setText( qtr( "Key or combination: <b>%1</b>" ).arg( vlckey_tr ) );
-    checkForConflicts( sequence.toString(QKeySequence::PortableText) );
+    checkForConflicts();
 }
 
 void KeyInputDialog::wheelEvent( QWheelEvent *e )

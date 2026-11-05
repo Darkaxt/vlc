@@ -1,5 +1,17 @@
 # VLC redesign stages and reconciliation
 
+**M5 Onboarding and interface shortcuts: ACTIVE (5 November).** R88–R89 cover
+the reported trapped capture, wizard-only editing and configurable/searchable
+interface commands. Only M5 receives implementation. M4/1.1.6 delivery remains
+historical and unchanged; S9 remains NOT STARTED. Acceptance remaining: complete
+wizard assignment/conflict/reassign/Unset/Cancel/Finish/restart with no additional
+windows; searchable editable Stream and interface commands with truthful hints
+and real dispatch; existing standalone editor behavior; one coordinated native
+acceptance pass followed by normal release and independent delivery verification.
+Internal blockers are these unimplemented/unverified criteria; no external blocker
+or tracked deferral. Reuse unaffected 1.1.6 runtime/MPV/DV evidence only after exact
+applicability checks. Preserve the user's running D:/Tools/Modern VLC instance.
+
 **M4: COMPLETE — normal1.1.6 delivered and independently verified.** Tag `redesign-v1.1.6` binds application source `bf45ca9748427279b08b995755c52f164f78e60d`. Current VLC/MPV SDR/P5 presentation, safe placement, foreground/lifecycle, all417 stripped mappings, four downloaded assets, retained/weekly binding and exact obsolete-output cleanup pass. The user explicitly waived additional manual review of minor UI details; no new Record/control pixels are claimed manually accepted. R83–R87 reconcile under that authorized release boundary. [Evidence](resources/m4-1.1.6-verification.json). Blockers0; tracked deferrals0. S8 remains COMPLETE; S9 remains NOT STARTED. Historical checkpoints below retain their original meaning.
 
 **5 November delivery instruction: target1.1.6.** The user requests full
@@ -387,6 +399,7 @@ presentation and final delivery remain required.
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
+| M5 Onboarding and interface shortcuts | ACTIVE | R88–R89: wizard-owned capture and native editable interface bindings are being integrated. | Native wizard/editor conflict, cancellation, failed-save and restart/dispatch verification; normal1.1.7 publication and independently verified delivery. | Internal acceptance work; no external blocker or tracked deferral. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

@@ -4,6 +4,22 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**5 November post-1.1.6 regression, R88–R89 (M5):** shortcut changes started
+from onboarding must remain inside the wizard. Capture, named conflict feedback,
+explicit reassignment, Unset and Cancel must never open Preferences, the Hotkeys
+page or a native capture window. Escape cancels capture before it can dismiss the
+wizard; invalid/conflicting input must not trap focus. Finish persists accepted
+edits; cancelling setup or a failed save preserves prior bindings. Verify the
+complete first-run/reopen/restart flow and actual saved action dispatch.
+Interface shortcuts, including Stream's Ctrl+S, must be searchable and editable
+alongside playback shortcuts, with the existing defaults preserved. Replace the
+hardcoded reservation/dispatch split with native CONFIG_ITEM_KEY bindings used by
+the editor, QML dispatcher and displayed menu hints. Conflicts identify the actual
+command and require explicit reassignment. Preserve unsupported-global semantics
+and normal shortcut editing outside onboarding. Deliver one verified normal update
+after this integrated outcome passes; the prior minor-UI waiver does not substitute
+for automated regression verification.
+
 **M4 delivery reconciliation: COMPLETE.** Normal [1.1.6](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.6) from `bf45ca9748427279b08b995755c52f164f78e60d` is independently verified. [Reconciliation](resources/m4-1.1.6-verification.json) records current native/artifact evidence, retained original UI producers and the explicit one-release waiver of further manual minor-UI review. R83–R87 close under that authorized acceptance boundary; blockers and required deferrals are zero.
 
 5 November final delivery instruction: publish normal release1.1.6 now with the

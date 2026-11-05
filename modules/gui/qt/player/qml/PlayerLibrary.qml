@@ -162,11 +162,14 @@ FocusScope {
         function onRowsAboutToBeInserted() { root.clearSelection() }
         function onRowsAboutToBeMoved() { root.clearSelection() }
     }
+    Shortcut {
+        sequences: MainCtx.interfaceShortcutSequences("Alt+D")
+        context: Qt.WindowShortcut
+        enabled: root.visible && MainCtx.useGlobalShortcuts && !MainCtx.onboardingRequested
+        onActivated: { root.editingAddress=true;address.forceActiveFocus();address.selectAll() }
+    }
     Keys.onPressed: event => {
-        if ((event.modifiers & Qt.AltModifier) && event.key === Qt.Key_D) {
-            editingAddress = true; address.forceActiveFocus(); address.selectAll(); event.accepted = true
-        }
-        else if (event.key === Qt.Key_Escape) { if (editingAddress) editingAddress = false; else if (path.length || section !== "home") back(); else closeRequested(); event.accepted = true }
+        if (event.key === Qt.Key_Escape) { if (editingAddress) editingAddress = false; else if (path.length || section !== "home") back(); else closeRequested(); event.accepted = true }
         else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_A) {
             selectedRows = Array.from({length: activeModel ? activeModel.count : 0}, (_, i) => i); event.accepted = true
         }

@@ -9,7 +9,65 @@
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QApplication>
+#include <QKeySequence>
 #include <vlc_actions.h>
+#include <vlc_modules.h>
+#include <vlc_configuration.h>
+
+QList<ConfiguredShortcut> configuredShortcuts()
+{
+    QList<ConfiguredShortcut> result;
+    for (auto *module : {module_get_main(), module_find("qt")})
+    {
+        if (!module) continue;
+        unsigned count;
+        auto *options = module_config_get(module, &count);
+        for (unsigned i = 0; i < count; ++i)
+        {
+            const auto &option = options[i];
+            if (option.i_type != CONFIG_ITEM_KEY || !option.psz_name ||
+                strncmp(option.psz_name, "global-", 7) == 0) continue;
+            char *raw = config_GetPsz(option.psz_name);
+            result.append({qfu(option.psz_name), qfut(option.psz_text), qfu(raw), qfu(option.orig.psz)});
+            free(raw);
+        }
+        module_config_free(options);
+    }
+    return result;
+}
+
+QStringList configuredShortcutSequences(const QString &option)
+{
+    char *raw = config_GetPsz(qtu(option));
+    const auto result = qfu(raw).split('\t', Qt::SkipEmptyParts);
+    free(raw);
+    return result;
+}
+
+QStringList interfaceShortcutSequences(const QString &originalSequence)
+{
+    const QKeySequence original(originalSequence);
+#define FIND_INTERFACE_SHORTCUT(name, label, defaults) \
+    for (const auto &key : QStringLiteral(defaults).split('\t')) \
+        if (QKeySequence(key) == original) return configuredShortcutSequences(QStringLiteral("qt-key-" name));
+    VLC_INTERFACE_SHORTCUTS(FIND_INTERFACE_SHORTCUT)
+#undef FIND_INTERFACE_SHORTCUT
+    return {originalSequence};
+}
+
+bool shortcutKeysEqual(const QString &first, const QString &second)
+{
+    if (first == second) return true;
+    const QKeySequence a(first), b(second);
+    return !a.toString().isEmpty() && !b.toString().isEmpty() && a == b;
+}
+
+QList<QKeySequence> interfaceMenuShortcuts(const QString &originalSequence)
+{
+    QList<QKeySequence> result;
+    for (const auto &key : interfaceShortcutSequences(originalSequence)) result.append(QKeySequence(key));
+    return result;
+}
 
 /***************************************************************************
  * Hotkeys converters

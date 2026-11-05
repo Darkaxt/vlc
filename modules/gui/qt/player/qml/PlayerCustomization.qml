@@ -83,6 +83,7 @@ QtObject {
     }
     function openOnboarding() {
         if(onboardingVisible)return
+        MainCtx.beginOnboardingShortcuts()
         onboardingOriginal=MainCtx.presentationSettings();onboardingVisible=true
     }
     function closeOnboarding(finish,theme,accent,folder) {

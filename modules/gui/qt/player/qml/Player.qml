@@ -197,7 +197,7 @@ FocusScope {
         onPressedChanged: if (pressed) rootPlayer._keyboardNavigation = false
     }
     Shortcut {
-        sequence: "Ctrl+Shift+H"
+        sequences: MainCtx.interfaceShortcutSequences("Ctrl+Shift+H")
         enabled: rootPlayer.visible && !PlayerCustomization.editing && !PlayerCustomization.profilesVisible && !PlayerCustomization.onboardingVisible
         onActivated: MainCtx.minimalView=!MainCtx.minimalView
     }

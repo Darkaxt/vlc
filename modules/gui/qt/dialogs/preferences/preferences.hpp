@@ -48,7 +48,6 @@ class PrefsDialog : public QVLCDialog
     PrefsDialog(QWindow *, qt_intf_t *);
     ~PrefsDialog() override;
     void showShortcuts();
-    void editShortcut(const QString &option);
     void reject() override;
     bool pluginScanActive() const { return pluginScan != nullptr; }
 

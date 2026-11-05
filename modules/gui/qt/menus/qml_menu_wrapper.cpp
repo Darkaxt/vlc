@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 #include "qml_menu_wrapper.hpp"
+#include "util/vlchotkeyconverter.hpp"
 #include "menus.hpp"
 #include "medialibrary/medialib.hpp"
 #include "medialibrary/mlplaylistlistmodel.hpp"
@@ -336,7 +337,7 @@ void QmlGlobalMenu::popup(QPoint pos)
 
     if (m_playerChromeCommand)
     {
-        auto action = submenu->addAction(qtr("Hide player interface\tCtrl+Shift+H"));
+        auto action = submenu->addAction(qtr("Hide player interface")+'\t'+interfaceShortcutSequences(QStringLiteral("Ctrl+Shift+H")).join(QStringLiteral(" / ")));
         connect(action, &QAction::triggered, this, &QmlGlobalMenu::hidePlayerChromeRequested);
     }
 
@@ -679,7 +680,7 @@ bool QmlMenuPositioner::eventFilter(QObject * object, QEvent * event)
     // Bookmarks
     if (m_ctx->hasMediaLibrary())
     {
-	m_menu->addAction(qtr("&Manage"), THEDP, &DialogsProvider::bookmarksDialog )->setShortcut(QKeySequence("Ctrl+B"));
+	m_menu->addAction(qtr("&Manage"), THEDP, &DialogsProvider::bookmarksDialog )->setShortcuts(interfaceMenuShortcuts(QStringLiteral("Ctrl+B")));
         m_menu->addSeparator();
 
         MLBookmarkModel * bookmarks = new MLBookmarkModel(m_menu.get());
