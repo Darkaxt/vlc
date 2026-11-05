@@ -13,6 +13,7 @@
 #include <vlc_actions.h>
 #include <vlc_modules.h>
 #include <vlc_configuration.h>
+#include <vlc_plugin.h>
 
 QList<ConfiguredShortcut> configuredShortcuts()
 {

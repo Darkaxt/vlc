@@ -837,7 +837,8 @@ def interface_shortcuts():
         case.inspect('select-search','widget_key','--target','keyboardShortcutsSearch','--key','0x41','--modifiers','0x4000000')
         case.inspect('search-stream','widget_key','--target','keyboardShortcutsSearch','--key','0','--text','Stream')
         case.native('table-focus','keyboardShortcutsTable')
-        case.inspect('select-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000010')
+        selected=case.inspect('select-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000011')
+        assert [row['columns'][0] for row in widget(selected,'keyboardShortcutsTable')['rendered_rows'] if row['selected']]==['Stream']
         opened=case.inspect('edit-stream','widget_key','--target','keyboardShortcutsTable','--key','0x1000004')
         assert widget(opened,'shortcutCapture')
         cancelled=case.inspect('cancel-standalone-capture','widget_key','--target','shortcutCapture','--key','0x1000000')
