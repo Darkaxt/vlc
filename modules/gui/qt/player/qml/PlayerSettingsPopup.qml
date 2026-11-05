@@ -311,7 +311,7 @@ T.Popup {
                         spacing: PlayerStyle.px(4)
                         Item {
                             Layout.preferredWidth: PlayerStyle.px(24); Layout.preferredHeight: PlayerStyle.px(24)
-                            Image { visible: parent.parent.parent.index===0; anchors.fill: parent; smooth: false; source: "qrc:/redesign/icons/tab-playback.svg"; sourceSize: Qt.size(width,height) }
+                            Image { objectName:"playerPlaybackTabIcon"; visible: parent.parent.parent.index===0; anchors.fill: parent; smooth: false; source: PlayerStyle.themedIcon("qrc:/redesign/icons/tab-playback.svg"); sourceSize: Qt.size(width,height) }
                             IconImage { visible: parent.parent.parent.index!==0; anchors.fill: parent; smooth: false; source: "qrc:/redesign/icons/" + ["playback","video","audio","subtitles"][parent.parent.parent.index] + ".svg"; sourceSize: Qt.size(width,height); color: PlayerStyle.sectionForeground }
                         }
                         Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(14); color: settingsPopup.page===parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground; Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }

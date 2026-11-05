@@ -589,6 +589,12 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
     if (code >= 0 && var_InheritBool(intf,"sub-ass-style-override"))
         code=d->api->set_option_string(d->player,"sub-ass-override","force");
     if (code >= 0) {
+        const float duration = var_InheritFloat(intf, "image-duration");
+        const QByteArray displayDuration = duration < 0.f ? QByteArrayLiteral("inf") : QByteArray::number(duration);
+        code = d->api->set_option_string(d->player, "image-display-duration", displayDuration.constData());
+        if (code < 0) d->error = tr("MPV could not apply the image display duration.");
+    }
+    if (code >= 0) {
         // A previously selected native endpoint and the volume owner must refer
         // to the same device. An empty id retains default eConsole routing.
         auto *audio = vlc_player_aout_Hold(intf->p_player);

@@ -91,12 +91,21 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
             m_window->hide();
     }, Qt::QueuedConnection);
 
-    m_window->setTitle("");
-
-    if( var_InheritBool( p_intf, "qt-name-in-title" ) )
-    {
-        connect( THEMIM, &PlayerController::nameChanged, m_window, &QWindow::setTitle );
-    }
+    const auto updateIdentity = [this] {
+        const bool mpv = THEMIM->usesMpv();
+        const QString application = mpv ? qtr("MPV Media Player") : qtr("VLC Media Player");
+        const QString media = var_InheritBool(p_intf, "qt-name-in-title") && THEMIM->isStarted()
+            ? THEMIM->getName() : QString();
+        m_window->setTitle(media.isEmpty() ? application : media + QStringLiteral(" — ") + application);
+        // QWindow updates the owned native HWND's small/big icons. Keep the
+        // executable identity and Windows taskbar grouping stable.
+        m_window->setIcon(QIcon(mpv ? QStringLiteral(":/redesign/icons/mpv.svg")
+                                   : QStringLiteral(":/redesign/icons/app.png")));
+    };
+    connect(THEMIM, &PlayerController::playbackEngineChanged, this, updateIdentity);
+    connect(THEMIM, &PlayerController::nameChanged, this, updateIdentity);
+    connect(THEMIM, &PlayerController::playingStateChanged, this, updateIdentity);
+    updateIdentity();
 
     connect( m_window, &QWindow::screenChanged, m_mainCtx, &MainCtx::updateIntfScaleFactor );
 

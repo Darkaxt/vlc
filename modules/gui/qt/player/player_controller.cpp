@@ -42,6 +42,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QImageReader>
 #include <QSignalMapper>
 #include <QThreadPool>
 #ifndef QT_HAS_LIBATOMIC
@@ -63,6 +64,15 @@ using SharedEsId = ::vlc::vlc_shared_data_ptr<vlc_es_id_t,
 using SharedTitleList = ::vlc::vlc_shared_data_ptr<vlc_player_title_list,
                                                    &vlc_player_title_list_Hold,
                                                    &vlc_player_title_list_Release>;
+
+static bool isLocalStillImage(const QUrl &url)
+{
+    if (!url.isLocalFile()) return false;
+    // Inspect the actual image header, not the filename extension. A supported
+    // multi-frame image retains playback controls instead of becoming a photo.
+    QImageReader reader(url.toLocalFile());
+    return reader.canRead() && (!reader.supportsAnimation() || reader.imageCount() == 1);
+}
 
 PlayerControllerPrivate::~PlayerControllerPrivate()
 {
@@ -351,6 +361,7 @@ static  void on_player_current_media_changed(vlc_player_t *, input_item_t *new_m
             {
                 vlc_player_locker lock{ that->m_player };
                 that->m_currentItem.reset(nullptr);
+                that->m_stillImage = false;
             }
 
             that->m_syltRaw.reset();
@@ -382,6 +393,7 @@ static  void on_player_current_media_changed(vlc_player_t *, input_item_t *new_m
         that->UpdateInfo( newMediaPtr.get() );
         that->UpdateName( newMediaPtr.get() );
         that->m_url = vlc::wrap_cptr( input_item_GetURI( newMediaPtr.get() ) ).get();
+        that->m_stillImage = isLocalStillImage(that->m_url);
 
         {
             vlc_player_locker lock{ that->m_player };
@@ -1272,6 +1284,10 @@ PlayerController::PlayerController( qt_intf_t *_p_intf )
 {
     connect( &d_ptr->m_position_timer, &QTimer::timeout, this, &PlayerController::updatePositionFromTimer );
     connect( &d_ptr->m_time_timer, &QTimer::timeout, this, &PlayerController::updateTimeFromTimer );
+    connect(this, &PlayerController::inputChanged, this, &PlayerController::stillImagePreviewChanged);
+    connect(this, &PlayerController::lengthChanged, this, &PlayerController::stillImagePreviewChanged);
+    connect(this, &PlayerController::playbackEngineChanged, this, &PlayerController::stillImagePreviewChanged);
+    connect(this, &PlayerController::stillImagePreviewChanged, this, [this] { emit seekableChanged(isSeekable()); });
     if (_p_intf->mpvPlayback) initializeMpvPlayback();
     connect(this, &PlayerController::playingStateChanged, this, [this](PlayingState state) {
         Q_D(PlayerController);
@@ -2473,7 +2489,6 @@ PRIMITIVETYPE_GETTER(VLCDuration, getLength, m_length)
 PRIMITIVETYPE_GETTER(VLCDuration, getAudioDelay, m_audioDelay)
 PRIMITIVETYPE_GETTER(VLCDuration, getSubtitleDelay, m_subtitleDelay)
 PRIMITIVETYPE_GETTER(VLCDuration, getSecondarySubtitleDelay, m_secondarySubtitleDelay)
-PRIMITIVETYPE_GETTER(bool, isSeekable, m_capabilities & VLC_PLAYER_CAP_SEEK)
 PRIMITIVETYPE_GETTER(bool, isRewindable, m_capabilities & VLC_PLAYER_CAP_REWIND)
 PRIMITIVETYPE_GETTER(bool, isPausable, m_capabilities & VLC_PLAYER_CAP_PAUSE)
 PRIMITIVETYPE_GETTER(bool, isRateChangable, m_capabilities & VLC_PLAYER_CAP_CHANGE_RATE)
@@ -2506,6 +2521,21 @@ PRIMITIVETYPE_GETTER(QString, getArtist, m_artist)
 PRIMITIVETYPE_GETTER(QString, getAlbum, m_album)
 PRIMITIVETYPE_GETTER(QUrl, getArtwork, m_artwork)
 PRIMITIVETYPE_GETTER(QUrl, getUrl, m_url)
+
+bool PlayerController::isStillImagePreview() const
+{
+    Q_D(const PlayerController);
+    if (!d->m_currentItem || !d->m_stillImage) return false;
+    // Positive explicitly configured image durations retain timed playback.
+    return d->m_mpv ? var_InheritFloat(d->p_intf, "image-duration") < 0.f
+                    : d->m_length.toVLCTick() <= 0;
+}
+
+bool PlayerController::isSeekable() const
+{
+    Q_D(const PlayerController);
+    return (d->m_capabilities & VLC_PLAYER_CAP_SEEK) && !isStillImagePreview();
+}
 
 QString PlayerController::getSourceLocationName() const
 {

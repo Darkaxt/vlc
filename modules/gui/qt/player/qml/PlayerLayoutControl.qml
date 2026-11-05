@@ -28,7 +28,8 @@ Loader {
         return value.split(":").length===2 ? "00:"+value : value
     }
     readonly property bool expands:controlKey==="seek"||controlKey==="spacer"
-    readonly property bool hidden:compact&&(controlKey==="elapsed"||controlKey==="duration"||controlKey==="artist"||controlKey==="playlistname")
+    readonly property bool hidden:(Player.stillImagePreview&&["play","elapsed","duration","seek","speed","forward10","backward10","forward15","backward15","replay"].includes(controlKey))
+        ||compact&&(controlKey==="elapsed"||controlKey==="duration"||controlKey==="artist"||controlKey==="playlistname")
     sourceComponent:controlKey==="seek"?seekComponent:controlKey==="volume"?volumeComponent:
         controlKey==="divider"?dividerComponent:controlKey==="spacer"?spacerComponent:
         controlKey==="thumbnail"?artComponent:["elapsed","duration","filename","artist","playlistname"].includes(controlKey)?textComponent:
@@ -86,7 +87,7 @@ Loader {
             implicitHeight:PlayerStyle.px(28);padding:0;activeFocusOnTab:control.controlKey==="duration"
             AccessibleCompat.id:control.ids[control.controlKey]||"layoutAction-"+control.controlKey
             text:control.controlKey==="elapsed"?control.displayTime(Player.time):control.controlKey==="duration"?(MainCtx.showRemainingTime?control.displayTime(Player.remainingTime):control.displayTime(Player.length)):
-                control.controlKey==="artist"?Player.artist:control.controlKey==="playlistname"?qsTr("Play Queue"):Player.name
+                control.controlKey==="artist"?Player.artist:control.controlKey==="playlistname"?qsTr("Play Queue"):MainCtx.intfMainWindow.title
             Accessible.name:text
             contentItem:Text {
                 text:textButton.text

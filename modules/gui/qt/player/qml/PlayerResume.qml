@@ -7,7 +7,7 @@ import VLC.Util
 
 T.Pane {
     id: resume
-    visible: Player.canRestorePlayback
+    visible: Player.canRestorePlayback && !Player.stillImagePreview
     enabled: visible
     leftPadding: PlayerStyle.px(20)
     rightPadding: PlayerStyle.px(10)

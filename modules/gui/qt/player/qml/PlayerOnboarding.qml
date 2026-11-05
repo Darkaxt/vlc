@@ -476,7 +476,7 @@ T.Popup {
                 }
                 Label { visible: dialog.page===2; Layout.fillWidth: true; color:PlayerStyle.sectionForeground;text: qsTr("Find the full list in the menu. Shortcut changes apply after restarting VLC.") }
                 Item { visible:dialog.page===0||dialog.page===3;Layout.fillWidth: true }
-                SetupButton { visible: dialog.page>0; enabled:!MainCtx.legacyFont.busy;text: qsTr("Back"); onClicked: { dialog.page=dialog.page===2?3:dialog.page===3?1:0;body.contentY=0 } }
+                SetupButton { visible: dialog.page>0; enabled:!MainCtx.legacyFont.busy;text: qsTr("Back"); AccessibleCompat.id:"onboardingBack"; onClicked: { dialog.page=dialog.page===2?(MainCtx.legacyFont.available?1:3):dialog.page===3?1:0;body.contentY=0 } }
                 SetupButton {
                     text: dialog.page===2?qsTr("Finish"):dialog.page===3?(MainCtx.legacyFont.available?qsTr("Continue"):qsTr("Download and continue")):qsTr("Next")
                     enabled:!MainCtx.legacyFont.busy
@@ -484,7 +484,7 @@ T.Popup {
                     AccessibleCompat.id: "onboardingNext"
                     onClicked: {
                         if(dialog.page===2)dialog.finishSetup()
-                        else if(dialog.page<2){dialog.page=dialog.page===0?1:3;body.contentY=0}
+                        else if(dialog.page<2){dialog.page=dialog.page===0?1:(MainCtx.legacyFont.available?2:3);body.contentY=0}
                         else if(MainCtx.legacyFont.available)dialog.showShortcuts()
                         else{dialog.fontFinishing=true;MainCtx.legacyFont.download()}
                     }

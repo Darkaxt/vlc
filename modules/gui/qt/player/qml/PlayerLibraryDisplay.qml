@@ -26,7 +26,7 @@ FocusScope {
     RedesignTopBar {
         id: titleBar
         anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
-        title: Player.isStarted ? Player.name : qsTr("VLC Media Player")
+        title: MainCtx.intfMainWindow.title
         showCSD: MainCtx.clientSideDecoration && MainCtx.intfMainWindow.visibility !== Window.FullScreen
         onBackRequested: { if (Player.isStarted) MainCtx.playerView = true }
         onBrowseRequested: library.navigate("home")

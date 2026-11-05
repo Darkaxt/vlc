@@ -12,7 +12,7 @@ p.add_argument('--ready-event', required=True)
 p.add_argument('--bound-event', required=True)
 p.add_argument('--cancel-event', required=True)
 p.add_argument('--executable', type=Path, required=True)
-p.add_argument('--expected-icon',type=Path,help='Verify the owned Qt main window icon against this maintained PNG')
+p.add_argument('--expected-icon',type=Path,help='Verify the owned Qt main window icon against the maintained cone PNG or official MPV SVG')
 a = p.parse_args()
 if a.expected_icon:
     from app_icon_checks import window_icon

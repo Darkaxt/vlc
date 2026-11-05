@@ -319,9 +319,10 @@ FocusScope {
                     anchors.centerIn: parent
                     width: Math.min(PlayerStyle.px(128), parent.width / 2, parent.height / 2)
                     height: width
-                    source: "qrc:///redesign/icons/app.svg"
+                    source: Player.playbackEngine === "mpv" ? "qrc:///redesign/icons/mpv.svg" : "qrc:///redesign/icons/app.svg"
                     sourceSize: Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
+                    smooth: false
                     visible: MainCtx.bgCone
                 }
             }

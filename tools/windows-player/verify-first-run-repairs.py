@@ -33,7 +33,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['idle', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
     help='Resume the closed settings pass after its completed150%% matrix lost the input-desktop preservation check')
@@ -430,8 +430,9 @@ class Case:
         command = [str(runtime / 'vlc.exe'), '--intf=qt', '--language=en', '--no-one-instance', '--no-plugins-cache',
             '--no-metadata-network-access', '--restore-playback-pos=0', '--no-volume-save', '--mmdevice-volume=0',
             '--aout=mmdevice', '--mmdevice-backend=wasapi', '--no-video-title-show', '--start-paused',
-            '--qt-playback-engine=' + engine, '--verbose=2', '--file-logging', '--log-verbose=2',
+            '--verbose=2', '--file-logging', '--log-verbose=2',
             '--logfile=' + str(self.evidence / 'native-ui.log')]
+        if engine is not None: command.append('--qt-playback-engine=' + engine)
         if not welcome: command.append('--no-qt-privacy-ask')
         if not updates: command.append('--no-qt-updates-notif')
         command.extend(extra)
@@ -571,8 +572,11 @@ def owned_native_read(case, reader):
 
 
 def verify_window_icon(case, snapshot):
-    case.record['native_window_icon']=owned_native_read(case,lambda:window_icon(owned_main_window(case,snapshot),case.player.pid,
-        repo/'modules/gui/qt/pixmaps/redesign/app.png',case.evidence/'native-window-icon.png'))
+    engine=snapshot['core']['engine']
+    name='mpv.svg' if engine=='mpv' else 'app.png'
+    result=owned_native_read(case,lambda:window_icon(owned_main_window(case,snapshot),case.player.pid,
+        repo/'modules/gui/qt/pixmaps/redesign'/name,case.evidence/('native-window-icon-'+engine+'.png')))
+    case.record.setdefault('native_window_icons',[]).append(result)
 
 
 def settings_window_region(case, dialog):
@@ -1041,6 +1045,187 @@ def drop_fixture(case, label, file):
                 '--await-core','state','--await-value','3')
         return case.click(label+'-pause','playButton','--await-core','state','--await-value','3')
     return case.inspect(label+'-paused','snapshot','--await-core','state','--await-value','3')
+
+
+def media_previews():
+    """Real image/video replacement and engine identity, with no ten-second EOF."""
+    images = root / 'image-fixtures'
+    images.mkdir()
+    photo = Image.new('RGB', (640, 360), '#296fba')
+    for x in range(320, 640):
+        for y in range(360): photo.putpixel((x, y), (230, 140, 45))
+    photo.save(images / 'still.jpg', quality=95)
+    photo.save(images / 'still.png')
+    # Long distinct frames permit native controls/state inspection without
+    # racing an animation's EOF. Both engines must retain animation playback.
+    frames = [Image.new('RGB', (320, 180), color) for color in ('#f02d38', '#28a867')]
+    frames[0].save(images / 'animated.gif', save_all=True, append_images=frames[1:], duration=6000, loop=0)
+
+    def no_clock(snapshot):
+        assert snapshot['core']['still_image_preview']
+        for identity in ('playerElapsedTime', 'layoutAction-duration', 'progressSlider', 'playButton'):
+            assert not any(item['visible'] for item in nodes(snapshot, identity)), identity
+        assert nodes(snapshot, 'playerVideoSurface')
+
+    def identity(case, snapshot, engine, media=True):
+        application=('MPV' if engine=='mpv' else 'VLC')+' Media Player'
+        assert snapshot['core']['engine']==engine
+        assert snapshot['window']['title'].endswith(application),snapshot['window']
+        if not media: assert snapshot['window']['title']==application
+        def read_title():
+            title=ctypes.create_unicode_buffer(4096)
+            assert u.GetWindowTextW(owned_main_window(case,snapshot),title,len(title))
+            return title.value
+        assert owned_native_read(case,read_title)==snapshot['window']['title']
+        verify_window_icon(case,snapshot)
+
+    def theme_icon(case, label, engine):
+        case.click(label+'-open', 'toolsButton')
+        snapshot=case.inspect(label+'-rendered','snapshot','--await-target','playerPlaybackTabIcon',
+            '--await-property','status','--await-value','1','--capture')
+        icon=nodes(snapshot,'playerPlaybackTabIcon')[0]
+        assert icon['source'].startswith('image://'),icon
+        picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')).convert('RGB')
+        ratio=picture.width/snapshot['window']['width']
+        crop=picture.crop(tuple(round(value*ratio) for value in
+            (icon['x'],icon['y'],icon['x']+icon['width'],icon['y']+icon['height'])))
+        crop.save(case.evidence/(label+'-tab.png'))
+        pixels=list(crop.getdata())
+        colored=[rgb for rgb in pixels if max(rgb)-min(rgb)>20]
+        assert colored, 'Playback tab accent is missing'
+        assert not any(r>100 and r>g*1.2 and g>b*1.2 for r,g,b in colored),'Fixed orange accent remains'
+        if engine=='mpv': assert any(r>g*2 and b>g*2 for r,g,b in colored),'MPV purple absent'
+        else: assert any(b>r*1.3 and b>g for r,g,b in colored),'Saved custom blue absent'
+        assert any(max(rgb)-min(rgb)<4 and 70<rgb[0]<180 for rgb in pixels),'Neutral outline lost'
+        case.inspect(label+'-close','key','--key','0x1000000')
+
+    for engine in ('vlc', 'mpv'):
+        case = Case('image-preview-' + engine, engine=engine, media=images / 'still.jpg',extra=('--qt-accent-color=#3b82f6',))
+        try:
+            case.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
+            ready = case.inspect('still-preview', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'true', '--capture')
+            no_clock(ready)
+            identity(case,ready,engine)
+            case.inspect('play-photo', 'key', '--target', 'playerView', '--key', '0x20', '--text', ' ',
+                '--await-core', 'state', '--await-value', '2')
+            started = time.monotonic_ns()
+            # This bounded observation is the explicit beyond-old-10s acceptance
+            # window. Expiry does not cancel the player or prove picture/state;
+            # the subsequent actual native snapshot must also pass.
+            assert k.WaitForSingleObject(case.player.handle, 11000) == 258, 'Player exited during image preview'
+            after = case.inspect('past-old-image-duration', 'snapshot', '--capture')
+            assert after['core']['state'] == 2
+            no_clock(after)
+            case.record['image_survival_observation_ms'] = (time.monotonic_ns() - started) / 1000000
+            case.inspect('png-replacement', 'drop', '--target', 'mainInterface', '--url', (images / 'still.png').as_uri(),
+                '--await-core', 'url', '--await-value', json.dumps((images / 'still.png').as_uri()))
+            no_clock(case.inspect('png-preview', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'true', '--capture'))
+            drop_fixture(case, 'replace-photo-with-video', 'control.mkv')
+            movie = case.inspect('restored-video-controls', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'false', '--capture')
+            assert any(item['visible'] for item in nodes(movie, 'progressSlider'))
+            assert any(item['visible'] for item in nodes(movie, 'playerElapsedTime'))
+            case.inspect('animated-image', 'drop', '--target', 'mainInterface', '--url', (images / 'animated.gif').as_uri(),
+                '--await-core', 'url', '--await-value', json.dumps((images / 'animated.gif').as_uri()))
+            animated = case.inspect('animation-controls', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'false', '--capture')
+            assert any(item['visible'] for item in nodes(animated, 'playButton'))
+            assert any(item['visible'] for item in nodes(animated, 'progressSlider'))
+            case.inspect('stop-animation', 'key', '--target', 'playerView', '--key', '0x53', '--text', 's')
+            case.inspect('customize-menu', 'click', '--name', 'Main menu')
+            case.inspect('customize-player', 'click', '--name', 'Customize Player')
+            case.inspect('editor-ready', 'snapshot', '--await-target', 'playerLayoutEditor', '--await-property', 'ready', '--await-value', 'true')
+            case.click('close-editor', 'layoutCancel')
+            for index,target in enumerate((engine, 'mpv' if engine == 'vlc' else 'vlc', engine)):
+                label=str(index)+'-'+target
+                if target != case.inspect('engine-before-' + label)['core']['engine']:
+                    case.click('engine-panel-' + label, 'toolsButton')
+                    case.inspect('choose-engine-' + label, 'click', '--name', 'MPV' if target == 'mpv' else 'VLC')
+                    case.inspect('engine-settled-' + label, 'snapshot', '--await-core', 'engine_switching', '--await-value', 'false')
+                    case.inspect('close-engine-panel-' + label, 'key', '--key', '0x1000000')
+                idle = case.inspect('centered-logo-' + label, 'snapshot', '--await-target', 'playerIdleCone',
+                    '--await-property', 'status', '--await-value', '1', '--capture')
+                assert nodes(idle, 'playerIdleCone')[0]['source'].endswith('/' + ('mpv' if target == 'mpv' else 'app') + '.svg')
+                identity(case,idle,target,False)
+                theme_icon(case,'theme-'+label,target)
+            case.record['untimed_image_replacement_animation_and_engine_branding'] = True
+            case.close(True)
+        finally: case.close()
+
+        profile=case.path/'profile'
+        restarted=Case('saved-engine-restart-'+engine,engine=None,media=fixtures/'control.mkv',reused_profile=profile)
+        try:
+            snapshot=restarted.inspect('saved-engine','snapshot','--await-core','state','--await-value','3','--capture')
+            identity(restarted,snapshot,engine)
+            restarted.record['saved_engine_without_cli_override']=engine
+            restarted.close(True)
+        finally: restarted.close()
+        override='vlc' if engine=='mpv' else 'mpv'
+        overridden=Case('explicit-engine-override-'+engine,engine=override,media=fixtures/'control.mkv',
+            reused_profile=profile,extra=('--no-qt-name-in-title',))
+        try:
+            snapshot=overridden.inspect('explicit-engine','snapshot','--await-core','state','--await-value','3','--capture')
+            identity(overridden,snapshot,override,False)
+            overridden.record['explicit_engine_and_title_preference_preserved']=True
+            overridden.close(True)
+        finally: overridden.close()
+
+        timed = Case('explicit-timed-image-' + engine, engine=engine, media=images / 'still.jpg', extra=('--image-duration=1',))
+        try:
+            timed.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
+            ready = timed.inspect('timed-paused-image', 'snapshot', '--await-core', 'state', '--await-value', '3', '--capture')
+            assert not ready['core']['still_image_preview']
+            assert any(item['visible'] for item in nodes(ready, 'progressSlider'))
+            timed.click('start-timed-image', 'playButton', '--await-core', 'state', '--await-value', '2')
+            if engine == 'mpv':
+                timed.inspect('timed-image-eof', 'snapshot', '--await-core', 'mpv_video_ready', '--await-value', 'false')
+            else:
+                timed.inspect('timed-image-eof', 'snapshot', '--await-core', 'state', '--await-value', '0')
+            timed.record['explicit_timed_image_natural_eof'] = True
+            timed.close(True)
+        finally: timed.close()
+
+    # A real incompatible compositor rejects MPV before any engine preference
+    # write. This is a supported native VLC path, not a diagnostic fake failure.
+    saved_vlc=root/'image-preview-vlc/profile'
+    rejected=Case('rejected-engine-preserves-choice',engine=None,media=fixtures/'control.mkv',
+        reused_profile=saved_vlc,extra=('--qt-compositor=win7',))
+    try:
+        rejected.inspect('vlc-running','snapshot','--await-core','state','--await-value','3')
+        before=(portable/'vlcrc').read_bytes()
+        rejected.click('open-engine-panel','toolsButton')
+        rejected.inspect('reject-incompatible-engine','click','--name','MPV')
+        snapshot=rejected.inspect('engine-still-vlc','snapshot','--capture')
+        assert snapshot['core']['engine']=='vlc' and not snapshot['core']['engine_switching']
+        assert (portable/'vlcrc').read_bytes()==before
+        rejected.record['rejected_switch_did_not_write_config']=True
+        rejected.close(True)
+    finally: rejected.close()
+
+    failed=Case('engine-save-failure',engine=None,media=fixtures/'control.mkv',reused_profile=saved_vlc)
+    try:
+        failed.inspect('vlc-ready','snapshot','--await-core','state','--await-value','3')
+        config=portable/'vlcrc'
+        before=config.read_bytes()
+        k.CreateFileW.argtypes=[W.LPCWSTR,W.DWORD,W.DWORD,W.LPVOID,W.DWORD,W.DWORD,W.HANDLE]
+        k.CreateFileW.restype=W.HANDLE
+        held=k.CreateFileW(str(config),0x80000000,1,None,3,0x80,None)
+        assert held and held!=ctypes.c_void_p(-1).value,ctypes.WinError(ctypes.get_last_error())
+        try:
+            failed.click('open-engine-panel','toolsButton')
+            failed.inspect('switch-with-locked-config','click','--name','MPV')
+            snapshot=failed.inspect('session-only-choice','snapshot','--await-core','engine_switching','--await-value','false','--capture')
+            assert snapshot['core']['engine']=='mpv'
+            assert config.read_bytes()==before
+            assert any(row.get('text')=='Playback engine' and row.get('visible') for row in snapshot['tree']), 'Save failure notification absent'
+        finally: assert k.CloseHandle(held)
+        failed.record['failed_save_preserved_file_and_reported_session_only_choice']=True
+        failed.close(True)
+    finally: failed.close()
+    restored=Case('failed-save-next-launch',engine=None,media=fixtures/'control.mkv',reused_profile=failed.path/'profile')
+    try:
+        snapshot=restored.inspect('old-choice-restored','snapshot','--await-core','state','--await-value','3')
+        identity(restored,snapshot,'vlc')
+        restored.close(True)
+    finally: restored.close()
 
 
 def idle():
@@ -2330,7 +2515,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue

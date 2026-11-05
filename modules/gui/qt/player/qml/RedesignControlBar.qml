@@ -17,7 +17,7 @@ T.Pane {
     readonly property bool compact:width<PlayerStyle.px(760)
     readonly property bool menuOpen:subtitles.visible||audio.visible||settings.visible||subtitleMatching.visible||playbackMenu.shown||PlayerCustomization.editing
     readonly property real sliderY:timelineHeight+(height-timelineHeight-PlayerStyle.px(28))/2
-    readonly property real timelineHeight:PlayerStyle.px(MediaTools.timelineVisible&&MediaTools.cues.length>0?30:0)
+    readonly property real timelineHeight:PlayerStyle.px(!Player.stillImagePreview&&MediaTools.timelineVisible&&MediaTools.cues.length>0?30:0)
     signal toggleQueue()
     signal hideChromeRequested()
     signal externalActionRequested(string key,var invoker)

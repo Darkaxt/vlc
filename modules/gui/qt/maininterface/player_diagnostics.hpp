@@ -291,7 +291,8 @@ private:
             {QStringLiteral("observation"), QStringLiteral("native_vlc_player_lock")},
             {QStringLiteral("state"), int(vlc_player_GetState(player))},
             {QStringLiteral("position"), vlc_player_GetPosition(player)},
-            {QStringLiteral("seekable"), vlc_player_CanSeek(player)}};
+            {QStringLiteral("seekable"), vlc_player_CanSeek(player)},
+            {QStringLiteral("still_image_preview"), m_player->isStillImagePreview()}};
         for (const auto &entry : {std::pair{"time_seconds", vlc_player_GetTime(player)},
                                   std::pair{"length_seconds", vlc_player_GetLength(player)}})
             core.insert(QString::fromLatin1(entry.first), entry.second == VLC_TICK_INVALID
@@ -333,6 +334,7 @@ private:
                 {QStringLiteral("mpv_history_ready"), m_player->mpvHistoryReady()},
                 {QStringLiteral("mpv_video_ready"), !mpv->value(QStringLiteral("video-out-params")).toMap().isEmpty()},
                 {QStringLiteral("seekable"), mpv->value(QStringLiteral("seekable")).toBool()},
+                {QStringLiteral("still_image_preview"), m_player->isStillImagePreview()},
                 {QStringLiteral("fullscreen"), m_player->isFullscreen()}};
             const bool idle = mpv->value(QStringLiteral("idle-active")).toBool();
             active[QStringLiteral("state")] = idle ? VLC_PLAYER_STATE_STOPPED : !mpv->isMediaLoaded()
@@ -487,6 +489,7 @@ private:
             const auto available=window->screen()?window->screen()->availableGeometry():QRect();
             const auto frame=window->frameGeometry();
             result.insert(QStringLiteral("window"), QJsonObject{{QStringLiteral("width"), window->width()},
+                {QStringLiteral("title"), window->title()},
                 {QStringLiteral("x"), window->x()}, {QStringLiteral("y"), window->y()},
                 {QStringLiteral("native_id_hex"), QString::number(qulonglong(window->winId()), 16)},
                 {QStringLiteral("height"), window->height()}, {QStringLiteral("dpr"), window->devicePixelRatio()},
@@ -747,6 +750,7 @@ private:
                 {QStringLiteral("position"), QStringLiteral("position")}, {QStringLiteral("time_seconds"), QStringLiteral("position")},
                 {QStringLiteral("length_seconds"), QStringLiteral("length")}, {QStringLiteral("url"), QStringLiteral("url")},
                 {QStringLiteral("seekable"), QStringLiteral("seekable")},
+                {QStringLiteral("still_image_preview"), QStringLiteral("stillImagePreview")},
                 {QStringLiteral("rate"), QStringLiteral("rate")},
                 {QStringLiteral("audio_delay_ms"), QStringLiteral("audioDelayMS")},
                 {QStringLiteral("subtitle_delay_ms"), QStringLiteral("subtitleDelayMS")},

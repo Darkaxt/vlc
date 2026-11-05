@@ -147,6 +147,7 @@ public:
     Q_PROPERTY(float rate READ getRate WRITE setRate NOTIFY rateChanged FINAL)
     Q_PROPERTY(QUrl url READ getUrl NOTIFY inputChanged FINAL)
     Q_PROPERTY(QString sourceLocationName READ getSourceLocationName NOTIFY inputChanged FINAL)
+    Q_PROPERTY(bool stillImagePreview READ isStillImagePreview NOTIFY stillImagePreviewChanged FINAL)
 
     Q_PROPERTY(VLCTime time READ getTime WRITE setTime NOTIFY timeChanged FINAL)
     Q_PROPERTY(VLCTime remainingTime READ getRemainingTime NOTIFY remainingTimeChanged FINAL)
@@ -300,6 +301,7 @@ public:
     bool cancelEngineRestart(input_item_t *stillCurrent = nullptr);
     void requireVlcTool(const QString &tool);
     QString playbackEngine() const;
+    bool isStillImagePreview() const;
     MpvPlayback *mpvPlayback() const;
     bool mpvAutostart() const;
     bool mpvStartPaused() const;
@@ -465,6 +467,7 @@ public slots:
 
 signals:
     void playbackEngineChanged();
+    void stillImagePreviewChanged();
 #ifdef VLC_PLAYER_DIAGNOSTICS
     void mpvHistoryReadyChanged();
 #endif

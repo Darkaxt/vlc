@@ -94,7 +94,7 @@ T.Pane {
             Image {
                 visible: row.glyph.length>0
                 smooth: false
-                source: row.glyph.length ? "qrc:/redesign/icons/menu-"+row.glyph+".svg" : ""
+                source: row.glyph.length ? PlayerStyle.themedIcon("qrc:/redesign/icons/menu-"+row.glyph+".svg") : ""
                 sourceSize: Qt.size(PlayerStyle.px(24),PlayerStyle.px(24))
                 Layout.preferredWidth: PlayerStyle.px(24)
                 Layout.preferredHeight: PlayerStyle.px(24)

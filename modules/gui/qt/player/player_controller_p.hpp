@@ -140,6 +140,7 @@ public:
     VLCDuration  m_remainingTime;
     double       m_position = 0.f;
     VLCDuration  m_length;
+    bool         m_stillImage = false;
 
 #ifdef QT_HAS_LIBATOMIC
     std::atomic<vlc_player_timer_smpte_timecode> m_highResolutionTime {{}};

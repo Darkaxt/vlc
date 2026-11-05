@@ -4,6 +4,8 @@ from ctypes import wintypes as W
 import hashlib
 from pathlib import Path
 import struct
+import shutil
+import subprocess
 import pefile
 from PIL import Image
 
@@ -88,14 +90,35 @@ def window_icon(hwnd, expected_pid, expected_png, output):
         image=Image.frombytes('RGBA',(bitmap.width,bitmap.height),pixels.raw,'raw','BGRA')
         image.save(output)
         opaque=[pixel for pixel in image.get_flattened_data() if pixel[3]==255]
-        assert opaque and all(max(abs(pixel[index]-channel) for index,channel in enumerate((211,121,24)))<=2 for pixel in opaque),'Native icon retains the upstream artwork'
+        mpv=Path(expected_png).suffix.lower()=='.svg'
+        if not mpv:
+            assert opaque and all(max(abs(pixel[index]-channel) for index,channel in enumerate((211,121,24)))<=2 for pixel in opaque),'Native icon retains the upstream artwork'
         assert any(pixel[3]==0 for pixel in image.get_flattened_data()),'Native icon lost transparency'
-        expected=Image.open(expected_png).convert('RGBA').resize(image.size,Image.Resampling.LANCZOS)
+        reference=Path(expected_png)
+        if mpv:
+            # Compare actual HWND artwork with a raster of the unchanged pinned
+            # official SVG, rather than accepting any purple/circular icon.
+            import json
+            provenance=json.loads(reference.with_name('mpv-source.json').read_text(encoding='utf-8'))
+            assert hashlib.sha256(reference.read_bytes()).hexdigest() in json.dumps(provenance)
+            renderer=shutil.which('magick')
+            assert renderer,'Installed SVG renderer required for official MPV reference'
+            raster=Path(output).with_name(Path(output).stem+'-reference.png')
+            subprocess.run([renderer,'-background','none','-density','384',str(reference),
+                '-resize',str(image.width)+'x'+str(image.height)+'!',str(raster)],check=True,
+                creationflags=subprocess.CREATE_NO_WINDOW)
+            reference=raster
+        expected=Image.open(reference).convert('RGBA').resize(image.size,Image.Resampling.LANCZOS)
         observed_mask={index for index,pixel in enumerate(image.get_flattened_data()) if pixel[3]>=128}
         expected_mask={index for index,pixel in enumerate(expected.get_flattened_data()) if pixel[3]>=128}
         overlap=len(observed_mask & expected_mask)/len(observed_mask | expected_mask)
-        assert overlap>=.94,('Native icon shape differs from the in-app cone',overlap)
-        return {'size':image.size,'root_window':format(root,'x'),'origin':origin,'flat_cone':True,
+        assert overlap>=.94,('Native icon shape differs from the maintained artwork',overlap)
+        if mpv:
+            differences=[abs(a-b) for actual,wanted in zip(image.get_flattened_data(),expected.get_flattened_data())
+                if actual[3]>=240 and wanted[3]>=240 for a,b in zip(actual[:3],wanted[:3])]
+            assert differences and sum(differences)/len(differences)<12,'Native icon differs from official MPV gradients/play emblem'
+        return {'size':image.size,'root_window':format(root,'x'),'origin':origin,'flat_cone':not mpv,
+            'official_mpv':mpv,
             'transparent':True,'alpha_shape_overlap':overlap,'expected_png_sha256':hashlib.sha256(Path(expected_png).read_bytes()).hexdigest()}
     finally:
         if info.mask:gdi.DeleteObject(info.mask)

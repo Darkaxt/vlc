@@ -4,6 +4,7 @@ pragma Singleton
 import QtQuick
 import VLC.Style
 import VLC.MainInterface
+import VLC.Util
 
 QtObject {
     id: style
@@ -28,5 +29,12 @@ QtObject {
     readonly property color hover: dark ? "#3b3b3b" : "#c5c5c5"
     readonly property FontLoader inter: FontLoader { source: "qrc:/redesign/fonts/InterVariable.ttf" }
     readonly property string fontFamily: inter.name
+    function themedIcon(source) {
+        return SVGColorImage.colorize(source).any({
+            "rgb(143,143,143)": foreground, "#8f8f8f": foreground,
+            "rgb(211,121,24)": accent, "#d37918": accent,
+            "rgb(171,99,20)": accentKnob, "#ab6314": accentKnob
+        }).uri()
+    }
     function px(value) { return VLCStyle.dp(value, VLCStyle.scale) }
 }

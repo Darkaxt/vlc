@@ -133,6 +133,18 @@ void PlayerController::initializeMpvPlayback()
             d->m_videoTracks.updateExternalTracks(value.toList(), QStringLiteral("video"));
             d->m_audioTracks.updateExternalTracks(value.toList(), QStringLiteral("audio"));
             d->m_subtitleTracks.updateExternalTracks(value.toList(), QStringLiteral("sub"));
+            bool image = false, audio = false;
+            for (const auto &entry : value.toList()) {
+                const auto track = entry.toMap();
+                audio |= track.value(QStringLiteral("type")) == QStringLiteral("audio");
+                image |= track.value(QStringLiteral("type")) == QStringLiteral("video")
+                    && track.value(QStringLiteral("image")).toBool()
+                    && !track.value(QStringLiteral("albumart")).toBool();
+            }
+            if (d->m_stillImage != (image && !audio)) {
+                d->m_stillImage = image && !audio;
+                emit stillImagePreviewChanged();
+            }
         } else if (name == QStringLiteral("video-params")) {
             const bool video = !value.toMap().isEmpty();
             if (video != d->m_hasVideo) { d->m_hasVideo = video; emit hasVideoOutputChanged(video); }
@@ -190,6 +202,7 @@ void PlayerController::initializeMpvPlayback()
         {
             vlc_player_locker lock(d->m_player);
             d->m_currentItem.reset(nullptr);
+            d->m_stillImage = false;
         }
         d->m_videoTracks.clear(); d->m_audioTracks.clear(); d->m_subtitleTracks.clear();
         d->m_chapterList.resetTitle(nullptr); d->m_hasChapters = false; emit hasChaptersChanged(false);
@@ -359,6 +372,7 @@ void PlayerController::loadMpvItem(input_item_t *item, bool paused)
     d->m_url = QUrl(qfu(uri.get()));
     d->m_name = qfu(name.get()); d->m_title = d->m_name;
     d->m_time = VLCTime(0); d->m_length = VLCDuration(0); d->m_position = 0.;
+    d->m_stillImage = false;
     d->m_playing_status = PLAYING_STATE_STARTED;
     d->m_buffering = 0.f;
     d->UpdateArt(item); d->UpdateMeta(item);
@@ -536,6 +550,21 @@ void PlayerController::completeEngineSwitch()
         vlc_player_SetExternalPlayback(d->m_player, toMpv);
     }
     d->m_playing_status = PLAYING_STATE_STOPPED;
+    // Only an accepted engine transition changes the next-launch preference.
+    // Leave the selected engine usable if saving fails, but restore the old
+    // configuration value and report that this choice was not persisted.
+    const auto previousEngine = vlc::wrap_cptr(config_GetPsz("qt-playback-engine"));
+    const auto selectedEngine = playbackEngine().toUtf8();
+    config_PutPsz("qt-playback-engine", selectedEngine.constData());
+    if (config_SaveConfigFile(d->p_intf) != 0) {
+        config_PutPsz("qt-playback-engine", previousEngine.get());
+        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "Playback engine", "%s",
+            qtu(tr("The engine changed for this session, but its startup preference could not be saved.")));
+    } else {
+        auto *instance = vlc_object_instance(d->p_intf);
+        if (!var_Type(instance, "qt-playback-engine")) var_Create(instance, "qt-playback-engine", VLC_VAR_STRING);
+        var_SetString(instance, "qt-playback-engine", selectedEngine.constData());
+    }
     emit playbackEngineChanged();
     bool sameItem = false;
     {

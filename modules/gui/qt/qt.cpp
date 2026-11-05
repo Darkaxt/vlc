@@ -829,11 +829,21 @@ static int OpenInternal( qt_intf_t *p_intf )
     p_intf->p_mi = NULL;
     p_intf->mpvPlayback = false;
     p_intf->mpvAutostart = false;
+    // In this interface, an ordinary image is a persistent preview. Keep an
+    // explicit command-line/input option or nondefault saved slideshow duration.
+    // This is an instance override, never a write to the user's configuration.
+    auto *instance = vlc_object_instance(p_intf);
+    const auto *imageDuration = config_FindConfig("image-duration");
+    if (!p_intf->b_isDialogProvider && imageDuration
+        && var_Type(instance, "image-duration") == 0
+        && config_GetFloat("image-duration") == imageDuration->orig.f) {
+        var_Create(instance, "image-duration", VLC_VAR_FLOAT);
+        var_SetFloat(instance, "image-duration", -1.f);
+    }
 #ifdef _WIN32
     const auto engine = vlc::wrap_cptr(var_InheritString(p_intf, "qt-playback-engine"));
     p_intf->mpvPlayback = !p_intf->b_isDialogProvider && engine && !strcmp(engine.get(), "mpv");
     if (p_intf->mpvPlayback) {
-        auto *instance = vlc_object_instance(p_intf);
         var_Create(instance, "qt-mpv-action", VLC_VAR_INTEGER);
         var_Create(instance, "qt-mpv-active", VLC_VAR_BOOL);
         var_SetBool(instance, "qt-mpv-active", true);

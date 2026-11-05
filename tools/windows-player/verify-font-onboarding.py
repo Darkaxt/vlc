@@ -92,6 +92,11 @@ def main():
         env['VLC_PLAYER_DIAGNOSTICS_PROXY_PORT'] = str(ready['port'])
     current_session = None
 
+    def assert_shortcuts(snapshot):
+        next_button = [node for node in snapshot['tree'] if node['id'] == 'onboardingNext' and node['visible']]
+        assert len(next_button) == 1 and next_button[0]['text'] == 'Finish', next_button
+        assert not any(node['visible'] for node in snapshot['tree'] if node['id'] == 'onboardingFontPage')
+
     def inspect(label, operation, *options):
         completed = subprocess.run([sys.executable, '-B', str(Path(__file__).with_name('inspect-player.py')),
             '--session', str(current_session), operation, *map(str, options)], capture_output=True,
@@ -141,21 +146,45 @@ def main():
                 if not setup:
                     assert snapshot['optional_legacy_font']['available']
                     assert not snapshot['customization']['onboardingVisible']
-                    inspect('reopen-menu', 'click', '--target', 'topBarMenuButton')
+                    inspect('reopen-preferences', 'key', '--key', '0x50', '--modifiers', '0x4000000')
+                    def reveal(label, target):
+                        snapshot=inspect(label+'-locate','snapshot')
+                        seen=set()
+                        while True:
+                            item=next(row for row in snapshot['widgets'] if row['id']==target)
+                            if item['center_visible']: return
+                            area=next(row for row in snapshot['widgets'] if row['id']=='preferencesScroll0')
+                            assert area['scroll_value'] not in seen,('Cannot reveal native control',target)
+                            seen.add(area['scroll_value'])
+                            snapshot=inspect(label+'-scroll-'+str(len(seen)),'widget_scroll',
+                                '--target','preferencesScroll0','--delta','-120')
+                    reveal('reopen-advanced','preferencesAdvanced0')
+                    inspect('reopen-advanced', 'widget_click', '--target', 'preferencesAdvanced0')
+                    reveal('reopen-commands','preferencesAction-vlc-commands')
+                    inspect('reopen-commands', 'widget_click', '--target', 'preferencesAction-vlc-commands')
                     inspect('reopen-setup', 'widget_click', '--menu-action', 'Welcome / Appearance Setup…')
                     for page in range(2):
                         inspect('reopen-next-' + str(page), 'click', '--target', 'onboardingNext')
                     cached = inspect('reopened-cache', 'snapshot', '--capture')
                     assert cached['optional_legacy_font']['available'] and not cached['optional_legacy_font']['busy']
                     assert 'No download is needed' in cached['optional_legacy_font']['status']
-                    inspect('cached-to-shortcuts', 'click', '--target', 'onboardingNext')
+                    assert_shortcuts(cached)
+                    back = inspect('cached-back-to-theme', 'click', '--target', 'onboardingBack')
+                    assert not any(node['visible'] for node in back['tree'] if node['id'] == 'onboardingFontPage')
+                    assert any(node['visible'] for node in back['tree'] if node['id'] == 'onboardingTheme0')
+                    assert_shortcuts(inspect('cached-forward-to-shortcuts', 'click', '--target', 'onboardingNext'))
                     finished = inspect('finish-reopened', 'click', '--target', 'onboardingNext')
                     assert not finished['customization']['onboardingVisible']
                     return
                 for page in range(2):
                     inspect('next-' + str(page), 'click', '--target', 'onboardingNext')
-                inspect('font-page', 'snapshot', '--capture')
-                if args.mode in ('fallback', 'corrupt'):
+                page = inspect('font-or-shortcuts-page', 'snapshot', '--capture')
+                if args.mode == 'cached':
+                    assert_shortcuts(page)
+                    back = inspect('first-cached-back-to-theme', 'click', '--target', 'onboardingBack')
+                    assert any(node['visible'] for node in back['tree'] if node['id'] == 'onboardingTheme0')
+                    assert_shortcuts(inspect('first-cached-forward-to-shortcuts', 'click', '--target', 'onboardingNext'))
+                elif args.mode in ('fallback', 'corrupt'):
                     if args.mode == 'corrupt':
                         failed = inspect('preserve-corrupt', 'click', '--target', 'onboardingNext')
                         assert not failed['optional_legacy_font']['busy'] and not failed['optional_legacy_font']['available']
@@ -191,7 +220,7 @@ def main():
                     downloaded = inspect('download-or-use-cache', 'click', '--target', 'onboardingNext',
                         '--await-target', 'onboardingFontStatus', '--await-property', 'busy', '--await-value', 'false')
                     assert downloaded['optional_legacy_font']['available'], downloaded['optional_legacy_font']
-                inspect('shortcut-reference', 'snapshot', '--capture')
+                assert_shortcuts(inspect('shortcut-reference', 'snapshot', '--capture'))
                 inspect('finish-shortcuts', 'click', '--target', 'onboardingNext')
                 # With the folder blank, completion is synchronous in MainCtx.
                 # Observe the next actual frame and state; the closed Loader

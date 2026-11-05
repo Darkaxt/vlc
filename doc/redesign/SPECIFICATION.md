@@ -4,13 +4,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
-**5 November next repair round, R90–R92 (M6), already authorized:**
+**5 November next repair round, R90–R95 (M6), already authorized:**
 
 - R90: bypass the optional font page in both forward and backward wizard navigation when the existing font service reports the font available. Missing or unrecognized fonts retain the download, cancellation and FreeSans flow. Preserve inline shortcut editing and Finish/restart behavior.
 - R91: opening a still image is an untimed preview, not a synthetic ten-second video. Keep the image visible until the user leaves it; remove elapsed/duration, seeking and seek-preview UI for that input. Preserve image navigation, explicit timed/slideshow capabilities, real video and animated-image playback, and both playback engines. Verify the actual native image remains displayed beyond the old duration and that image/video replacement restores the appropriate controls.
 - R92: the centered idle/loading placeholder follows the selected engine: reuse the existing official MPV artwork for MPV and the redesign cone for VLC. Verify switching in both directions without changing the existing top-left branding or playback handover.
+- R93: a successful in-player engine selection becomes the saved startup engine. A failed switch must not change the saved choice; a failed preference save must be reported truthfully. Verify switching and restarting in both directions with an isolated profile, preserving explicit launch overrides and unrelated preferences.
+- R94: the actual main-window title and running Windows taskbar/window icon follow the selected engine: MPV Media Player and the existing official MPV artwork for MPV, VLC Media Player and the redesign cone for VLC. Preserve the media-name-in-title preference and restore identity in both switch directions and on restart. The executable file's distribution identity is unchanged.
+- R95: theme accent regions in two-tone settings/menu icons follow the effective accent, including MPV purple, while neutral outlines and original vector shapes remain intact. Correct the Playback tab's fixed amber triangle and check the other uses of the same rendering path. Verify native rendering with VLC default/custom accents and MPV selected.
 
-Batch these repairs into one normal update after their complete workflows pass. The independently verified 1.1.7 delivery remains valid for R88–R89; these new requests do not retroactively claim that delivery contains R90–R92.
+Batch these repairs into one normal update after their complete workflows pass. The independently verified 1.1.7 delivery remains valid for R88–R89; these new requests do not retroactively claim that delivery contains R90–R95.
 
 **M5 delivery reconciliation: COMPLETE.** Normal [1.1.7](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.7) from `e9caba476b64c27817ef935532d22921bae28f43` passed native wizard/editor/restart/dispatch, normal artifact/presentation, independent download, retained/weekly binding and cleanup gates. [Reconciliation](resources/m5-1.1.7-verification.json). Blockers and required deferrals are zero.
 
