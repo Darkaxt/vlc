@@ -1,9 +1,7 @@
-"""Run the pinned toolchain in a private mount namespace through the WSL gate.
+"""Run the pinned legacy or verified native-ext4 toolchain through the WSL gate.
 
-The extracted filesystem and all build/source/runtime files belong to the D: task.
-No distribution is imported, registered, configured, upgraded or retired here.
-The existing Ubuntu installation supplies only the already available kernel,
-Python and mount utilities. Every operation stays in the admitted cgroup.
+Distribution import is a separately verified migration, never an implicit build
+side effect. Both paths preserve the admitted cgroup and private mount lifetime.
 """
 import argparse
 import hashlib
@@ -18,10 +16,69 @@ import uuid
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--scratch', required=True, type=Path)
 parser.add_argument('--initialize', action='store_true')
+parser.add_argument('--native', action='store_true', help='Use the verified D:-backed native ext4 cohort')
 parser.add_argument('--inside-namespace', action='store_true', help=argparse.SUPPRESS)
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 root = args.scratch.resolve(strict=True)
+environment = ['PATH=/opt/tools/bin:/opt/tools/libexec:/opt/rust/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    'HOME=/work/home', 'TMPDIR=/work/tmp', 'LANG=en_US.UTF-8',
+    'WINE_SDK_PATH=/usr/include/wine/wine/windows', 'RUST_HOME=/opt/rust',
+    'RUSTUP_HOME=/opt/rust/rustup', 'CARGO_HOME=/opt/rust/cargo', 'WINEPREFIX=/work/wine',
+    'JOBS=1', 'CMAKE_BUILD_PARALLEL_LEVEL=1', 'CARGO_BUILD_JOBS=1']
+
+
+def native_toolchain():
+    assert root == Path('/mnt/d/VLC-Redesign/build/windows-x64') and not args.initialize
+    assert os.geteuid() == 0, 'Preserve the imported distribution default UID'
+    binding_path = root / 'native-storage.json'
+    binding = json.loads(binding_path.read_text())
+    assert binding == json.loads(Path('/scratch/native-storage.json').read_text())
+    assert binding['schema'] == 'vlc_redesign.native_build_storage.v1' and binding['state'] == 'verified'
+    assert binding['distribution'] == os.environ.get('WSL_DISTRO_NAME') == 'VLC-Build-20261106'
+    assert binding['vhdx_directory'] == 'D:/VLC-Redesign/build/wsl-native-20261106'
+    assert json.loads(Path('/.vlc-s8-toolchain.json').read_text()) == binding['toolchain_marker']
+    filesystem = subprocess.check_output(['/usr/bin/findmnt', '-n', '-o', 'FSTYPE', '-T', '/work'], text=True).strip()
+    assert filesystem == 'ext4', 'Compilation must use the migrated Linux filesystem'
+    group = Path('/proc/self/cgroup').read_text().strip().split('::', 1)[1]
+    assert group.startswith('/llm-coordinator/'), 'Use the installed WSL gate'
+    limits = Path('/sys/fs/cgroup' + group)
+    assert int((limits / 'memory.max').read_text()) <= 3758096384
+    assert int((limits / 'memory.swap.max').read_text()) <= 536870912
+    quota, period = (limits / 'cpu.max').read_text().split()
+    assert quota != 'max' and int(quota) <= int(period)
+    command = args.command[1:] if args.command[:1] == ['--'] else args.command
+    assert command and command[0].startswith('/')
+    if args.inside_namespace:
+        subprocess.run(['/usr/bin/mount', '-t', 'proc', 'proc', '/proc'], check=True)
+        raise SystemExit(subprocess.run(['/usr/bin/env', '-i', *environment, *command]).returncode)
+    staged = {}
+    for value in command:
+        if value.startswith('/scratch/'):
+            relative = Path(value).relative_to('/scratch')
+            assert len(relative.parts) == 1 and (root / relative).is_file()
+            shutil.copyfile(root / relative, Path('/scratch') / relative)
+            staged[value] = hashlib.sha256((root / relative).read_bytes()).hexdigest()
+    def cache_mounts():
+        return [line.split()[4] for line in Path('/proc/self/mountinfo').read_text().splitlines()
+                if 'vlc-compiler-cache' in line]
+    assert not cache_mounts(), 'Inspect an existing cache mount before building'
+    result = subprocess.run(['/usr/bin/unshare', '--user', '--map-root-user', '--mount', '--pid', '--fork',
+        '--propagation', 'private', sys.executable, str(Path(__file__).resolve()),
+        '--inside-namespace', *sys.argv[1:]])
+    assert not cache_mounts(), 'A cache mount escaped the private namespace'
+    receipt = {'schema': 'vlc_redesign.native_toolchain_execution.v1', 'group': group,
+        'filesystem': filesystem, 'binding_sha256': hashlib.sha256(binding_path.read_bytes()).hexdigest(),
+        'staged_control_files': staged, 'namespace_exit_code': result.returncode,
+        'private_mounts_released': True, 'environment': environment}
+    (root / 'evidence/native-toolchain-filesystem.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps(receipt), flush=True)
+    raise SystemExit(result.returncode)
+
+
+if args.native:
+    native_toolchain()
+
 temporary = root.parent == Path('/mnt/d/Temp') and root.name.startswith('vlc-s8-')
 retained = root == Path('/mnt/d/VLC-Redesign/build/windows-x64')
 assert temporary or retained, 'Use the exact task root or verified project build binding'
@@ -146,11 +203,6 @@ try:
         target = mount / 'scratch/mpv-source-inputs'
         run('/usr/bin/mount', '--bind', str(mpv_sources), str(target))
         mounted.append((target, False))
-    environment = ['PATH=/opt/tools/bin:/opt/tools/libexec:/opt/rust/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-        'HOME=/work/home', 'TMPDIR=/work/tmp', 'LANG=en_US.UTF-8',
-        'WINE_SDK_PATH=/usr/include/wine/wine/windows', 'RUST_HOME=/opt/rust',
-        'RUSTUP_HOME=/opt/rust/rustup', 'CARGO_HOME=/opt/rust/cargo', 'WINEPREFIX=/work/wine',
-        'JOBS=1', 'CMAKE_BUILD_PARALLEL_LEVEL=1', 'CARGO_BUILD_JOBS=1']
     run('/usr/sbin/chroot', str(mount), '/usr/bin/env', '-i', *environment, *command)
 finally:
     # The outer owner waits for namespace exit and records release there. Do

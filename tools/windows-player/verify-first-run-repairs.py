@@ -1079,7 +1079,7 @@ def media_previews():
         assert owned_native_read(case,read_title)==snapshot['window']['title']
         verify_window_icon(case,snapshot)
 
-    def theme_icon(case, label, engine):
+    def theme_icon(case, label, engine, custom=True):
         case.click(label+'-open', 'toolsButton')
         snapshot=case.inspect(label+'-rendered','snapshot','--await-target','playerPlaybackTabIcon',
             '--await-property','status','--await-value','1','--capture')
@@ -1093,16 +1093,19 @@ def media_previews():
         pixels=list(crop.getdata())
         colored=[rgb for rgb in pixels if max(rgb)-min(rgb)>20]
         assert colored, 'Playback tab accent is missing'
-        assert not any(r>100 and r>g*1.2 and g>b*1.2 for r,g,b in colored),'Fixed orange accent remains'
+        if custom or engine=='mpv':
+            assert not any(r>100 and r>g*1.2 and g>b*1.2 for r,g,b in colored),'Fixed orange accent remains'
         if engine=='mpv': assert any(r>g*2 and b>g*2 for r,g,b in colored),'MPV purple absent'
-        else: assert any(b>r*1.3 and b>g for r,g,b in colored),'Saved custom blue absent'
-        assert any(max(rgb)-min(rgb)<4 and 70<rgb[0]<180 for rgb in pixels),'Neutral outline lost'
+        elif custom: assert any(b>r*1.3 and b>g for r,g,b in colored),'Custom blue absent'
+        else: assert any(r>100 and r>g*1.2 and g>b*1.2 for r,g,b in colored),'Default amber absent'
+        assert any(max(rgb)-min(rgb)<4 and min(abs(rgb[0]-143),abs(rgb[0]-46))<5 for rgb in pixels),'Neutral outline lost'
         case.inspect(label+'-close','key','--key','0x1000000')
 
     for engine in ('vlc', 'mpv'):
         case = Case('image-preview-' + engine, engine=engine, media=images / 'still.jpg',extra=('--qt-accent-color=#3b82f6',))
         try:
             case.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
+            case.inspect('photo-video-surface','snapshot','--await-target','playerVideoSurface','--await-property','visible','--await-value','true')
             ready = case.inspect('still-preview', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'true', '--capture')
             no_clock(ready)
             identity(case,ready,engine)
@@ -1129,6 +1132,10 @@ def media_previews():
             animated = case.inspect('animation-controls', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'false', '--capture')
             assert any(item['visible'] for item in nodes(animated, 'playButton'))
             assert any(item['visible'] for item in nodes(animated, 'progressSlider'))
+            # Observe the real animation clock cross its second frame boundary;
+            # an accidentally frozen still image must not qualify as animation.
+            case.inspect('second-animation-frame','snapshot','--await-core','time_seconds','--await-value','6.2',
+                '--await-comparison','at_least','--capture')
             case.inspect('stop-animation', 'key', '--target', 'playerView', '--key', '0x53', '--text', 's')
             case.inspect('customize-menu', 'click', '--name', 'Main menu')
             case.inspect('customize-player', 'click', '--name', 'Customize Player')
@@ -1172,6 +1179,7 @@ def media_previews():
         try:
             timed.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
             ready = timed.inspect('timed-paused-image', 'snapshot', '--await-core', 'state', '--await-value', '3', '--capture')
+            ready = timed.inspect('timed-duration-known','snapshot','--await-core','length_seconds','--await-value','1','--await-tolerance','0.05')
             assert not ready['core']['still_image_preview']
             assert any(item['visible'] for item in nodes(ready, 'progressSlider'))
             timed.click('start-timed-image', 'playButton', '--await-core', 'state', '--await-value', '2')
@@ -1182,6 +1190,13 @@ def media_previews():
             timed.record['explicit_timed_image_natural_eof'] = True
             timed.close(True)
         finally: timed.close()
+
+    default=Case('default-accent-vlc',media=fixtures/'control.mkv')
+    try:
+        default.inspect('default-paused','snapshot','--await-core','state','--await-value','3')
+        theme_icon(default,'default-theme','vlc',custom=False)
+        default.close(True)
+    finally: default.close()
 
     # A real incompatible compositor rejects MPV before any engine preference
     # write. This is a supported native VLC path, not a diagnostic fake failure.

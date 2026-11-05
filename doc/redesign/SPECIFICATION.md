@@ -4,6 +4,28 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**6 November R96 (M6), already authorized:** migrate the Linux build toolchain,
+source and reusable objects from the Windows-mounted tree into native ext4
+storage backed by a VLC-owned WSL2 virtual disk on internal D:. Preserve pinned
+toolchain/dependency/runtime provenance, absolute `/work` paths, contents,
+symlinks and build-input/object mtimes. Verify the copied cohort and unchanged
+configure inputs before resuming the original interrupted pipeline; do not
+reinstall the SDK or discard completed objects. Use the supported WSL gate with
+the existing4GiB VM/3.5GiB workload/512MiB swap/one CPU/one compiler limits.
+Remove the per-build Windows-header RAM-cache copy from the native execution
+recipe. Measure equivalent representative metadata/header reads and compiler
+preprocessing before/after, and observe host disk latency/queue and available
+memory during migration and resumed work. These observations must not be
+presented as proof of the historical desktop-freeze cause or a host-I/O latency
+guarantee. Keep Windows source editing, native acceptance and release delivery at
+their established paths; transfer only required changes/control metadata and
+finished artifacts. Preserve the old cohort as the explicit rollback until the
+new binding and release are verified, then retire expendable migration output
+and superseded build inputs through transactional cleanup. Existing Ubuntu,
+Docker, user settings and global WSL limits remain preserved. The user's “go
+ahead” resumes this chat for this migration and the outstanding M6 outcome;
+other chats are not resumed by this instruction.
+
 **5 November next repair round, R90–R95 (M6), already authorized:**
 
 - R90: bypass the optional font page in both forward and backward wizard navigation when the existing font service reports the font available. Missing or unrecognized fonts retain the download, cancellation and FreeSans flow. Preserve inline shortcut editing and Finish/restart behavior.

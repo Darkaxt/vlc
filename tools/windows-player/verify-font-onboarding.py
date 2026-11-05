@@ -30,12 +30,13 @@ def main():
     parser.add_argument('--skin-fixture', type=Path, required=True)
     parser.add_argument('--mode', choices=['download', 'fallback', 'cancel', 'retry', 'cached', 'corrupt'], required=True)
     parser.add_argument('--font-archive', type=Path)
+    parser.add_argument('--cached-font', type=Path, help='Read-only verified existing Delicious cache for the cached-font navigation workflow')
     parser.add_argument('--theme', choices=['light', 'dark'], default='light')
     parser.add_argument('--scale', choices=['1', '1.5', '2'], default='1')
     parser.add_argument('--skip-skin', action='store_true')
     args = parser.parse_args()
     source, scratch = args.runtime.resolve(), args.scratch.resolve()
-    assert scratch.drive.upper() == 'D:' and scratch.parent.name.startswith('vlc-s7-') and not scratch.exists()
+    assert scratch.drive.upper() == 'D:' and scratch.parent.name.startswith(('vlc-s7-', 'vlc-s8-preview-')) and not scratch.exists()
     assert args.fixture.is_file() and args.skin_fixture.is_file()
     plugin = source / 'plugins/gui/libqt_plugin.dll'
     assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
@@ -53,9 +54,12 @@ def main():
     if args.mode in ('cached', 'corrupt'):
         expected_font.parent.mkdir(parents=True)
         if args.mode == 'cached':
-            assert args.font_archive and hashlib.sha256(args.font_archive.read_bytes()).hexdigest() == ARCHIVE_HASH
-            with zipfile.ZipFile(args.font_archive) as archive:
-                blob = archive.read('DELICIOUS_21_OTF/Delicious_R_2021.otf')
+            if args.cached_font:
+                blob=args.cached_font.read_bytes()
+            else:
+                assert args.font_archive and hashlib.sha256(args.font_archive.read_bytes()).hexdigest() == ARCHIVE_HASH
+                with zipfile.ZipFile(args.font_archive) as archive:
+                    blob = archive.read('DELICIOUS_21_OTF/Delicious_R_2021.otf')
             assert hashlib.sha256(blob).hexdigest() == FONT_HASH
             expected_font.write_bytes(blob)
         else:

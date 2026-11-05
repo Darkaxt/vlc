@@ -1,8 +1,26 @@
 # VLC redesign stages and reconciliation
 
+**6 November: M6 execution resumed for authorized R96 storage migration.**
+R90–R95 and final1.1.8 delivery remain assigned to the same sole ACTIVE M6 stage.
+R96 is necessary recovery/integration work before compilation resumes: freeze
+and copy the current pinned cohort once; import a VLC-only WSL2 filesystem at
+`D:/VLC-Redesign/build/wsl-native-20261106`; verify contents/symlinks/object and
+input mtimes, unchanged configure inputs, native ext4 execution and measured
+metadata/header/preprocessor performance; then resume run44 under its original
+pipeline identity with the exact225/137 interruption report. Keep the existing
+resource limits and one job, use native files without the Windows-header RAM
+cache, and observe host I/O/memory. The existing NTFS cohort is rollback, not
+another compilation destination. Preserve the current Windows checkout, dirty
+test/doc changes and untracked AGENTS.md. Migration/acceptance/build/release
+criteria remain unverified; no external blocker or tracked deferral is claimed.
+No second ACTIVE stage, dependency reinstall, whole-WSL stop or premature
+release is introduced. The earlier explicit-pause record below remains history.
+
 **M6 Font navigation, media preview and engine identity: ACTIVE (5 November).** R90–R95 are newly authorized. Investigation identified unconditional theme/font/shortcuts navigation, VLC's ten-second image-demux default, a fixed centered cone, session-only engine selection and an unthemed amber Playback-tab SVG. M5 cleanup and delivery closure passed; only M6 receives implementation. Acceptance: available-font forward/back bypass plus unchanged missing/corrupt/download/fallback flow; untimed still-image behavior across both engines and image/video replacement, preserving animation and explicit timed playback; engine-aware centered/window/taskbar identity; saved engine selection and restart in both directions without changing a failed selection; theme-aware two-tone accents with original artwork preserved; one normal1.1.8 release with independent delivered-package verification. These implementable gaps block M6 acceptance; no external blocker or tracked deferral. No M5 criterion is deferred into M6. These new requirements are not delivered in 1.1.7.
 
 M6 coherent source is integrated before compilation. Native checks cover both-engine photo survival/replacement/animation/timed override, centered and HWND identity, successful selection/restart/explicit override, rejected switch/failed save and actual two-tone icon pixels. Available-font forward/back/reopen checks use the real cached font service. Fresh acceptance remains pending. Reuse the verified Ubuntu-hosted private toolchain namespace and Qt-only409-plugin guard; preserve all SDK/MPV/codec objects, optimized flags and native state. Task control is `E:/Temp/vlc-preview-1.1.8-20261105`; sustained native/build I/O uses exact `D:/Temp/vlc-s8-preview-1.1.8-20261105` and retained `scratch-share/preview-1.1.8`. Cleanup transaction `b4da9d0b04c7eb47593c482da9cfea68` registers these exact outputs. This is an intermediate source freeze, not verified completion or publication.
+
+**M6 execution paused at explicit user request (5 November):** the user reported a frozen Windows desktop and requested all chat activity pause. Supported gate stop cancelled only original225/request `b8aa2029e76d416b8770072015525a2e`; session68674 ended1 with Linux137, freshly verified `populated=false`, peak charged1,176,899,584 bytes and no max/OOM events. This is a requested cancellation, not a diagnosed compiler crash or explanation of the desktop freeze. Source freeze `278d9f346ce33fa95cee63c8b326334ac7caa080`, completed objects, run44 and test-only draft changes are preserved. The namespace-wrapper receipt was not refreshed by the forced stop; its previous exit0 is historical. Wait for explicit resume, then reconcile namespace/cache state and resume the same pipeline with the exact interrupted report. M6 remains ACTIVE with execution paused and all fresh acceptance/release criteria pending;1.1.7 remains the verified delivery. No new acceptance, normal assembly,1.1.8 publication, broader WSL stop or desktop action occurred.
 
 **M5 Onboarding and interface shortcuts: COMPLETE (5 November).** R88–R89 are delivered in normal [1.1.7](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.7) from `e9caba476b64c27817ef935532d22921bae28f43`. The complete wizard capture/Unset/Cancel/Escape/conflict/reassignment/Finish/restart/failed-save workflow passes at 100%, with layout, capture cancellation and Finish/restart also verified at 150/200%; no Preferences or Hotkeys window opens. Interface shortcuts including Stream are searchable/editable; saved Stream dispatch passes after restart. The four-field appearance profile contract and separate live blur getter are preserved. Actual native layouts inspected; optimized normal artifacts, VLC/MPV SDR/P5 presentation, independent downloads, retained/weekly bindings and obsolete-output cleanup pass. [Reconciliation](resources/m5-1.1.7-verification.json). Blockers0; required deferrals0; S9 remains NOT STARTED. Earlier compiler/checker failures remain in retained original evidence; all unaffected completed checks were reused against identical production blobs.
 

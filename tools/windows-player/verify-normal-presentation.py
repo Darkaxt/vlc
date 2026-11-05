@@ -199,7 +199,7 @@ observer_command = [sys.executable, '-B', str(repo / 'tools/windows-player/obser
 if args.verify_app_icon:
     from app_icon_checks import executable_icon
     result['executable_app_icon']=executable_icon(runtime/'vlc.exe',repo/'share/icons/vlc.ico')
-    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/app.png')]
+    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/mpv.svg')]
 observer = player = None
 with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb') as error, \
         (evidence / 'observer.stdout').open('wb') as observer_output, (evidence / 'observer.stderr').open('wb') as observer_error:
@@ -267,7 +267,8 @@ checks = {'all_visible_owned_windows_offscreen': offscreen, 'no_observer_errors'
     'no_mpv_runtime_errors': not any(re.search(r'\berror:\s+mpv/', line) for line in log.splitlines()),
     'no_qml_errors': not re.search(r'TypeError:|ReferenceError:|Binding loop detected|Cannot assign to non-existent property', log + stderr)}
 if args.verify_app_icon:
-    checks['native_flat_app_icon']=bool(window_events['native_window_icons'])
+    checks['native_engine_app_icon']=bool(window_events['native_window_icons']) and all(
+        icon['official_mpv'] for icon in window_events['native_window_icons'].values())
 if args.mode in {'private','private-playback'}:
     # User lock/unlock is independent of our inactive desktop. Preserve that
     # observation without equating it to activation of the owned test desktop.
