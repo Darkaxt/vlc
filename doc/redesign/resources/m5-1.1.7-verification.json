@@ -1,0 +1,60 @@
+{
+  "stage": "M5",
+  "status": "COMPLETE",
+  "version": "1.1.7",
+  "source_commit": "e9caba476b64c27817ef935532d22921bae28f43",
+  "native_evidence_source_commit": "3c1ce0f16be7d21e558e2d966f3c52a85b9f7000",
+  "acceptance_applicability": {
+    "native_producer": "3c1ce0f16be7d21e558e2d966f3c52a85b9f7000",
+    "normal_producer": "e9caba476b64c27817ef935532d22921bae28f43",
+    "production_tree_sha256": "15f657fde8e5132ee82fb362c461cf69738e56e417dba7ffe2d1691dd2e3394b",
+    "changed_paths": [
+      "tools/windows-player/verify-first-run-repairs.py"
+    ],
+    "basis": "Only native verification driver changed; all application production blobs and modes are identical."
+  },
+  "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.7",
+  "upstream_commit": "8a47770f6333df6b60181329db5fdaad318bdb44",
+  "requirements": {
+    "R88": "Complete wizard capture/Unset/Cancel/Escape/named conflict/reassignment, Finish/restart and failed-save rollback workflow passed at 100%; native layout, capture cancellation and Finish/restart also passed at 150/200%. No Preferences or Hotkeys window.",
+    "R89": "Interface commands searchable/editable through shared native configuration; Stream rebound, saved, restarted and actually dispatched. Standalone capture Escape passed."
+  },
+  "actual_native_images_inspected": 4,
+  "configured_plugins": 410,
+  "stripped_pe_mappings": 417,
+  "downloaded_hashes": {
+    "Modern-VLC-Fork-1.1.7-win64-portable.zip": "b165f8f8d238ec2cfe75067df722a9fdfa30be5c70c8590a052523e9ff625cd4",
+    "Modern-VLC-Fork-1.1.7-corresponding-source.tar.gz": "0e0332ca0f1234ae492be8b7c1bf67087683cd5413361e7f4db1de466af30ef7",
+    "Modern-VLC-Fork-1.1.7-win64-symbols.zip": "47b825a4495ec11434887a26bb1e083df3ff450fbb0f52812bb93aeb79008e3a"
+  },
+  "protected_profiles_unchanged": true,
+  "actual_sdr_and_p5_presentation_verified": true,
+  "retained_binding_verified": true,
+  "weekly_schedule_preserved": true,
+  "older_release_entries_retired_tags_preserved": true,
+  "cleanup": {
+    "passed": true,
+    "transaction_id": "7857be0a56f8bf6d6a5a2a7bbb40a49b",
+    "state": "applied",
+    "deleted_bytes": 25522317021,
+    "result_counts": {
+      "deleted": 178435
+    },
+    "review_manifest_sha256": "08d465a0cfb357a44f8ae991773e3d74f522853c5997837d92b84e8289a1d310",
+    "all_reviewed_roots_absent": true,
+    "current_release_hashes_and_retained_build_preserved": true,
+    "roots": [
+      "D:\\Temp\\vlc-s8-shortcuts-1.1.7-20261105",
+      "D:\\VLC-Redesign\\build\\windows-x64\\scratch-share\\shortcuts-1.1.7",
+      "E:\\Temp\\vlc-shortcuts-1.1.7-20261105",
+      "D:\\VLC-Redesign\\build\\windows-x64\\shortcuts-1.1.7-paused.json",
+      "D:\\VLC-Redesign\\releases\\1.1.6"
+    ]
+  },
+  "blockers": [],
+  "tracked_deferrals": [],
+  "evidence_directory": "D:\\VLC-Redesign\\releases\\1.1.7\\verification",
+  "build_retention_sha256": "0a9c2dbce2cdf8670772571330c42940ec1fdfa733590752381edfb9d3b04639",
+  "delivery_verification_sha256": "e5c363ec3ede7ec8b42cfaea0e7f1a20c3a30023b61dc021f1d219244ee307df",
+  "refactoring_assessment": "Native configuration is the single shortcut owner; obsolete wizard-to-Preferences routing and hardcoded reservations removed. Four-field appearance profile contract restored, blur getter separate. No required consolidation or new infrastructure."
+}

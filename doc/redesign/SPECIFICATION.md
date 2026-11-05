@@ -4,6 +4,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**5 November next repair round, R90–R92 (M6), already authorized:**
+
+- R90: bypass the optional font page in both forward and backward wizard navigation when the existing font service reports the font available. Missing or unrecognized fonts retain the download, cancellation and FreeSans flow. Preserve inline shortcut editing and Finish/restart behavior.
+- R91: opening a still image is an untimed preview, not a synthetic ten-second video. Keep the image visible until the user leaves it; remove elapsed/duration, seeking and seek-preview UI for that input. Preserve image navigation, explicit timed/slideshow capabilities, real video and animated-image playback, and both playback engines. Verify the actual native image remains displayed beyond the old duration and that image/video replacement restores the appropriate controls.
+- R92: the centered idle/loading placeholder follows the selected engine: reuse the existing official MPV artwork for MPV and the redesign cone for VLC. Verify switching in both directions without changing the existing top-left branding or playback handover.
+
+Batch these repairs into one normal update after their complete workflows pass. The independently verified 1.1.7 delivery remains valid for R88–R89; these new requests do not retroactively claim that delivery contains R90–R92.
+
+**M5 delivery reconciliation: COMPLETE.** Normal [1.1.7](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.7) from `e9caba476b64c27817ef935532d22921bae28f43` passed native wizard/editor/restart/dispatch, normal artifact/presentation, independent download, retained/weekly binding and cleanup gates. [Reconciliation](resources/m5-1.1.7-verification.json). Blockers and required deferrals are zero.
+
 **5 November post-1.1.6 regression, R88–R89 (M5):** shortcut changes started
 from onboarding must remain inside the wizard. Capture, named conflict feedback,
 explicit reassignment, Unset and Cancel must never open Preferences, the Hotkeys

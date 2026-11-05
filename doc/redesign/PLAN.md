@@ -1,27 +1,8 @@
 # VLC redesign stages and reconciliation
 
-**M5 Onboarding and interface shortcuts: ACTIVE (5 November).** R88–R89 cover
-the reported trapped capture, wizard-only editing and configurable/searchable
-interface commands. Only M5 receives implementation. M4/1.1.6 delivery remains
-historical and unchanged; S9 remains NOT STARTED. Acceptance remaining: complete
-wizard assignment/conflict/reassign/Unset/Cancel/Finish/restart with no additional
-windows; searchable editable Stream and interface commands with truthful hints
-and real dispatch; existing standalone editor behavior; one coordinated native
-acceptance pass followed by normal release and independent delivery verification.
-Internal blockers are these unimplemented/unverified criteria; no external blocker
-or tracked deferral. Reuse unaffected 1.1.6 runtime/MPV/DV evidence only after exact
-applicability checks. Preserve the user's running D:/Tools/Modern VLC instance.
+**M6 Font navigation, still-image preview and engine placeholder: NOT STARTED (5 November).** R90–R92 are newly authorized. Investigation identified unconditional theme/font/shortcuts navigation, VLC's ten-second image-demux default and a centered cone independent of the existing engine-aware top-left logo. Implement after the original M5 cleanup and delivery closure finish; M5 remains the only ACTIVE stage. Acceptance: available-font forward/back bypass plus unchanged missing/corrupt/download/fallback flow; untimed still-image presentation and appropriate controls across both engines and image/video replacement while preserving animation and explicit timed playback; MPV/VLC centered artwork in both switch directions; one normal release with independent delivered-package verification. No M5 criterion is deferred into M6. These new requirements remain pending, not delivered in 1.1.7.
 
-Finish regression traced: R87 appended blur radius to the four-field profile
-appearance snapshot, which Finish rejects. Keep that snapshot's existing contract
-and read blur through its own native getter. The M5 Finish/restart and failed-save
-flows must verify this correction alongside shortcut persistence. Owned build219
-was stopped137, group empty/no OOM; retain its objects and resume after binding
-this correction, without rebuilding dependencies or changing configuration.
-Run41/220 identified the converter's missing vlc_plugin.h include for
-CONFIG_ITEM_KEY; its remaining object census is allowed to finish. Resume the
-same diagnostic pipeline with the required include and exact Stream-row checker,
-preserving all completed Qt objects. Native acceptance and delivery remain pending.
+**M5 Onboarding and interface shortcuts: COMPLETE (5 November).** R88–R89 are delivered in normal [1.1.7](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.7) from `e9caba476b64c27817ef935532d22921bae28f43`. The complete wizard capture/Unset/Cancel/Escape/conflict/reassignment/Finish/restart/failed-save workflow passes at 100%, with layout, capture cancellation and Finish/restart also verified at 150/200%; no Preferences or Hotkeys window opens. Interface shortcuts including Stream are searchable/editable; saved Stream dispatch passes after restart. The four-field appearance profile contract and separate live blur getter are preserved. Actual native layouts inspected; optimized normal artifacts, VLC/MPV SDR/P5 presentation, independent downloads, retained/weekly bindings and obsolete-output cleanup pass. [Reconciliation](resources/m5-1.1.7-verification.json). Blockers0; required deferrals0; S9 remains NOT STARTED. Earlier compiler/checker failures remain in retained original evidence; all unaffected completed checks were reused against identical production blobs.
 
 **M4: COMPLETE — normal1.1.6 delivered and independently verified.** Tag `redesign-v1.1.6` binds application source `bf45ca9748427279b08b995755c52f164f78e60d`. Current VLC/MPV SDR/P5 presentation, safe placement, foreground/lifecycle, all417 stripped mappings, four downloaded assets, retained/weekly binding and exact obsolete-output cleanup pass. The user explicitly waived additional manual review of minor UI details; no new Record/control pixels are claimed manually accepted. R83–R87 reconcile under that authorized release boundary. [Evidence](resources/m4-1.1.6-verification.json). Blockers0; tracked deferrals0. S8 remains COMPLETE; S9 remains NOT STARTED. Historical checkpoints below retain their original meaning.
 
@@ -410,7 +391,8 @@ presentation and final delivery remain required.
 | Stage | Status | Acceptance satisfied | Remaining criteria / blockers | Deferrals |
 |---|---|---|---|---|
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
-| M5 Onboarding and interface shortcuts | ACTIVE | R88–R89: wizard-owned capture and native editable interface bindings are being integrated. | Native wizard/editor conflict, cancellation, failed-save and restart/dispatch verification; normal1.1.7 publication and independently verified delivery. | Internal acceptance work; no external blocker or tracked deferral. |
+| M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
+| M6 Font navigation, still-image preview and engine placeholder | NOT STARTED | R90–R92 mapped; causes investigated. | Conditional wizard navigation; untimed still-image behavior and controls in both engines; engine-aware centered artwork; native workflows and one verified normal update. | Starts after M5 cleanup and closure; no M5 criterion deferred. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core
