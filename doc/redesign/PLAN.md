@@ -55,6 +55,16 @@ Original failed native acceptance and cancellation evidence are retained at
 `D:/Temp/vlc-s8-preview-1.1.8-20261105/media-previews`. M6 remains ACTIVE:
 fresh complete native feature acceptance and final1.1.8 delivery are pending.
 
+Native repair232 completed0/group empty with no OOM; affected Qt compile/link
+took55.7 seconds. Fresh R91 classification and hidden controls pass. R94 then
+failed at the actual HWND title: Qt reported `still.jpg — VLC Media Player`,
+while Windows read `still.jpg — VLC Media Player - VLC media player`.
+The pinned Qt `QPlatformWindow::formatWindowTitle` appends the application
+display name unless the requested title ends with that exact case-sensitive
+name. Aligning the existing display name with the selected engine resolves the
+underlying mismatch; actual title/icon/switch/restart acceptance remains required.
+Failed checks remain false and their owned processes exited0/resources closed.
+
 **M6 Font navigation, media preview and engine identity: ACTIVE (5 November).** R90–R95 are newly authorized. Investigation identified unconditional theme/font/shortcuts navigation, VLC's ten-second image-demux default, a fixed centered cone, session-only engine selection and an unthemed amber Playback-tab SVG. M5 cleanup and delivery closure passed; only M6 receives implementation. Acceptance: available-font forward/back bypass plus unchanged missing/corrupt/download/fallback flow; untimed still-image behavior across both engines and image/video replacement, preserving animation and explicit timed playback; engine-aware centered/window/taskbar identity; saved engine selection and restart in both directions without changing a failed selection; theme-aware two-tone accents with original artwork preserved; one normal1.1.8 release with independent delivered-package verification. These implementable gaps block M6 acceptance; no external blocker or tracked deferral. No M5 criterion is deferred into M6. These new requirements are not delivered in 1.1.7.
 
 M6 coherent source is integrated before compilation. Native checks cover both-engine photo survival/replacement/animation/timed override, centered and HWND identity, successful selection/restart/explicit override, rejected switch/failed save and actual two-tone icon pixels. Available-font forward/back/reopen checks use the real cached font service. Fresh acceptance remains pending. Reuse the verified Ubuntu-hosted private toolchain namespace and Qt-only409-plugin guard; preserve all SDK/MPV/codec objects, optimized flags and native state. Task control is `E:/Temp/vlc-preview-1.1.8-20261105`; sustained native/build I/O uses exact `D:/Temp/vlc-s8-preview-1.1.8-20261105` and retained `scratch-share/preview-1.1.8`. Cleanup transaction `b4da9d0b04c7eb47593c482da9cfea68` registers these exact outputs. This is an intermediate source freeze, not verified completion or publication.

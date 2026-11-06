@@ -26,6 +26,7 @@
 #include "widgets/native/qvlcframe.hpp"
 #include "dialogs/dialogs/dialogmodel.hpp"
 #include <QScreen>
+#include <QGuiApplication>
 #include <QQmlProperty>
 #include <cmath>
 #include <algorithm>
@@ -94,6 +95,10 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
     const auto updateIdentity = [this] {
         const bool mpv = THEMIM->usesMpv();
         const QString application = mpv ? qtr("MPV Media Player") : qtr("VLC Media Player");
+        // Qt appends its display name to the native Windows title unless the
+        // requested title already ends with that exact name. Keep both owners
+        // aligned, otherwise Windows retains the legacy VLC suffix for MPV.
+        QGuiApplication::setApplicationDisplayName(application);
         const QString media = var_InheritBool(p_intf, "qt-name-in-title") && THEMIM->isStarted()
             ? THEMIM->getName() : QString();
         m_window->setTitle(media.isEmpty() ? application : media + QStringLiteral(" — ") + application);

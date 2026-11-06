@@ -22,6 +22,7 @@ import subprocess
 import sys
 import threading
 import time
+import traceback
 import uuid
 from PIL import Image
 from app_icon_checks import executable_icon, window_icon
@@ -1074,9 +1075,12 @@ def media_previews():
         if not media: assert snapshot['window']['title']==application
         def read_title():
             title=ctypes.create_unicode_buffer(4096)
-            assert u.GetWindowTextW(owned_main_window(case,snapshot),title,len(title))
+            u.GetWindowTextW.argtypes=[W.HWND,W.LPWSTR,ctypes.c_int]
+            u.GetWindowTextW.restype=ctypes.c_int
+            assert u.GetWindowTextW(owned_main_window(case,snapshot),title,len(title)),ctypes.WinError(ctypes.get_last_error())
             return title.value
-        assert owned_native_read(case,read_title)==snapshot['window']['title']
+        native_title=owned_native_read(case,read_title)
+        assert native_title==snapshot['window']['title'],(native_title,snapshot['window']['title'])
         verify_window_icon(case,snapshot)
 
     def theme_icon(case, label, engine, custom=True):
@@ -2554,6 +2558,7 @@ try:
             operation()
         except Exception as failure:
             records.setdefault('failures',{})[name]=repr(failure)
+            records.setdefault('failure_tracebacks',{})[name]=traceback.format_exc()
             save()
             print(json.dumps({'workflow':name,'failure':repr(failure)}),flush=True)
             # Collect independent acceptance failures from this one complete
