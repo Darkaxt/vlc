@@ -1,6 +1,16 @@
 # VLC redesign stages and reconciliation
 
 **6 November current work: M7 Runtime engine icon and accent parity — ACTIVE.**
+Normal59 qualification passed, but its user-opened actual taskbar capture still
+matches the pre-optical icon (old48-to36 RGB error5.59 versus new48-to36 error29.24).
+Both actual HWND HICONs and both Shell file-icon extraction routes contain the
+new artwork; the Shell file-cache indexes are distinct. No pinned shortcuts or
+second VLC process explain the stale group. R98/R100/R101 therefore remain
+unmet. Rebind only this player's registered taskbar button after icon identity
+changes, using ITaskbarList DeleteTab/AddTab; retain AppIDs, pins and global caches.
+The identity guard must prevent TaskbarButtonCreated recursion and passive windows
+must remain unregistered. Verify the affected native lifecycle and actual group
+pixels before publishing; do not repeat unchanged palette/asset acceptance.
 The user's normal-window review confirms the colored taskbar icon is present.
 R101 adds the requested optical size/edge correction before final publication:
 derive display frames from the256px original after removing only transparent
