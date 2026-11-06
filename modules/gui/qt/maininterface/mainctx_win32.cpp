@@ -673,18 +673,6 @@ void WinTaskbarWidget::clearShellIdentity()
 void WinTaskbarWidget::updateShellIdentity()
 {
     const auto window = WinId(m_window);
-    if(window && var_InheritBool(p_intf,"qt-passive"))
-    {
-        // NOACTIVATE suppresses a taskbar button unless APPWINDOW is explicit.
-        // Keep unattended playback nonactivating while retaining its ordinary
-        // running-window identity. This touches only this application's HWND.
-        const auto style=GetWindowLongPtr(window,GWL_EXSTYLE);
-        if((style&WS_EX_NOACTIVATE) && !(style&WS_EX_APPWINDOW)) {
-            SetLastError(ERROR_SUCCESS);
-            if(!SetWindowLongPtr(window,GWL_EXSTYLE,style|WS_EX_APPWINDOW) && GetLastError()!=ERROR_SUCCESS)
-                msg_Err(p_intf,"Creating passive player taskbar identity failed: %lu",GetLastError());
-        }
-    }
     const bool mpv=THEMIM->usesMpv();
     if (!mpv && p_intf->p_mi->getRedesignAccent()==QColor(QStringLiteral("#d37918")))
     {
@@ -1106,7 +1094,9 @@ bool InterfaceWindowHandlerWin32::eventFilter(QObject* obj, QEvent* ev)
         const HWND hwnd = WinId(m_window);
         const LONG_PTR style = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
         SetLastError(ERROR_SUCCESS);
-        const LONG_PTR previous = SetWindowLongPtr(hwnd, GWL_EXSTYLE, style | WS_EX_NOACTIVATE);
+        // Qt rewrites the extended style during Show. Keep the taskbar opt-in
+        // together with the nonactivation policy at this policy owner.
+        const LONG_PTR previous = SetWindowLongPtr(hwnd, GWL_EXSTYLE, style | WS_EX_NOACTIVATE | WS_EX_APPWINDOW);
         const DWORD error = GetLastError();
         if (!previous && error != ERROR_SUCCESS)
             msg_Err(p_intf, "Unable to establish passive native window style: %lu", error);
@@ -1168,7 +1158,7 @@ bool InterfaceWindowHandlerWin32::eventFilter(QObject* obj, QEvent* ev)
             if (msg->wParam == static_cast<WPARAM>(GWL_EXSTYLE)
                 && m_window && m_window->handle() && msg->hwnd == WinId(m_window)
                 && var_InheritBool(p_intf, "qt-passive"))
-                reinterpret_cast<STYLESTRUCT*>(msg->lParam)->styleNew |= WS_EX_NOACTIVATE;
+                reinterpret_cast<STYLESTRUCT*>(msg->lParam)->styleNew |= WS_EX_NOACTIVATE | WS_EX_APPWINDOW;
             break;
         case WM_APPCOMMAND:
             cmd = GET_APPCOMMAND_LPARAM(msg->lParam);

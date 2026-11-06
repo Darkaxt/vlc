@@ -62,7 +62,11 @@ parser.add_argument('--resume-media-previews-checker',action='store_true',
     help='Resume closed photo acceptance after correcting keyboard targeting or animation-clock observation')
 parser.add_argument('--resume-m7-checker',action='store_true',
     help='Resume closed M7 native acceptance after the client service whitelist and Settings-close selector correction')
+parser.add_argument('--resume-m7-lifecycle',action='store_true',
+    help='Retain completed modes and VLC no-library cases; finish handover, DPI and the remaining no-library paths')
+parser.add_argument('--visualizer-options-only',action='store_true',help='Inspect the complete Figma visualizer/EQ option rendering on the real player')
 args = parser.parse_args()
+assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
 resume_empty_survey=args.case=='settings-survey' and (root/'result.json').is_file()
@@ -76,8 +80,10 @@ resume_idle=args.resume_idle_checker
 resume_onboarding=args.resume_onboarding_checker
 resume_media=args.resume_media_previews_checker
 resume_m7=args.resume_m7_checker
+resume_m7_lifecycle=args.resume_m7_lifecycle
+assert not resume_m7_lifecycle or args.case=='m7-regressions'
 assert not resume_m7 or args.case=='m7-regressions'
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7))<=1
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7,resume_m7_lifecycle))<=1
 assert not resume_media or args.case=='media-previews'
 assert not resume_onboarding or args.case=='onboarding-shortcuts'
 assert not resume_idle or args.case=='idle'
@@ -85,13 +91,36 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
-if resume_m7:
+m7_final_path=False
+if resume_m7_lifecycle:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='m7-regressions' and not previous['passed'] and previous['protected_profiles_unchanged']
+    m7_final_path=set(previous['failures'])=={'no-library'}
+    if m7_final_path:
+        assert 'browse-during-video-ready' in previous['failures']['no-library'] and 'observed_item_destroyed' in previous['failures']['no-library']
+        assert previous['cases'][-1]['name']=='no-library-video-mpv'
+        assert all(case['passed'] for case in previous['cases'][:-1])
+        assert previous['reused_m7_complete_modes']['inversion']
+    else:
+        assert set(previous['failures'])=={'audio-visualizer','no-library'}
+        assert 'handover-vlc-focus' in previous['failures']['audio-visualizer'] and 'Expected one visible enabled target; matched 0' in previous['failures']['audio-visualizer']
+        assert 'return-to-video' in previous['failures']['no-library'] and 'Expected one observation target; matched 0' in previous['failures']['no-library']
+        assert [case['name'] for case in previous['cases']]==['audio-visualizer-1','no-library-vlc-1','no-library-restart-vlc','no-library-vlc-1.5','no-library-vlc-2','no-library-video-vlc']
+        assert all(case['passed'] for case in previous['cases'][1:5])
+        assert set(previous['cases'][0]['visualizer_inversion'])=={'spectrometer','scope','spectrum','waveform'}
+        assert 'disabled-pause' in {step['label'] for step in previous['cases'][0]['steps']}
+    assert all(case['exit_code']==0 and case['owned_desktop_never_observed_as_input'] for case in previous['cases'])
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/('result-before-m7-input-ready.json' if m7_final_path else 'result-before-m7-lifecycle-checker.json');assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_m7:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='m7-regressions' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert set(previous['failures'])=={'audio-visualizer','no-library'}
@@ -323,6 +352,7 @@ records = {'schema': 'vlc_redesign.m2_native_acceptance.v1', 'scope': args.case,
     'qt_plugin_sha256': hashlib.sha256(plugin.read_bytes()).hexdigest(), 'cases': [],
     'no_os_input_or_desktop_switching': True, 'passed': False}
 records['verification_helper_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+if args.visualizer_options_only:records['scope']='visualizer-options'
 records['source_commit']=json.loads((source/'VLC-PLUGIN-BUILDINFO.json').read_text())['source_commit']
 version_header=subprocess.check_output(['git','-C',str(repo),'show',records['source_commit']+':modules/gui/qt/dialogs/help/fork_release.hpp'],text=True)
 fork_version=re.search(r'currentVersion\[\] = "([0-9.]+)"',version_header).group(1)
@@ -330,6 +360,19 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
+if resume_m7_lifecycle:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    if m7_final_path:
+        records['cases']=previous['cases'][:-1]
+        records['reused_m7_complete_modes']=previous['reused_m7_complete_modes']
+        records['resumed_m7_input_readiness']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+            'scope':'Retain all complete native cases. The last MPV navigation started in OPENING, before video readiness; finish only that untested playing-video browse/return path.'}
+    else:
+        records['cases']=previous['cases'][1:5]
+        records['reused_m7_complete_modes']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+            'source_commit':previous['source_commit'],'qt_plugin_sha256':previous['qt_plugin_sha256'],
+            'completed_steps':previous['cases'][0]['steps'],'inversion':previous['cases'][0]['visualizer_inversion'],
+            'scope':'All four100% modes: live PCM, one vout, geometry, changing/frozen frames, actual black/accent pixels, seek/reset/resume and disable. Handover and remaining DPI/engine paths are not reused.'}
 if resume_m7:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     if m7_observer_repair:
@@ -1744,10 +1787,75 @@ def engine_accents():
     finally:case.close()
 
 
+def visualizer_options():
+    case=Case('original-visualizer-eq-options',media=fixtures/'control.mkv')
+    try:
+        case.inspect('audio-ready','snapshot','--await-service','redesignAudioVisualizer','--await-property','available','--await-value','true')
+        case.inspect('reference-viewport','resize','--width','1280','--height','800')
+        case.click('playback-panel','toolsButton')
+        case.inspect('visualizer-focus','focus','--target','seekbarVisualizerChoice')
+        visualizer=case.inspect('visualizer-options','key','--key','0x20','--text',' ','--capture')
+        def originals(snapshot,prefix):
+            rows=[n for n in snapshot['tree'] if n['visible'] and prefix in n.get('source','')]
+            assert rows and all(n.get('status')=='Ready' for n in rows),rows
+            return [n['source'] for n in rows]
+        visualizer_icons=originals(visualizer,'visualizer-')
+        assert len(visualizer_icons)==4,visualizer_icons
+        case.inspect('visualizer-cancel','key','--key','0x1000000')
+        tab=next(n for n in visualizer['tree'] if n.get('name')=='Audio' and n.get('id')!='audioButton' and n['visible'] and n.get('actions'))
+        case.inspect('audio-tab','click','--node',str(tab['node']))
+        case.inspect('equalizer-expand','click','--name','Equalizer: Expand Settings')
+        case.inspect('equalizer-focus','focus','--name','Equalizer Preset')
+        first=case.inspect('equalizer-first-options','key','--key','0x20','--text',' ','--capture')
+        first_icons=originals(first,'eq-')
+        assert len(first_icons)>=4,first_icons
+        last=case.inspect('equalizer-last-options','key','--key','0x1000011','--capture')
+        last_icons=originals(last,'eq-')
+        assert len(set(first_icons+last_icons))>=8,(first_icons,last_icons)
+        case.inspect('equalizer-cancel','key','--key','0x1000000')
+        case.record['original_dropdowns']={'visualizer_icons':visualizer_icons,'eq_first':first_icons,'eq_last':last_icons,
+            'source_manifest':'modules/gui/qt/pixmaps/redesign/manifest.json'}
+        case.close(True)
+    finally:case.close()
+
+
+def visualizer_handover(case):
+    identity='redesignAudioVisualizer'
+    case.click('handover-panel','toolsButton')
+    case.inspect('handover-visualizer-focus','focus','--target','seekbarVisualizerChoice')
+    case.inspect('handover-enable','key','--key','0x1000015',
+        '--await-service',identity,'--await-property','mode','--await-value','"spectrometer"')
+    case.inspect('handover-mpv-focus','focus','--name','MPV')
+    mpv=case.inspect('handover-mpv','click','--name','MPV','--await-core','engine','--await-value','"mpv"')
+    assert not service(mpv,identity)['active'] and not service(mpv,identity)['samples']
+    case.inspect('handover-mpv-settled','snapshot','--await-core','engine_switching','--await-value','false')
+    case.inspect('handover-vlc-focus','focus','--name','VLC')
+    case.inspect('handover-vlc','click','--name','VLC','--await-core','engine','--await-value','"vlc"')
+    case.inspect('handover-vlc-settled','snapshot','--await-core','engine_switching','--await-value','false')
+    case.inspect('handover-audio-restored','snapshot','--await-service',identity,'--await-property','available','--await-value','true')
+    case.inspect('handover-panel-dismiss','key','--key','0x1000000')
+    case.click('handover-play','playButton','--await-core','state','--await-value','2')
+    case.inspect('handover-new-pcm','snapshot','--await-service',identity,'--await-property','active','--await-value','true')
+    case.click('handover-pause','playButton','--await-core','state','--await-value','3')
+    drop_fixture(case,'input-without-audio','wide.mkv')
+    no_audio=case.inspect('no-audio-observer-released','snapshot','--await-service',identity,'--await-property','available','--await-value','false')
+    assert not service(no_audio,identity)['samples']
+
+
 def audio_visualizer():
     """Real PCM effects stay inside the seek track and release on disable/handover."""
+    if args.visualizer_options_only:return visualizer_options()
+    if m7_final_path:return
     identity='redesignAudioVisualizer'
     for scale in ('1','1.5','2'):
+        if resume_m7_lifecycle and scale=='1':
+            case=Case('audio-visualizer-handover-1',media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
+            try:
+                case.inspect('audio-ready','snapshot','--await-service',identity,'--await-property','available','--await-value','true')
+                visualizer_handover(case)
+                case.close(True)
+            finally:case.close()
+            continue
         suffix=('-observer-fixed' if m7_observer_repair else '-client-fixed') if resume_m7 and scale=='1' else ''
         case=Case('audio-visualizer-'+scale+suffix,scale=scale,media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
         try:
@@ -1806,22 +1914,7 @@ def audio_visualizer():
             assert service(advanced,identity)['frameRevision']==service(disabled,identity)['frameRevision']
             case.click('disabled-pause','playButton','--await-core','state','--await-value','3')
             if scale=='1':
-                case.click('handover-panel','toolsButton')
-                case.inspect('handover-visualizer-focus','focus','--target','seekbarVisualizerChoice')
-                case.inspect('handover-enable','key','--key','0x1000015',
-                    '--await-service',identity,'--await-property','mode','--await-value','"spectrometer"')
-                case.inspect('handover-mpv-focus','focus','--name','MPV')
-                mpv=case.inspect('handover-mpv','click','--name','MPV','--await-core','engine','--await-value','"mpv"')
-                assert not service(mpv,identity)['active'] and not service(mpv,identity)['samples']
-                case.inspect('handover-vlc-focus','focus','--name','VLC')
-                case.inspect('handover-vlc','click','--name','VLC','--await-core','engine','--await-value','"vlc"')
-                case.inspect('handover-audio-restored','snapshot','--await-service',identity,'--await-property','available','--await-value','true')
-                case.inspect('handover-panel-dismiss','key','--key','0x1000000')
-                case.click('handover-play','playButton','--await-core','state','--await-value','2')
-                case.inspect('handover-new-pcm','snapshot','--await-service',identity,'--await-property','active','--await-value','true')
-                case.click('handover-pause','playButton','--await-core','state','--await-value','3')
-                no_audio=drop_fixture(case,'input-without-audio','wide.mkv')
-                assert not service(no_audio,identity)['available'] and not service(no_audio,identity)['samples']
+                visualizer_handover(case)
             case.close(True)
         finally:case.close()
     unsupported=Case('audio-visualizer-mpv',engine='mpv',media=fixtures/'control.mkv')
@@ -1838,6 +1931,7 @@ def no_library():
     """The disabled backend keeps the real redesign, menus and video workflow."""
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
+            if m7_final_path or (resume_m7_lifecycle and engine=='vlc'):continue
             reuse_navigation=resume_m7 and engine=='vlc' and scale=='1'
             if m7_observer_repair and reuse_navigation:
                 profile_path=root/'no-library-vlc-1-client-fixed/profile'
@@ -1889,15 +1983,22 @@ def no_library():
                     restarted.close(True)
                     assert not any(path.name.endswith(('.db','.db-wal','.db-shm')) for path in (restarted.path/'profile').rglob('*'))
                 finally:restarted.close()
-        video=Case('no-library-video-'+engine,engine=engine,media=fixtures/'control.mkv',extra=('--no-media-library',))
+        if m7_final_path and engine=='vlc':continue
+        suffix='-ready-fixed' if m7_final_path else '-return-fixed' if resume_m7_lifecycle and engine=='vlc' else ''
+        video=Case('no-library-video-'+engine+suffix,engine=engine,media=fixtures/'control.mkv',extra=('--no-media-library',))
         try:
             video.inspect('main-video','snapshot','--await-target','playerView','--await-property','visible','--await-value','true')
+            video.inspect('paused-video-ready','snapshot','--await-core','state','--await-value','3')
+            if engine=='mpv':
+                video.inspect('mpv-video-ready','snapshot','--await-core','mpv_video_ready','--await-value','true')
             browsed=video.inspect('browse-during-video','click','--name','Back to media')
             library_target='compactLibrary' if nodes(browsed,'compactLibrary') else 'fullLibrary'
             result=video.inspect('browse-during-video-ready','snapshot','--await-target',library_target,'--await-property','ready','--await-value','true','--capture')
             assert nodes(result,'libraryMiniSeek') and nodes(result,'libraryDisabledMessage')
-            result=video.click('return-to-video','libraryReturnToPlayer',
-                '--await-target','playerView','--await-property','visible','--await-value','true')
+            video.click('return-to-video','libraryReturnToPlayer',
+                '--await-target','viewLoader','--await-property','source','--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+            result=video.inspect('return-to-video-ready','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
+            assert nodes(result,'playerView')[0]['visible']
             assert result['core']['engine']==engine
             video.close(True)
         finally:video.close()
@@ -3031,6 +3132,7 @@ try:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
     for name, operation in [('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+        if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':

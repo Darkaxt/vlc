@@ -11,7 +11,12 @@ and usable seeking, rather than above it. Its implementation observes the
 current PCM audio path without a second decoder or visualization vout. The user
 accepted the first real capture and added progress-boundary inversion: accent
 effects over black, black effects over solid accent fill. That connected change
-and the seek-reset repair await the next incremental Qt assembly. Neither1.1.9
+and seek reset compiled in diagnostic62 (104s managed elapsed, no OOM/max events,
+group empty/private mounts released). The real native affected workflow now
+passes: four modes at100/150/200%, black/accent pixel inversion, fixed geometry,
+one vout, changing audio/frozen pause, actual seek/reset/resume, disable, VLC→MPV
+observer release and VLC restoration, no-audio release, explicit MPV unavailability.
+Original dropdown pixels and actual enlarged taskbar pixels remain unmet. Neither1.1.9
 is delivered. M8 has not begun.
 Normal60 closed0/group empty (63a4ef6196a64cd68b2f95cac30e4e6c), reused409 plugins,
 and passed stripped packaging/source/symbols, native VLC and actual MPV SDR/P5
@@ -62,7 +67,20 @@ changes by clearing only the owned window's explicit AppID before its relaunch
 metadata, then restoring the same stable engine AppID. The old rebind mechanism
 remains removed; actual taskbar pixel acceptance is still unmet. The existing
 volatile passive-window option now retains APPWINDOW alongside NOACTIVATE so
-normal package taskbar checks can run without focus or desktop controls.
+normal package taskbar checks can run without focus or desktop controls. The
+diagnostic61 private placement and actual offscreen MPV picture passed, but no
+taskbar button appeared. Native Show events establish the reason: Qt replaced
+the style and discarded APPWINDOW after the earlier identity update. Source now
+sets/preserves both flags together in the existing Show/STYLECHANGING policy,
+removing the redundant taskbar-widget style mutation; this scoped lifetime repair
+still needs its incremental assembly and actual button pixels. No Shell/pin/cache
+mutation or normal interactive-window policy change was introduced.
+The diagnostic62 no-library workflow also passes both engines at100/150/200%,
+Settings, restart/direct file/HTTP/folder, no database/indexing and video/library
+mini/return. A checker previously clicked MPV Back during OPENING; it now waits
+for actual paused/video readiness before testing the playing-video browse path.
+Evidence is `inversion-m7-native/result.json`, including exact hash-bound reused
+completed cases and preserved false historical results. Protected profiles match.
 Normal59 qualification passed, but its user-opened actual taskbar capture still
 matches the pre-optical icon (old48-to36 RGB error5.59 versus new48-to36 error29.24).
 Both actual HWND HICONs and both Shell file-icon extraction routes contain the
