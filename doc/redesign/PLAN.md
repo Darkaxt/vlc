@@ -1,7 +1,9 @@
 # VLC redesign stages and reconciliation
 
 **6 November current work: M7 Runtime engine icon parity — ACTIVE.**
-R97–R98 are authorized by the user's installed-MPV icon/taskbar report.
+R97–R99 are authorized by the user's installed-MPV icon/taskbar report and
+subsequent README request. After functional acceptance, update actual-player and
+Figma side-by-side screenshot references/credits before final delivery.
 Prerequisite normal1.1.8 is independently verified; M6 remains BLOCKED only on
 its native cleanup capability. This is the sole ACTIVE stage, with no Rust work.
 The running1.1.8 player changes its HWND icon but has no explicit Shell AppID or
@@ -12,8 +14,16 @@ neither installation. Complete the icon resources, native/Shell lifecycle and
 packaging together, then verify both-engine switch/restart, DPI artwork and actual
 taskbar presentation before a single normal1.1.9 release. Preserve live user
 windows/profiles and existing pins; no desktop input or icon-cache reset.
-Required gaps: extracted-artwork integration, Shell identity implementation,
-combined acceptance and final delivery. No tracked deferral. Read-only extraction
+Build239/run51 passed optimized Qt assembly in170.8s (whole managed operation201.8s),
+closed0/group empty/private mounts released. The complete native workflow then
+reproduced the pinned Qt image-format limitation: direct ICO decoding is not
+supported. Its failed result remains at the task root's `engine-icons/result.json`;
+owned player exit0 and protected-profile preservation pass. Preserve the original
+ICO for Shell and use pixel-identical decoded native-size PNG frames for Qt;
+no SDK/dependency change is needed. MSAA read-only taskbar enumeration also
+identifies the existing VLC running group, which UIA's pane-only tree omitted.
+Required gaps: repaired Qt artwork acceptance, Shell visible-button acceptance,
+README refresh and final delivery. No tracked deferral. Read-only extraction
 and HWND/Shell inspection use `E:/Temp/vlc-mpv-icons-1.1.9-20261106`.
 
 **6 November current reconciliation: normal1.1.8 delivered; M6 BLOCKED only on native cleanup.**

@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 import QtQuick
+import QtQuick.Window
 
 import VLC.MainInterface
 import VLC.Widgets as Widgets
@@ -95,13 +96,14 @@ FocusScope {
         Image {
             id: logo
 
-            source: Player.playbackEngine === "mpv" ? "qrc:///redesign/icons/mpv.ico" : "qrc:///redesign/icons/app.svg"
+            source: Player.playbackEngine === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio) : "qrc:///redesign/icons/app.svg"
 
             anchors.centerIn: parent
-            width: Math.min(parent.width / 2, sourceSize.width)
-            height: Math.min(parent.height / 2, sourceSize.height)
+            width: Math.min(parent.width / 2, Player.playbackEngine === "mpv" ? 64 : 24)
+            height: Math.min(parent.height / 2, Player.playbackEngine === "mpv" ? 64 : 24)
+            sourceSize: Qt.size(width, height)
             fillMode: Image.PreserveAspectFit
-            smooth: true
+            smooth: Player.playbackEngine !== "mpv"
             visible: MainCtx.bgCone
         }
 

@@ -560,6 +560,7 @@ class Case:
 
 def nodes(snapshot, identity): return [node for node in snapshot['tree'] if node['id'] == identity and node['visible']]
 def service(snapshot, name='redesignMediaTools'): return snapshot['media_tools'][name]
+def mpv_frame(source): return re.search(r'/mpv-(16|24|32|48|64|256)\.png$',source) is not None
 
 
 def verify_executable_icon():
@@ -1199,7 +1200,8 @@ def media_previews():
                     case.inspect('close-engine-panel-' + label, 'key', '--key', '0x1000000')
                 idle = case.inspect('centered-logo-' + label, 'snapshot', '--await-target', 'playerIdleCone',
                     '--await-property', 'status', '--await-value', '1', '--capture')
-                assert nodes(idle, 'playerIdleCone')[0]['source'].endswith('/mpv.ico' if target == 'mpv' else '/app.svg')
+                logo=nodes(idle, 'playerIdleCone')[0]['source']
+                assert mpv_frame(logo) if target == 'mpv' else logo.endswith('/app.svg')
                 identity(case,idle,target,False)
                 theme_icon(case,'theme-'+label,target)
             case.record['untimed_image_replacement_animation_and_engine_branding'] = True
@@ -1571,7 +1573,7 @@ def engine_icons():
             snapshot=case.inspect(label,'snapshot','--await-target','playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'),
                 '--await-property','status','--await-value','1','--capture')
             glyph=nodes(snapshot,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
-            assert len(glyph)==1 and glyph[0]['source'].endswith('/mpv.ico' if engine=='mpv' else '/vlc.svg'),glyph
+            assert len(glyph)==1 and (mpv_frame(glyph[0]['source']) if engine=='mpv' else glyph[0]['source'].endswith('/vlc.svg')),glyph
             assert snapshot['window']['title'].endswith(('MPV' if engine=='mpv' else 'VLC')+' Media Player')
             verify_window_icon(case,snapshot)
             picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png'))
@@ -1597,7 +1599,7 @@ def engine_icons():
             case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
             case.click('idle-editor-cancel','layoutCancel')
             idle=case.inspect('idle-logo','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1','--capture')
-            assert nodes(idle,'playerIdleCone')[0]['source'].endswith('/mpv.ico')
+            assert mpv_frame(nodes(idle,'playerIdleCone')[0]['source'])
             verify_window_icon(case,idle)
             case.close(True)
         finally:case.close()
@@ -1791,7 +1793,7 @@ def menus_normal():
             assert settled['rendered_accent']==('#420042' if engine=='mpv' else '#2f87b5')
             assert settled['presentation']==saved_presentation, 'Engine selection rewrote the saved appearance'
             glyph=nodes(settled,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
-            assert len(glyph)==1 and glyph[0]['source'].endswith('/mpv.ico' if engine=='mpv' else '/vlc.svg'),glyph
+            assert len(glyph)==1 and (mpv_frame(glyph[0]['source']) if engine=='mpv' else glyph[0]['source'].endswith('/vlc.svg')),glyph
             playing=case.click('panel-play-retained-'+engine,'playButton','--await-core','state','--await-value','2')
             assert nodes(playing,'mediaSettingsBody'), 'Play dismissed the settings panel'
             paused=case.click('panel-pause-retained-'+engine,'playButton','--await-core','state','--await-value','3')

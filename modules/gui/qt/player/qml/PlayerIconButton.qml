@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
+import QtQuick.Window
 import QtQuick.Templates as T
 import QtQuick.Controls.impl
 import VLC.MainInterface
@@ -34,10 +35,11 @@ T.ToolButton {
       IconImage {
         objectName: "playerGlyph-" + button.glyph
         anchors.centerIn: parent
-        source: "qrc:/redesign/icons/" + button.glyph + (button.glyph === "mpv" ? ".ico" : ".svg")
+        source: button.glyph === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio)
+                                      : "qrc:/redesign/icons/" + button.glyph + ".svg"
         color: button.glyph === "mpv" ? "transparent" : button.accented ? PlayerStyle.accentForeground : button.checked && !["sidebar","more"].includes(button.glyph) ? PlayerStyle.accent : button.foreground
         opacity: button.enabled ? 1 : 0.45
-        // Qt selects an ICO frame or rasterizes SVG at the native device ratio.
+        // Select an original MPV frame or rasterize SVG at the native ratio.
         // Its SVG edges already contain antialiasing: applying another linear
         // filter at a half-physical-pixel position visibly softens the icon.
         sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))

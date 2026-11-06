@@ -4,7 +4,7 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
-**6 November runtime icon repair, R97–R98 (M7), already authorized:**
+**6 November runtime icon repair, R97–R99 (M7), already authorized:**
 
 - R97: extract the Windows icon group from the user's locally installed MPV
   executable, preserve every embedded image payload, and use that artwork for
@@ -22,6 +22,12 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   to this fork with the corresponding engine, never the separate MPV install.
   Verify actual Shell identity/resource selection and visible running-button
   pixels as well as HWND icons; the earlier WM_GETICON-only check is insufficient.
+- R99: after the icon workflow passes, refresh the repository README with
+  actual current-player screenshots, side-by-side Figma comparisons and direct
+  credits/links to the original Figma project and YouTube redesign video. Use
+  public synthetic media in application captures; do not publish private clips,
+  profile data or desktop content. Distinguish implemented behavior from the
+  design reference and retain existing upstream/project attribution.
 
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.

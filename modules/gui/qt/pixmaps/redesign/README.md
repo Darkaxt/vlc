@@ -5,7 +5,9 @@ from the installed MPV202611051247 executable. The reconstructed group is byte
 identical to upstream `etc/mpv-icon.ico` at3138fc8eea. [mpv-source.json](mpv-source.json)
 records the PE, group, individual frames and upstream blob hashes, extraction
 command and GPL-2.0-or-later provenance. Qt chooses its original frames at native
-DPR; Windows uses the same packaged ICO for the MPV taskbar identity. While
+DPR. The matching PNG frames preserve every decoded RGBA pixel because the
+pinned Qt build has no ICO decoder; QIcon and QML select the appropriate native
+size. Windows uses the original packaged ICO for the MPV taskbar identity. While
 MPV is selected the effective accent is `#420042`, sampled from the user's
 mpv.io reference; the stored VLC/custom accent is preserved.
 

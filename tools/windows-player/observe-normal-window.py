@@ -12,10 +12,10 @@ p.add_argument('--ready-event', required=True)
 p.add_argument('--bound-event', required=True)
 p.add_argument('--cancel-event', required=True)
 p.add_argument('--executable', type=Path, required=True)
-p.add_argument('--expected-icon',type=Path,help='Verify the owned Qt main window icon against the maintained cone PNG or official MPV SVG')
+p.add_argument('--expected-icon',type=Path,help='Verify the owned Qt main window and Shell identity against the maintained PNG or native MPV ICO')
 a = p.parse_args()
 if a.expected_icon:
-    from app_icon_checks import window_icon
+    from app_icon_checks import window_icon, shell_identity
     assert a.expected_icon.is_file()
 u = ctypes.WinDLL('user32', use_last_error=True)
 k = ctypes.WinDLL('kernel32', use_last_error=True)
@@ -63,6 +63,7 @@ ready, bound, cancel = [k.OpenEventW(0x100002, False, name)
 assert ready and bound and cancel
 records, errors = [], []
 icons={}
+shell_identities={}
 process = None
 target = None
 hooks = []
@@ -145,6 +146,8 @@ def event(hook, kind, window, object_id, child_id, thread, timestamp):
                 and str(window) not in icons):
             icons[str(window)]=window_icon(window,pid.value,a.expected_icon,
                 a.result.parent/('native-icon-'+format(window,'x')+'.png'))
+            engine='mpv' if a.expected_icon.suffix.lower()=='.ico' else 'vlc'
+            shell_identities[str(window)]=shell_identity(window,pid.value,engine,a.executable,a.expected_icon)
         if record not in records:
             records.append(record)
     except Exception as failure:
@@ -157,7 +160,7 @@ def messages():
         u.DispatchMessageW(ctypes.byref(message))
 
 result = {'schema': 'vlc_redesign.owned_window_events.v1', 'events': records,
-    'errors': errors, 'passive_observation_only': True,'native_window_icons':icons}
+    'errors': errors, 'passive_observation_only': True,'native_window_icons':icons,'native_shell_identities':shell_identities}
 try:
     hooks = [u.SetWinEventHook(first, last, None, event, 0, 0, 2)
         for first, last in ((3, 3), (0x8002, 0x800B))]

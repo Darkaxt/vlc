@@ -63,5 +63,62 @@
   "license": "GPL-2.0-or-later; retained MPV Copyright and LICENSE.GPL",
   "changes": "None; resource group extracted byte for byte and identical to the upstream ICO blob",
   "reproduce": "python -B tools/windows-player/extract-pe-icons.py --executable <installed mpv.exe> --output <new output directory>",
-  "reference_accent": "#420042"
+  "reference_accent": "#420042",
+  "decoded_png_frames": [
+    {
+      "file": "mpv-16.png",
+      "sha256": "8ecd15c267dbaf930b198158c3dc774842dc939bb773c8c6bea4ca867132de8f",
+      "rgba_sha256": "c4588cddbfd5529fa37c5c6edb976cfc0abf80b769f34f8cfda65c170853fb73",
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "file": "mpv-24.png",
+      "sha256": "3538a275c446fcaaeaafe5da54e5f1075e5385be9f971a14f11f28dd5725a6c2",
+      "rgba_sha256": "93552cb825c32ff48cad64eb169df362d8f6e62f2a1fcf343748c0bb1bd243b8",
+      "size": [
+        24,
+        24
+      ]
+    },
+    {
+      "file": "mpv-32.png",
+      "sha256": "7e1f8778a746da500187f2ec1f63abaa64b5c2c9d358460a04b4ace488ae67fe",
+      "rgba_sha256": "516a24a3f3dc16c95a3f642b03e06f15b42441e90b004662454165d8f5d43ea8",
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "file": "mpv-48.png",
+      "sha256": "9997999909bd04a5319d43b8bc931de729bda28b8770c8f8b76e898c5bbff788",
+      "rgba_sha256": "6f57885ebbe571fbf4dca42302a86eb0063280ca7b3ca90fae42808a78ce30ef",
+      "size": [
+        48,
+        48
+      ]
+    },
+    {
+      "file": "mpv-64.png",
+      "sha256": "0d038a153c29322c1b07cb1c9c9d02aa2a27a9fc601ce373af118197c54e80b2",
+      "rgba_sha256": "3ceb1ee1929e0579bc86a5c505af7ae4e9c7e6d35aaafdcf8c1b33d42d2d0b77",
+      "size": [
+        64,
+        64
+      ]
+    },
+    {
+      "file": "mpv-256.png",
+      "sha256": "1fa9a1e8785d996b57292a066841dde66b783aaf7463881463883e6c47235db0",
+      "rgba_sha256": "a130048a6be9f7c5e630302529d02f6ef034a73bdb010feb293d8397cedbae3c",
+      "size": [
+        256,
+        256
+      ]
+    }
+  ],
+  "qt_decoder_contract": "Original RGBA pixels, no tracing or redrawing; native-size PNG frames because the pinned Qt image formats exclude ICO"
 }

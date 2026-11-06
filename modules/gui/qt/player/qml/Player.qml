@@ -319,7 +319,7 @@ FocusScope {
                     anchors.centerIn: parent
                     width: Math.min(PlayerStyle.px(128), parent.width / 2, parent.height / 2)
                     height: width
-                    source: Player.playbackEngine === "mpv" ? "qrc:///redesign/icons/mpv.ico" : "qrc:///redesign/icons/app.svg"
+                    source: Player.playbackEngine === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio) : "qrc:///redesign/icons/app.svg"
                     sourceSize: Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
                     smooth: false
