@@ -73,6 +73,15 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   the same main window and avoid resurrecting the mini after explicit dismissal.
   Audio-only and idle playback must not automatically create the floating video
   window. Move the existing in-library preview to the right as also requested.
+  Implementation/design contract: the normal main HWND stays minimized; a
+  separate nonactivating, always-on-top tool window owns the Figma card and the
+  existing composition video visual. No second decoder/player or media reopen.
+  Initial card width360 logical units,8-unit video surround,16:9 picture,
+  compact filename/folder footer,14-unit outer radius and an expandable queue
+  above the picture. Use existing Inter/PlayerStyle tokens and original icons.
+  Constrain drag/resize/queue expansion to the selected screen's usable area;
+  test100/150/200% DPI and both playback engines. Restore/dismiss and natural EOF
+  must use the existing player and queue owners; main geometry is preserved.
 - R104 (6 November reported regression): investigate the actual audio-visualizer
   selection during video playback. Supported enabled modes must have a visible
   result; unsupported engine/input combinations must not accept a silent no-op.
@@ -91,10 +100,23 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   stale samples, and disabling releases its audio observer. Existing standalone
   VLC visualization capabilities remain available through their native controls.
 
+- R105 (6 November player-panel comparison): match all four gear-panel tabs to
+  the supplied Figma references. Only the selected tab uses its original
+  two-tone active artwork, recolored with the current engine accent; inactive
+  tabs remain neutral. Match section order, dividers, row spacing, field widths,
+  flip segments, numeric editors, delay/speed sliders and their ticks, expanded
+  filter controls, preset footer and advanced-settings action. Preserve real
+  control bindings, track selection and truthful VLC/MPV availability. Verify
+  actual native rendering of Playback/Video/Audio/Subtitles, including selected
+  icons in VLC orange, MPV purple and a custom accent. The supplied comparisons
+  are the visual contract; functioning controls alone do not prove parity.
+
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
 The expanded request also requires R102/R104 repairs and R103 floating-miniplayer
-acceptance before that single final release; no intermediate repair release.
+acceptance and R105 player-panel parity before that single final release; no
+intermediate repair release. M8 retains the floating miniplayer; M9 owns R105;
+the final release is M10. Only M8 is ACTIVE while it is being implemented.
 M6's separately recorded native-cleanup capability blocker remains parked;
 it is neither waived nor relabeled as M7 completion.
 

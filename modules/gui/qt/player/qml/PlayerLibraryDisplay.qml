@@ -54,7 +54,7 @@ FocusScope {
     Rectangle {
         id: mini
         visible: Player.isStarted
-        x: PlayerStyle.px(8); y: root.height-height-PlayerStyle.px(8)
+        x: root.width-width-PlayerStyle.px(8); y: root.height-height-PlayerStyle.px(8)
         width: Math.max(0,Math.min(PlayerStyle.px(390),root.width-PlayerStyle.px(16),(root.height-titleBar.height-PlayerStyle.px(136))*16/9))
         height: width*9/16 + PlayerStyle.px(120)
         function constrain() {

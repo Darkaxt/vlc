@@ -1328,6 +1328,23 @@ void MainCtx::setPlayerView(bool enable)
     emit mainInterfaceModesChanged(m_mainInterfaceModes);
 }
 
+void MainCtx::setFloatingPlayer(bool enabled)
+{
+    if (m_floatingPlayer == enabled) return;
+    m_floatingPlayer = enabled;
+    emit floatingPlayerChanged();
+}
+
+void MainCtx::restoreFloatingPlayer()
+{
+    if (p_intf->p_compositor) p_intf->p_compositor->restoreFloatingPlayer();
+}
+
+void MainCtx::dismissFloatingPlayer()
+{
+    if (p_intf->p_compositor) p_intf->p_compositor->dismissFloatingPlayer();
+}
+
 void MainCtx::setShowRemainingTime( bool show )
 {
     m_showRemainingTime = show;

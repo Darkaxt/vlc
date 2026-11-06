@@ -60,6 +60,12 @@
 #include <memory>
 #include <type_traits>
 #include <QScreen>
+#include <QQmlContext>
+#include "videosurface.hpp"
+#include "player/player_controller.hpp"
+#include "playlist/playlist_controller.hpp"
+#include "windoweffects_module.hpp"
+#include <algorithm>
 
 namespace vlc {
 
@@ -81,9 +87,11 @@ int CompositorDirectComposition::windowEnable(const vlc_window_cfg_t *)
     const auto backdrop = playerBackdrop();
     // The blur copies already exist when vout is enabled. Insert the unfiltered
     // video below them, otherwise it covers their output beneath Qt's tint.
-    const auto ret = m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE,
-        backdrop ? backdrop->bottomVisual() : m_uiVisual);
-    if (backdrop) backdrop->setEnabled(true);
+    const bool floating = m_floatingRoot && m_mainCtx->floatingPlayer();
+    const auto ret = floating ? m_floatingRoot->AddVisual(m_videoVisual.Get(), FALSE, m_floatingUiVisual)
+        : m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE, backdrop ? backdrop->bottomVisual() : m_uiVisual);
+    if (backdrop) backdrop->setEnabled(!floating);
+    m_videoInFloating = floating && SUCCEEDED(ret);
     m_dcompDevice->Commit();
 
     if (ret == S_OK)
@@ -101,7 +109,9 @@ void CompositorDirectComposition::windowDisable()
     commonWindowDisable();
     if (auto backdrop = playerBackdrop()) backdrop->setEnabled(false);
 
-    const auto ret = m_rootVisual->RemoveVisual(m_videoVisual.Get());
+    auto parent = m_videoInFloating ? m_floatingRoot.Get() : m_rootVisual.Get();
+    const auto ret = parent->RemoveVisual(m_videoVisual.Get());
+    m_videoInFloating = false;
     assert(ret == S_OK);
     m_dcompDevice->Commit();
 }
@@ -299,6 +309,7 @@ bool CompositorDirectComposition::setup()
 
 void CompositorDirectComposition::cleanup()
 {
+    destroyFloatingPlayer();
     {
         QMutexLocker lock(&m_playerBackdropLock);
         m_playerBackdrop.Reset();
@@ -333,6 +344,9 @@ bool CompositorDirectComposition::makeMainInterface(MainCtx* mainCtx, std::funct
 
     m_quickView = std::make_unique<QQuickView>();
     const auto quickViewPtr = m_quickView.get();
+    connect(quickViewPtr, &QWindow::windowStateChanged, this, [this](Qt::WindowState state) {
+        if (state != Qt::WindowMinimized) hideFloatingPlayer();
+    });
 
     m_quickView->setResizeMode(QQuickView::SizeRootObjectToView);
     m_quickView->setColor(Qt::transparent);
@@ -462,6 +476,7 @@ void CompositorDirectComposition::destroyMainInterface()
 
 void CompositorDirectComposition::unloadGUI()
 {
+    destroyFloatingPlayer();
     m_acrylicSurface.reset();
     m_interfaceWindowHandler.reset();
 
@@ -572,11 +587,213 @@ void CompositorDirectComposition::removeVisual(IDCompositionVisual *visual)
 
 QQuickItem * CompositorDirectComposition::activeFocusItem() const /* override */
 {
+    if (m_floatingView && m_floatingView->isActive()) return m_floatingView->activeFocusItem();
     return m_quickView->activeFocusItem();
+}
+
+bool CompositorDirectComposition::showFloatingPlayer(Qt::WindowStates previousState)
+{
+    if (!m_videoVisual || !m_videoSurfaceProvider->isEnabled()) return false;
+    if (m_mainCtx->floatingPlayer()) return true;
+    m_mainStateBeforeFloating = previousState & ~Qt::WindowMinimized;
+    if (!m_floatingView) {
+        // Reuse the engine's registered singleton controllers; this creates no
+        // new player, decoder, media library or playback session.
+        m_floatingView = std::make_unique<QQuickView>(m_quickView->engine(), nullptr);
+        auto view = m_floatingView.get();
+        view->setObjectName(QStringLiteral("floatingPlayerWindow"));
+        view->setFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        view->setProperty("_q_showWithoutActivating", true);
+        view->setColor(Qt::transparent);
+        view->setPersistentGraphics(true);
+        view->setPersistentSceneGraph(true);
+        view->setResizeMode(QQuickView::SizeRootObjectToView);
+        if (!MainCtxWin32::createWindowWithoutRedirectionSurfaceImpl(view)) {
+            m_floatingView.reset();
+            return false;
+        }
+        if (m_windowEffectsModule && m_windowEffectsModule->isEffectAvailable(view, WindowEffectsModule::BlurBehind))
+            m_windowEffectsModule->setBlurBehind(view, m_mainCtx->backdropBlurRequested(), {});
+        view->installEventFilter(this);
+        connect(view, &QQuickWindow::frameSwapped, this, &CompositorDirectComposition::setupFloatingPlayer);
+        connect(view, &QWindow::xChanged, this, &CompositorDirectComposition::constrainFloatingPlayer);
+        connect(view, &QWindow::yChanged, this, &CompositorDirectComposition::constrainFloatingPlayer);
+        connect(view, &QWindow::widthChanged, this, &CompositorDirectComposition::constrainFloatingPlayer);
+        connect(view, &QWindow::heightChanged, this, &CompositorDirectComposition::constrainFloatingPlayer);
+        connect(view, &QWindow::screenChanged, this, &CompositorDirectComposition::constrainFloatingPlayer);
+        const auto identity = [this] {
+            m_floatingView->setTitle(m_quickView->title() + QStringLiteral(" — ") + qtr("Miniplayer"));
+            m_floatingView->setIcon(m_mainCtx->getRedesignWindowIcon());
+        };
+        connect(m_quickView.get(), &QWindow::titleChanged, view, identity);
+        connect(m_mainCtx, &MainCtx::redesignAccentChanged, view, identity);
+        identity();
+        view->setSource(QUrl(QStringLiteral("qrc:/qt/qml/VLC/Player/FloatingPlayer.qml")));
+        if (view->status() != QQuickView::Ready || !view->rootObject()) {
+            msg_Err(m_intf, "Floating player QML failed to load");
+            m_floatingView.reset();
+            return false;
+        }
+        connect(view->rootObject(), &QQuickItem::implicitHeightChanged, view, [this] {
+            const int bottom = m_floatingView->y() + m_floatingView->height();
+            m_floatingView->resize(m_floatingView->width(), qCeil(m_floatingView->rootObject()->implicitHeight()));
+            m_floatingView->setY(bottom - m_floatingView->height());
+            constrainFloatingPlayer();
+        });
+    }
+    const auto area = m_quickView->screen()->availableGeometry();
+    m_floatingView->setScreen(m_quickView->screen());
+    const int width = std::min(360, area.width() - 32);
+    m_floatingView->resize(width, qCeil(m_floatingView->rootObject()->implicitHeight()));
+    m_floatingView->setPosition(area.right() + 1 - width - 16, area.bottom() + 1 - m_floatingView->height() - 16);
+    m_mainCtx->setFloatingPlayer(true);
+    constrainFloatingPlayer();
+    // A hidden window retains its existing Qt target. Reattach the live video
+    // on subsequent opens rather than waiting for a target-creation callback.
+    if (m_floatingRoot) setupFloatingPlayer();
+    m_floatingView->show();
+    return true;
+}
+
+void CompositorDirectComposition::setupFloatingPlayer()
+{
+    if (!m_mainCtx->floatingPlayer() || m_videoInFloating) return;
+    if (m_floatingRoot) {
+        if (m_videoVisual && m_videoSurfaceProvider->isEnabled()) {
+            const HRESULT removed = m_rootVisual->RemoveVisual(m_videoVisual.Get());
+            HRESULT result = removed;
+            if (SUCCEEDED(result)) result = m_floatingRoot->AddVisual(m_videoVisual.Get(), FALSE, m_floatingUiVisual);
+            if (FAILED(result)) {
+                if (SUCCEEDED(removed)) {
+                    const auto backdrop = playerBackdrop();
+                    m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE, backdrop ? backdrop->bottomVisual() : m_uiVisual);
+                    m_dcompDevice->Commit();
+                }
+                msg_Err(m_intf, "Could not move video into miniplayer (0x%lx)", static_cast<unsigned long>(result));
+                restoreFloatingPlayer();
+                return;
+            }
+            m_videoInFloating = true;
+            if (auto backdrop = playerBackdrop()) backdrop->setEnabled(false);
+            m_dcompDevice->Commit();
+        }
+        m_floatingView->setProperty("floatingVideoCompositionReady", true);
+        m_floatingView->rootObject()->setProperty("ready", true);
+        return;
+    }
+    auto rhi = m_floatingView->rhi();
+    auto swapchain = m_floatingView->swapChain();
+    if (!rhi || !swapchain) return; // first frame supplies the real native target
+    IDCompositionTarget *target = nullptr;
+#ifdef QRhiD3D11_ACTIVE
+    if (rhi->backend() == QRhi::D3D11) {
+        auto chain = static_cast<QD3D11SwapChain *>(swapchain);
+        target = chain->dcompTarget;
+        m_floatingUiVisual = chain->dcompVisual;
+        m_floatingDevice = static_cast<QRhiD3D11 *>(rhi->implementation())->dcompDevice;
+    }
+#endif
+#ifdef QRhiD3D12_ACTIVE
+    if (rhi->backend() == QRhi::D3D12) {
+        auto chain = static_cast<QD3D12SwapChain *>(swapchain);
+        target = chain->dcompTarget;
+        m_floatingUiVisual = chain->dcompVisual;
+        m_floatingDevice = static_cast<QRhiD3D12 *>(rhi->implementation())->dcompDevice;
+    }
+#endif
+    HRESULT result = target && m_floatingUiVisual ? m_dcompDevice->CreateVisual(&m_floatingRoot) : E_NOINTERFACE;
+    if (SUCCEEDED(result)) result = target->SetRoot(m_floatingRoot.Get());
+    if (SUCCEEDED(result)) result = m_floatingRoot->AddVisual(m_floatingUiVisual, FALSE, nullptr);
+    if (FAILED(result)) {
+        if (target && m_floatingUiVisual) target->SetRoot(m_floatingUiVisual);
+        if (m_floatingDevice) m_floatingDevice->Commit();
+        if (m_floatingRoot && m_floatingUiVisual) m_floatingRoot->RemoveVisual(m_floatingUiVisual);
+        m_floatingRoot.Reset();
+        msg_Err(m_intf, "Floating video composition failed (0x%lx)", static_cast<unsigned long>(result));
+        restoreFloatingPlayer();
+        return;
+    }
+    // The target belongs to Qt's other RHI device; each device must commit its
+    // own mutations when visuals from different devices share a tree.
+    m_floatingDevice->Commit();
+    setupFloatingPlayer();
+}
+
+void CompositorDirectComposition::hideFloatingPlayer()
+{
+    if (!m_floatingView || !m_mainCtx || !m_mainCtx->floatingPlayer()) return;
+    if (m_videoInFloating && m_videoVisual && m_videoSurfaceProvider && m_videoSurfaceProvider->isEnabled()) {
+        m_floatingRoot->RemoveVisual(m_videoVisual.Get());
+        const auto backdrop = playerBackdrop();
+        m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE, backdrop ? backdrop->bottomVisual() : m_uiVisual);
+        if (backdrop) backdrop->setEnabled(true);
+        m_dcompDevice->Commit();
+    }
+    m_videoInFloating = false;
+    if (m_mainCtx) m_mainCtx->setFloatingPlayer(false);
+    m_floatingView->hide();
+    // The hidden Qt window retains its graphics resources. Its root remains
+    // installed until native window teardown; later opens use the same tree.
+    m_floatingView->setProperty("floatingVideoCompositionReady", false);
+    if (m_floatingView->rootObject()) m_floatingView->rootObject()->setProperty("ready", false);
+}
+
+void CompositorDirectComposition::destroyFloatingPlayer()
+{
+    hideFloatingPlayer();
+    if (m_floatingRoot && m_floatingUiVisual) m_floatingRoot->RemoveVisual(m_floatingUiVisual);
+    m_floatingRoot.Reset();
+    m_floatingUiVisual = nullptr;
+    m_floatingView.reset();
+    m_floatingDevice.Reset();
+}
+
+void CompositorDirectComposition::restoreFloatingPlayer()
+{
+    hideFloatingPlayer();
+    if (!m_quickView) return;
+    m_quickView->setWindowStates(m_mainStateBeforeFloating);
+    m_quickView->show();
+    m_quickView->raise();
+    m_quickView->requestActivate();
+}
+
+void CompositorDirectComposition::dismissFloatingPlayer()
+{
+    hideFloatingPlayer();
+    // No visibility/state callback reopens it. Only a later explicit minimize
+    // of a playing video can start another floating-player lifecycle.
+    m_intf->p_mainPlaylistController->stop();
+}
+
+void CompositorDirectComposition::constrainFloatingPlayer()
+{
+    if (!m_floatingView || !m_floatingView->rootObject() || m_constrainingFloating) return;
+    m_constrainingFloating = true;
+    const auto screen = m_floatingView->screen();
+    if (screen) {
+        const auto area = screen->availableGeometry().adjusted(8, 8, -8, -8);
+        auto view = m_floatingView.get();
+        if (auto root = view->rootObject()) root->setProperty("availableHeight", area.height());
+        const int maxWidth = std::max(1, std::min({640, area.width(), int((area.height() - 100) * 16 / 9)}));
+        view->setMinimumSize(QSize(std::min(260, maxWidth), 1));
+        view->setMaximumSize(QSize(maxWidth, area.height()));
+        const int width = std::clamp(view->width(), std::min(260, maxWidth), maxWidth);
+        const int height = std::min(area.height(), qCeil(view->rootObject()->implicitHeight()));
+        view->resize(width, height);
+        view->setPosition(std::clamp(view->x(), area.left(), area.right()+1-width),
+                          std::clamp(view->y(), area.top(), area.bottom()+1-height));
+    }
+    m_constrainingFloating = false;
 }
 
 bool CompositorDirectComposition::eventFilter(QObject *watched, QEvent *event)
 {
+    if (watched == m_floatingView.get() && event->type() == QEvent::Close) {
+        event->ignore();
+        dismissFloatingPlayer();
+        return true;
+    }
     switch (event->type())
     {
     case QEvent::PlatformSurface:

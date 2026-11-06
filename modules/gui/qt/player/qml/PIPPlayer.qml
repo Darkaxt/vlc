@@ -145,7 +145,7 @@ T.Control {
 
     background: VideoSurface {
         id: videoSurface
-        videoSurfaceProvider: MainCtx.videoSurfaceProvider
+        videoSurfaceProvider: MainCtx.floatingPlayer ? null : MainCtx.videoSurfaceProvider
 
         color: (hoverHandler.hovered ||
                 playButton?.hovered ||

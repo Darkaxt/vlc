@@ -56,7 +56,7 @@ T.Pane {
     }
     RowLayout {
         id:right;anchors.right:parent.right;anchors.rightMargin:PlayerStyle.px(6);height:parent.height;spacing:0
-        PlayerIconButton{visible:header.showCSD;implicitWidth:PlayerStyle.px(36);implicitHeight:PlayerStyle.px(24);glyph:"minimize";description:qsTr("Minimize");onClicked:MainCtx.requestInterfaceMinimized()}
+        PlayerIconButton{visible:header.showCSD;implicitWidth:PlayerStyle.px(36);implicitHeight:PlayerStyle.px(24);glyph:"minimize";description:qsTr("Minimize");AccessibleCompat.id:"playerMinimize";onClicked:MainCtx.requestInterfaceMinimized()}
         PlayerIconButton{visible:header.showCSD;implicitWidth:PlayerStyle.px(36);implicitHeight:PlayerStyle.px(24);glyph:"maximize";description:MainCtx.intfMainWindow.visibility===Window.Maximized?qsTr("Restore window"):qsTr("Maximize");onClicked:{if(MainCtx.intfMainWindow.visibility===Window.Maximized)MainCtx.requestInterfaceNormal();else MainCtx.requestInterfaceMaximized()}}
         PlayerLayoutStrip{visible:!header.libraryContext;zone:"topRight";popupParent:header.parent;compact:header.width<PlayerStyle.px(760);checkedControls:header.activeControls;Layout.preferredWidth:Math.min(implicitWidth,header.width*0.3);Layout.preferredHeight:PlayerStyle.px(32);onActionRequested:(key,invoker)=>header.actionRequested(key,invoker)}
         PlayerIconButton{visible:header.libraryContext;implicitWidth:PlayerStyle.px(36);implicitHeight:PlayerStyle.px(24);glyph:"fullscreen";description:Player.fullscreen?qsTr("Leave fullscreen"):qsTr("Fullscreen");onClicked:Player.toggleFullscreen()}

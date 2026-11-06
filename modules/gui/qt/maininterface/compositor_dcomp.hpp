@@ -68,6 +68,9 @@ public:
     void removeVisual(IDCompositionVisual *visual);
 
     QQuickItem * activeFocusItem() const override;
+    bool showFloatingPlayer(Qt::WindowStates previousState) override;
+    void restoreFloatingPlayer() override;
+    void dismissFloatingPlayer() override;
 
     bool eventFilter(QObject *watched, QEvent *event) override;
 
@@ -84,6 +87,10 @@ private:
     [[nodiscard]] bool setup();
     void cleanup();
     Microsoft::WRL::ComPtr<PlayerVideoBackdrop> playerBackdrop() const;
+    void hideFloatingPlayer();
+    void destroyFloatingPlayer();
+    void setupFloatingPlayer();
+    void constrainFloatingPlayer();
 
 private slots:
     void onSurfacePositionChanged(const QPointF& position) override;
@@ -105,6 +112,13 @@ private:
     QMutex m_setupStateLock;
 
     std::unique_ptr<QQuickView> m_quickView;
+    std::unique_ptr<QQuickView> m_floatingView;
+    Microsoft::WRL::ComPtr<IDCompositionVisual> m_floatingRoot;
+    Microsoft::WRL::ComPtr<IDCompositionDevice> m_floatingDevice;
+    IDCompositionVisual *m_floatingUiVisual = nullptr;
+    Qt::WindowStates m_mainStateBeforeFloating;
+    bool m_constrainingFloating = false;
+    bool m_videoInFloating = false;
 
     IDCompositionDevice *m_dcompDevice = nullptr;
     Microsoft::WRL::ComPtr<IDCompositionVisual> m_rootVisual;

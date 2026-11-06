@@ -355,7 +355,7 @@ FocusScope {
                     // behind (unlike pip player):
                     renderingEnabled: false
 
-                    videoSurfaceProvider: MainCtx.videoSurfaceProvider
+                    videoSurfaceProvider: MainCtx.floatingPlayer ? null : MainCtx.videoSurfaceProvider
 
                     visible: MainCtx.hasEmbededVideo
 

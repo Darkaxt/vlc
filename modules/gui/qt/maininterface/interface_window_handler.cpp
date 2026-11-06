@@ -311,6 +311,12 @@ bool InterfaceWindowHandler::eventFilter(QObject*, QEvent* event)
 
             m_hasPausedWhenMinimized = false;
 
+            if (THEMIM->getPlayingState() == PlayerController::PLAYING_STATE_PLAYING &&
+                THEMIM->hasVideoOutput() && !THEMIM->hasAudioVisualization() &&
+                !THEMIM->isStillImagePreview() &&
+                p_intf->p_compositor->showFloatingPlayer(oldState))
+                break;
+
             if( THEMIM->getPlayingState() == PlayerController::PLAYING_STATE_PLAYING &&
                 THEMIM->hasVideoOutput() && !THEMIM->hasAudioVisualization() &&
                 m_pauseOnMinimize )

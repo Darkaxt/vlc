@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['m7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -1809,6 +1809,89 @@ def engine_accents():
     finally:case.close()
 
 
+def floating_player():
+    def current(case,label,capture=False):
+        if capture:case.inspect(label+'-hover','move','--target','floatingPlayer','--fraction-y','0.25')
+        state=case.inspect(label,'snapshot','--await-target','floatingPlayer',
+            '--await-property','ready','--await-value','true',*(['--capture'] if capture else []))
+        assert state['main_window']['visibility']==3, state['main_window']
+        windows=[w for w in state['windows'] if w.get('name')=='floatingPlayerWindow' and w['visible']]
+        assert len(windows)==1 and windows[0]['composition_ready'], windows
+        assert windows[0]['native_id_hex']!=state['main_window']['native_id_hex']
+        assert not state['engine_switching']
+        assert state['window']['width']<=state['window']['available_width']
+        assert state['window']['height']<=state['window']['available_height']
+        assert not state['images']['failed']
+        return state
+
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            case=Case('floating-'+engine+'-'+scale,engine=engine,scale=scale,
+                media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
+            try:
+                initial=case.inspect('video-ready','snapshot','--await-core','state','--await-value','3')
+                initial=case.inspect('seek-ready','snapshot','--await-core','seekable','--await-value','true')
+                native=initial['main_window']['native_id_hex']
+                geometry={k:initial['main_window'][k] for k in ('x','y','width','height')}
+                case.click('play','playButton','--await-core','state','--await-value','2')
+                before=case.inspect('before-minimize','snapshot')
+                case.click('minimize','playerMinimize')
+                mini=current(case,'floating-ready',True)
+                assert mini['playback_engine']==engine and mini['core']['url']==before['core']['url']
+                assert mini['main_window']['native_id_hex']==native and mini['core']['state']==2
+                case.click('pause-floating','floatingPlay','--await-core','state','--await-value','3')
+                case.inspect('seek-floating','click','--target','floatingSeek','--fraction-x','0.35')
+                paused=case.inspect('seek-observed','snapshot','--await-core','position','--await-value','0.35','--await-tolerance','0.03')
+                queued=case.click('expand-queue','floatingQueueToggle','--capture')
+                assert nodes(queued,'floatingQueueList') and nodes(queued,'floatingQueueItem0')
+                assert queued['window']['height']>mini['window']['height']
+                case.click('collapse-queue','floatingQueueToggle')
+                case.inspect('monitor-bounded-resize','resize','--width','10000','--height','10000')
+                bounded=current(case,'bounded-result',True)
+                assert bounded['window']['width']<=640
+                restored=case.click('restore-main','floatingRestore','--capture')
+                assert restored['main_window']['visibility']!=3
+                assert restored['main_window']['native_id_hex']==native
+                assert all(restored['main_window'][k]==v for k,v in geometry.items()),(geometry,restored['main_window'])
+                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in restored['windows'])
+                assert restored['core']['state']==3 and abs(restored['core']['position']-paused['core']['position'])<0.03
+                case.click('play-again','playButton','--await-core','state','--await-value','2')
+                case.click('minimize-again','playerMinimize')
+                current(case,'same-mini-reopened')
+                dismissed=case.click('dismiss','floatingClose')
+                stopped=case.inspect('dismiss-stopped','snapshot','--await-core','state','--await-value','4')
+                assert stopped['main_window']['visibility']==3
+                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in stopped['windows'])
+                case.close(True)
+            finally:case.close()
+        eof=Case('floating-eof-'+engine,engine=engine,media=fixtures/'control.mkv')
+        try:
+            eof.inspect('paused','snapshot','--await-core','state','--await-value','3')
+            eof.click('play','playButton','--await-core','state','--await-value','2')
+            eof.click('minimize','playerMinimize')
+            current(eof,'floating-ready')
+            stopped=eof.inspect('natural-eof','snapshot','--await-core','state','--await-value','4','--capture')
+            assert nodes(stopped,'floatingPlay') and nodes(stopped,'floatingRestore')
+            replay=eof.click('replay','floatingPlay','--await-core','state','--await-value','2')
+            assert replay['main_window']['visibility']==3
+            current(eof,'replay-surface-ready',True)
+            eof.close(True)
+        finally:eof.close()
+        for name,media in (('idle',None),('audio',fixtures/'audio-only.mka')):
+            negative=Case('floating-excludes-'+name+'-'+engine,engine=engine,media=media)
+            try:
+                if media:
+                    negative.inspect('paused','snapshot','--await-core','state','--await-value','3')
+                    negative.click('play','playButton','--await-core','state','--await-value','2')
+                state=negative.inspect('library-ready','snapshot')
+                negative.click('minimize','playerMinimize')
+                state=negative.inspect('no-floating','snapshot')
+                assert state['main_window']['visibility']==3
+                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in state['windows'])
+                negative.close(True)
+            finally:negative.close()
+
+
 def visualizer_options():
     suffix='-eq-utf8-resumed' if options_utf8_repair else '-eq-resumed' if resume_visualizer_options else ''
     case=Case('original-visualizer-eq-options'+suffix,media=fixtures/'control.mkv')
@@ -3157,7 +3240,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue

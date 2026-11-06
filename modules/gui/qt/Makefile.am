@@ -1357,6 +1357,7 @@ libqml_module_player_a_QML = \
 	player/qml/LyricsFlickable.qml \
 	player/qml/MiniPlayer.qml \
 	player/qml/PIPPlayer.qml \
+	player/qml/FloatingPlayer.qml \
 	player/qml/PlayerLibraryNetworkDialog.qml \
 	player/qml/LibraryGlass.qml \
 	player/qml/PlayerLibraryHome.qml \

@@ -21,7 +21,10 @@ with Linux group empty/private mounts released; no build remains running.
 M7 closure assessment found no additional required abstraction or refactor.
 M8 owns R103: real floating video on minimize, Figma compact/queue/hover/seek/
 metadata/replay controls, both engines, monitor bounds and restore/dismissal.
-M9 normal1.1.9 release remains NOT STARTED until M8 passes. M6's exact native
+M9 player-panel Figma parity (R105) is NOT STARTED, added by the user's four-tab
+comparison. It owns original selected two-tone icons, actual row/control/slider
+layout and footer parity, with real VLC/MPV bindings and rendered acceptance.
+M10 normal1.1.9 release remains NOT STARTED until M8 and M9 pass. M6's exact native
 cleanup capability blocker remains parked; S9 Rust is NOT STARTED.
 
 The following earlier M7 checkpoints are historical; current status is above.
@@ -736,7 +739,8 @@ presentation and final delivery remain required.
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 | M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M9. | None. |
 | M8 Figma floating miniplayer | ACTIVE | Existing embedding and reference assets identified. | R103 automatic floating video, full Figma card/queue/controls, both-engine continuity, bounds/restore/dismissal and actual rendering. | None. |
-| M9 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
+| M9 Player-panel Figma parity | NOT STARTED | User's four-tab comparison recorded as R105. | Selected original two-tone icons; Playback/Video/Audio/Subtitles row/control/slider/layout and footer parity; real engine bindings and native rendered acceptance. | None. |
+| M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

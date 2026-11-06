@@ -142,6 +142,7 @@ class MainCtx : public QObject
     Q_PROPERTY(bool hasAcrylicSurface READ hasAcrylicSurface NOTIFY hasAcrylicSurfaceChanged FINAL)
     Q_PROPERTY(bool smoothScroll READ smoothScroll NOTIFY smoothScrollChanged FINAL)
     Q_PROPERTY(QWindow* intfMainWindow READ intfMainWindow CONSTANT FINAL)
+    Q_PROPERTY(bool floatingPlayer READ floatingPlayer NOTIFY floatingPlayerChanged FINAL)
     Q_PROPERTY(bool videoSurfaceCanHaveFractionalPosition READ videoSurfaceCanHaveFractionalPosition CONSTANT FINAL)
     Q_PROPERTY(bool useGlobalShortcuts READ getUseGlobalShortcuts WRITE setUseGlobalShortcuts NOTIFY useGlobalShortcutsChanged FINAL)
     Q_PROPERTY(int maxVolume READ maxVolume NOTIFY maxVolumeChanged FINAL)
@@ -266,6 +267,10 @@ public:
     void updateRedesignIconAssets() const;
     MLBookmarkModel *getBookmarks();
     Q_INVOKABLE void addBookmark();
+    bool floatingPlayer() const { return m_floatingPlayer; }
+    void setFloatingPlayer(bool enabled);
+    Q_INVOKABLE void restoreFloatingPlayer();
+    Q_INVOKABLE void dismissFloatingPlayer();
     Q_INVOKABLE QVariantMap presentationSettings() const;
     Q_INVOKABLE int backgroundBlurRadius() const;
     Q_INVOKABLE bool previewAppearance(int theme, const QString &accent);
@@ -511,6 +516,7 @@ protected:
     vlc_preparser_t *m_network_preparser = nullptr;
 
     bool m_hasEmbededVideo = false;
+    bool m_floatingPlayer = false;
     VideoSurfaceProvider* m_videoSurfaceProvider = nullptr;
     bool m_showRemainingTime = false;
     QSet<QMenu *> m_playerMenus;
@@ -677,6 +683,7 @@ signals:
     void playerPlaylistWidthChanged(double);
     void interfaceAlwaysOnTopChanged(bool);
     void hasEmbededVideoChanged(bool);
+    void floatingPlayerChanged();
     void playerMenuOpenChanged();
     void showRemainingTimeChanged(bool);
     void gridViewChanged( bool );

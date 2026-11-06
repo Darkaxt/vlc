@@ -391,13 +391,21 @@ private:
         return actual == expected || (tolerance > 0 && actualNumber && expectedNumber && std::abs(a - e) <= tolerance);
     }
 
+    QQuickWindow *observationWindow() const
+    {
+        for (auto candidate : QGuiApplication::allWindows())
+            if (candidate->isVisible() && candidate->objectName()==QStringLiteral("floatingPlayerWindow"))
+                return qobject_cast<QQuickWindow *>(candidate);
+        return m_root->window();
+    }
+
     QJsonObject snapshot()
     {
         m_items.clear();
         QJsonArray tree;
         QJsonObject images{{QStringLiteral("resolved"), 0}, {QStringLiteral("pending"), 0},
                           {QStringLiteral("failed"), 0}, {QStringLiteral("unresolved"), 0}};
-        auto window = m_root->window();
+        auto window = observationWindow();
         visit(window ? window->contentItem() : m_root, -1, tree, images);
         QJsonObject result{{QStringLiteral("revision"), qint64(++m_revision)},
             {QStringLiteral("core"), coreSnapshot()},
@@ -515,6 +523,12 @@ private:
                 {QStringLiteral("flags"), QString::number(quint64(window->flags()), 16)},
                 {QStringLiteral("visibility"), int(window->visibility())}});
         }
+        auto mainWindow=m_root->window();
+        result.insert(QStringLiteral("main_window"), QJsonObject{
+            {QStringLiteral("visibility"), int(mainWindow->visibility())},
+            {QStringLiteral("native_id_hex"), QString::number(qulonglong(mainWindow->winId()),16)},
+            {QStringLiteral("x"),mainWindow->x()}, {QStringLiteral("y"),mainWindow->y()},
+            {QStringLiteral("width"),mainWindow->width()}, {QStringLiteral("height"),mainWindow->height()}});
         QJsonArray windows;
         for (auto candidate : QGuiApplication::allWindows()) {
             if (windows.size() >= 100) break;
@@ -526,9 +540,13 @@ private:
                     if (item->isVisible() && !text.isEmpty() && texts.size() < 20) texts.append(text.left(512));
                 }
             windows.append(QJsonObject{{QStringLiteral("type"), QString::fromLatin1(candidate->metaObject()->className())},
+                {QStringLiteral("name"),candidate->objectName()},
+                {QStringLiteral("x"),candidate->x()}, {QStringLiteral("y"),candidate->y()},
+                {QStringLiteral("native_id_hex"),candidate->isVisible()?QString::number(qulonglong(candidate->winId()),16):QString()},
+                {QStringLiteral("composition_ready"),candidate->property("floatingVideoCompositionReady").toBool()},
                 {QStringLiteral("window_type"), int(candidate->type())}, {QStringLiteral("visible"), candidate->isVisible()},
                 {QStringLiteral("active"), candidate->isActive()}, {QStringLiteral("width"), candidate->width()},
-                {QStringLiteral("height"), candidate->height()}, {QStringLiteral("main"), candidate == window},
+                {QStringLiteral("height"), candidate->height()}, {QStringLiteral("main"), candidate == mainWindow},
                 {QStringLiteral("visible_text"), texts}});
         }
         result.insert(QStringLiteral("windows"), windows);
@@ -754,7 +772,7 @@ private:
         }
         m_pendingId = id;
         m_busy = true;
-        auto window = m_root->window();
+        auto window = observationWindow();
         QString error;
         const qint64 before = m_revision;
         QString awaitProperty = command.value(QStringLiteral("await_property")).toString();
@@ -997,11 +1015,22 @@ private:
                          {QStringLiteral("error"), error}});
             return;
         }
-        const auto render = [this, window, id, before, error, command] {
+        const auto render = [this, id, before, error, command] {
             const qint64 predicateObserved = m_clock.elapsed();
+            auto window = observationWindow();
+            if (!window || !window->isVisible() || window->windowStates().testFlag(Qt::WindowMinimized)) {
+                auto result=snapshot();
+                result.insert(QStringLiteral("id"),id);
+                result.insert(QStringLiteral("status"),error.isEmpty()?QStringLiteral("completed"):QStringLiteral("failed"));
+                if (!error.isEmpty()) result.insert(QStringLiteral("error"),error);
+                result.insert(QStringLiteral("frame_observed_ms"),QJsonValue::Null);
+                result.insert(QStringLiteral("observation_boundary"),QStringLiteral("UI dispatcher; no visible render window"));
+                respond(id,result);
+                return;
+            }
             // Await a real rendered frame: a queued invocation alone can run before
             // Qt Quick's deferred polish/positioner pass (notably popup Columns).
-            connect(window, &QQuickWindow::frameSwapped, this, [this, id, before, error, command, predicateObserved] {
+            connect(window, &QQuickWindow::frameSwapped, this, [this, window, id, before, error, command, predicateObserved] {
                 if (id != m_pendingId) return;
                 const qint64 frameObserved = m_clock.elapsed();
                 const auto finish = [this, id, before, error, frameObserved, command, predicateObserved](const QJsonObject &extra) {
@@ -1040,8 +1069,8 @@ private:
                     }
                     respond(id, result);
                 };
-                if (command.value(QStringLiteral("capture")).toBool() && m_root->window()) {
-                    auto grab = m_root->window()->contentItem()->grabToImage();
+                if (command.value(QStringLiteral("capture")).toBool() && window) {
+                    auto grab = window->contentItem()->grabToImage();
                     if (grab) {
                         connect(grab.data(), &QQuickItemGrabResult::ready, this, [this, grab, id, finish] {
                             finish({{QStringLiteral("capture_saved"), grab->saveToFile(QDir(m_directory).filePath(id + QStringLiteral(".png")))},

@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QPointF>
 #include <QSizeF>
+#include <QWindow>
 
 #include <vlc_common.h>
 
@@ -103,6 +104,12 @@ public:
     virtual QQuickWindow* quickWindow() const;
 
     virtual QQuickItem * activeFocusItem() const = 0;
+
+    // A compositor may move its existing video visual to the floating player.
+    // Returning false preserves the normal minimize policy on other backends.
+    virtual bool showFloatingPlayer(Qt::WindowStates) { return false; }
+    virtual void restoreFloatingPlayer() {}
+    virtual void dismissFloatingPlayer() {}
 };
 
 /**
