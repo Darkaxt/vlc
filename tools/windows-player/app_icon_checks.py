@@ -75,6 +75,13 @@ def shell_identity(hwnd, expected_pid, engine, executable, expected_mpv_icon, *,
         resource=Path(custom_resource) if custom_resource else executable.parent/'mpv.ico'
         assert properties['icon']==str(resource)+',0',properties
         assert resource.read_bytes()==Path(expected_mpv_icon).read_bytes(),'Shell resource differs from the verified engine artwork'
+        if custom_resource:
+            u.LoadImageW.argtypes=[W.HINSTANCE,W.LPCWSTR,W.UINT,ctypes.c_int,ctypes.c_int,W.UINT]
+            u.LoadImageW.restype=W.HANDLE
+            u.DestroyIcon.argtypes=[W.HANDLE]
+            loaded=u.LoadImageW(None,str(resource),1,48,48,0x10)
+            assert loaded,'Windows cannot decode the generated Shell ICO resource'
+            assert u.DestroyIcon(loaded)
     else:
         assert engine=='vlc' and all(value is None for value in properties.values()),('VLC did not restore its original Shell grouping',properties)
     return {'root_window':format(root,'x'),'engine':engine,'properties':properties,'shell_resource_verified':True}

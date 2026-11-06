@@ -10,6 +10,17 @@ Shell cache/pin mutation is authorized by that failed proof. Complete R100 befor
 one coordinated affected acceptance/normal release pass. The earlier hue-only
 check proved replacement but missed the wrong dark-purple source; preserve it
 as limited evidence, not visual acceptance. No other stage is activated.
+Integrated4076261 passes separate VLC/MPV palette Save/Cancel/restart/default
+restoration, all12 menu accent hues and visible default purple details, original
+and custom MPV header/idle pixels, native HICON and Windows-readable generated
+Shell resources. Default extracted artwork also passes100/150/200% actual Qt
+pixel comparison. Protected VLC/Nuvio profiles remain unchanged; owned players
+exit0. Evidence: `engine-accents-fit/result.json`, `engine-icon-pixels-accent/result.json`
+and `engine-accent-unit/result.json` under the M7 native root. The first palette
+attempt was rejected before Customize dispatch because its small viewport clipped
+the target; its failure/exit0 is preserved. The corrected viewport applies before
+opening the menu. Actual taskbar-button pixels and final normal delivery remain
+unmet; these native property checks do not close R98.
 R97–R99 are authorized by the user's installed-MPV icon/taskbar report and
 subsequent README request. After functional acceptance, update actual-player and
 Figma side-by-side screenshot references/credits before final delivery.

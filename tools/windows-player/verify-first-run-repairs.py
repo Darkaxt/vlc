@@ -1141,7 +1141,9 @@ def media_previews():
         assert colored, 'Playback tab accent is missing'
         if custom or engine=='mpv':
             assert not any(r>100 and r>g*1.2 and g>b*1.2 for r,g,b in colored),'Fixed orange accent remains'
-        if engine=='mpv': assert any(r>g*2 and b>g*2 for r,g,b in colored),'MPV purple absent'
+        if engine=='mpv':
+            expected=colorsys.rgb_to_hsv(152/255,89/255,173/255)[0]
+            assert any(abs(colorsys.rgb_to_hsv(r/255,g/255,b/255)[0]-expected)<.035 for r,g,b in colored),'MPV purple absent'
         elif custom: assert any(b>r*1.3 and b>g for r,g,b in colored),'Custom blue absent'
         else: assert any(r>100 and r>g*1.2 and g>b*1.2 for r,g,b in colored),'Default amber absent'
         assert any(max(rgb)-min(rgb)<4 and min(abs(rgb[0]-143),abs(rgb[0]-46))<5 for rgb in pixels),'Neutral outline lost'
@@ -1572,6 +1574,7 @@ def engine_accents():
     """Both engine palettes, live icon resources, cancellation and saved restart."""
     case=Case('engine-accent-settings')
     def empty_player(label):
+        case.inspect(label+'-viewport','resize','--width','1280','--height','900')
         case.inspect(label+'-menu','click','--name','Main menu')
         case.inspect(label+'-customize','click','--name','Customize Player')
         case.inspect(label+'-editor','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
@@ -1598,6 +1601,18 @@ def engine_accents():
         ico=Image.open(reference)
         assert ico.ico.sizes()=={(n,n) for n in (16,24,32,48,64,256)}
         if engine=='mpv':
+            mounted=nodes(snapshot,'playerGlyph-mpv');assert len(mounted)==1
+            snapshot=case.inspect(label+'-qml-ready','snapshot','--await-node',str(mounted[0]['node']),
+                '--await-property','status','--await-value','1','--capture')
+            picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png'))
+            ratio=picture.width/snapshot['window']['width']
+            for target in ('playerGlyph-mpv','playerIdleCone'):
+                visible=nodes(snapshot,target);assert len(visible)==1
+                node=visible[0];assert node['source'].startswith(snapshot['engine_icon_root'])
+                crop=case.evidence/(label+'-'+target+'.png')
+                picture.crop(tuple(round(v*ratio) for v in (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(crop)
+                pixels=qml_mpv_icon_pixels(crop,reference,tuple(math.floor(node[k]*ratio)-round(node[k]*ratio) for k in ('x','y')))
+                case.record.setdefault('custom_qml_icons',[]).append(dict(pixels,label=label,target=target))
             original=Image.open(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')
             for size in sorted(ico.ico.sizes()):
                 observed=ico.ico.getimage(size).convert('RGBA');expected=original.ico.getimage(size).convert('RGBA')
@@ -1965,7 +1980,7 @@ def menus_normal():
             settled=case.inspect('menu-engine-settled-'+engine,'snapshot',
                 '--await-core','engine_switching','--await-value','false','--capture')
             assert settled['core']['engine']==engine and settled['core']['state']==3
-            assert settled['rendered_accent']==('#420042' if engine=='mpv' else '#2f87b5')
+            assert settled['rendered_accent']==('#9859ad' if engine=='mpv' else '#2f87b5')
             assert settled['presentation']==saved_presentation, 'Engine selection rewrote the saved appearance'
             glyph=nodes(settled,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
             assert len(glyph)==1 and (mpv_frame(glyph[0]['source']) if engine=='mpv' else glyph[0]['source'].endswith('/vlc.svg')),glyph
@@ -2016,7 +2031,7 @@ def menus():
         initial=Case('mpv-startup-presentation',engine='mpv',media=fixtures/'control.mkv',extra=('--qt-accent-color=#2f87b5',))
         try:
             snapshot=initial.inspect('mpv-initial-identity','snapshot','--await-core','state','--await-value','3','--capture')
-            assert snapshot['core']['engine']=='mpv' and snapshot['rendered_accent']=='#420042'
+            assert snapshot['core']['engine']=='mpv' and snapshot['rendered_accent']=='#9859ad'
             assert snapshot['presentation']['accent']=='#2f87b5'
             assert len(nodes(snapshot,'playerGlyph-mpv'))==1
             initial.record['initial_engine_identity_verified']=True

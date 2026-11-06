@@ -21,6 +21,10 @@ Actual Qt player captures from an empty, isolated profile. Selecting an engine
 also changes the title, accent and artwork, and saves the choice for the next
 launch.
 
+VLC and MPV have separate saved accent palettes in General Settings. Their
+defaults are VLC orange and the MPV logo's purple; custom colors also tint the
+running window and taskbar icon while preserving the original icon shading.
+
 - Redesigned player, media library, first-run guide and settings.
 - VLC and MPV playback engines, with in-session switching that preserves position
   and play/pause state.
