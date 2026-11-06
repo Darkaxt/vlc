@@ -30,7 +30,7 @@ def qml_mpv_icon_pixels(capture, expected_ico, pixel_offset=(0,0)):
         'native_detail_preserved':True,'capture_sha256':hashlib.sha256(Path(capture).read_bytes()).hexdigest()}
 
 
-def shell_identity(hwnd, expected_pid, engine, executable, expected_mpv_icon):
+def shell_identity(hwnd, expected_pid, engine, executable, expected_mpv_icon, *, custom_resource=None):
     """Read the actual owned window's Shell identity, distinct from WM_GETICON."""
     u=ctypes.WinDLL('user32',use_last_error=True)
     u.GetAncestor.argtypes=[W.HWND,W.UINT];u.GetAncestor.restype=W.HWND
@@ -66,15 +66,15 @@ def shell_identity(hwnd, expected_pid, engine, executable, expected_mpv_icon):
                 finally:ole.PropVariantClear(ctypes.byref(value))
         finally:release(pointer)
     finally:ole.CoUninitialize()
-    if engine=='mpv':
-        assert properties['id']=='Darkaxt.ModernVLC.MPV',('MPV taskbar still inherits the VLC executable identity',properties)
+    if engine=='mpv' or custom_resource:
+        assert properties['id']=='Darkaxt.ModernVLC.'+engine.upper(),('Taskbar retains the wrong engine identity',properties)
         executable=Path(executable)
-        expected_command='"'+str(executable)+'" --qt-playback-engine=mpv'
+        expected_command='"'+str(executable)+'" --qt-playback-engine='+engine
         assert properties['command']==expected_command,properties
-        assert properties['name']=='MPV Media Player',properties
-        resource=executable.parent/'mpv.ico'
+        assert properties['name']==engine.upper()+' Media Player',properties
+        resource=Path(custom_resource) if custom_resource else executable.parent/'mpv.ico'
         assert properties['icon']==str(resource)+',0',properties
-        assert resource.read_bytes()==Path(expected_mpv_icon).read_bytes(),'Shell icon differs from extracted native artwork'
+        assert resource.read_bytes()==Path(expected_mpv_icon).read_bytes(),'Shell resource differs from the verified engine artwork'
     else:
         assert engine=='vlc' and all(value is None for value in properties.values()),('VLC did not restore its original Shell grouping',properties)
     return {'root_window':format(root,'x'),'engine':engine,'properties':properties,'shell_resource_verified':True}
@@ -112,7 +112,7 @@ def executable_icon(executable, expected_ico):
         'expected_ico_sha256':hashlib.sha256(data).hexdigest()}
 
 
-def window_icon(hwnd, expected_pid, expected_png, output):
+def window_icon(hwnd, expected_pid, expected_png, output, *, custom=False):
     """Resolve the native root and read its HICON without activation or OS input."""
     u=ctypes.WinDLL('user32',use_last_error=True)
     u.GetAncestor.argtypes=[W.HWND,W.UINT]
@@ -161,16 +161,17 @@ def window_icon(hwnd, expected_pid, expected_png, output):
         image.save(output)
         opaque=[pixel for pixel in image.get_flattened_data() if pixel[3]==255]
         mpv=Path(expected_png).name=='mpv.ico'
-        if not mpv:
+        if not mpv and not custom:
             assert opaque and all(max(abs(pixel[index]-channel) for index,channel in enumerate((211,121,24)))<=2 for pixel in opaque),'Native icon retains the upstream artwork'
         assert any(pixel[3]==0 for pixel in image.get_flattened_data()),'Native icon lost transparency'
         reference=Path(expected_png)
-        if mpv:
+        if reference.suffix=='.ico':
             # Compare the actual HWND with the original native ICO frame,
             # rather than accepting any purple/circular icon.
             import json
-            provenance=json.loads(reference.with_name('mpv-source.json').read_text(encoding='utf-8'))
-            assert hashlib.sha256(reference.read_bytes()).hexdigest() in json.dumps(provenance)
+            if not custom:
+                provenance=json.loads(reference.with_name('mpv-source.json').read_text(encoding='utf-8'))
+                assert hashlib.sha256(reference.read_bytes()).hexdigest() in json.dumps(provenance)
             native=Image.open(reference)
             sizes=native.ico.sizes()
             selected=image.size if image.size in sizes else min(
@@ -183,12 +184,12 @@ def window_icon(hwnd, expected_pid, expected_png, output):
         expected_mask={index for index,pixel in enumerate(expected.get_flattened_data()) if pixel[3]>=128}
         overlap=len(observed_mask & expected_mask)/len(observed_mask | expected_mask)
         assert overlap>=.94,('Native icon shape differs from the maintained artwork',overlap)
-        if mpv:
+        if mpv or custom:
             differences=[abs(a-b) for actual,wanted in zip(image.get_flattened_data(),expected.get_flattened_data())
                 if actual[3]>=240 and wanted[3]>=240 for a,b in zip(actual[:3],wanted[:3])]
             assert differences and sum(differences)/len(differences)<12,'Native icon differs from official MPV gradients/play emblem'
         return {'size':image.size,'root_window':format(root,'x'),'origin':origin,'flat_cone':not mpv,
-            'official_mpv':mpv,
+            'official_mpv':mpv and not custom,'custom_colored':custom,
             'transparent':True,'alpha_shape_overlap':overlap,'expected_png_sha256':hashlib.sha256(Path(expected_png).read_bytes()).hexdigest()}
     finally:
         if info.mask:gdi.DeleteObject(info.mask)

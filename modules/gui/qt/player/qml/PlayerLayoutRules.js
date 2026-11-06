@@ -43,7 +43,9 @@ function validateLayout(layout) {
     return true
 }
 function validateSettings(value) {
-    return exactKeys(value,['theme','accent','grid','remaining']) && Number.isInteger(value.theme)
+    return (exactKeys(value,['theme','accent','grid','remaining'])
+            || (exactKeys(value,['theme','accent','mpvAccent','grid','remaining'])
+                && typeof value.mpvAccent==='string' && /^(system|default|#[0-9a-fA-F]{6})$/.test(value.mpvAccent))) && Number.isInteger(value.theme)
             && value.theme>=0 && value.theme<=2 && typeof value.accent==='string'
             && /^(system|default|#[0-9a-fA-F]{6})$/.test(value.accent)
             && typeof value.grid==='boolean' && typeof value.remaining==='boolean'

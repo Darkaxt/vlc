@@ -38,7 +38,8 @@ constexpr Row withEditorHeight(Row row, int height)
 #define ADV(k,c,g,l) {k,c,g,l,Editor::Native,nullptr,true}
 #define ASLIDE(k,c,g,l,a,b,s) {k,c,g,l,Editor::Slider,nullptr,true,a,b,s}
 inline constexpr Row rows[] = {
-    withoutInformation(PREF("qt-accent-color",0,N_("Appearance"),N_("Accent color"))),
+    withoutInformation(PREF("qt-accent-color",0,N_("Appearance"),N_("VLC accent color"))),
+    withoutInformation(PREF("qt-mpv-accent-color",0,N_("Appearance"),N_("MPV accent color"))),
     PREF("interact",0,N_("Startup"),N_("Show confirmation and error dialogs")),
     PREF("qt-updates-notif",0,N_("Startup"),N_("Check for updates automatically")),
     PREF("qt-verbose",0,N_("Diagnostics"),N_("Developer messages")),

@@ -61,6 +61,7 @@ private:
     UINT taskbar_wmsg = 0;
     QWindow* m_window = nullptr;
     HWND m_identityWindow = nullptr;
+    QString m_identityIcon;
 
     class ComHolder
     {

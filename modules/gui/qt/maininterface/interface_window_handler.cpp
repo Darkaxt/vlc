@@ -102,20 +102,12 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
         const QString media = var_InheritBool(p_intf, "qt-name-in-title") && THEMIM->isStarted()
             ? THEMIM->getName() : QString();
         m_window->setTitle(media.isEmpty() ? application : media + QStringLiteral(" — ") + application);
-        QIcon icon;
-        if (mpv)
-        {
-            // The pinned Qt image formats exclude ICO. Its original decoded
-            // PNG frames retain the PE artwork and give QIcon native sizes.
-            for (int size : {16, 24, 32, 48, 64, 256})
-                icon.addFile(QStringLiteral(":/redesign/icons/mpv-%1.png").arg(size), QSize(size, size));
-        }
-        else
-            icon = QIcon(QStringLiteral(":/redesign/icons/app.png"));
+        const QIcon icon=m_mainCtx->getRedesignWindowIcon();
         QGuiApplication::setWindowIcon(icon);
         m_window->setIcon(icon);
     };
     connect(THEMIM, &PlayerController::playbackEngineChanged, this, updateIdentity);
+    connect(m_mainCtx, &MainCtx::redesignAccentChanged, this, updateIdentity);
     connect(THEMIM, &PlayerController::nameChanged, this, updateIdentity);
     connect(THEMIM, &PlayerController::playingStateChanged, this, updateIdentity);
     updateIdentity();

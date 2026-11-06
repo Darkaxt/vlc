@@ -49,6 +49,7 @@
 
 #include "util/color_scheme_model.hpp"
 #include "util/model_recovery_agent.hpp"
+#include "util/engine_icon.hpp"
 
 #include "widgets/native/interface_widgets.hpp"     // bgWidget, videoWidget
 
@@ -741,12 +742,10 @@ void MainCtx::dispatchMpvAction(int action)
 
 QColor MainCtx::getRedesignAccent() const
 {
-    // Engine identity is a presentation override, never a saved preference.
-    // Leaving MPV restores the current custom/system VLC accent immediately.
-    if (THEMIM->playbackEngine() == QStringLiteral("mpv"))
-        return QColor(QStringLiteral("#420042"));
-    char *raw=var_InheritString(p_intf,"qt-accent-color");const QString value=qfu(raw).trimmed();free(raw);
-    const QString effective=m_previewAccent.isNull()?value:m_previewAccent;
+    const bool mpv=THEMIM->usesMpv();
+    char *raw=var_InheritString(p_intf,mpv?"qt-mpv-accent-color":"qt-accent-color");
+    const QString value=qfu(raw).trimmed();free(raw);
+    const QString effective=mpv||m_previewAccent.isNull()?value:m_previewAccent;
     if(effective==QStringLiteral("system")) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
         return QGuiApplication::palette().color(QPalette::Accent);
@@ -754,9 +753,37 @@ QColor MainCtx::getRedesignAccent() const
         return QGuiApplication::palette().color(QPalette::Highlight);
 #endif
     }
-    if(effective.isEmpty() || effective==QStringLiteral("default"))return QColor(QStringLiteral("#d37918"));
-    const QColor color(effective);return color.isValid()?color:QColor(QStringLiteral("#d37918"));
+    if(effective.isEmpty() || effective==QStringLiteral("default"))return EngineIcon::defaultAccent(mpv);
+    const QColor color(effective);return color.isValid()?color:EngineIcon::defaultAccent(mpv);
 }
+
+void MainCtx::updateRedesignIconAssets() const
+{
+    const bool mpv=THEMIM->usesMpv();
+    const QColor accent=getRedesignAccent();
+    const QString key=(mpv?QStringLiteral("mpv-"):QStringLiteral("vlc-"))+accent.name();
+    if(key==m_engineIconKey)return;
+    // VLC's profile path honors portable/VLC_USERDATA_PATH isolation. These
+    // reproducible, immutable resources also remain usable by Shell relaunch.
+    char *raw=config_GetUserDir(VLC_USERDATA_DIR);
+    const QString userData=qfu(raw);free(raw);
+    if(!QDir::isAbsolutePath(userData)) {
+        msg_Err(p_intf,"Engine icon cache requires an absolute VLC profile path");return;
+    }
+    const QString cache=QDir(userData).filePath(QStringLiteral("redesign-icon-cache"));
+    auto assets=EngineIcon::create(mpv,accent,cache);
+    if(!assets.valid) {
+        m_engineIconKey.clear();m_engineIconRoot.clear();m_engineShellIcon.clear();m_engineWindowIcon=QIcon();
+        msg_Err(p_intf,"Could not materialize engine icon resources in %s",qtu(cache));
+        return;
+    }
+    m_engineIconKey=key;m_engineWindowIcon=assets.icon;m_engineShellIcon=assets.ico;
+    m_engineIconRoot=assets.root.startsWith(QLatin1Char(':'))
+        ? QStringLiteral("qrc")+assets.root : QUrl::fromLocalFile(assets.root).toString();
+}
+QString MainCtx::getRedesignIconRoot() const { updateRedesignIconAssets();return m_engineIconRoot; }
+QIcon MainCtx::getRedesignWindowIcon() const { updateRedesignIconAssets();return m_engineWindowIcon; }
+QString MainCtx::getRedesignShellIcon() const { updateRedesignIconAssets();return m_engineShellIcon; }
 
 QColor MainCtx::getRedesignAccentText() const
 {
@@ -780,7 +807,11 @@ QVariantMap MainCtx::presentationSettings() const
     if(accent.isEmpty())accent=QStringLiteral("default");
     if(accent!=QStringLiteral("system") && accent!=QStringLiteral("default"))
         accent=QColor(accent).isValid()?QColor(accent).name():QStringLiteral("default");
+    char *mpvRaw=var_InheritString(p_intf,"qt-mpv-accent-color");
+    QString mpvAccent=qfu(mpvRaw).trimmed();free(mpvRaw);
+    if(mpvAccent.isEmpty() || (mpvAccent!=QStringLiteral("system") && !QColor(mpvAccent).isValid()))mpvAccent=QStringLiteral("default");
     return {{QStringLiteral("theme"),m_colorScheme->currentIndex()},
+            {QStringLiteral("mpvAccent"),mpvAccent},
             {QStringLiteral("accent"),accent},{QStringLiteral("grid"),m_gridView},
             {QStringLiteral("remaining"),m_showRemainingTime}};
 }
@@ -814,13 +845,18 @@ QString MainCtx::saveCustomizationImpl(const QString &encoded,const QVariantMap 
     const bool apply=!values.isEmpty();
     const int theme=values.value(QStringLiteral("theme")).toInt();
     const QString accent=values.value(QStringLiteral("accent")).toString();
-    if(apply&&(values.size()!=4||!values.contains(QStringLiteral("theme"))||!values.contains(QStringLiteral("accent"))||theme<0||theme>2||values.value(QStringLiteral("theme")).toDouble()!=theme
+    const bool hasMpvAccent=values.contains(QStringLiteral("mpvAccent"));
+    const QString mpvAccent=values.value(QStringLiteral("mpvAccent")).toString();
+    if(apply&&((values.size()!=4 && values.size()!=5)||(values.size()==5 && !hasMpvAccent)||!values.contains(QStringLiteral("theme"))||!values.contains(QStringLiteral("accent"))||theme<0||theme>2||values.value(QStringLiteral("theme")).toDouble()!=theme
             ||values.value(QStringLiteral("grid")).metaType().id()!=QMetaType::Bool
             ||values.value(QStringLiteral("remaining")).metaType().id()!=QMetaType::Bool
-            ||(accent!=QStringLiteral("system")&&accent!=QStringLiteral("default")&&!QColor(accent).isValid())))
+            ||(accent!=QStringLiteral("system")&&accent!=QStringLiteral("default")&&!QColor(accent).isValid())
+            ||(hasMpvAccent && mpvAccent!=QStringLiteral("system")&&mpvAccent!=QStringLiteral("default")&&!QColor(mpvAccent).isValid())))
         return qtr("The profile's appearance settings are invalid.");
     char *oldRaw=config_GetPsz("qt-accent-color");
     const QByteArray oldAccent=oldRaw?QByteArray(oldRaw):QByteArray();free(oldRaw);
+    oldRaw=config_GetPsz("qt-mpv-accent-color");
+    const QByteArray oldMpvAccent=oldRaw?QByteArray(oldRaw):QByteArray();free(oldRaw);
     const auto oldAsk=config_GetInt("qt-privacy-ask");
     const bool saveCore=apply||dismissOnboarding;
     QVariantMap oldShortcuts;
@@ -834,9 +870,11 @@ QString MainCtx::saveCustomizationImpl(const QString &encoded,const QVariantMap 
         for (auto it=oldShortcuts.cbegin(); it!=oldShortcuts.cend(); ++it)
             config_PutPsz(qtu(it.key()),qtu(it.value().toString()));
         if(apply)config_PutPsz("qt-accent-color",oldAccent.constData());
+        if(apply && hasMpvAccent)config_PutPsz("qt-mpv-accent-color",oldMpvAccent.constData());
         if(dismissOnboarding)config_PutInt("qt-privacy-ask",oldAsk);
     };
     if(apply)config_PutPsz("qt-accent-color",qtu(accent));
+    if(apply && hasMpvAccent)config_PutPsz("qt-mpv-accent-color",qtu(mpvAccent));
     if(dismissOnboarding)config_PutInt("qt-privacy-ask",0);
     if(saveCore&&config_SaveConfigFile(p_intf)!=0){
         restoreCore();

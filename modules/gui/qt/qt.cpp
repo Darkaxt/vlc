@@ -665,6 +665,8 @@ vlc_module_begin ()
              N_("Show shortcut feedback for (milliseconds)"), N_("Duration of the on-screen action message."))
 
     add_string( "qt-accent-color", "default", ACCENT_COLOR_TEXT, ACCENT_COLOR_LONGTEXT )
+    add_string( "qt-mpv-accent-color", "default", N_("MPV accent color"),
+                N_("Saved MPV accent: default artwork purple, system, or a hexadecimal color. Independent of the VLC accent.") )
 #ifdef _WIN32
     add_string("qt-playback-engine", "vlc", N_("Startup playback engine"),
         N_("Choose the engine used when the application starts. During playback, switch between VLC and MPV on the in-player Playback settings tab without closing the application. VLC preserves its native tools; MPV applies Dolby Vision metadata through libplacebo."))

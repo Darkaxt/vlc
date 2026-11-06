@@ -35,6 +35,7 @@
 #include <QUrl>
 #include <QStringList>
 #include <QVariantList>
+#include <QIcon>
 
 Q_MOC_INCLUDE( "dialogs/toolbar/controlbar_profile_model.hpp" )
 Q_MOC_INCLUDE( "util/csdbuttonmodel.hpp" )
@@ -125,6 +126,7 @@ class MainCtx : public QObject
     Q_PROPERTY(Grouping grouping READ grouping WRITE setGrouping NOTIFY groupingChanged FINAL)
     Q_PROPERTY(QColor redesignAccent READ getRedesignAccent NOTIFY redesignAccentChanged FINAL)
     Q_PROPERTY(QColor redesignAccentText READ getRedesignAccentText NOTIFY redesignAccentChanged FINAL)
+    Q_PROPERTY(QString redesignIconRoot READ getRedesignIconRoot NOTIFY redesignAccentChanged FINAL)
     Q_PROPERTY(ColorSchemeModel* colorScheme READ getColorScheme CONSTANT FINAL)
     Q_PROPERTY(bool onboardingRequested READ onboardingRequested NOTIFY onboardingRequestedChanged FINAL)
     Q_PROPERTY(QObject* legacyFont READ legacyFont CONSTANT FINAL)
@@ -258,6 +260,10 @@ public:
     inline double getMaxIntfUserScaleFactor() const { return MAX_INTF_USER_SCALE_FACTOR; }
     QColor getRedesignAccent() const;
     QColor getRedesignAccentText() const;
+    QString getRedesignIconRoot() const;
+    QIcon getRedesignWindowIcon() const;
+    QString getRedesignShellIcon() const;
+    void updateRedesignIconAssets() const;
     MLBookmarkModel *getBookmarks();
     Q_INVOKABLE void addBookmark();
     Q_INVOKABLE QVariantMap presentationSettings() const;
@@ -509,6 +515,10 @@ protected:
     bool m_showRemainingTime = false;
     QSet<QMenu *> m_playerMenus;
     QString m_previewAccent;
+    mutable QString m_engineIconKey;
+    mutable QString m_engineIconRoot;
+    mutable QString m_engineShellIcon;
+    mutable QIcon m_engineWindowIcon;
     QString saveCustomizationImpl(const QString &encoded, const QVariantMap &values, bool dismissOnboarding);
     void completeRedesignOnboarding(bool finish, const QVariantMap &values, const QString &error, bool folderAdded=false);
     void resolveOnboardingFolder(quint64 revision, const QString &error, bool folderAdded);

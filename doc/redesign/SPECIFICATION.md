@@ -28,6 +28,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   public synthetic media in application captures; do not publish private clips,
   profile data or desktop content. Distinguish implemented behavior from the
   design reference and retain existing upstream/project attribution.
+- R100 (6 November user clarification): persist accent personalization separately
+  for VLC and MPV, with orange and artwork-matching purple defaults. Offer the
+  existing palette independently for each engine, preserving existing VLC values
+  and legacy profile compatibility. MPV's default logo remains the extracted
+  original. Custom colors recolor its chromatic regions while preserving neutral
+  details, alpha and shading; header, idle, native window and running taskbar
+  must agree. Menu details must use the visible purple of the logo, not the deep
+  website-background purple or an additional excessively darkened substitute.
+  Verify palette selection/save/cancel, engine handover, restart, custom-colored
+  icon pixels and actual Shell resource/button behavior before final delivery.
 
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.

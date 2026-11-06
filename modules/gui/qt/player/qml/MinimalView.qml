@@ -96,7 +96,7 @@ FocusScope {
         Image {
             id: logo
 
-            source: Player.playbackEngine === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio) : "qrc:///redesign/icons/app.svg"
+            source: Player.playbackEngine === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio) : PlayerStyle.themedIcon("qrc:/redesign/icons/app.svg")
 
             anchors.centerIn: parent
             width: Math.min(parent.width / 2, Player.playbackEngine === "mpv" ? 64 : 24)

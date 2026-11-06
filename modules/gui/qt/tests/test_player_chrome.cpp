@@ -2,12 +2,15 @@
 #include <QTest>
 #include <QQmlComponent>
 #include <QQmlEngine>
+#include <QJSEngine>
+#include <QFile>
 #include <QFileInfo>
 #include <QDir>
 #include <QEventLoop>
 #include <QtPlugin>
 #include <memory>
 #include "widgets/native/settings_svg_icon.hpp"
+#include "util/engine_icon.hpp"
 
 #ifdef QT_STATIC
 Q_IMPORT_PLUGIN(QtQmlPlugin)
@@ -19,6 +22,45 @@ class TestPlayerChrome : public QObject
 {
     Q_OBJECT
 private slots:
+    void engineProfileSettingsRemainBackwardCompatible()
+    {
+        const QString configured=qEnvironmentVariable("VLC_TEST_PLAYER_LAYOUT_RULES");
+        QFile source(configured.isEmpty()?QFINDTESTDATA("../player/qml/PlayerLayoutRules.js"):configured);
+        QVERIFY(source.open(QIODevice::ReadOnly));
+        QString script=QString::fromUtf8(source.readAll());
+        script.remove(0,script.indexOf('\n')+1); // QML-only .pragma library line.
+        QJSEngine engine;
+        QVERIFY2(!engine.evaluate(script).isError(),"Layout rules could not be evaluated");
+        QVERIFY(engine.evaluate("validateSettings({theme:2,accent:'default',grid:true,remaining:false})").toBool());
+        QVERIFY(engine.evaluate("validateSettings({theme:2,accent:'#167329',mpvAccent:'#1b4e9d',grid:true,remaining:false})").toBool());
+        QVERIFY(!engine.evaluate("validateSettings({theme:2,accent:'default',mpvAccent:'invalid',grid:true,remaining:false})").toBool());
+        QVERIFY(!engine.evaluate("validateSettings({theme:2,accent:'default',mpvAccent:'default',grid:true,remaining:false,unknown:1})").toBool());
+    }
+
+    void engineTintPreservesNeutralShadingAndAlpha()
+    {
+        QImage original(5,1,QImage::Format_ARGB32);
+        original.setPixelColor(0,0,QColor(66,0,66,255));
+        original.setPixelColor(1,0,QColor(150,70,150,128));
+        original.setPixelColor(2,0,QColor(220,220,220,255));
+        original.setPixelColor(3,0,QColor(100,100,100,0));
+        original.setPixelColor(4,0,QColor(80,10,80,255));
+        const auto blue=EngineIcon::tint(original,QColor("#2f87b5"),true);
+        QCOMPARE(blue.size(),original.size());
+        for(int x=0;x<5;++x)QCOMPARE(blue.pixelColor(x,0).alpha(),original.pixelColor(x,0).alpha());
+        QCOMPARE(blue.pixel(2,0),original.pixel(2,0));
+        QCOMPARE(blue.pixel(3,0),original.pixel(3,0));
+        for(int x:{0,1,4}) {
+            const auto actual=blue.pixelColor(x,0);
+            QVERIFY(qAbs(actual.lightnessF()-original.pixelColor(x,0).lightnessF())<0.01);
+            QVERIFY(qAbs(actual.hslHueF()-QColor("#2f87b5").hslHueF())<0.01);
+        }
+        const auto gray=EngineIcon::tint(original,QColor("#808080"),true);
+        QCOMPARE(gray.pixelColor(0,0).red(),gray.pixelColor(0,0).blue());
+        QVERIFY(blue.pixelColor(0,0).lightness()<blue.pixelColor(1,0).lightness());
+        QCOMPARE(EngineIcon::tint(original,QColor("#167329"),false).pixelColor(0,0),QColor("#167329"));
+    }
+
     void settingsIconsUseRequestedResolution()
     {
         const auto configured=qEnvironmentVariable("VLC_TEST_SETTINGS_SVG_ROOT");

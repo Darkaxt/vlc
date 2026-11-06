@@ -625,6 +625,8 @@ WinTaskbarWidget::WinTaskbarWidget(qt_intf_t *_p_intf, QWindow* windowHandle, QO
             this, &WinTaskbarWidget::changeThumbbarButtons);
     connect(THEMIM, &PlayerController::playbackEngineChanged,
             this, &WinTaskbarWidget::updateShellIdentity);
+    connect(p_intf->p_mi, &MainCtx::redesignAccentChanged,
+            this, &WinTaskbarWidget::updateShellIdentity);
     m_window->installEventFilter(this);
     updateShellIdentity();
     msg_Info(p_intf, "WinTaskbarWidget::WinTaskbarWidget");
@@ -662,21 +664,25 @@ void WinTaskbarWidget::clearShellIdentity()
     if (SUCCEEDED(hr)) hr = clearShellProperties(store.Get());
     if (FAILED(hr))
         msg_Err(p_intf, "Clearing playback Shell identity failed: %08lx", hr);
-    else
+    else {
         m_identityWindow = nullptr;
+        m_identityIcon.clear();
+    }
 }
 
 void WinTaskbarWidget::updateShellIdentity()
 {
     const auto window = WinId(m_window);
-    if (!THEMIM->usesMpv())
+    const bool mpv=THEMIM->usesMpv();
+    if (!mpv && p_intf->p_mi->getRedesignAccent()==QColor(QStringLiteral("#d37918")))
     {
         clearShellIdentity();
         return;
     }
-    if (!window || window == m_identityWindow)
+    const QString icon=p_intf->p_mi->getRedesignShellIcon();
+    if (!window || icon.isEmpty() || (window==m_identityWindow && icon==m_identityIcon))
         return;
-    clearShellIdentity();
+    if(window!=m_identityWindow)clearShellIdentity();
     try
     {
         if (!m_comHolder) m_comHolder.emplace();
@@ -690,16 +696,15 @@ void WinTaskbarWidget::updateShellIdentity()
     HRESULT hr = SHGetPropertyStoreForWindow(window, IID_PPV_ARGS(store.GetAddressOf()));
     if (SUCCEEDED(hr))
     {
-        const QString directory = QCoreApplication::applicationDirPath();
         const QString command = QLatin1Char('"') + QDir::toNativeSeparators(
-            QCoreApplication::applicationFilePath()) + QStringLiteral("\" --qt-playback-engine=mpv");
+            QCoreApplication::applicationFilePath()) + (mpv ? QStringLiteral("\" --qt-playback-engine=mpv") : QStringLiteral("\" --qt-playback-engine=vlc"));
         hr = setShellString(store.Get(), shellCommand, command);
-        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellName, qtr("MPV Media Player"));
+        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellName, mpv?qtr("MPV Media Player"):qtr("VLC Media Player"));
         if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellIcon,
-            QDir::toNativeSeparators(directory + QStringLiteral("/mpv.ico")) + QStringLiteral(",0"));
-        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellId, QStringLiteral("Darkaxt.ModernVLC.MPV"));
+            QDir::toNativeSeparators(icon) + QStringLiteral(",0"));
+        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellId, mpv?QStringLiteral("Darkaxt.ModernVLC.MPV"):QStringLiteral("Darkaxt.ModernVLC.VLC"));
         if (FAILED(hr)) clearShellProperties(store.Get());
-        else m_identityWindow = window;
+        else { m_identityWindow = window;m_identityIcon=icon; }
     }
     if (FAILED(hr))
         msg_Err(p_intf, "Setting MPV Shell identity failed: %08lx", hr);

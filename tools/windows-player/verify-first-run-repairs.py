@@ -6,6 +6,7 @@ selected. No OS input, activation, desktop switching or execution-kill deadline.
 """
 import argparse
 import ctypes
+import colorsys
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from ctypes import wintypes as W
@@ -35,7 +36,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -1567,6 +1568,115 @@ def preview():
         case.close(True)
     finally: case.close()
 
+def engine_accents():
+    """Both engine palettes, live icon resources, cancellation and saved restart."""
+    case=Case('engine-accent-settings')
+    def empty_player(label):
+        case.inspect(label+'-menu','click','--name','Main menu')
+        case.inspect(label+'-customize','click','--name','Customize Player')
+        case.inspect(label+'-editor','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
+        case.click(label+'-cancel-editor','layoutCancel')
+    def settings(label):
+        case.inspect(label+'-open','key','--key','0x50','--modifiers','0x4000000')
+        ready=case.inspect(label+'-ready','snapshot')
+        assert any(w['id']=='redesignPreferences' for w in ready['widgets'])
+        return ready
+    def color(label,engine,value):
+        return case.inspect(label,'widget_click','--widget-name',engine+' accent color '+value)
+    def identity(label,engine,accent,custom):
+        snapshot=case.inspect(label,'snapshot','--await-core','engine_switching','--await-value','false','--capture')
+        assert snapshot['core']['engine']==engine and snapshot['rendered_accent']==accent
+        if not custom:verify_window_icon(case,snapshot);return snapshot
+        reference=Path(snapshot['engine_shell_icon'])
+        assert reference.is_relative_to(runtime/'portable') and reference.name==engine+'.ico'
+        assert accent[1:] in reference.parent.name
+        from app_icon_checks import shell_identity
+        case.record.setdefault('custom_native_icons',[]).append(owned_native_read(case,lambda:window_icon(
+            owned_main_window(case,snapshot),case.player.pid,reference,case.evidence/(label+'-window.png'),custom=True)))
+        case.record.setdefault('custom_shell_icons',[]).append(owned_native_read(case,lambda:shell_identity(
+            owned_main_window(case,snapshot),case.player.pid,engine,runtime/'vlc.exe',reference,custom_resource=reference)))
+        ico=Image.open(reference)
+        assert ico.ico.sizes()=={(n,n) for n in (16,24,32,48,64,256)}
+        if engine=='mpv':
+            original=Image.open(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')
+            for size in sorted(ico.ico.sizes()):
+                observed=ico.ico.getimage(size).convert('RGBA');expected=original.ico.getimage(size).convert('RGBA')
+                assert observed.getchannel('A').tobytes()==expected.getchannel('A').tobytes()
+                chromatic=0
+                for actual,wanted in zip(observed.get_flattened_data(),expected.get_flattened_data()):
+                    hue,light,saturation=colorsys.rgb_to_hls(*[v/255 for v in wanted[:3]])
+                    if not wanted[3] or saturation<.12:
+                        assert max(abs(a-b) for a,b in zip(actual,wanted))<=1
+                    else:
+                        chromatic+=1
+                        actual_hue,actual_light,actual_saturation=colorsys.rgb_to_hls(*[v/255 for v in actual[:3]])
+                        assert abs(actual_light-light)<.01
+                        target_hue=colorsys.rgb_to_hls(*[v/255 for v in bytes.fromhex(accent[1:])])[0]
+                        if actual_saturation>.15:assert min(abs(actual_hue-target_hue),1-abs(actual_hue-target_hue))<.035
+                assert chromatic>0
+        return snapshot
+    def switch(label,engine):
+        case.click(label+'-panel','toolsButton')
+        case.inspect(label+'-select','click','--name',engine.upper())
+        snapshot=case.inspect(label+'-settled','snapshot','--await-core','engine_switching','--await-value','false')
+        assert snapshot['core']['engine']==engine
+        case.inspect(label+'-close','key','--key','0x1000000')
+    def menu(label,accent):
+        snapshot=case.inspect(label,'click','--name','Main menu','--capture')
+        path=root/case.record['steps'][-1]['response'];picture=Image.open(path.with_suffix('.png')).convert('RGB')
+        ratio=picture.width/snapshot['window']['width']
+        icons=[n for n in snapshot['tree'] if n['visible'] and 'menu-' in (n.get('source') or '') and n.get('width')==24]
+        assert len(icons)==12
+        wanted=colorsys.rgb_to_hsv(*[v/255 for v in bytes.fromhex(accent[1:])])[0]
+        checks=[]
+        for n in icons:
+            box=tuple(round(v*ratio) for v in (n['x'],n['y'],n['x']+n['width'],n['y']+n['height']))
+            pixels=list(picture.crop(box).get_flattened_data())
+            colored=[p for p in pixels if max(p)-min(p)>12]
+            assert colored
+            for p in colored:
+                hue=colorsys.rgb_to_hsv(*[v/255 for v in p])[0]
+                assert min(abs(hue-wanted),1-abs(hue-wanted))<.035
+            def luminance(p):
+                linear=[v/255/12.92 if v/255<=.04045 else ((v/255+.055)/1.055)**2.4 for v in p]
+                return sum(a*b for a,b in zip(linear,(.2126,.7152,.0722)))
+            peak=max((luminance(p)+.05)/(luminance((14,14,14))+.05) for p in colored)
+            if accent=='#9859ad':assert peak>=1.8,(label,n['source'],peak)
+            checks.append({'glyph':n['source'],'peak_accent_contrast':peak})
+        case.record.setdefault('menu_palettes',[]).append({'label':label,'accent':accent,'icons':checks})
+        case.inspect(label+'-close','key','--key','0x1000000')
+    try:
+        empty_player('empty-player')
+        case.inspect('reference-viewport','resize','--width','1280','--height','900')
+        identity('vlc-default','vlc','#d37918',False)
+        settings('separate-palettes')
+        color('vlc-green','VLC','#167329');color('mpv-blue','MPV','#1b4e9d')
+        case.native('save-independent-colors','preferencesSave')
+        snapshot=identity('vlc-green-applied','vlc','#167329',True)
+        assert snapshot['presentation']['accent']=='#167329' and snapshot['presentation']['mpvAccent']=='#1b4e9d'
+        menu('vlc-green-menu','#167329')
+        switch('live-mpv','mpv');identity('mpv-blue-applied','mpv','#1b4e9d',True)
+        menu('mpv-blue-menu','#1b4e9d')
+        settings('cancel-palette');color('cancel-red','MPV','#a4381f');case.native('cancel-color','preferencesCancel')
+        identity('mpv-blue-after-cancel','mpv','#1b4e9d',True)
+        case.close(True)
+    finally:case.close()
+    prior=case.path/'profile'
+    case=Case('engine-accent-restart',engine=None,reused_profile=prior)
+    try:
+        empty_player('saved-empty-player')
+        snapshot=identity('saved-mpv-blue','mpv','#1b4e9d',True)
+        assert snapshot['presentation']['accent']=='#167329' and snapshot['presentation']['mpvAccent']=='#1b4e9d'
+        settings('restore-mpv-default');case.native('mpv-default','preferencesMpvAccentDefault');case.native('save-mpv-default','preferencesSave')
+        identity('mpv-original-restored','mpv','#9859ad',False)
+        menu('readable-mpv-purple','#9859ad')
+        switch('return-vlc','vlc');identity('vlc-green-preserved','vlc','#167329',True)
+        settings('restore-vlc-default');case.native('vlc-default','preferencesVlcAccentDefault');case.native('save-vlc-default','preferencesSave')
+        identity('vlc-original-restored','vlc','#d37918',False)
+        case.close(True)
+    finally:case.close()
+
+
 def engine_icon_pixels():
     """Verify changed PNG decode sizes; preserve unchanged handover evidence."""
     for scale in ('1','1.5','2'):
@@ -2694,7 +2804,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue

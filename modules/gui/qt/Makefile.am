@@ -328,6 +328,7 @@ libqt_plugin_la_SOURCES = \
 	util/color_scheme_model.cpp util/color_scheme_model.hpp \
 	util/ui_notifier.cpp util/ui_notifier.hpp \
 	util/color_svg_image_provider.cpp util/color_svg_image_provider.hpp \
+	util/engine_icon.hpp \
 	util/vlcaccess_image_provider.cpp util/vlcaccess_image_provider.hpp \
 	util/covergenerator.cpp \
 	util/covergenerator.hpp \

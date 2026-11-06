@@ -40,6 +40,6 @@ QtObject {
     function mpvIcon(size, deviceRatio) {
         const physicalSize = Math.ceil(size * deviceRatio)
         const frame = [16, 24, 32, 48, 64, 256].find(value => value >= physicalSize) || 256
-        return "qrc:/redesign/icons/mpv-" + frame + ".png"
+        return MainCtx.redesignIconRoot + "/mpv-" + frame + ".png"
     }
 }

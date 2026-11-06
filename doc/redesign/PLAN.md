@@ -1,6 +1,15 @@
 # VLC redesign stages and reconciliation
 
-**6 November current work: M7 Runtime engine icon parity — ACTIVE.**
+**6 November current work: M7 Runtime engine icon and accent parity — ACTIVE.**
+The user's later R100 request adds independent saved engine accents and matching
+custom-colored app/taskbar artwork to this same stage. Existing1.1.9 packages are
+unpublished qualification output, not delivery. Their native playback passes;
+passive offscreen presentation passed but intentionally created no taskbar button,
+so R98 visible-button acceptance remains unmet. No visible user-window launch or
+Shell cache/pin mutation is authorized by that failed proof. Complete R100 before
+one coordinated affected acceptance/normal release pass. The earlier hue-only
+check proved replacement but missed the wrong dark-purple source; preserve it
+as limited evidence, not visual acceptance. No other stage is activated.
 R97–R99 are authorized by the user's installed-MPV icon/taskbar report and
 subsequent README request. After functional acceptance, update actual-player and
 Figma side-by-side screenshot references/credits before final delivery.

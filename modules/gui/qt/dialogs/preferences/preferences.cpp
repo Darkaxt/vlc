@@ -864,7 +864,8 @@ void PrefsDialog::updateResponsiveLayout()
         QWidget *editor = item->widget();
         auto *help = grid->itemAtPosition(stacked ? 2 : 1, 0);
         QWidget *description = help ? help->widget() : nullptr;
-        const bool accent = row->property("preferenceKey").toString() == "qt-accent-color";
+        const auto preferenceKey=row->property("preferenceKey").toString();
+        const bool accent = preferenceKey=="qt-accent-color" || preferenceKey=="qt-mpv-accent-color";
         if (accent)
         {
             auto *custom = row->findChild<QLineEdit *>(row->property("valueId").toString());
@@ -1150,15 +1151,16 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
     const bool referenceTrack = presentation && (key=="audio-track" || key=="sub-track");
     const bool referenceFont = presentation && o.config->i_type == CONFIG_ITEM_FONT;
     const bool referenceDisc = presentation && key=="dvd";
-    if (key == "qt-accent-color")
+    if (key == "qt-accent-color" || key == "qt-mpv-accent-color")
     {
         grid->setColumnStretch(0, 1);
         grid->setColumnStretch(10, 0);
-        auto *label = new QLabel(qtr("Accent color"), row);
+        const bool mpvAccent=key=="qt-mpv-accent-color";
+        auto *label = new QLabel(mpvAccent?qtr("MPV accent color"):qtr("VLC accent color"), row);
         grid->addWidget(label, 0, 0);
         auto *value = new QLineEdit(row);
         value->setObjectName("value-" + viewKey);
-        value->setAccessibleName(qtr("Custom accent color or system / default"));
+        value->setAccessibleName(mpvAccent?qtr("MPV custom accent color or system / default"):qtr("VLC custom accent color or system / default"));
         value->hide();
         grid->addWidget(value, 2, 0, 1, 12);
         control = new StringConfigControl(o.config, label, value);
@@ -1179,7 +1181,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
             button->setMinimumWidth(0);
             button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
             button->setCheckable(true);
-            button->setAccessibleName(qtr("Accent color %1").arg(color));
+            button->setAccessibleName((mpvAccent?qtr("MPV accent color %1"):qtr("VLC accent color %1")).arg(color));
             QPixmap square(20, 20);
             square.fill(QColor(color));
             button->setIcon(QIcon(square));
@@ -1190,12 +1192,26 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
                         "QToolButton:focus{border:1px solid %2;}")
                     .arg(accent.darker(400).name(), accent.name()));
             selection->addButton(button);
-            button->setChecked(QColor(color) == accent);
+            button->setChecked(QColor(color) == QColor(draftValue(key).toString()));
             connect(button, &QToolButton::clicked, row,
                     [value, color]() { value->setText(QString::fromLatin1(color)); });
             swatches->addWidget(button,1);
         }
         grid->addWidget(palette, 0, 10, Qt::AlignRight);
+        auto *defaults=new QPushButton(qtr("Default"),palette);
+        defaults->setFixedWidth(50);
+        defaults->setCheckable(true);
+        selection->addButton(defaults);
+        defaults->setChecked(draftValue(key).toString().isEmpty() || draftValue(key).toString()=="default");
+        const QColor defaultAccent(mpvAccent?"#9859ad":"#d37918");
+        defaults->setStyleSheet(QString("QPushButton{padding:0;}QPushButton:checked{background:%1;color:%2;}")
+            .arg(defaultAccent.darker(400).name(),defaultAccent.name()));
+        defaults->setAccessibleName(mpvAccent?qtr("Restore MPV purple accent"):qtr("Restore VLC orange accent"));
+        defaults->setObjectName(mpvAccent?"preferencesMpvAccentDefault":"preferencesVlcAccentDefault");
+        swatches->addWidget(defaults);
+        connect(defaults,&QPushButton::clicked,row,[value]{
+            value->setText(QStringLiteral("default"));
+        });
     }
     else if (referenceTrack)
     {
@@ -1401,7 +1417,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
         grid->addWidget(group, 0, 10);
     }
     if (auto *item = grid->itemAtPosition(0, 10); item && item->widget() &&
-        o.config->i_type != CONFIG_ITEM_BOOL && key != "qt-accent-color")
+        o.config->i_type != CONFIG_ITEM_BOOL && key != "qt-accent-color" && key != "qt-mpv-accent-color")
     {
         auto *editor = item->widget();
         if (!editor->property("preferenceEditorGroup").toBool())
@@ -1594,7 +1610,7 @@ void PrefsDialog::addOption(QVBoxLayout *parent, const Option &o,
             {
                 const bool visible = !description->isVisible();
                 description->setVisible(visible);
-                if (key == "qt-accent-color")
+                if (key == "qt-accent-color" || key == "qt-mpv-accent-color")
                     row->findChild<QLineEdit *>("value-"+viewKey)->setVisible(visible);
             });
     parent->addWidget(row);

@@ -446,6 +446,8 @@ private:
                 }
                 result[QStringLiteral("presentation")]=QJsonObject::fromVariantMap(context->presentationSettings());
                 result[QStringLiteral("rendered_accent")]=context->getRedesignAccent().name();
+                result[QStringLiteral("engine_icon_root")]=context->getRedesignIconRoot();
+                result[QStringLiteral("engine_shell_icon")]=context->getRedesignShellIcon();
                 const QVariant saved=context->settingValue(QStringLiteral("redesign/customization-v1"),QVariant());
                 const auto encoded=saved.toString().toUtf8();
                 result[QStringLiteral("customization_saved")]=QJsonObject{
