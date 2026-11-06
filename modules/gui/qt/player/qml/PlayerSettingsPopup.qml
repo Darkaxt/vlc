@@ -255,6 +255,9 @@ T.Popup {
         property real maximum: 10
         property real step: 0.1
         property bool rangeLabels: true
+        property string hint: ""
+        property bool available: true
+        opacity: available ? 1 : 0.5
         signal edited(real number)
         x: PlayerStyle.px(20)
         width: body.width - PlayerStyle.px(40)
@@ -264,6 +267,7 @@ T.Popup {
             Label { text: timing.text; Layout.fillWidth: true }
             T.TextField {
                 objectName: timing.editorName
+                enabled: timing.available
                 Layout.preferredWidth: PlayerStyle.px(140); implicitHeight: PlayerStyle.px(36)
                 text: Number(timing.value).toFixed(3) + (timing.unit.length ? " " + timing.unit : "")
                 color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
@@ -274,8 +278,12 @@ T.Popup {
             }
         }
         Item { width: 1; height: PlayerStyle.px(5) }
+        HoverHandler { id: timingHover }
+        T.ToolTip.visible: timingHover.hovered && timing.hint.length>0
+        T.ToolTip.text: timing.hint
         T.Slider {
             id: timeSlider
+            enabled: timing.available
             width: parent.width; height: PlayerStyle.px(24)
             from: timing.minimum; to: timing.maximum; value: timing.value; stepSize: timing.step
             padding: 0
@@ -561,8 +569,6 @@ T.Popup {
                             QmlRendererMenu { id: rendererMenu; ctx: MainCtx }
                         }
                     }
-                    ChoiceRow { text: qsTr("Deinterlace"); choices: Player.deinterlace }
-                    ChoiceRow { text: qsTr("Deinterlace Mode"); choices: Player.deinterlaceMode }
                     Divider { }
                     Section { text: qsTr("Filters") }
                     Effect { title: qsTr("Essential"); module: "adjust"; section: "essential"; showDivider: false; showToggle: false }
@@ -570,11 +576,12 @@ T.Popup {
                     Effect { title: qsTr("Colors"); module: "colorthres"; section: "colors" }
                     Effect { title: qsTr("Geometry"); module: "transform"; section: "geometry" }
                     Toggle { text: qsTr("Negate Colors"); requiresVlc: true; checked: settingsPopup.filterEnabled("invert"); onToggled: enabled => MediaTools.enableFilter("invert", enabled) }
+                    ChoiceRow { text: qsTr("Deinterlace"); choices: Player.deinterlace }
+                    ChoiceRow { text: qsTr("Deinterlace Mode"); choices: Player.deinterlaceMode }
                 }
                 Column {
                     visible: settingsPopup.page === 2
                     width: parent.width
-                    ChoiceRow { text: qsTr("Audio Track"); requiresVlc: false; choices: Player.audioTracks }
                     LanguageRow { }
                     Item { height: PlayerStyle.px(16); width: 1 }
                     Label { x: PlayerStyle.px(24); text: qsTr("Stereo Mode"); height: PlayerStyle.px(32) }
@@ -587,7 +594,7 @@ T.Popup {
                     Label { x: PlayerStyle.px(24); text: qsTr("Equalizer"); height: PlayerStyle.px(32) }
                     Repeater {
                         model: { const revision=settingsPopup.settingsRevision; return MediaTools.options("equalizer").filter(option=>option.key==="equalizer-preset") }
-                        PlayerSettingRow { required property var modelData; option: modelData; fullWidthChoice: true; x: PlayerStyle.px(20); width: body.width-PlayerStyle.px(40); controlHeight: 48; valueWidth: 360; topPadding: 0; bottomPadding: PlayerStyle.px(10) }
+                        PlayerSettingRow { required property var modelData; option: modelData; fullWidthChoice: true; filterChoice: true; x: PlayerStyle.px(20); width: body.width-PlayerStyle.px(40); controlHeight: 48; valueWidth: 360; topPadding: 0; bottomPadding: PlayerStyle.px(10) }
                     }
                     Effect { title: ""; module: "equalizer"; section: "equalizer"; showDivider: false; showToggle: false; excludedKeys: ["equalizer-preset","equalizer-2pass"] }
                     Toggle { text: qsTr("2 Pass"); requiresVlc: true; checked: { const revision=settingsPopup.settingsRevision; return Boolean(MediaTools.value("equalizer-2pass")) } onToggled: value=>MediaTools.setValue("equalizer-2pass",value) }
@@ -595,6 +602,7 @@ T.Popup {
                     Effect { title: qsTr("Spatializer"); module: "spatializer"; section: "spatializer" }
                     Effect { title: qsTr("Stereo Widener"); module: "stereo_widen"; section: "stereo_widen" }
                     Effect { title: qsTr("Adjust Pitch"); module: "scaletempo_pitch"; section: "pitch" }
+                    ChoiceRow { text: qsTr("Audio Track"); requiresVlc: false; choices: Player.audioTracks }
                 }
                 Column {
                     visible: settingsPopup.page === 3
@@ -604,7 +612,6 @@ T.Popup {
                         topPadding: PlayerStyle.px(10)
                         bottomPadding: PlayerStyle.px(10)
                         spacing: PlayerStyle.px(5)
-                        ChoiceRow { text: qsTr("Subtitle Track"); requiresVlc: false; choices: Player.subtitleTracks }
                         LanguageRow { subtitle: true }
                     }
                     Divider { }
@@ -614,9 +621,8 @@ T.Popup {
                         topPadding: PlayerStyle.px(10)
                         bottomPadding: PlayerStyle.px(15)
                         TimingRow { text: qsTr("Subtitle Track Delay"); editorName: "subtitleDelayEditor"; unit: "s"; value: Player.subtitleDelayMS / 1000; onEdited: number => Player.subtitleDelayMS = Math.round(Math.max(-600,Math.min(600,number))*1000) }
-                        TimingRow { text: qsTr("Subtitle Speed"); enabled: MediaTools.subtitleFPSSupported; opacity: enabled ? 1 : 0.5; rangeLabels: false; unit: "fps"; minimum: 0; maximum: 120; value: Player.subtitleFPS; onEdited: number => { if (number >= 0 && number <= 1000) Player.subtitleFPS = number } }
-                        Label { width: parent.width; visible: !MediaTools.subtitleFPSSupported; text: qsTr("FPS correction applies to added SRT, ASS and SSA tracks. This track uses its original timing."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
-                        TimingRow { text: qsTr("Subtitle Duration Factor"); enabled: settingsPopup.vlcToolsAvailable; rangeLabels: false; minimum: 0; maximum: 20; value: { const revision = settingsPopup.settingsRevision; return settingsPopup.filterEnabled("subsdelay") ? Number(MediaTools.value("subsdelay-factor")) : 0 } onEdited: number => { if (MediaTools.setValue("subsdelay-factor",number)) MediaTools.enableFilter("subsdelay",number > 0) } }
+                        TimingRow { text: qsTr("Subtitle Speed"); available: MediaTools.subtitleFPSSupported; rangeLabels: false; unit: "fps"; minimum: 0; maximum: 120; value: Player.subtitleFPS; hint: MediaTools.subtitleFPSSupported ? "" : qsTr("FPS correction applies to added SRT, ASS and SSA tracks. This track uses its original timing."); onEdited: number => { if (number >= 0 && number <= 1000) Player.subtitleFPS = number } }
+                        TimingRow { text: qsTr("Subtitle Duration Factor"); available: settingsPopup.vlcToolsAvailable; hint: available ? "" : settingsPopup.vlcToolsHint; rangeLabels: false; minimum: 0; maximum: 20; value: { const revision = settingsPopup.settingsRevision; return settingsPopup.filterEnabled("subsdelay") ? Number(MediaTools.value("subsdelay-factor")) : 0 } onEdited: number => { if (MediaTools.setValue("subsdelay-factor",number)) MediaTools.enableFilter("subsdelay",number > 0) } }
                     }
                     Divider { }
                     Section { text: qsTr("Appearance") }
@@ -651,6 +657,7 @@ T.Popup {
                     }
                     Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: MediaTools.timelineStatus; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
                     Section { text: qsTr("Subtitle Files") }
+                    ChoiceRow { text: qsTr("Subtitle Track"); requiresVlc: false; choices: Player.subtitleTracks }
                     RowLayout {
                         x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(52)
                         Button { text: qsTr("Add File…"); Layout.fillWidth: true; onClicked: MediaTools.browseSubtitle() }

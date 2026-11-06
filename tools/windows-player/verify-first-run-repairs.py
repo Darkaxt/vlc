@@ -2410,6 +2410,12 @@ def player_panels():
                         'original_two_tone_selected':True,'neutral_inactive_tabs':True,'fixed_footer':page!=0})
                 if engine=='vlc':
                     case.click('return-audio','playerSettingsTab_2')
+                    case.inspect('focus-equalizer-preset','focus','--target','mediaChoice_equalizer-preset')
+                    enabled=case.inspect('enable-equalizer-preset','key','--key','0x1000015')
+                    assert enabled['media_tools']['filters']['equalizer'],'Choosing a preset did not enable equalization'
+                    case.inspect('focus-equalizer-off','focus','--target','mediaChoice_equalizer-preset')
+                    disabled=case.inspect('disable-equalizer','key','--key','0x1000010')
+                    assert not disabled['media_tools']['filters']['equalizer'],'None did not disable equalization'
                     case.inspect('reveal-equalizer','focus','--name','Equalizer: Expand Settings')
                     expanded=case.inspect('expand-equalizer','click','--name','Equalizer: Expand Settings','--capture')
                     assert any(n['visible'] and n['id']=='mediaOption_equalizer-bands' for n in expanded['tree']) or any(n.get('text')=='60' and n['visible'] for n in expanded['tree'])

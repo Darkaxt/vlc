@@ -9,6 +9,9 @@ Column {
     required property var option
     property bool slider: false
     property bool fullWidthChoice: false
+    // The EQ selector's None choice disables the real filter; it is not a preset.
+    property bool filterChoice: false
+    property bool filterActive: false
     property int controlHeight: 32
     property int rangeHeight: 22
     property int valueWidth: option.choices && option.choices.length > 0 ? 152 : option.kind === "number" ? 110 : 152
@@ -34,6 +37,7 @@ Column {
     }
     function refresh() {
         current = MediaTools.value(option.key)
+        filterActive = option.module ? MediaTools.filterEnabled(option.module) : false
         if (!editor.activeFocus) editor.text = displayValue(current)
     }
     Component.onCompleted: refresh()
@@ -58,13 +62,14 @@ Column {
             onClicked: row.apply(!value)
         }
         PlayerSettingsChoice {
+            objectName: "mediaChoice_"+row.option.key
             visible: !row.option.color && row.option.choices && row.option.choices.length > 0
             Layout.preferredWidth: PlayerStyle.px(row.valueWidth)
             Layout.fillWidth: row.fullWidthChoice
             Layout.preferredHeight: PlayerStyle.px(row.controlHeight)
             outlined: true
             label: row.option.label
-            model: row.option.choices || []
+            model: row.filterChoice ? [{text:qsTr("None"),value:"__disabled__"}].concat(row.option.choices || []) : row.option.choices || []
             textRole: "text"
             valueRole: "value"
             optionIcons: row.option.key === "equalizer-preset" ? ({
@@ -74,8 +79,11 @@ Column {
                 pop:"eq-pop", reggae:"eq-reggae", rock:"eq-rock", ska:"eq-ska", soft:"eq-soft",
                 softrock:"eq-softrock", techno:"eq-techno"
             }) : ({})
-            currentIndex: indexOfValue(row.current)
-            onActivated: row.apply(currentValue)
+            currentIndex: row.filterChoice && !row.filterActive ? 0 : indexOfValue(row.current)
+            onActivated: {
+                if(row.filterChoice && currentValue==="__disabled__")MediaTools.enableFilter(row.option.module,false)
+                else row.apply(currentValue)
+            }
         }
         T.TextField {
             id: editor
