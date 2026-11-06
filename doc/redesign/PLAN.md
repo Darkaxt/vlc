@@ -1,5 +1,53 @@
 # VLC redesign stages and reconciliation
 
+**6 November current reconciliation: normal1.1.8 delivered; M6 BLOCKED only on native cleanup.**
+R90–R95 pass complete native workflows and are published in
+[normal1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8)
+from `4c8c98e6a269b852afc8f40e362580172f303ff9`. The four assets were independently
+downloaded and verified. Native VLC picture/EOF/release, MPV SDR/P5 actual
+presentation and media/engine workflows pass. Downloaded MPV lifecycle was
+checked separately; its presentation evidence is reused only through identical
+whole-package hashing. No actual picture is claimed for the inactive downloaded
+MPV run. Font navigation, still-image/video/animation replacement, saved engine
+selection, actual HWND title/HICON and two-tone accents pass. Wizard layout and
+navigation pass at100/150/200%; VLC/Nuvio profiles remain unchanged.
+
+R96 native ext4 migration, retained build and weekly binding pass. Normal236
+`c08d05c518ae4dcab33b604ddfed06f9` reused the original SDK/MPV/codecs/objects and
+409 unchanged plugins, with `-O3/-g0`, NDEBUG and QML debugging disabled. Qt
+compile/link took105.6 seconds; the entire managed Linux operation took267.3
+seconds. It exited0 with an empty group, no OOM and private mounts released.
+Read-only237 `b028ce36e0314fb6abfd7eb1522dc809` verifies clean source, configured
+inputs, all417 stripped PE mappings,410 plugins and exact codec/runtime bindings,
+without another build. The existing weekly schedule/status is preserved and now
+uses `VLC-Build-20261106`, `/toolchain` and the1.1.8 symbol carrier. Evidence is
+retained at `D:/VLC-Redesign/releases/1.1.8/verification`.
+
+Windows retirement passed: three signed transactional cleanup applications removed
+35,436,609,671 logical bytes, with zero exclusions/errors. The old NTFS toolchain,
+old runtime/pipeline mirrors, task scratch and obsolete local1.1.7 are gone.
+The older remote release entry/assets were retired; its Git tag/history and
+verified recovery archive remain. An initial overlapping-root review failed before
+ticketing or deletion; its diagnosed duplicate-key boundary is retained, and a
+new disjoint-root review/inspection/application passed. Current runtime/pipeline,
+native compiler objects, source inputs, private fixtures and1.1.8 are preserved.
+
+Remaining R96 acceptance is native spent-output retirement through the installed
+transactional helper. A concrete helper limitation blocks removal of
+1,587,759,102 logical bytes of spent native output: installed cleanup0.9.0 supports
+Windows handle deletion and Android, rejects UNC paths and has no native Linux
+backend. Read-only238 `cb28bc8f95ce40cab4da485c80d9fa18` inventoried
+`/toolchain/scratch/runtime`, `/toolchain/scratch/compilation` and
+`/toolchain/scratch/preview-1.1.8/normal-symbols`; it exited0/group empty with
+private mounts released. No native deletion was attempted. A supported native
+transactional backend is the resolution condition; do not substitute `rm`, UNC,
+drive mappings or deletion of the active VHDX. This blocks M6 closure, not the
+already verified1.1.8 delivery. [Reconciliation](resources/m6-1.1.8-verification.json).
+No operation remains running. Required deferrals0; S8 COMPLETE; S9 NOT STARTED.
+
+Earlier checkpoints below are historical. Their pending/paused descriptions apply
+only to the recorded operation, not the current delivery or execution state.
+
 **6 November: M6 execution resumed for authorized R96 storage migration.**
 R90–R95 and final1.1.8 delivery remain assigned to the same sole ACTIVE M6 stage.
 R96 is necessary recovery/integration work before compilation resumes: freeze
@@ -502,7 +550,7 @@ presentation and final delivery remain required.
 |---|---|---|---|---|
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
-| M6 Font navigation, media preview and engine identity | ACTIVE | R90–R95 mapped; causes investigated; M5 prerequisite closed. | Conditional wizard navigation; untimed still images; engine-aware centered/window/taskbar identity and restart persistence; theme-aware two-tone accents; native workflows and one verified normal1.1.8 update. | Internal acceptance gaps; no external blocker or tracked deferral. |
+| M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

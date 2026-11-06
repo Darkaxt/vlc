@@ -1,0 +1,112 @@
+{
+  "schema": "vlc_redesign.m6_reconciliation.v1",
+  "stage": "M6 Font navigation, media preview and engine identity",
+  "status": "BLOCKED",
+  "release": {
+    "version": "1.1.8",
+    "source_commit": "4c8c98e6a269b852afc8f40e362580172f303ff9",
+    "tag": "redesign-v1.1.8",
+    "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8",
+    "normal": true,
+    "independently_downloaded_and_verified": true,
+    "artifact_sha256": {
+      "Modern-VLC-Fork-1.1.8-win64-portable.zip": "fff36a9dfbcda77767c5504d4f9fb51d044922469e52fe69e2013f69e70171ae",
+      "Modern-VLC-Fork-1.1.8-corresponding-source.tar.gz": "ce557c318df436d2aa6ceb11fdf1fad6559728f8e76c50c9ab1091202213c494",
+      "Modern-VLC-Fork-1.1.8-win64-symbols.zip": "2b5f448200f18afb60e8a4b06f77668ebe4454e8e7223698bf7b8dff98d26065",
+      "SHA256SUMS.txt": "db9c0cf58412fe35a4ba0ae43930423e2627b88c3245645f1ab452021cbd5251"
+    }
+  },
+  "requirements": {
+    "R90 font-page bypass": "verified",
+    "R91 untimed still-image workflows": "verified",
+    "R92 engine-aware centered artwork": "verified",
+    "R93 saved engine and failure semantics": "verified",
+    "R94 native title and runtime icon": "verified",
+    "R95 two-tone accent rendering": "verified"
+  },
+  "R96": {
+    "native_ext4_migration": "verified",
+    "content_link_input_timestamp_verification": "passed",
+    "representative_256_header_read_speedup": 23.69458,
+    "identical_preprocessing_speedup": 9.86677,
+    "normal_qt_compile_link_seconds": 105.6,
+    "normal_managed_linux_seconds": 267.309082667,
+    "resource_limits_preserved": true,
+    "host_observation_is_not_hard_io_bound_or_historical_freeze_proof": true,
+    "retained_build_and_weekly_binding": "verified",
+    "superseded_windows_outputs": "retired",
+    "cleanup_recovery": {
+      "original_review": "73be66fff26192fdeb418e52463505ec",
+      "failure": "Overlapping parent/nested scan roots produced a duplicate manifest key; no ticket or target deletion.",
+      "resolution": "Original unissued transaction discarded through helper; disjoint exact roots reviewed and applied.",
+      "original_failure_and_bounded_reproduction_retained": true
+    },
+    "native_spent_cleanup": {
+      "state": "blocked",
+      "logical_bytes": 1587759102,
+      "paths": [
+        "/toolchain/scratch/runtime",
+        "/toolchain/scratch/compilation",
+        "/toolchain/scratch/preview-1.1.8/normal-symbols"
+      ],
+      "private_chroot_paths": [
+        "/scratch/runtime",
+        "/scratch/compilation",
+        "/scratch/preview-1.1.8/normal-symbols"
+      ],
+      "criterion": "R96 obsolete-output retirement through the required installed transactional helper",
+      "reason": "Installed transactional-cleanup0.9.0 has no native Linux backend; Windows canonical paths reject UNC and deletion requires Windows handles.",
+      "resolution": "Provide a supported native transactional-cleanup backend, then review and remove only these exact spent outputs after checking consumers.",
+      "no_deletion_attempted": true,
+      "active_runtime_pipeline_objects_vhdx_preserved": true
+    }
+  },
+  "acceptance": {
+    "wizard_dpi": [
+      100,
+      150,
+      200
+    ],
+    "all_stripped_pe_mappings": 417,
+    "plugin_count": 410,
+    "protected_profiles_unchanged": true,
+    "actual_normal_sdr_p5_presentation": "passed",
+    "downloaded_mpv_actual_picture_observed": false,
+    "downloaded_mpv_presentation_reused_by_identical_whole_package": true,
+    "scope": "Existing M2-M5 acceptance retained; no S9/Rust migration started."
+  },
+  "windows_retirement": [
+    {
+      "transaction_id": "d91e0bf1927ffe057cb7b17de556e7ca",
+      "state": "applied",
+      "deleted_bytes": 12224324778,
+      "result_counts": {
+        "deleted": 62691
+      },
+      "receipt_sha256": "6d5543741cdef42e99b5d5a3390d76c311e59047244d88bc003b78960f60b619"
+    },
+    {
+      "transaction_id": "f83e3798648770abfd0e3b588ac94388",
+      "state": "applied",
+      "deleted_bytes": 23212283001,
+      "result_counts": {
+        "deleted": 166784
+      },
+      "receipt_sha256": "0dde214d876df7111be2b5cba2e0bb5b02288035ca9db9089169d57fb11354a6"
+    },
+    {
+      "transaction_id": "aba334fdad32a719c1e65f834f9480c8",
+      "state": "applied",
+      "deleted_bytes": 1892,
+      "result_counts": {
+        "deleted": 3
+      },
+      "receipt_sha256": "bb988845b68dcebc181e57783b966c0760a6e6ecbc16a52057fc45ca7f8d4827"
+    }
+  ],
+  "tracked_deferrals": [],
+  "remaining": [
+    "R96 obsolete-output retirement through the required installed transactional helper"
+  ],
+  "evidence_root": "D:/VLC-Redesign/releases/1.1.8/verification"
+}

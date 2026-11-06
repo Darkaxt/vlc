@@ -4,6 +4,21 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**6 November delivery evidence:** R90–R95 are verified in normal
+[1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8), source
+`4c8c98e6a269b852afc8f40e362580172f303ff9`. Independent four-asset verification,
+actual native workflows/presentation, preserved profiles and retained/weekly
+ext4 binding pass. Evidence is at
+`D:/VLC-Redesign/releases/1.1.8/verification`. R96 retirement remains required;
+the installed cleanup helper has no native Linux deletion backend. Preserve the
+exact inventoried spent native output until that capability is available. This
+records an unmet cleanup criterion and does not waive it or weaken the migration
+acceptance contract. Windows retirement passed with35,436,609,671 logical bytes
+removed through signed tickets and zero exclusions/errors. M6 is BLOCKED only
+on native cleanup, with no running operation or required deferral. See the
+[reconciliation](resources/m6-1.1.8-verification.json). Current state is maintained
+in PLAN.md; earlier checkpoints retain their historical meaning.
+
 **6 November R96 (M6), already authorized:** migrate the Linux build toolchain,
 source and reusable objects from the Windows-mounted tree into native ext4
 storage backed by a VLC-owned WSL2 virtual disk on internal D:. Preserve pinned

@@ -1,5 +1,58 @@
 # Windows x64 reproduction and recovery
 
+Current delivery is normal
+[1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8), source
+`4c8c98e6a269b852afc8f40e362580172f303ff9`. The local usable executable is
+`D:/VLC-Redesign/releases/1.1.8/Modern-VLC-Fork-1.1.8-win64-portable/vlc.exe`.
+All four published assets were independently retrieved and checked. Normal
+qualification, downloaded native behavior, actual SDR/P5 presentation and
+protected-profile evidence are retained in that version's `verification` folder.
+Frozen control snapshots document original paths; they are not installed
+relocatable launchers.
+
+The continuing build consumer is now `VLC-Build-20261106` with its D:-backed ext4
+root `/toolchain`. Source is `/toolchain/work/src`, build is
+`/toolchain/work/build/win64`, runtime is
+`/toolchain/scratch/preview-1.1.8/runtime` and pipeline is
+`/toolchain/scratch/preview-1.1.8/compilation`. Windows finished-artifact mirrors
+remain under `D:/VLC-Redesign/build/windows-x64/scratch-share/preview-1.1.8`.
+Use the installed WSL Coordinator launcher and `with-isolated-toolchain.py
+--native --scratch /mnt/d/VLC-Redesign/build/windows-x64`, without `--initialize`.
+Preserve4GiB shared VM,3.5GiB workload,512MiB swap, one CPU and one compiler job.
+Native storage sets the Windows-header-copy cache to0. No SDK reinstallation,
+configure rerun or dependency rebuild is needed for an unchanged UI-only delta.
+
+`build-retention.json` and `verify-retained-build-1.1.8.py` bind normal236
+`c08d05c518ae4dcab33b604ddfed06f9` and read-only237
+`b028ce36e0314fb6abfd7eb1522dc809`. Both closed with empty Linux groups and
+released private mounts. Use the matching optional1.1.8 symbols ZIP to seed a
+fresh incomplete manifest from verified unchanged mappings. Never mutate a
+completed symbol manifest. The weekly schedule has been read back against this
+exact binding. Old NTFS paths below are historical, not another build target.
+
+The superseded NTFS toolchain, old Windows runtime/pipeline mirrors, obsolete
+local1.1.7 and spent task roots were retired through signed helper tickets after
+consumer and recovery checks. Source recovery is
+`G:/VLC-Redesign/recovery/native-migration-20261106.git`; prior1.1.7 verification
+and isolated-profile evidence is in
+`G:/VLC-Redesign/evidence/1.1.7-verification.zip`. The corresponding recovery
+contracts, hashes and applied cleanup receipts are retained with1.1.8 evidence.
+
+Bind a raw reusable assembly using `VLC-PLUGIN-BUILDINFO.json`, its actual native
+DLLs and the recorded assembly/source receipts. Its inherited package-seed
+`BUILDINFO.json` is historical. `package-release.py` generates the delivered
+`BUILDINFO.json` afresh from the exact source argument and native DLL identity;
+the independently checked1.1.8 package has the correct version/source/Qt hash.
+
+R96 cleanup is still tracked in PLAN.md. Native read-only238 inventoried spent
+`/toolchain/scratch/runtime`, `/toolchain/scratch/compilation` and
+`/toolchain/scratch/preview-1.1.8/normal-symbols`; the active1.1.8 runtime/pipeline,
+compiler objects and VHDX are excluded. Installed transactional-cleanup0.9.0 has
+no native Linux backend. Do not bypass it with raw deletion or UNC mappings.
+
+Historical reproduction checkpoints follow; their original pending work, release
+paths and rollback instructions are superseded by the current binding above.
+
 6 November M6 storage migration: keep normal1.1.7 as the delivered
 rollback. The interrupted optimized Qt assembly remains run44, original225
 `b8aa2029e76d416b8770072015525a2e`, with its exit137/group-empty report. The
