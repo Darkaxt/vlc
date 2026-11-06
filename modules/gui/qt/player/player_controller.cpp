@@ -1964,7 +1964,9 @@ void PlayerController::toggleMuted()
 bool PlayerController::hasAudioVisualization() const
 {
     Q_D(const PlayerController);
-    return d->m_audioVisualization.hasCurrent();
+    // Row zero is "Disable", not a running visualization. hasCurrent() also
+    // reports that row as selected and would suppress normal video workflows.
+    return d->m_audioVisualization.currentRow() > 0;
 }
 
 void PlayerController::updatePosition()

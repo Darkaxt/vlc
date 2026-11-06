@@ -1811,9 +1811,11 @@ def engine_accents():
 
 def floating_player():
     def current(case,label,capture=False):
-        if capture:case.inspect(label+'-hover','move','--target','floatingPlayer','--fraction-y','0.25')
         state=case.inspect(label,'snapshot','--await-target','floatingPlayer',
-            '--await-property','ready','--await-value','true',*(['--capture'] if capture else []))
+            '--await-property','ready','--await-value','true')
+        if capture:
+            case.inspect(label+'-hover','move','--target','floatingPlayer','--fraction-y','0.25')
+            state=case.inspect(label+'-capture','snapshot','--capture')
         assert state['main_window']['visibility']==3, state['main_window']
         windows=[w for w in state['windows'] if w.get('name')=='floatingPlayerWindow' and w['visible']]
         assert len(windows)==1 and windows[0]['composition_ready'], windows
@@ -1835,6 +1837,8 @@ def floating_player():
                 geometry={k:initial['main_window'][k] for k in ('x','y','width','height')}
                 case.click('play','playButton','--await-core','state','--await-value','2')
                 before=case.inspect('before-minimize','snapshot')
+                if engine=='vlc':
+                    assert [v['value'] for v in before['visualization_choices'] if v['selected']]==['']
                 case.click('minimize','playerMinimize')
                 mini=current(case,'floating-ready',True)
                 assert mini['playback_engine']==engine and mini['core']['url']==before['core']['url']
