@@ -76,6 +76,18 @@ Preserve the original started state and only report a final stop for an active
 handover; an already-idle engine change must retain its player view. This same
 M6 acceptance criterion remains an internal advancement blocker until verified.
 
+R92 idle switching and the complete VLC photo/replacement/animation, native
+branding, restart/explicit override and timed-image EOF cases now pass. MPV's
+photo case exposed its forced lavf/image2 blacklist. Read-only native probes of
+the unchanged pinned DLL confirm `mf` decodes JPEG, but the video libplacebo
+filter emits no single-frame output. Native mf plus its unfiltered image path
+renders correctly; target peak203 preserves the synthetic JPEG patches within
+one channel value, whereas the video peak100 brightens them. Apply these as
+entry-local image options after header/animation detection; the next video/GIF
+restores the existing lavf/DV filter/peak100. No MPV/FFmpeg/SDK rebuild or runtime
+pin change is needed. Native JPEG/PNG survival, video/GIF replacement and final
+SDR/P5 presentation remain required before delivery.
+
 **M6 Font navigation, media preview and engine identity: ACTIVE (5 November).** R90–R95 are newly authorized. Investigation identified unconditional theme/font/shortcuts navigation, VLC's ten-second image-demux default, a fixed centered cone, session-only engine selection and an unthemed amber Playback-tab SVG. M5 cleanup and delivery closure passed; only M6 receives implementation. Acceptance: available-font forward/back bypass plus unchanged missing/corrupt/download/fallback flow; untimed still-image behavior across both engines and image/video replacement, preserving animation and explicit timed playback; engine-aware centered/window/taskbar identity; saved engine selection and restart in both directions without changing a failed selection; theme-aware two-tone accents with original artwork preserved; one normal1.1.8 release with independent delivered-package verification. These implementable gaps block M6 acceptance; no external blocker or tracked deferral. No M5 criterion is deferred into M6. These new requirements are not delivered in 1.1.7.
 
 M6 coherent source is integrated before compilation. Native checks cover both-engine photo survival/replacement/animation/timed override, centered and HWND identity, successful selection/restart/explicit override, rejected switch/failed save and actual two-tone icon pixels. Available-font forward/back/reopen checks use the real cached font service. Fresh acceptance remains pending. Reuse the verified Ubuntu-hosted private toolchain namespace and Qt-only409-plugin guard; preserve all SDK/MPV/codec objects, optimized flags and native state. Task control is `E:/Temp/vlc-preview-1.1.8-20261105`; sustained native/build I/O uses exact `D:/Temp/vlc-s8-preview-1.1.8-20261105` and retained `scratch-share/preview-1.1.8`. Cleanup transaction `b4da9d0b04c7eb47593c482da9cfea68` registers these exact outputs. This is an intermediate source freeze, not verified completion or publication.

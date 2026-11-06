@@ -1136,6 +1136,8 @@ def media_previews():
         case = Case('image-preview-' + engine + ('-'+suffix if suffix else ''), engine=engine, media=images / 'still.jpg',extra=('--qt-accent-color=#3b82f6',))
         try:
             case.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
+            if engine=='mpv':
+                case.inspect('photo-native-video-ready','snapshot','--await-core','mpv_video_ready','--await-value','true')
             case.inspect('photo-video-surface','snapshot','--await-target','playerVideoSurface','--await-property','visible','--await-value','true')
             ready = case.inspect('still-preview', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'true', '--capture')
             no_clock(ready)

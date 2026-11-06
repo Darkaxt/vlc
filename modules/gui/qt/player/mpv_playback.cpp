@@ -15,6 +15,7 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
+#include <QImageReader>
 #include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
@@ -755,7 +756,21 @@ void MpvPlayback::load(const QUrl &url, bool paused)
     d->loadStarting = true;
     set(QStringLiteral("pause"), paused);
     const QString input = url.isLocalFile() ? QDir::toNativeSeparators(url.toLocalFile()) : url.toString(QUrl::FullyEncoded);
-    command({QStringLiteral("loadfile"), input, QStringLiteral("replace")});
+    QStringList arguments{QStringLiteral("loadfile"), input, QStringLiteral("replace")};
+    if (url.isLocalFile()) {
+        QImageReader image(url.toLocalFile());
+        if (image.canRead() && (!image.supportsAnimation() || image.imageCount() == 1)) {
+            // Forced lavf rejects image2, while the video libplacebo filter
+            // produces no output for a single sparse frame. Native mf marks
+            // the input as an image and honors image-display-duration. Keep
+            // SDR reference white (203 nits) so ordinary photo colors survive.
+            // Entry-local options are restored before the next video/GIF.
+            arguments << QStringLiteral("-1")
+                      << QStringLiteral("demuxer=mf,mf-type=%1,vf=null,target-peak=203")
+                            .arg(QString::fromLatin1(image.format()));
+        }
+    }
+    command(arguments);
     d->pending.clear();
 }
 void MpvPlayback::prepareToClose(std::function<void()> completion)

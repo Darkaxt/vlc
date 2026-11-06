@@ -59,6 +59,7 @@ def main():
     parser.add_argument('--strip-dovi', action='store_true', help='Negative control: disable libplacebo Dolby Vision metadata mapping')
     parser.add_argument('--vf', help='Explicit filter under investigation; recorded in the reference result')
     parser.add_argument('--demuxer', help='Explicit demuxer for a bounded media-entry diagnostic')
+    parser.add_argument('--target-peak',type=float,default=100.,help='Explicit renderer peak for a bounded color diagnostic')
     args = parser.parse_args()
     root = args.scratch_root.resolve()
     assert root.parent == Path('D:/Temp') and root.name.startswith('vlc-s8-')
@@ -92,6 +93,7 @@ def main():
     get_string = bind('get_property_string', c.c_void_p, c.c_void_p, c.c_char_p)
     free = bind('free', None, c.c_void_p)
     request_log = bind('request_log_messages', c.c_int, c.c_void_p, c.c_char_p)
+    observe = bind('observe_property', c.c_int, c.c_void_p, c.c_uint64, c.c_char_p, c.c_int)
     wait = bind('wait_event', c.POINTER(Event), c.c_void_p, c.c_double)
     wake_player = bind('wakeup', None, c.c_void_p)
     destroy = bind('terminate_destroy', None, c.c_void_p)
@@ -184,7 +186,7 @@ def main():
     try:
         options = {'config': 'no', 'vo': 'libmpv', 'ao': 'null', 'terminal': 'no',
                    'input-default-bindings': 'no', 'pause': 'yes',
-                   'hwdec': args.hwdec, 'vd-lavc-threads': '1', 'target-prim': 'bt.709', 'target-trc': 'srgb', 'target-peak': '100',
+                   'hwdec': args.hwdec, 'vd-lavc-threads': '1', 'target-prim': 'bt.709', 'target-trc': 'srgb', 'target-peak': format(args.target_peak,'g'),
                    'vf': 'lavfi=[libplacebo=apply_dolbyvision=1:colorspace=bt709:color_primaries=bt709:color_trc=iec61966-2-1:range=pc:format=rgba]',
                    'gpu-shader-cache': 'no'}
         if args.strip_dovi:
@@ -200,6 +202,8 @@ def main():
             assert code >= 0, (name, code)
         assert request_log(player, b'v') >= 0
         assert initialize(player) >= 0
+        for identity,name in enumerate((b'video-params',b'video-out-params'),1):
+            assert observe(player,identity,name,0)>=0
         worker = threading.Thread(target=draw_thread, name='S8-D3D11-reference')
         worker.start(); ready.wait()
         assert not render_errors, render_errors
@@ -207,6 +211,7 @@ def main():
         assert command(player, 1, arguments) >= 0
         phase = 'load'
         seek_started = False
+        restarted = False
         while True:
             event = wait(player, -1).contents
             assert not render_errors, render_errors
@@ -226,7 +231,12 @@ def main():
                     assert command(player, 2, arguments) >= 0
                     phase = 'seek'
                 elif phase == 'load' or seek_started:
-                    break
+                    restarted = True
+            # A sparse image can emit PLAYBACK_RESTART before its asynchronous
+            # filter publishes the output format. Wait for that real property
+            # notification rather than capturing an unconfigured renderer.
+            if restarted and property_string('video-params') and property_string('video-out-params'):
+                break
         result['properties'] = {key: property_string(key) for key in ('mpv-version', 'ffmpeg-version', 'libplacebo-version',
             'video-params', 'video-dec-params', 'video-out-params', 'video-params/colormatrix', 'video-params/gamma', 'video-params/primaries',
             'video-params/dolbyvision', 'video-pts', 'time-pos', 'hwdec-current')}
