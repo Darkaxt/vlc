@@ -24,8 +24,8 @@ launch.
 VLC and MPV have separate saved accent palettes in General Settings. Their
 defaults are VLC orange and the MPV logo's purple; custom colors also tint the
 running window and taskbar icon while preserving the original icon shading.
-MPV display frames are downsampled from its original high-resolution artwork
-with transparent outer padding removed for a closer visual size match.
+MPV display frames are derived from its original high-resolution artwork;
+the Windows taskbar controls the displayed button size.
 
 - Redesigned player, media library, first-run guide and settings.
 - VLC and MPV playback engines, with in-session switching that preserves position
@@ -34,6 +34,8 @@ with transparent outer padding removed for a closer visual size match.
   Dolby Vision sources, converted to the verified Windows SDR output path.
 - Seek previews, subtitle timing/navigation and a subtitle timeline for supported
   text tracks.
+- Live VLC audio visualization inside the seekbar, with colors inverted across
+  the playhead; unavailable engine/input combinations are identified explicitly.
 - Native VLC specialist options remain available through Advanced Options and
   the searchable All VLC options view.
 
@@ -62,6 +64,11 @@ The comparison preserves the original menu order, two-tone icons and shortcuts.
 The reference image is from the linked Figma project; the implementation image
 is a cropped app-rendered capture. These captures show interface rendering,
 without media or personal library content. See the [capture provenance](doc/redesign/screenshots/provenance.json).
+
+![Live scope inside the seekbar, using a synthetic audio fixture](doc/redesign/screenshots/seekbar-scope-native.png)
+
+The scope uses the playing audio stream. Its line changes from black over the
+played accent fill to the active accent over the unplayed track.
 
 The player builds on [VideoLAN VLC](https://www.videolan.org/vlc/),
 [MPV](https://mpv.io/), [libplacebo](https://code.videolan.org/videolan/libplacebo)

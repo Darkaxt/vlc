@@ -1,23 +1,30 @@
 # VLC redesign stages and reconciliation
 
-**6 November current work: M7 Runtime engine icon and accent parity — ACTIVE.**
-Expanded outcome: M7 retains R97-R102 and the reported R104 visualizer regression;
-M8 Figma floating miniplayer (R103) is NOT STARTED; M9 final1.1.9 delivery is
-NOT STARTED. M7's planned publication now belongs to M9 after both implementation
-stages pass; no earlier release is authorized as completion of this expanded
-request. S9 Rust remains NOT STARTED. M7 resumed after the user's explicit choice:
-R104 effects animate inside the existing progress bar, with unchanged geometry
-and usable seeking, rather than above it. Its implementation observes the
-current PCM audio path without a second decoder or visualization vout. The user
-accepted the first real capture and added progress-boundary inversion: accent
-effects over black, black effects over solid accent fill. That connected change
-and seek reset compiled in diagnostic62 (104s managed elapsed, no OOM/max events,
-group empty/private mounts released). The real native affected workflow now
-passes: four modes at100/150/200%, black/accent pixel inversion, fixed geometry,
-one vout, changing audio/frozen pause, actual seek/reset/resume, disable, VLC→MPV
-observer release and VLC restoration, no-audio release, explicit MPV unavailability.
-Original dropdown pixels and actual enlarged taskbar pixels remain unmet. Neither1.1.9
-is delivered. M8 has not begun.
+**6 November current work: M8 Figma floating miniplayer — ACTIVE.**
+M7 is COMPLETE under the user's explicit withdrawal of further taskbar resizing.
+The current blue MPV running button was captured and inspected by the user;
+its native icon and Shell resource/identity are verified. The10–15% enlargement
+was not achieved and the failed numeric size comparison remains false, preserved
+at `D:/Temp/vlc-s8-taskbar-style-1.1.9-20261106/taskbar-review/result.json`.
+No further enlargement experiments or review launches are required. R97/R98/R100
+retain original artwork, engine identity, independent saved palettes and native
+DPI evidence. R99 README now includes the credited Figma/YouTube comparisons
+and actual synthetic-audio seekbar scope capture with per-file provenance.
+R102 passes both engines at100/150/200%, restart/direct file/HTTP/folder,
+main/library transitions and no database/indexing. R104 passes all four live
+in-bar modes, inversion, seek/pause/reset/disable, no-audio and engine handover;
+the original visualizer/EQ dropdown icons also pass native rendering inspection.
+Evidence: `inversion-m7-native/result.json` and
+`visualizer-options-native/result.json` under the retained M7 native root.
+Their owned players exited0 and protected profiles match. Diagnostic63 closed0
+with Linux group empty/private mounts released; no build remains running.
+M7 closure assessment found no additional required abstraction or refactor.
+M8 owns R103: real floating video on minimize, Figma compact/queue/hover/seek/
+metadata/replay controls, both engines, monitor bounds and restore/dismissal.
+M9 normal1.1.9 release remains NOT STARTED until M8 passes. M6's exact native
+cleanup capability blocker remains parked; S9 Rust is NOT STARTED.
+
+The following earlier M7 checkpoints are historical; current status is above.
 Normal60 closed0/group empty (63a4ef6196a64cd68b2f95cac30e4e6c), reused409 plugins,
 and passed stripped packaging/source/symbols, native VLC and actual MPV SDR/P5
 presentation. Its scoped taskbar-button rebind ran once but did not fix the actual
@@ -727,7 +734,9 @@ presentation and final delivery remain required.
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
-| M7 Runtime engine icon parity | ACTIVE | Original/custom engine assets and independent palettes pass earlier applicable native checks; R102 source and R104 original dropdown assets are integrated. | R98/R101 actual larger taskbar image; R102 native no-library workflows; R104 in-bar output implementation and native acceptance. Final publication belongs to M9. | None. |
+| M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M9. | None. |
+| M8 Figma floating miniplayer | ACTIVE | Existing embedding and reference assets identified. | R103 automatic floating video, full Figma card/queue/controls, both-engine continuity, bounds/restore/dismissal and actual rendering. | None. |
+| M9 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

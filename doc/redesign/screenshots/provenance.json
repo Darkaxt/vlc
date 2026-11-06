@@ -41,6 +41,16 @@
       "sha256": "d7faa9417df034446146813b7b7419f3c80ee829b0bb00f7056423fbbba027ce",
       "crop": null,
       "applicability": "User-supplied Juxtopposed Figma reference; CC BY4 attribution in README"
+    },
+    {
+      "file": "seekbar-scope-native.png",
+      "capture": "cfccffe4b78c4e29aa2e6b1a8abfc2aa.png",
+      "capture_sha256": "7e99828c782db4d895ae1ac576d58bd68f6139d5400693b5cfea6df9939af810",
+      "sha256": "7e99828c782db4d895ae1ac576d58bd68f6139d5400693b5cfea6df9939af810",
+      "crop": null,
+      "source_commit": "f05eb6c06debaf06f74efc1716c476c927274f2d",
+      "qt_plugin_sha256": "ed4a68e0e590b81aa833872da5a7f20664c394e0d78f172d0a334dc8a11aeaf5",
+      "applicability": "Actual Qt rendering using public synthetic control.mkv; live scope and playhead inversion, isolated profile; no desktop or private media"
     }
   ]
 }

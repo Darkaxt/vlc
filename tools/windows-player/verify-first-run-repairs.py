@@ -68,6 +68,8 @@ parser.add_argument('--visualizer-options-only',action='store_true',help='Inspec
 args = parser.parse_args()
 assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
+resume_visualizer_options=args.visualizer_options_only and (root/'result.json').is_file()
+options_utf8_repair=False
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
 resume_empty_survey=args.case=='settings-survey' and (root/'result.json').is_file()
 resume_settings=args.resume_settings_after_desktop_change
@@ -91,14 +93,30 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
 m7_final_path=False
-if resume_m7_lifecycle:
+if resume_visualizer_options:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='visualizer-options' and not previous['passed'] and previous['protected_profiles_unchanged']
+    options_utf8_repair=previous['failures']['audio-visualizer'].startswith('UnicodeDecodeError(')
+    if options_utf8_repair:
+        assert len(previous['cases'])==1 and previous['cases'][0]['name']=='original-visualizer-eq-options-eq-resumed'
+        assert previous['cases'][0]['steps'][-2]['label']=='playback-panel'
+        assert previous['resumed_visualizer_options']['completed_visualizer_capture']
+    else:
+        assert previous['failures']=={'audio-visualizer':repr(TypeError("argument of type 'NoneType' is not a container or iterable"))}
+        assert len(previous['cases'])==1 and previous['cases'][0]['steps'][-2]['label']=='visualizer-options'
+    assert previous['cases'][0]['exit_code']==0 and previous['cases'][0]['owned_desktop_never_observed_as_input']
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/('result-before-options-utf8-checker.json' if options_utf8_repair else 'result-before-options-snapshot-checker.json');assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_m7_lifecycle:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='m7-regressions' and not previous['passed'] and previous['protected_profiles_unchanged']
     m7_final_path=set(previous['failures'])=={'no-library'}
@@ -360,6 +378,10 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
+if resume_visualizer_options:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    records['resumed_visualizer_options']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'completed_visualizer_capture':previous['resumed_visualizer_options']['completed_visualizer_capture'] if options_utf8_repair else previous['cases'][0]['steps'][-2]['response'],'scope':'Validate the captured original visualizer popup and finish the untested EQ popup. Source/Qt binary unchanged.'}
 if resume_m7_lifecycle:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     if m7_final_path:
@@ -1788,21 +1810,25 @@ def engine_accents():
 
 
 def visualizer_options():
-    case=Case('original-visualizer-eq-options',media=fixtures/'control.mkv')
+    suffix='-eq-utf8-resumed' if options_utf8_repair else '-eq-resumed' if resume_visualizer_options else ''
+    case=Case('original-visualizer-eq-options'+suffix,media=fixtures/'control.mkv')
     try:
         case.inspect('audio-ready','snapshot','--await-service','redesignAudioVisualizer','--await-property','available','--await-value','true')
         case.inspect('reference-viewport','resize','--width','1280','--height','800')
         case.click('playback-panel','toolsButton')
-        case.inspect('visualizer-focus','focus','--target','seekbarVisualizerChoice')
-        visualizer=case.inspect('visualizer-options','key','--key','0x20','--text',' ','--capture')
+        if resume_visualizer_options:
+            visualizer=json.loads((root/records['resumed_visualizer_options']['completed_visualizer_capture']).read_text(encoding='utf-8'))
+        else:
+            case.inspect('visualizer-focus','focus','--target','seekbarVisualizerChoice')
+            visualizer=case.inspect('visualizer-options','key','--key','0x20','--text',' ','--capture')
         def originals(snapshot,prefix):
-            rows=[n for n in snapshot['tree'] if n['visible'] and prefix in n.get('source','')]
+            rows=[n for n in snapshot['tree'] if n['visible'] and prefix in (n.get('source') or '')]
             assert rows and all(n.get('status')=='Ready' for n in rows),rows
             return [n['source'] for n in rows]
         visualizer_icons=originals(visualizer,'visualizer-')
         assert len(visualizer_icons)==4,visualizer_icons
-        case.inspect('visualizer-cancel','key','--key','0x1000000')
-        tab=next(n for n in visualizer['tree'] if n.get('name')=='Audio' and n.get('id')!='audioButton' and n['visible'] and n.get('actions'))
+        closed=case.inspect('current-panel','snapshot') if resume_visualizer_options else case.inspect('visualizer-cancel','key','--key','0x1000000')
+        tab=next(n for n in closed['tree'] if n.get('name')=='Audio' and n.get('id')!='audioButton' and n['visible'] and n.get('actions'))
         case.inspect('audio-tab','click','--node',str(tab['node']))
         case.inspect('equalizer-expand','click','--name','Equalizer: Expand Settings')
         case.inspect('equalizer-focus','focus','--name','Equalizer Preset')
@@ -3156,10 +3182,11 @@ try:
         try:
             operation()
         except Exception as failure:
-            records.setdefault('failures',{})[name]=repr(failure)
+            detail=type(failure).__name__+': '+str(failure) if isinstance(failure,UnicodeDecodeError) else repr(failure)
+            records.setdefault('failures',{})[name]=detail
             records.setdefault('failure_tracebacks',{})[name]=traceback.format_exc()
             save()
-            print(json.dumps({'workflow':name,'failure':repr(failure)}),flush=True)
+            print(json.dumps({'workflow':name,'failure':detail}),flush=True)
             # Collect independent acceptance failures from this one complete
             # assembly, but never start another consumer after uncertain exit.
             assert not active_cases and not any(portable.iterdir()), 'Original native consumer/profile has not been released'

@@ -48,6 +48,13 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   earlier pixel-identical small-frame display requirement, not source preservation.
   Verify unclipped artwork, optical dimensions,100/150/200% rendering and actual
   taskbar pixels, accounting for the taskbar's own display scaling.
+  **6 November scope revision:** after inspecting the captured blue MPV taskbar
+  button, the user ended the resizing effort ("the icon resizing is a lost
+  cause"). Keep the current displayed size; further enlargement and its optical
+  size comparison are withdrawn acceptance criteria. This does not waive R98's
+  engine identity or R100's custom coloring. Preserve the original artwork,
+  current derived resources and the failed enlargement evidence without claiming
+  that the requested10–15% taskbar increase was achieved.
 
 - R102 (6 November user correction): disabling the media library, including
   `--no-media-library`, must retain the Figma interface, engine identity, menus,
