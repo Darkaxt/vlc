@@ -27,6 +27,7 @@ Loader {
         const value=tick.formatHMS(0)
         return value.split(":").length===2 ? "00:"+value : value
     }
+    readonly property real minimumControlWidth: PlayerStyle.px(controlKey === "seek" && !Player.stillImagePreview && MediaTools.timelineVisible && MediaTools.cues.length > 0 ? 240 : expands ? 24 : 8)
     readonly property bool expands:controlKey==="seek"||controlKey==="spacer"
     readonly property bool hidden:(Player.stillImagePreview&&["play","elapsed","duration","seek","speed","forward10","backward10","forward15","backward15","replay"].includes(controlKey))
         ||compact&&(controlKey==="elapsed"||controlKey==="duration"||controlKey==="artist"||controlKey==="playlistname")
@@ -117,16 +118,18 @@ Loader {
     Component {
         id:seekComponent
         T.Slider {
-            id:seek;implicitWidth:PlayerStyle.px(80);implicitHeight:PlayerStyle.px(28);padding:PlayerStyle.px(2);from:0;to:1
+            id:seek;implicitWidth:Math.max(PlayerStyle.px(80),control.minimumControlWidth);implicitHeight:PlayerStyle.px(28);padding:PlayerStyle.px(2);from:0;to:1
+            leftPadding: seekAnalysis.cueControlsWidth || PlayerStyle.px(2)
+            rightPadding: leftPadding
             enabled:Player.seekable;activeFocusOnTab:true
             Accessible.name:qsTr("Playback position");Accessible.description:Player.time.formatHMS(0)+" / "+Player.length.formatHMS(0);AccessibleCompat.id:"progressSlider"
             Binding on value{when:!seek.pressed;value:Player.position;restoreMode:Binding.RestoreNone}
             onMoved:Player.position=value
-            PlayerSeekAnalysis{overlayParent:control.popupParent;playedWidth:seek.leftPadding+seek.availableWidth*seek.visualPosition}
+            PlayerSeekAnalysis{id:seekAnalysis;overlayParent:control.popupParent;playedWidth:seek.leftPadding+seek.availableWidth*seek.visualPosition}
             background:Rectangle{color:PlayerStyle.timeline;radius:PlayerStyle.px(6)
-                Rectangle{x:PlayerStyle.px(2);y:x;width:Math.max(0,(parent.width-PlayerStyle.px(4))*seek.visualPosition);height:parent.height-PlayerStyle.px(4);color:PlayerStyle.accent;opacity:MediaAnalysis.visualizer.active?1:0.24;radius:PlayerStyle.px(4)}
+                Rectangle{x:seek.leftPadding;y:PlayerStyle.px(2);width:Math.max(0,seek.availableWidth*seek.visualPosition);height:parent.height-PlayerStyle.px(4);color:PlayerStyle.accent;opacity:MediaAnalysis.visualizer.active?1:0.24;radius:PlayerStyle.px(4)}
                 border.width:seek.visualFocus?PlayerStyle.px(2):0;border.color:PlayerStyle.accent}
-            handle:Rectangle{x:seek.leftPadding+seek.visualPosition*(seek.availableWidth-width);y:seek.topPadding;width:PlayerStyle.px(8);height:seek.availableHeight;radius:PlayerStyle.px(4);color:PlayerStyle.accent}
+            handle:Rectangle{z:4;x:seek.leftPadding+seek.visualPosition*(seek.availableWidth-width);y:seek.topPadding;width:PlayerStyle.px(8);height:seek.availableHeight;radius:PlayerStyle.px(4);color:PlayerStyle.accent}
         }
     }
     Component {

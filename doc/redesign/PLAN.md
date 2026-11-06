@@ -1,6 +1,13 @@
 # VLC redesign stages and reconciliation
 
-**7 November current work: M8 — ACTIVE for video-overlay contrast.**
+**7 November current work: M11 — ACTIVE for inline subtitle synchronization.**
+M8 contrast verification now passes in both engines at100/150/200 percent. M8 is
+parked BLOCKED only on current normal-desktop floating/restored-main pictures;
+its source-bound runtime-contrast review is prepared. M11 is independent of that
+external picture observation. R106 places cue bands and all timing/navigation
+actions inside the existing seekbar, with distinct seeking and timing gestures.
+
+Historical M8 contrast implementation checkpoint:
 The user reports the current remaining issue is muted controls blending into the
 bright video. Apply bright original glyphs on compact translucent dark backing,
 preserving focus/hover/pressed feedback. Native geometry repair below passes;
@@ -103,7 +110,8 @@ against the supplied Figma panels, and README includes a source-bound comparison
 [Verification](resources/m9-1.1.9-verification.json) records the original unexpected
 minimize, scoped same-binary completion, truthful unsupported controls and clean
 profile/lifecycle results. No production minimize workaround was added.
-M10 normal1.1.9 release remains NOT STARTED until M8 and M9 pass. M6's exact native
+M10 normal1.1.9 release remains NOT STARTED until M8, M9 and newly requested
+M11/R106 inline subtitle synchronization pass. M6's exact native
 cleanup capability blocker remains parked; S9 Rust is NOT STARTED.
 
 The following earlier M7 checkpoints are historical; current status is above.
@@ -817,9 +825,10 @@ presentation and final delivery remain required.
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 | M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M10. | None. |
-| M8 Figma floating miniplayer | BLOCKED | Both-engine100/150/200% lifecycle, hover/drag/seek/queue and full published geometry after repeated restore pass; user confirms surrounding-area dragging/hover. Original16-unit muted toolbar inspected. | External current normal-desktop miniplayer and restored-main composed pictures; user-owned runtime-restore review and window-bound capture resolve it. M10 depends on this proof. | None. |
+| M8 Figma floating miniplayer | BLOCKED | Both-engine100/150/200% lifecycle, hover/drag/seek/queue and full published geometry after repeated restore pass; user confirms surrounding-area dragging/hover. Original16-unit muted toolbar inspected. | Bright-overlay contrast passes; external current normal-desktop miniplayer/restored-main pictures remain. M10 depends on this proof. | None. |
 | M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
-| M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
+| M11 Inline subtitle synchronization | ACTIVE | Existing cue extraction, delay/navigation and both-engine bindings retained as inputs. | R106 cue bands/timing actions inside seekbar, no extra row, distinct seek/sync gestures, responsive/custom layouts, actual native DPI/engine/track verification. Runs before M10. | None. |
+| M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8, M9 and M11, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

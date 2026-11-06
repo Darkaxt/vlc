@@ -16,14 +16,13 @@ T.Pane {
     readonly property var checkedControls:({audio:audio.visible,subtitles:subtitles.visible,tools:settings.visible,queue:queueVisible,more:playbackMenu.shown})
     readonly property bool compact:width<PlayerStyle.px(760)
     readonly property bool menuOpen:subtitles.visible||audio.visible||settings.visible||subtitleMatching.visible||playbackMenu.shown||PlayerCustomization.editing
-    readonly property real sliderY:timelineHeight+(height-timelineHeight-PlayerStyle.px(28))/2
-    readonly property real timelineHeight:PlayerStyle.px(!Player.stillImagePreview&&MediaTools.timelineVisible&&MediaTools.cues.length>0?30:0)
+    readonly property real sliderY:(height-PlayerStyle.px(28))/2
     signal toggleQueue()
     signal hideChromeRequested()
     signal externalActionRequested(string key,var invoker)
     signal forceUnlock()
     onForceUnlock:{subtitles.close();audio.close();settings.close();subtitleMatching.close();playbackMenu.close()}
-    implicitHeight:PlayerStyle.px(54)+timelineHeight;padding:0;hoverEnabled:true;enabled:visible
+    implicitHeight:PlayerStyle.px(54);padding:0;hoverEnabled:true;enabled:visible
     Accessible.name:qsTr("Player controls");AccessibleCompat.id:"playerControlBar"
     background:Rectangle{objectName:"playerVideoBackdrop";readonly property real backgroundBlurRadius:PlayerStyle.px(PlayerStyle.backgroundBlurRadius);color:PlayerStyle.chrome}
     function restoreFocus(){if(lastInvoker)lastInvoker.forceActiveFocus(Qt.PopupFocusReason)}
@@ -51,7 +50,6 @@ T.Pane {
     }
     RowLayout {
         anchors.fill:parent;anchors.leftMargin:PlayerStyle.px(bar.compact?12:20);anchors.rightMargin:anchors.leftMargin
-        anchors.topMargin:bar.timelineHeight
         spacing:PlayerStyle.px(bar.compact?12:20)
         PlayerLayoutStrip{zone:"bottomLeft";compact:bar.compact;popupParent:bar.popupParent;checkedControls:bar.checkedControls;Layout.preferredWidth:Math.min(implicitWidth,bar.width*0.3);Layout.fillHeight:true;onActionRequested:(key,invoker)=>bar.activate(key,invoker)}
         PlayerLayoutStrip{zone:"bottomCenter";compact:bar.compact;popupParent:bar.popupParent;checkedControls:bar.checkedControls;Layout.fillWidth:true;Layout.minimumWidth:PlayerStyle.px(24);Layout.fillHeight:true;onActionRequested:(key,invoker)=>bar.activate(key,invoker)}

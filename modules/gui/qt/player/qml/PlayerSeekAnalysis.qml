@@ -10,9 +10,12 @@ Item {
     required property Item overlayParent
     property real hoverPosition: 0
     property real playedWidth: 0
+    readonly property bool subtitleTimelineVisible: !Player.stillImagePreview && MediaTools.timelineVisible && MediaTools.cues.length > 0
+    readonly property real cueControlsWidth: subtitleTimelineVisible ? PlayerStyle.px(52) : 0
+    readonly property real graphWidth: Math.max(1, width - 2 * cueControlsWidth)
     anchors.fill: parent
     function positionPreview() {
-        const point = analysis.mapToItem(analysis.overlayParent, analysis.width * analysis.hoverPosition, 0)
+        const point = analysis.mapToItem(analysis.overlayParent, cueControlsWidth + graphWidth * analysis.hoverPosition, 0)
         preview.x = Math.max(PlayerStyle.px(20), Math.min(analysis.overlayParent.width - preview.width - PlayerStyle.px(20), point.x - preview.width / 2))
         preview.y = Math.max(PlayerStyle.px(40), point.y - preview.height - PlayerStyle.px(12))
     }
@@ -24,16 +27,20 @@ Item {
     PlayerAnalysisStrip {
         objectName: "liveAudioVisualizerStrip"
         anchors.fill: parent
+        anchors.leftMargin: analysis.cueControlsWidth
+        anchors.rightMargin: analysis.cueControlsWidth
         visible: MediaAnalysis.visualizer.active
         renderMode: MediaAnalysis.visualizer.mode
         samples: MediaAnalysis.visualizer.samples
         color: PlayerStyle.accent
-        playedWidth: analysis.playedWidth
+        playedWidth: analysis.playedWidth - analysis.cueControlsWidth
         // Paint only: slider pointer, keyboard and handle ownership stay intact.
     }
     PlayerAnalysisStrip {
         objectName: "audioWaveformStrip"
         anchors.fill: parent
+        anchors.leftMargin: analysis.cueControlsWidth
+        anchors.rightMargin: analysis.cueControlsWidth
         visible: !MediaAnalysis.visualizer.active && MediaTools.waveformVisible && MediaAnalysis.waveform.length > 0
         opacity: 0.65
         color: PlayerStyle.accent
@@ -61,36 +68,13 @@ Item {
     }
     Item {
         id: cueTimeline
-        // Layout strips scroll and clip their delegates. Like the preview,
-        // this separate row belongs to the player's overlay coordinate space.
-        parent: analysis.overlayParent
         z: 3
         objectName: "subtitleCueStrip"
-        // A compact seek target can be only60px wide. Four24px buttons plus
-        // gaps cannot share that width; expand this separate row within the
-        // player while retaining the source alignment at larger sizes.
-        width: Math.min(Math.max(analysis.width,PlayerStyle.px(240)),
-                        Math.max(0,analysis.overlayParent.width-PlayerStyle.px(40)))
-        x: {
-            analysis.overlayParent.width
-            const point=analysis.mapToItem(analysis.overlayParent,0,0)
-            const left=Math.max(PlayerStyle.px(20),Math.min(analysis.overlayParent.width-width-PlayerStyle.px(20),
-                                                          point.x+(analysis.width-width)/2))
-            return left
-        }
-        height: PlayerStyle.px(24)
-        visible: analysis.visible && MediaTools.timelineVisible && MediaTools.cues.length > 0
-        // Leave the ordinary playback slider intact. A customized top-area
-        // seek control places its timeline below instead of outside the window.
-        y: {
-            visible
-            analysis.overlayParent.height
-            analysis.width
-            const point = analysis.mapToItem(analysis.overlayParent,0,0)
-            return point.y < PlayerStyle.px(60) ? point.y+analysis.height+PlayerStyle.px(6) : point.y-height-PlayerStyle.px(6)
-        }
+        anchors.fill: parent
+        visible: analysis.subtitleTimelineVisible
         CueButton {
             id: previousCue
+            anchors.verticalCenter: parent.verticalCenter
             text: "‹"
             Accessible.name: qsTr("Previous subtitle cue")
             AccessibleCompat.id: "previousSubtitleCue"
@@ -98,6 +82,7 @@ Item {
         }
         CueButton {
             id: earlierCue
+            anchors.verticalCenter: parent.verticalCenter
             anchors.left: previousCue.right
             anchors.leftMargin: PlayerStyle.px(2)
             text: "−"
@@ -112,38 +97,58 @@ Item {
             anchors.leftMargin: PlayerStyle.px(2)
             anchors.rightMargin: PlayerStyle.px(2)
             height: parent.height
-            color: PlayerStyle.timeline
+            color: "transparent"
             clip: true
             PlayerAnalysisStrip {
                 anchors.fill: parent
-                color: PlayerStyle.accent
-                opacity: 0.45
+                color: PlayerStyle.foreground
+                opacity: 0.35
                 cues: MediaTools.cues
                 durationMS: MediaAnalysis.durationMS
                 timeScale: MediaTools.subtitleTimeScale
                 delayMS: Player.subtitleDelayMS
             }
-            Rectangle {
-                width: PlayerStyle.px(3)
-                height: parent.height
-                x: Math.min(parent.width-width,Math.max(0,Player.position*parent.width))
-                radius: width/2
-                color: PlayerStyle.accent
-            }
             MouseArea {
                 id: offset
                 anchors.fill: parent
+                preventStealing: true
                 property real startX: 0
                 property int startDelay: 0
-                onPressed: mouse => { startX = mouse.x; startDelay = Player.subtitleDelayMS }
-                onPositionChanged: mouse => {
-                    if(pressed && width>0)
-                        Player.subtitleDelayMS = Math.max(-600000,Math.min(600000,Math.round(startDelay+(mouse.x-startX)/width*MediaAnalysis.durationMS)))
+                property bool adjusting: false
+                function hitsCue(x) {
+                    const time = x / width * MediaAnalysis.durationMS
+                    return MediaTools.cues.some(cue => {
+                        const start = cue.start * MediaTools.subtitleTimeScale + Player.subtitleDelayMS
+                        const end = cue.end * MediaTools.subtitleTimeScale + Player.subtitleDelayMS
+                        return time >= start && time <= end
+                    })
                 }
+                onPressed: mouse => {
+                    // Empty track and the topmost handle keep ordinary seeking.
+                    if (!hitsCue(mouse.x) || Math.abs(mouse.x - Player.position * width) < PlayerStyle.px(8)) {
+                        mouse.accepted = false
+                        return
+                    }
+                    startX = mouse.x
+                    startDelay = Player.subtitleDelayMS
+                    adjusting = false
+                    cueGraph.forceActiveFocus(Qt.MouseFocusReason)
+                }
+                onPositionChanged: mouse => {
+                    if (pressed && Math.abs(mouse.x-startX) >= Qt.styleHints.startDragDistance)
+                        adjusting = true
+                    if (pressed && adjusting && width > 0)
+                        Player.subtitleDelayMS = Math.max(-600000, Math.min(600000,
+                            Math.round(startDelay+(mouse.x-startX)/width*MediaAnalysis.durationMS)))
+                }
+                onReleased: mouse => {
+                    if (!adjusting) Player.position = Math.max(0, Math.min(1, mouse.x / width))
+                }
+                onCanceled: adjusting = false
                 cursorShape: Qt.SizeHorCursor
             }
             Accessible.name: qsTr("Subtitle timeline offset")
-            Accessible.description: qsTr("Drag to adjust subtitle timing. Current delay: %1 milliseconds.").arg(Player.subtitleDelayMS)
+            Accessible.description: qsTr("Click to seek. Drag a subtitle cue to adjust timing; use the playback handle or empty track to seek. Left and Right adjust timing by 50 milliseconds. Current delay: %1 milliseconds.").arg(Player.subtitleDelayMS)
             AccessibleCompat.id: "subtitleTimelineOffset"
             activeFocusOnTab: true
             Rectangle { anchors.fill: parent; color: "transparent"; border.color: PlayerStyle.trackForeground; border.width: parent.activeFocus?1:0 }
@@ -152,6 +157,7 @@ Item {
         }
         CueButton {
             id: laterCue
+            anchors.verticalCenter: parent.verticalCenter
             anchors.right: nextCue.left
             anchors.rightMargin: PlayerStyle.px(2)
             text: "+"
@@ -161,6 +167,7 @@ Item {
         }
         CueButton {
             id: nextCue
+            anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             text: "›"
             Accessible.name: qsTr("Next subtitle cue")
@@ -172,11 +179,11 @@ Item {
         id: hover
         enabled: MainCtx.seekPreviewEnabled
         onHoveredChanged: {
-            if (hovered) { analysis.hoverPosition = Math.max(0, Math.min(1, point.position.x / analysis.width)); analysis.positionPreview(); preview.open(); MediaAnalysis.requestPreview(analysis.hoverPosition) }
+            if (hovered) { analysis.hoverPosition = Math.max(0, Math.min(1, (point.position.x-analysis.cueControlsWidth) / analysis.graphWidth)); analysis.positionPreview(); preview.open(); MediaAnalysis.requestPreview(analysis.hoverPosition) }
             else { preview.close(); MediaAnalysis.hidePreview() }
         }
         onPointChanged: if (hovered) {
-            analysis.hoverPosition = Math.max(0, Math.min(1, point.position.x / analysis.width))
+            analysis.hoverPosition = Math.max(0, Math.min(1, (point.position.x-analysis.cueControlsWidth) / analysis.graphWidth))
             analysis.positionPreview()
             MediaAnalysis.requestPreview(analysis.hoverPosition)
         }

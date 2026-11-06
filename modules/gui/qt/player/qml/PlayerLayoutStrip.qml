@@ -29,7 +29,7 @@ Item {
                     onFocusEntered:viewport.reveal(delegate)
                     visible:!action.hidden||PlayerCustomization.editing
                     Layout.fillWidth:action.expands||(strip.zone==="topCenter"&&modelData==="filename")
-                    Layout.minimumWidth:PlayerStyle.px(action.expands?24:8)
+                    Layout.minimumWidth:action.minimumControlWidth
                     Layout.preferredWidth:action.implicitWidth;Layout.maximumWidth:action.expands||strip.zone==="topCenter"?Infinity:action.implicitWidth
                     Layout.preferredHeight:PlayerStyle.px(28)
                     Layout.rightMargin:PlayerStyle.px(strip.zone.startsWith("top")?(modelData==="more"?10:0):strip.zone==="bottomRight"?modelData==="volume"||modelData==="audio"?12:modelData==="tools"||modelData==="subtitles"?4:0:0)

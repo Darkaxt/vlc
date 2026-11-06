@@ -6,7 +6,7 @@
   "workflows_passed": true,
   "protected_profiles_unchanged": true,
   "composed_video_picture_verified": false,
-  "status": "ACTIVE",
+  "status": "BLOCKED",
   "user_review_7_november": {
     "engine": "mpv",
     "video_picture": "User confirmed working; separate from independently captured proof",
@@ -27,8 +27,8 @@
     "criterion": "R103 composed miniplayer and restored-main video picture",
     "classification": "external picture/physical-movement observation",
     "reason": "Inactive-desktop checks cannot prove the separately composed video or actual Windows movement; current user-opened picture is required.",
-    "resolution": "Open the source-bound runtime-restore review; leave the floating video visible, then restore and leave the main picture visible for window-bound capture in both engines.",
-    "dependent": "M8 closure and M10 final1.1.9 delivery"
+    "resolution": "Capture current runtime-contrast floating and restored-main actual pictures in both engines after the user opens the source-bound review. Reuse confirmed dragging and native geometry evidence.",
+    "dependent": "M8 closure and M10 final1.1.9 delivery; independent M11 is actionable."
   },
   "review": "D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review",
   "cases": [
@@ -244,5 +244,12 @@
     ],
     "scope": "Both engines100/150/200: compact/expanded hover exit/enter in playing and paused states, metadata/header/empty queue drag dispatch, seek exclusion, queue actions and restore. Main published size/position equals its actual surface after both restore paths. Profiles unchanged; clean exit.",
     "limits": "App-owned Qt events prove dispatch and overlay opacity. Actual composed picture and physical window movement are separate normal-desktop checks."
+  },
+  "contrast_verification": {
+    "source_commit": "91d22dd2f8fd4bd4ca97b14b144da55d72feac94",
+    "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-contrast-native\\result.json",
+    "sha256": "ec4b5fe2e416e75a0240df6083e3f1a671433c064797b1e8da4f3db072a276ed",
+    "scope": "Both engines at100/150/200 percent, compact and expanded hover controls, bright foreground and local dark backing, clean exits and unchanged protected profiles.",
+    "inspection": "Expanded MPV150 Qt capture inspected; original glyphs and queue toolbar preserved. Separately composed video is absent from inactive Qt capture."
   }
 }

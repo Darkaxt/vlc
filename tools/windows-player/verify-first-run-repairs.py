@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['floating-contrast', 'floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['inline-subtitles', 'floating-contrast', 'floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -1904,6 +1904,62 @@ def engine_accents():
     finally:case.close()
 
 
+def inline_subtitles():
+    """Cue synchronization and ordinary seeking share one reference-height bar."""
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            case=Case('inline-subtitles-'+engine+'-'+scale,engine=engine,scale=scale,media=fixtures/'embedded-text.mkv')
+            try:
+                initial=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+                case.inspect('full-width','resize','--width','1280','--height','720')
+                initial=case.inspect('bar-before','snapshot')
+                before=nodes(initial,'playerControlBar')[0]
+                case.click('open-tools','toolsButton')
+                case.inspect('enable-timeline','click','--name','Show Subtitle Timeline on Seekbar',
+                    '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('3 embedded source cues; positions follow the selected track and subtitle delay.'))
+                case.inspect('close-tools','key','--key','0x1000000')
+                state=case.inspect('inline-layout','snapshot','--capture')
+                slider=nodes(state,'progressSlider')[0]
+                bar=nodes(state,'playerControlBar')[0]
+                graph=nodes(state,'subtitleTimelineOffset')[0]
+                assert abs(bar['height']-before['height'])<.5
+                assert abs(graph['y']-slider['y'])<.5 and abs(graph['height']-slider['height'])<.5
+                assert graph['width']>100
+                buttons=[nodes(state,key)[0] for key in ('previousSubtitleCue','subtitleDelayEarlier','subtitleDelayLater','nextSubtitleCue')]
+                assert all(slider['x']-.5<=b['x'] and b['x']+b['width']<=slider['x']+slider['width']+.5 for b in buttons)
+                base=state['core']['subtitle_delay_ms']
+                case.click('later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50)
+                case.click('earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base)
+                case.key('keyboard-later',0x1000014,target='subtitleTimelineOffset')
+                state=case.key('keyboard-earlier',0x1000012,target='subtitleTimelineOffset')
+                assert state['core']['subtitle_delay_ms']==base
+                duration=state['core']['length_seconds']*1000
+                cues=service(state)['cues']
+                fraction=(cues[0]['start']+cues[0]['end'])/2/duration
+                case.inspect('cue-press','press','--target','subtitleTimelineOffset','--fraction-x',fraction)
+                moved=case.inspect('cue-drag','move','--target','subtitleTimelineOffset','--fraction-x',fraction+.1)
+                case.inspect('cue-release','release','--target','subtitleTimelineOffset','--fraction-x',fraction+.1)
+                expected=base+round(duration*.1)
+                assert abs(moved['core']['subtitle_delay_ms']-expected)<=40,moved['core']['subtitle_delay_ms']
+                delay=moved['core']['subtitle_delay_ms']
+                # A gap, rather than a cue, must retain the slider's seek owner.
+                sought=case.inspect('gap-seek','click','--target','subtitleTimelineOffset','--fraction-x','.02')
+                assert sought['core']['subtitle_delay_ms']==delay
+                case.click('next-cue','nextSubtitleCue')
+                case.click('previous-cue','previousSubtitleCue')
+                case.inspect('narrow-window','resize','--width','600','--height','420')
+                narrow=case.inspect('narrow-inline','snapshot','--capture')
+                assert nodes(narrow,'subtitleTimelineOffset')[0]['width']>0
+                case.click('tools-to-disable','toolsButton')
+                case.inspect('disable-timeline','click','--name','Show Subtitle Timeline on Seekbar')
+                case.inspect('close-disabled-tools','key','--key','0x1000000')
+                regular=case.inspect('regular-bar','snapshot','--capture')
+                assert not nodes(regular,'subtitleTimelineOffset')
+                case.record['inline_geometry_seek_sync']=True
+                case.close(True)
+            finally:case.close()
+
+
 def floating_contrast():
     """Real compact/expanded hover readability, without replaying unchanged geometry/drag acceptance."""
     def luminance(byte):
@@ -3560,7 +3616,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('floating-contrast',floating_contrast),('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('inline-subtitles',inline_subtitles),('floating-contrast',floating_contrast),('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue

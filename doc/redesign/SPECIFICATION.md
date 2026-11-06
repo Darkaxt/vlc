@@ -126,16 +126,29 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   actual native rendering of Playback/Video/Audio/Subtitles, including selected
   icons in VLC orange, MPV purple and a custom accent. The supplied comparisons
   are the visual contract; functioning controls alone do not prove parity.
+- R106 (7 November explicit request): integrate subtitle cue bands and their
+  timing/navigation controls inside the existing progress bar, matching the
+  supplied Figma screenshot. Remove the separate strip/extra control-bar row.
+  Preserve selected embedded/external text cues in both engines, previous/next
+  cue navigation, +/-50ms timing adjustments and direct cue dragging for sync.
+  Keep ordinary seeking and the playhead distinct from subtitle-offset dragging;
+  keyboard/accessibility actions remain available. Cues and playhead share the
+  same timeline geometry. At narrow/customized widths keep seeking usable and
+  every timing action reachable without overlap or out-of-window controls.
+  Toggle-off/no-cue/still-image cases retain the regular seekbar. Verify actual
+  native100/150/200% layout, cue timing, pointer/keyboard gestures and both-engine
+  playback; preserve in-bar visualizer/waveform behavior and saved settings.
 
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
 The expanded request also requires R102/R104 repairs and R103 floating-miniplayer
-acceptance and R105 player-panel parity before that single final release; no
+acceptance, R105 player-panel parity and R106 inline subtitle synchronization
+before that single final release; no
 intermediate repair release. M8 retains the floating miniplayer; M9 owns R105;
-the final release is M10. M8 is ACTIVE for the reported expanded-queue dragging
-and toolbar parity repair; M9 is COMPLETE. The user confirmed MPV floating video
-works, but the expanded queue did not drag. Preserve that report separately from
-the remaining actual composed-picture evidence; desktop controls are prohibited.
+M11 owns R106 and runs before final delivery M10. M8's current native repair
+acceptance and remaining actual composed-picture condition are recorded in PLAN;
+M9 is COMPLETE. Preserve original drag/restore/readability reports separately
+from current verification; desktop controls remain prohibited.
 M6's separately recorded native-cleanup capability blocker remains parked;
 it is neither waived nor relabeled as M7 completion.
 
