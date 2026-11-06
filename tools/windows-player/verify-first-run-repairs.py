@@ -1891,6 +1891,17 @@ def floating_queue():
                 case.click('play','playButton','--await-core','state','--await-value','2')
                 case.click('minimize','playerMinimize')
                 case.inspect('floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                def hover_controls(label, playing):
+                    case.inspect(label+'-leave','move','--target','floatingMediaName')
+                    case.inspect(label+'-hidden','snapshot','--await-target','floatingVideoControls','--await-property','opacity','--await-value','0')
+                    state=case.inspect(label+'-enter','move','--target','floatingVideoSurface','--fraction-x','.25','--fraction-y','.25')
+                    state=case.inspect(label+'-visible','snapshot','--await-target','floatingVideoControls','--await-property','opacity','--await-value','1')
+                    assert state['core']['state']==playing,state['core']
+                    assert nodes(state,'floatingClose') and nodes(state,'floatingRestore')
+                hover_controls('compact-playing-hover',2)
+                case.click('compact-pause','floatingPlay','--await-core','state','--await-value','3')
+                hover_controls('compact-paused-hover',3)
+                case.click('compact-resume','floatingPlay','--await-core','state','--await-value','2')
                 compact=case.inspect('compact-drag-target','snapshot')
                 title=nodes(compact,'floatingMediaName')[0]
                 moved=case.inspect('drag-compact-metadata','drag','--target','floatingMediaName',
@@ -1899,6 +1910,10 @@ def floating_queue():
                 expanded=case.click('expand-queue','floatingQueueToggle','--capture')
                 header=nodes(expanded,'floatingQueueHeader');assert len(header)==1
                 assert nodes(expanded,'floatingQueueList') and nodes(expanded,'floatingQueueItem0')
+                hover_controls('expanded-playing-hover',2)
+                case.click('expanded-pause','floatingPlay','--await-core','state','--await-value','3')
+                hover_controls('expanded-paused-hover',3)
+                case.click('expanded-resume','floatingPlay','--await-core','state','--await-value','2')
                 for glyph in ('sort','remove','add'):
                     image=nodes(expanded,'playerGlyph-'+glyph)
                     assert len(image)==1 and image[0]['width']==16 and image[0]['height']==16,(glyph,image)
@@ -1922,8 +1937,10 @@ def floating_queue():
                 assert not nodes(seeking,'floatingPlayer')[0]['moving'],'Seekbar gesture moved the window'
                 assert abs(nodes(seeking,'floatingSeek')[0]['value']-.4)<.04
                 case.inspect('seek-release','release','--target','floatingSeek','--fraction-x','0.4')
-                case.click('sort-queue','floatingQueueSort')
-                case.click('play-queue-item','floatingQueueItem0')
+                ordered=case.click('sort-queue','floatingQueueSort')
+                first=nodes(ordered,'floatingQueueItem0')[0]['name']
+                assert first in ('control.mkv','embedded-text.mkv'),first
+                case.click('play-queue-item','floatingQueueItem0','--await-core','url','--await-value',json.dumps((fixtures/first).as_uri()))
                 case.inspect('selected-video-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
                 collapsed=case.click('collapse-queue','floatingQueueToggle')
                 assert not nodes(collapsed,'floatingQueueHeader')

@@ -160,6 +160,8 @@ FocusScope {
                 objectName: "floatingVideoSurface"
                 videoSurfaceProvider: MainCtx.floatingPlayer ? MainCtx.videoSurfaceProvider : null
                 visible: MainCtx.hasEmbededVideo
+                // The surface accepts legacy hover events before its parent.
+                HoverHandler { id: videoPointer }
             }
             MouseArea {
                 anchors.fill: parent
@@ -168,8 +170,9 @@ FocusScope {
             }
             HoverHandler { id: pictureHover }
             Item {
+                AccessibleCompat.id: "floatingVideoControls"
                 anchors.fill: parent
-                opacity: pictureHover.hovered || miniClose.visualFocus || miniRestore.visualFocus || miniPrevious.visualFocus || miniPlay.visualFocus || miniNext.visualFocus || MainCtx.usingTouch ? 1 : 0
+                opacity: pictureHover.hovered || videoPointer.hovered || miniClose.visualFocus || miniRestore.visualFocus || miniPrevious.visualFocus || miniPlay.visualFocus || miniNext.visualFocus || MainCtx.usingTouch ? 1 : 0
                 Rectangle { anchors.fill: parent; color: "#66000000" }
                 PlayerIconButton {
                     id: miniClose

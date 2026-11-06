@@ -87,6 +87,9 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   Drag coverage also includes filename/footer and unused queue space in compact
   and expanded states, as clarified by the user. The seekbar and interactive
   controls retain their gestures; a queue that overflows retains scrolling.
+  Hovering the video reveals Close/Restore and transport controls during both
+  playing and paused states, with the queue compact or expanded. Pointer exit
+  hides the overlay unless keyboard focus or touch interaction requires it.
   test100/150/200% DPI and both playback engines. Restore/dismiss and natural EOF
   must use the existing player and queue owners; main geometry is preserved.
 - R104 (6 November reported regression): investigate the actual audio-visualizer

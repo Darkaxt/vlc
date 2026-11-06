@@ -14,6 +14,12 @@ expanded modes; the gap is surrounding UI coverage, not a demonstrated native
 move failure. Use one card-wide drag owner for text/background, retain seekbar
 and control grabs, and disable list flicking when the queue fits. The affected
 check includes compact/expanded metadata, header, empty queue and seek exclusion.
+Diagnostic74 from8601fa088416d1853b460b7a99fbff270a342877 closed0/group empty;
+both engines at100/150/200% pass those gestures, queue actions and preserved
+profiles. The user additionally reports hover controls missing during playback.
+VideoSurface accepts hover before the ancestor handler, unlike the main player's
+surface-owned hover tracking. Apply that same ownership to the miniplayer and
+verify enter/exit while playing/paused in both queue states before M8 closure.
 M7 is COMPLETE under the user's explicit withdrawal of further taskbar resizing.
 The current blue MPV running button was captured and inspected by the user;
 its native icon and Shell resource/identity are verified. The10–15% enlargement
