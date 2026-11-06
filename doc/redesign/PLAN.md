@@ -30,6 +30,12 @@ hasAudioVisualization getter incorrectly counted any selected row as active.
 Correct the getter to exclude row zero and resume affected Qt acceptance.
 Preserve `floating-m8-native/result.json` and its original failure evidence.
 M8 remains ACTIVE; full floating workflow and real rendering are not verified.
+Diagnostic66 closed0/group empty after the disabled-choice correction. Its native
+case progressed into floating composition, where Windows returned E_INVALIDARG.
+The floating target was being assigned a root from the main window's different
+device. Bind the root to the floating Qt device, share only the video child,
+and commit mutations on each owning device. Preserve the original native failure
+in `floating-m8-native-eligibility/result.json`; its exited runtime copy is retired.
 M9 player-panel Figma parity (R105) is NOT STARTED, added by the user's four-tab
 comparison. It owns original selected two-tone icons, actual row/control/slider
 layout and footer parity, with real VLC/MPV bindings and rendered acceptance.

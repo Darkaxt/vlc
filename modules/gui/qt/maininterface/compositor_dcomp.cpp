@@ -93,6 +93,7 @@ int CompositorDirectComposition::windowEnable(const vlc_window_cfg_t *)
     if (backdrop) backdrop->setEnabled(!floating);
     m_videoInFloating = floating && SUCCEEDED(ret);
     m_dcompDevice->Commit();
+    if (floating) m_floatingDevice->Commit();
 
     if (ret == S_OK)
         return VLC_SUCCESS;
@@ -114,6 +115,7 @@ void CompositorDirectComposition::windowDisable()
     m_videoInFloating = false;
     assert(ret == S_OK);
     m_dcompDevice->Commit();
+    if (parent == m_floatingRoot.Get()) m_floatingDevice->Commit();
 }
 
 void CompositorDirectComposition::windowDestroy()
@@ -676,6 +678,7 @@ void CompositorDirectComposition::setupFloatingPlayer()
             m_videoInFloating = true;
             if (auto backdrop = playerBackdrop()) backdrop->setEnabled(false);
             m_dcompDevice->Commit();
+            m_floatingDevice->Commit();
         }
         m_floatingView->setProperty("floatingVideoCompositionReady", true);
         m_floatingView->rootObject()->setProperty("ready", true);
@@ -701,15 +704,19 @@ void CompositorDirectComposition::setupFloatingPlayer()
         m_floatingDevice = static_cast<QRhiD3D12 *>(rhi->implementation())->dcompDevice;
     }
 #endif
-    HRESULT result = target && m_floatingUiVisual ? m_dcompDevice->CreateVisual(&m_floatingRoot) : E_NOINTERFACE;
-    if (SUCCEEDED(result)) result = target->SetRoot(m_floatingRoot.Get());
-    if (SUCCEEDED(result)) result = m_floatingRoot->AddVisual(m_floatingUiVisual, FALSE, nullptr);
+    // The target and its root must belong to the same device. Cross-device
+    // composition is supported for child visuals (the existing video below),
+    // not for installing another device's root on this Qt swapchain target.
+    const char *step = "create root";
+    HRESULT result = target && m_floatingUiVisual ? m_floatingDevice->CreateVisual(&m_floatingRoot) : E_NOINTERFACE;
+    if (SUCCEEDED(result)) { step = "set root"; result = target->SetRoot(m_floatingRoot.Get()); }
+    if (SUCCEEDED(result)) { step = "attach UI"; result = m_floatingRoot->AddVisual(m_floatingUiVisual, FALSE, nullptr); }
     if (FAILED(result)) {
         if (target && m_floatingUiVisual) target->SetRoot(m_floatingUiVisual);
         if (m_floatingDevice) m_floatingDevice->Commit();
         if (m_floatingRoot && m_floatingUiVisual) m_floatingRoot->RemoveVisual(m_floatingUiVisual);
         m_floatingRoot.Reset();
-        msg_Err(m_intf, "Floating video composition failed (0x%lx)", static_cast<unsigned long>(result));
+        msg_Err(m_intf, "Floating video composition failed at %s (0x%lx)", step, static_cast<unsigned long>(result));
         restoreFloatingPlayer();
         return;
     }
@@ -727,6 +734,7 @@ void CompositorDirectComposition::hideFloatingPlayer()
         const auto backdrop = playerBackdrop();
         m_rootVisual->AddVisual(m_videoVisual.Get(), FALSE, backdrop ? backdrop->bottomVisual() : m_uiVisual);
         if (backdrop) backdrop->setEnabled(true);
+        m_floatingDevice->Commit();
         m_dcompDevice->Commit();
     }
     m_videoInFloating = false;
