@@ -1,6 +1,27 @@
 # VLC redesign stages and reconciliation
 
-**7 November current work: M8 expanded-queue dragging and toolbar parity — ACTIVE.**
+**7 November current work: M8 — ACTIVE for restored video geometry.**
+The user confirms surrounding-area dragging and hover now work, but Restore
+leaves the composition video at miniplayer size/offset and exposes the desktop
+through the main video cutout. VideoSurface reconnection retains its local
+geometry cache and does not force a full publication to the shared renderer.
+Invalidate size/position/DPI on provider attachment and verify the published
+geometry after repeated compact and expanded restore, then inspect actual video.
+Diagnostic75 from0addc211e9df5857ae3d7802cd888c544bef006e closes0/group empty,
+private mounts released, no max/OOM events. Both engines at100/150/200% pass
+compact/expanded playing/paused hover enter/exit, metadata/header/empty-queue
+drag dispatch, seek exclusion, queue actions and restore; protected profiles are
+unchanged and every owned player exits0. Preserve the unsupported-opacity client
+failure and short-fixture natural EOF separately; same-binary resumed evidence
+passes. The longer retained synthetic fixture removes the EOF race.
+The source-bound ordinary review is `floating-m8-review/runtime-hover`; its
+launchers use an isolated profile and600-second synthetic video. User launch and
+actual composed-picture capture remain required because inactive Qt grabs do not
+capture the separate video visual or prove physical Windows movement. M8 cannot
+close and dependent M10 cannot start until that external observation passes in
+both engines. No compilation remains running. No further consolidation finding.
+
+The following repair checkpoints are historical:
 The user confirmed MPV floating video works, then reported that the expanded
 queue could not drag. Its header has no drag handler; only the picture does.
 The toolbar also inherits24-unit glyphs instead of the reference's smaller,
@@ -786,7 +807,7 @@ presentation and final delivery remain required.
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 | M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M10. | None. |
-| M8 Figma floating miniplayer | ACTIVE | Prior both-engine100/150/200% lifecycle/seek/queue/restore/EOF/exclusions pass; user confirms MPV floating video. | Expanded queue header drag and smaller muted toolbar icons; affected native/rendered verification and actual composed picture. M10 depends on this proof. | None. |
+| M8 Figma floating miniplayer | BLOCKED | Both-engine100/150/200% lifecycle and current hover/drag/seek/queue/restore checks pass; original16-unit muted toolbar inspected. | External normal-desktop composed picture and physical surrounding-area dragging; user-owned current review launch/capture resolves it. M10 depends on this proof. | None. |
 | M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
 | M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 

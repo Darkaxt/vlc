@@ -90,6 +90,9 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   Hovering the video reveals Close/Restore and transport controls during both
   playing and paused states, with the queue compact or expanded. Pointer exit
   hides the overlay unless keyboard focus or touch interaction requires it.
+  Restoring republishes the main surface's complete size, position and DPI even
+  when its layout did not change while minimized; no miniplayer-sized video or
+  transparent uncovered video area may remain (7 November reported regression).
   test100/150/200% DPI and both playback engines. Restore/dismiss and natural EOF
   must use the existing player and queue owners; main geometry is preserved.
 - R104 (6 November reported regression): investigate the actual audio-visualizer

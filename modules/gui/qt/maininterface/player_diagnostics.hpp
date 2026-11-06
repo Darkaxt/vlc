@@ -529,6 +529,11 @@ private:
             {QStringLiteral("native_id_hex"), QString::number(qulonglong(mainWindow->winId()),16)},
             {QStringLiteral("x"),mainWindow->x()}, {QStringLiteral("y"),mainWindow->y()},
             {QStringLiteral("width"),mainWindow->width()}, {QStringLiteral("height"),mainWindow->height()}});
+        const auto reportedSize = mainWindow->property("reportedVideoSize").toSizeF();
+        const auto reportedPosition = mainWindow->property("reportedVideoPosition").toPointF();
+        result.insert(QStringLiteral("reported_video_surface"), QJsonObject{
+            {QStringLiteral("width"), reportedSize.width()}, {QStringLiteral("height"), reportedSize.height()},
+            {QStringLiteral("x"), reportedPosition.x()}, {QStringLiteral("y"), reportedPosition.y()}});
         QJsonArray windows;
         for (auto candidate : QGuiApplication::allWindows()) {
             if (windows.size() >= 100) break;

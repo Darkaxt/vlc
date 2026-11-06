@@ -397,6 +397,11 @@ void VideoSurface::setVideoSurfaceProvider(VideoSurfaceProvider *newVideoSurface
         assert(!m_provider->videoSurface());
         m_provider->setVideoSurface(this);
 
+        // Another surface may have changed the shared renderer's geometry while
+        // this item was detached. Its unchanged local cache is no longer proof
+        // that the consumer has this size/position/DPR (notably after PiP).
+        m_videoEnabledChanged = true;
+        m_dprChanged = true;
         setFlag(ItemHasContents, true);
         update(); // this should not be necessary right after setting `ItemHasContents`, but just in case
     }

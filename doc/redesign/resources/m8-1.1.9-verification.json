@@ -1,8 +1,8 @@
 {
-  "source_commit": "996317a43a8789bf3cade32545a4c2087dfda612",
-  "qt_plugin_sha256": "9fad95be6927bfd5b8146a9ad777fe85f0c30876467164cbbea8288515a67b27",
-  "native_result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-native-lifecycle\\result.json",
-  "native_result_sha256": "3e75c7522dda645c28edf52a0f3b8098e5e01f30c6dc063bf1b7ead94bb7d7b1",
+  "source_commit": "0addc211e9df5857ae3d7802cd888c544bef006e",
+  "qt_plugin_sha256": "8dcb19cd3eaf9a783b1471e7a0d36019546f8e481f74e27343ced040c2676f60",
+  "native_result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-hover-native\\result.json",
+  "native_result_sha256": "a33a68552756884a4bfccb70fd93cd88e91664141df115965e526766223efcaf",
   "workflows_passed": true,
   "protected_profiles_unchanged": true,
   "composed_video_picture_verified": false,
@@ -13,100 +13,193 @@
     "reported_defect": "Cannot move the window with queue expanded; toolbar icons do not blend with adjacent text like Figma",
     "source_cause": "Expanded queue header has no drag handler. Toolbar inherits24-unit player glyphs and a brighter foreground.",
     "clarification": "User confirms video dragging works in compact and expanded states; restore drag coverage across other non-control UI, preserving seek/control gestures. Native system movement is not itself shown broken.",
-    "remaining": "Verify native header drag dispatch,16-unit muted icons and actual composed picture after repair"
+    "remaining": "Normal-desktop composed picture and actual surrounding-area window movement; native gesture, palette, hover and profile checks passed."
   },
   "blocker": {
-    "criterion": "R103 actual composed video and Figma appearance on a normal desktop in both engines",
-    "classification": "internal implementable repair; external actual-picture verification remains separate",
-    "reason": "The ordinary MPV review is open and video works according to the user; expanded-queue drag/style must be repaired before final picture acceptance.",
-    "resolution": "User opens the prepared ordinary review player and minimizes playing video; capture only its bound window and inspect the real picture, controls and queue in VLC and MPV.",
-    "dependent": "M8 closure and M10 final release"
+    "criterion": "R103 restore republishes main video size/position/DPI and displays the full main picture",
+    "classification": "internal implementable handover defect",
+    "reason": "User confirms drag/hover work; restoration leaves mini-sized video and transparent exposed area. Reattached VideoSurface retains local cache without republishing shared renderer geometry.",
+    "resolution": "Force complete publication on provider attachment; verify repeated compact/expanded restore geometry and actual composed picture in both engines.",
+    "dependent": "M8 closure and M10 final1.1.9 delivery"
   },
   "review": "D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review",
   "cases": [
     {
-      "name": "floating-vlc-1",
-      "engine": "vlc",
-      "scale": "1",
+      "name": "floating-queue-vlc-1-observation-resumed",
       "passed": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "pending": null
     },
     {
-      "name": "floating-vlc-1.5",
-      "engine": "vlc",
-      "scale": "1.5",
+      "name": "floating-queue-vlc-1.5-observation-resumed",
       "passed": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "pending": null
     },
     {
-      "name": "floating-vlc-2",
-      "engine": "vlc",
-      "scale": "2",
+      "name": "floating-queue-vlc-2-observation-resumed",
       "passed": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "pending": null
     },
     {
-      "name": "floating-eof-vlc-replay-resumed",
-      "engine": "vlc",
-      "scale": "1",
+      "name": "floating-queue-mpv-1-fixture-resumed",
       "passed": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "pending": null
     },
     {
-      "name": "floating-excludes-idle-vlc",
-      "engine": "vlc",
-      "scale": "1",
+      "name": "floating-queue-mpv-1.5-fixture-resumed",
       "passed": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "pending": null
     },
     {
-      "name": "floating-excludes-audio-vlc",
-      "engine": "vlc",
-      "scale": "1",
+      "name": "floating-queue-mpv-2-fixture-resumed",
       "passed": true,
-      "exit_code": 0
-    },
-    {
-      "name": "floating-mpv-1-seek-resumed",
-      "engine": "mpv",
-      "scale": "1",
-      "passed": true,
-      "exit_code": 0
-    },
-    {
-      "name": "floating-mpv-1.5",
-      "engine": "mpv",
-      "scale": "1.5",
-      "passed": true,
-      "exit_code": 0
-    },
-    {
-      "name": "floating-mpv-2",
-      "engine": "mpv",
-      "scale": "2",
-      "passed": true,
-      "exit_code": 0
-    },
-    {
-      "name": "floating-eof-mpv-notification-resumed",
-      "engine": "mpv",
-      "scale": "1",
-      "passed": true,
-      "exit_code": 0
-    },
-    {
-      "name": "floating-excludes-idle-mpv",
-      "engine": "mpv",
-      "scale": "1",
-      "passed": true,
-      "exit_code": 0
-    },
-    {
-      "name": "floating-excludes-audio-mpv",
-      "engine": "mpv",
-      "scale": "1",
-      "passed": true,
-      "exit_code": 0
+      "exit_code": 0,
+      "pending": null
     }
-  ]
+  ],
+  "current_source_commit": "0addc211e9df5857ae3d7802cd888c544bef006e",
+  "hover_drag_verification": {
+    "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-hover-native\\result.json",
+    "result_sha256": "a33a68552756884a4bfccb70fd93cd88e91664141df115965e526766223efcaf",
+    "qt_plugin_sha256": "8dcb19cd3eaf9a783b1471e7a0d36019546f8e481f74e27343ced040c2676f60",
+    "gate_request": "6b979513e8484ce698a19bad6bcb9545",
+    "group_empty": true,
+    "cases": [
+      {
+        "name": "floating-queue-vlc-1-observation-resumed",
+        "passed": true,
+        "exit_code": 0,
+        "pending": null
+      },
+      {
+        "name": "floating-queue-vlc-1.5-observation-resumed",
+        "passed": true,
+        "exit_code": 0,
+        "pending": null
+      },
+      {
+        "name": "floating-queue-vlc-2-observation-resumed",
+        "passed": true,
+        "exit_code": 0,
+        "pending": null
+      },
+      {
+        "name": "floating-queue-mpv-1-fixture-resumed",
+        "passed": true,
+        "exit_code": 0,
+        "pending": null
+      },
+      {
+        "name": "floating-queue-mpv-1.5-fixture-resumed",
+        "passed": true,
+        "exit_code": 0,
+        "pending": null
+      },
+      {
+        "name": "floating-queue-mpv-2-fixture-resumed",
+        "passed": true,
+        "exit_code": 0,
+        "pending": null
+      }
+    ],
+    "scope": "Both engines100/150/200: compact/expanded hover exit/enter in playing and paused states, metadata/header/empty queue drag dispatch, seek exclusion, queue actions and restore. Profiles unchanged; clean exit.",
+    "limits": "App-owned Qt events prove dispatch and overlay opacity. Actual composed picture and physical window movement are separate normal-desktop checks."
+  },
+  "reused_lifecycle_verification": {
+    "source_commit": "996317a43a8789bf3cade32545a4c2087dfda612",
+    "qt_plugin_sha256": "9fad95be6927bfd5b8146a9ad777fe85f0c30876467164cbbea8288515a67b27",
+    "native_result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-native-lifecycle\\result.json",
+    "native_result_sha256": "3e75c7522dda645c28edf52a0f3b8098e5e01f30c6dc063bf1b7ead94bb7d7b1",
+    "cases": [
+      {
+        "name": "floating-vlc-1",
+        "engine": "vlc",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-vlc-1.5",
+        "engine": "vlc",
+        "scale": "1.5",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-vlc-2",
+        "engine": "vlc",
+        "scale": "2",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-eof-vlc-replay-resumed",
+        "engine": "vlc",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-excludes-idle-vlc",
+        "engine": "vlc",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-excludes-audio-vlc",
+        "engine": "vlc",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-mpv-1-seek-resumed",
+        "engine": "mpv",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-mpv-1.5",
+        "engine": "mpv",
+        "scale": "1.5",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-mpv-2",
+        "engine": "mpv",
+        "scale": "2",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-eof-mpv-notification-resumed",
+        "engine": "mpv",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-excludes-idle-mpv",
+        "engine": "mpv",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "name": "floating-excludes-audio-mpv",
+        "engine": "mpv",
+        "scale": "1",
+        "passed": true,
+        "exit_code": 0
+      }
+    ]
+  },
+  "closure_assessment": "One root drag owner and surface-owned hover reuse existing Qt state; child controls keep their grabs. No further consolidation is required for R103. Rendering and physical-movement acceptance still require the normal desktop."
 }

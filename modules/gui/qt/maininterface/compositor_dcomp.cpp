@@ -446,14 +446,23 @@ void CompositorDirectComposition::onSurfacePositionChanged(const QPointF& positi
     m_videoVisual->SetOffsetX(position.x());
     m_videoVisual->SetOffsetY(position.y());
     if (auto backdrop = playerBackdrop()) backdrop->setVideoPosition(position);
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    auto view = m_quickView.get();
+    QMetaObject::invokeMethod(view, [view, position] { view->setProperty("reportedVideoPosition", position); }, Qt::QueuedConnection);
+#endif
 
     // WARNING: Commit is requested explicitly through `::commitSurface()` after size
     //          and position changes are applied.
 }
 
-void CompositorDirectComposition::onSurfaceSizeChanged(const QSizeF&)
+void CompositorDirectComposition::onSurfaceSizeChanged(const QSizeF& size)
 {
-    //N/A
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    auto view = m_quickView.get();
+    QMetaObject::invokeMethod(view, [view, size] { view->setProperty("reportedVideoSize", size); }, Qt::QueuedConnection);
+#else
+    Q_UNUSED(size);
+#endif
 }
 
 void CompositorDirectComposition::destroyMainInterface()

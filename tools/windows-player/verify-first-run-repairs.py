@@ -68,6 +68,8 @@ parser.add_argument('--visualizer-options-only',action='store_true',help='Inspec
 parser.add_argument('--resume-floating-stopped-observer',action='store_true',help='Retain completed VLC100%% miniplayer evidence after correcting STOPPING versus STOPPED in the observer')
 parser.add_argument('--resume-player-panels-observation',action='store_true',
     help='Preserve completed same-binary panel cases and the closed unexpected-minimize evidence; observe only unfinished engine/DPI cases')
+parser.add_argument('--resume-floating-hover-observation',action='store_true',
+    help='Preserve the closed unsupported-opacity observation and resume the same miniplayer binary')
 args = parser.parse_args()
 assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -88,6 +90,8 @@ resume_m7=args.resume_m7_checker
 resume_m7_lifecycle=args.resume_m7_lifecycle
 resume_floating=args.resume_floating_stopped_observer
 resume_panels=args.resume_player_panels_observation
+resume_hover=args.resume_floating_hover_observation
+assert not resume_hover or args.case=='floating-queue'
 assert not resume_panels or args.case=='player-panels'
 assert not resume_panels or not any((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7,resume_m7_lifecycle,resume_floating,resume_visualizer_options))
 assert not resume_floating or args.case=='floating-player'
@@ -101,14 +105,30 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
+assert not root.exists() or resume_hover or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
 m7_final_path=False
-if resume_panels:
+if resume_hover:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='floating-queue' and not previous['passed'] and previous['protected_profiles_unchanged']
+    hover_eof_resume=len(previous['cases'])==4
+    if hover_eof_resume:
+        assert all(c['passed'] and c['exit_code']==0 for c in previous['cases'][:3])
+        assert previous['cases'][-1]['exit_code']==0
+        assert "'state': 0" in previous['failures']['floating-queue']
+        assert 'MPV natural EOF reached' in (root/previous['cases'][-1]['name']/'evidence/native-ui.log').read_text(encoding='utf-8')
+    else:
+        assert len(previous['cases'])==1 and previous['cases'][0]['exit_code']==0
+        assert "invalid choice: 'opacity'" in previous['failures']['floating-queue']
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/('result-before-hover-fixture-eof.json' if hover_eof_resume else 'result-before-hover-observation.json');assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_panels:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='player-panels' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert [case['name'] for case in previous['cases']]==['player-panels-vlc-1','player-panels-vlc-1.5','player-panels-vlc-2']
@@ -424,6 +444,10 @@ records = {'schema': 'vlc_redesign.m2_native_acceptance.v1', 'scope': args.case,
     'qt_plugin_sha256': hashlib.sha256(plugin.read_bytes()).hexdigest(), 'cases': [],
     'no_os_input_or_desktop_switching': True, 'passed': False}
 records['verification_helper_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+if resume_hover:
+    if hover_eof_resume:records['cases']=previous['cases'][:3]
+    records['reused_observation_failure']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'reason':'Preserve the original client-opacity failure or short-fixture natural EOF; resume only unfinished same-binary cases. Production unchanged.'}
 if args.visualizer_options_only:records['scope']='visualizer-options'
 records['source_commit']=json.loads((source/'VLC-PLUGIN-BUILDINFO.json').read_text())['source_commit']
 version_header=subprocess.check_output(['git','-C',str(repo),'show',records['source_commit']+':modules/gui/qt/dialogs/help/fork_release.hpp'],text=True)
@@ -1884,8 +1908,11 @@ def floating_queue():
     """Complete expanded-queue drag, original toolbar and real item workflow."""
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
-            case=Case('floating-queue-'+engine+'-'+scale,engine=engine,scale=scale,
-                extra=('--input-repeat=-1',str(fixtures/'control.mkv'),str(fixtures/'embedded-text.mkv')))
+            if resume_hover and hover_eof_resume and engine=='vlc':continue
+            primary='miniplayer-long.mkv'
+            assert (fixtures/primary).is_file(),'Run prepare-miniplayer-fixture.py once for the retained synthetic input'
+            case=Case('floating-queue-'+engine+'-'+scale+('-fixture-resumed' if resume_hover and hover_eof_resume else '-observation-resumed' if resume_hover else ''),engine=engine,scale=scale,
+                extra=(str(fixtures/primary),str(fixtures/'embedded-text.mkv')))
             try:
                 case.inspect('video-ready','snapshot','--await-core','state','--await-value','3')
                 case.click('play','playButton','--await-core','state','--await-value','2')
@@ -1893,9 +1920,11 @@ def floating_queue():
                 case.inspect('floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
                 def hover_controls(label, playing):
                     case.inspect(label+'-leave','move','--target','floatingMediaName')
-                    case.inspect(label+'-hidden','snapshot','--await-target','floatingVideoControls','--await-property','opacity','--await-value','0')
+                    state=case.inspect(label+'-hidden','snapshot')
+                    assert nodes(state,'floatingVideoControls')[0]['opacity']==0,('Hover controls stayed visible after pointer exit',label)
                     state=case.inspect(label+'-enter','move','--target','floatingVideoSurface','--fraction-x','.25','--fraction-y','.25')
-                    state=case.inspect(label+'-visible','snapshot','--await-target','floatingVideoControls','--await-property','opacity','--await-value','1')
+                    state=case.inspect(label+'-visible','snapshot')
+                    assert nodes(state,'floatingVideoControls')[0]['opacity']==1,('Hover controls stayed hidden over video',label)
                     assert state['core']['state']==playing,state['core']
                     assert nodes(state,'floatingClose') and nodes(state,'floatingRestore')
                 hover_controls('compact-playing-hover',2)
@@ -1939,12 +1968,27 @@ def floating_queue():
                 case.inspect('seek-release','release','--target','floatingSeek','--fraction-x','0.4')
                 ordered=case.click('sort-queue','floatingQueueSort')
                 first=nodes(ordered,'floatingQueueItem0')[0]['name']
-                assert first in ('control.mkv','embedded-text.mkv'),first
+                assert first in (primary,'embedded-text.mkv'),first
                 case.click('play-queue-item','floatingQueueItem0','--await-core','url','--await-value',json.dumps((fixtures/first).as_uri()))
                 case.inspect('selected-video-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
                 collapsed=case.click('collapse-queue','floatingQueueToggle')
                 assert not nodes(collapsed,'floatingQueueHeader')
                 case.click('restore-main','floatingRestore')
+                def restored_geometry(label):
+                    state=case.inspect(label,'move','--target','playerVideoSurface','--capture')
+                    surface=nodes(state,'playerVideoSurface')[0]
+                    dpr=state['window']['dpr']
+                    actual=state['reported_video_surface']
+                    expected={key:surface[key]*dpr for key in ('x','y','width','height')}
+                    assert all(abs(actual[key]-value)<1.1 for key,value in expected.items()),(actual,expected)
+                    assert not any(w['name']=='floatingPlayerWindow' and w['visible'] for w in state['windows'])
+                    case.record.setdefault('restored_surface_geometry',[]).append({'actual':actual,'expected':expected})
+                restored_geometry('restored-compact-video-geometry')
+                case.click('minimize-again','playerMinimize')
+                case.inspect('floating-again-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                case.click('expand-again','floatingQueueToggle')
+                case.click('restore-expanded','floatingRestore')
+                restored_geometry('restored-expanded-video-geometry')
                 case.close(True)
             finally:case.close()
 
