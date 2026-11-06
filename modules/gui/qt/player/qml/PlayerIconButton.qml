@@ -32,19 +32,31 @@ T.ToolButton {
         border.color: PlayerStyle.accent
     }
     contentItem: Item {
+      Image {
+        objectName: "playerGlyph-mpv"
+        visible: button.glyph === "mpv"
+        anchors.centerIn: parent
+        width: PlayerStyle.px(24)
+        height: width
+        source: visible ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio) : ""
+        sourceSize: Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+        fillMode: Image.PreserveAspectFit
+        smooth: false
+        opacity: button.enabled ? 1 : 0.45
+        rotation: button.glyphRotation
+      }
       IconImage {
         objectName: "playerGlyph-" + button.glyph
+        visible: button.glyph !== "mpv"
         anchors.centerIn: parent
-        source: button.glyph === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio)
-                                      : "qrc:/redesign/icons/" + button.glyph + ".svg"
+        source: visible ? "qrc:/redesign/icons/" + button.glyph + ".svg" : ""
         color: button.glyph === "mpv" ? "transparent" : button.accented ? PlayerStyle.accentForeground : button.checked && !["sidebar","more"].includes(button.glyph) ? PlayerStyle.accent : button.foreground
         opacity: button.enabled ? 1 : 0.45
-        // Select an original MPV frame or rasterize SVG at the native ratio.
+        // Rasterize SVG at the native ratio. MPV uses plain Image above:
+        // IconImage changes fillMode to Pad and crops physical-size PNGs.
         // Its SVG edges already contain antialiasing: applying another linear
         // filter at a half-physical-pixel position visibly softens the icon.
-        sourceSize: button.glyph === "mpv"
-            ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
-            : Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
+        sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
         smooth: false
         rotation: button.glyphRotation
         width: PlayerStyle.px(24)

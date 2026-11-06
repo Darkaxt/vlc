@@ -34,8 +34,9 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
+parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
     help='Resume the closed settings pass after its completed150%% matrix lost the input-desktop preservation check')
 parser.add_argument('--resume-settings-history', action='store_true',
@@ -1565,6 +1566,51 @@ def preview():
         case.close(True)
     finally: case.close()
 
+def engine_icon_pixels():
+    """Verify changed PNG decode sizes; preserve unchanged handover evidence."""
+    for scale in ('1','1.5','2'):
+        case=Case('engine-icon-pixels-'+scale,scale=scale,engine='mpv',extra=('--no-file-logging','--logfile='))
+        try:
+            case.inspect('reference-viewport','resize','--width','1280','--height','800')
+            case.inspect('idle-menu','click','--name','Main menu')
+            case.inspect('idle-customize','click','--name','Customize Player')
+            case.inspect('idle-player-mounted','snapshot','--await-target','viewLoader','--await-property','source',
+                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+            case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
+            case.click('idle-editor-cancel','layoutCancel')
+            case.inspect('idle-logo-ready','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1')
+            snapshot=case.inspect('native-dpr-icons','snapshot','--await-target','playerGlyph-mpv','--await-property','status','--await-value','1','--capture')
+            verify_window_icon(case,snapshot)
+            picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png'))
+            ratio=picture.width/snapshot['window']['width']
+            for identity in ('playerGlyph-mpv','playerIdleCone'):
+                node=nodes(snapshot,identity);assert len(node)==1 and mpv_frame(node[0]['source'])
+                node=node[0];crop=case.evidence/(identity+'.png')
+                picture.crop(tuple(round(value*ratio) for value in
+                    (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(crop)
+                case.record.setdefault('native_qml_icon_pixels',[]).append(dict(
+                    qml_mpv_icon_pixels(crop,repo/'modules/gui/qt/pixmaps/redesign/mpv.ico'),target=identity,source=node['source']))
+            if scale=='1' and not args.skip_documentation_capture:
+                # Current public UI documentation uses an empty owned profile.
+                # No private movie, local path or user desktop is captured.
+                case.click('readme-engine-panel','toolsButton')
+                case.inspect('readme-vlc','click','--name','VLC')
+                case.inspect('readme-vlc-ready','snapshot','--await-core','engine_switching','--await-value','false')
+                case.inspect('readme-close-panel','key','--key','0x1000000')
+                case.inspect('readme-player','snapshot','--capture')
+                case.inspect('readme-main-menu','click','--name','Main menu','--capture')
+                case.inspect('readme-global-settings','click','--name','Settings')
+                case.native('readme-dark-theme','preferencesTheme2')
+                case.native('readme-save-theme','preferencesSave')
+                case.inspect('readme-reopen-settings','key','--key','0x50','--modifiers','0x4000000')
+                case.inspect('readme-settings-size','widget_resize','--target','redesignPreferences','--width','1048','--height','865')
+                settings=case.inspect('readme-settings','snapshot','--capture')
+                assert any(row['id']=='preferencesHeading' and row.get('text')=='Global Settings' for row in settings['widgets'])
+                case.native('readme-close-settings','preferencesClose')
+            case.close(True)
+        finally:case.close()
+
+
 def engine_icons():
     """Complete mode identity handover, original artwork and persisted restart."""
     for scale in ('1','1.5','2'):
@@ -2641,7 +2687,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue

@@ -26,6 +26,19 @@ Required gaps: repaired Qt artwork acceptance, Shell visible-button acceptance,
 README refresh and final delivery. No tracked deferral. Read-only extraction
 and HWND/Shell inspection use `E:/Temp/vlc-mpv-icons-1.1.9-20261106`.
 
+PNG240/run52 passed; its nine real handover/restart/idle workflows at100/150/200%
+preserve profiles and actual HWND/Shell properties. Visual comparison rejected
+the24px texture being scaled at high DPI despite selection of a larger source
+frame (mean RGB errors14.9/14.4 at150/200%). DPR241/run53 then proved physical
+decode sizing exposes Qt6.8.3 IconImage's automatic Pad fill-mode override: it
+crops the high-DPI PNG. Qt's `qquickiconimage.cpp` source confirms this mechanism.
+Use plain Image for the colored raster emblem, with physical decode size and
+PreserveAspectFit; keep existing tintable SVG controls unchanged. The native
+PNG pixel assertion remains failed until the corrected actual pixels pass.
+Original failed checker/format/pixel evidence remains retained; no product crash
+or build failure is claimed. Unchanged handover/storage/Windows identity evidence
+is reusable; verify the affected actual header/idle pixels once at all three DPIs.
+
 **6 November current reconciliation: normal1.1.8 delivered; M6 BLOCKED only on native cleanup.**
 R90–R95 pass complete native workflows and are published in
 [normal1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8)
