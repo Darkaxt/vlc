@@ -26,13 +26,18 @@ void PlayerAnalysisStrip::paint(QPainter *painter)
         painter->setClipPath(clip,Qt::IntersectClip);
         if(m_samples.isEmpty())return;
         painter->setRenderHint(QPainter::Antialiasing);
+        // Render the same geometry on both sides of the playhead. Clipping,
+        // rather than recoloring whole bands, preserves the exact boundary
+        // when it crosses a bar, a waveform column or an antialiased curve.
+        const double played=std::isfinite(m_playedWidth)?std::clamp(m_playedWidth,0.,width()):0.;
+        const auto drawEffect=[&](const QColor &color,bool playedSide) {
         if(m_renderMode==QStringLiteral("spectrometer")) {
             const double step=width()/m_samples.size();
             for(qsizetype i=0;i<m_samples.size();++i) {
                 const double h=std::clamp(m_samples[i].toDouble(),0.,1.)*height();
                 if(h<=0)continue;
-                painter->fillRect(QRectF(i*step,height()-h,std::max(0.5,step-1),h),m_color);
-                painter->fillRect(QRectF(i*step,std::max(0.,height()-h-2),std::max(0.5,step-1),1),m_color.lighter(140));
+                painter->fillRect(QRectF(i*step,height()-h,std::max(0.5,step-1),h),color);
+                painter->fillRect(QRectF(i*step,std::max(0.,height()-h-2),std::max(0.5,step-1),1),playedSide?color:color.lighter(140));
             }
         } else if(m_renderMode==QStringLiteral("spectrum") || m_renderMode==QStringLiteral("scope")) {
             const bool spectrum=m_renderMode==QStringLiteral("spectrum");
@@ -45,8 +50,8 @@ void PlayerAnalysisStrip::paint(QPainter *painter)
             }
             if(spectrum) {
                 path.lineTo(width(),height());path.lineTo(0,height());path.closeSubpath();
-                painter->fillPath(path,m_color);
-            } else { painter->setPen(QPen(m_color,1.5));painter->drawPath(path); }
+                painter->fillPath(path,color);
+            } else { painter->setPen(QPen(color,1.5));painter->drawPath(path); }
         } else if(m_renderMode==QStringLiteral("waveform")) {
             const int columns=std::min(int(m_samples.size()),std::max(1,int(std::ceil(width()))));
             for(int x=0;x<columns;++x) {
@@ -55,9 +60,18 @@ void PlayerAnalysisStrip::paint(QPainter *painter)
                 double peak=0;
                 for(auto i=first;i<last;++i)peak=std::max(peak,std::abs(m_samples[i].toDouble()));
                 const double h=std::clamp(peak,0.,1.)*height();
-                if(h>0)painter->fillRect(QRectF(double(x)/columns*width(),(height()-h)/2,width()/columns,h),m_color);
+                if(h>0)painter->fillRect(QRectF(double(x)/columns*width(),(height()-h)/2,width()/columns,h),color);
             }
         }
+        };
+        painter->save();
+        painter->setClipRect(QRectF(played,0,width()-played,height()),Qt::IntersectClip);
+        drawEffect(m_color,false);
+        painter->restore();
+        painter->save();
+        painter->setClipRect(QRectF(0,0,played,height()),Qt::IntersectClip);
+        drawEffect(Qt::black,true);
+        painter->restore();
         return;
     }
     if (!m_samples.isEmpty()) {

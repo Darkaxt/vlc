@@ -28,6 +28,7 @@ class PlayerAnalysisStrip : public QQuickPaintedItem
     Q_PROPERTY(double delayMS READ delayMS WRITE setDelayMS NOTIFY changed FINAL)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY changed FINAL)
     Q_PROPERTY(QString renderMode READ renderMode WRITE setRenderMode NOTIFY changed FINAL)
+    Q_PROPERTY(double playedWidth READ playedWidth WRITE setPlayedWidth NOTIFY changed FINAL)
 public:
     explicit PlayerAnalysisStrip(QQuickItem *parent = nullptr) : QQuickPaintedItem(parent) { setAcceptedMouseButtons(Qt::NoButton); }
     QVariantList samples() const { return m_samples; }
@@ -37,6 +38,7 @@ public:
     double delayMS() const { return m_delay; }
     QColor color() const { return m_color; }
     QString renderMode() const { return m_renderMode; }
+    double playedWidth() const { return m_playedWidth; }
     void setSamples(const QVariantList &v) { if (m_samples == v) return; m_samples = v; update(); emit changed(); }
     void setCues(const QVariantList &v) { if (m_cues == v) return; m_cues = v; update(); emit changed(); }
     void setDurationMS(double v) { if (m_duration == v) return; m_duration = v; update(); emit changed(); }
@@ -44,12 +46,13 @@ public:
     void setDelayMS(double v) { if (m_delay == v) return; m_delay = v; update(); emit changed(); }
     void setColor(const QColor &v) { if (m_color == v) return; m_color = v; update(); emit changed(); }
     void setRenderMode(const QString &v) { if (m_renderMode == v) return; m_renderMode = v; update(); emit changed(); }
+    void setPlayedWidth(double v) { if (m_playedWidth == v) return; m_playedWidth = v; update(); emit changed(); }
     void paint(QPainter *) override;
 signals:
     void changed();
 private:
     QVariantList m_samples, m_cues;
-    double m_duration = 0, m_scale = 1, m_delay = 0;
+    double m_duration = 0, m_scale = 1, m_delay = 0, m_playedWidth = 0;
     QColor m_color;
     QString m_renderMode;
 };

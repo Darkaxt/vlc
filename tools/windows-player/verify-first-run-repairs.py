@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['m7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -60,6 +60,8 @@ parser.add_argument('--resume-onboarding-checker',action='store_true',
     help='Retain passed100%% wizard/restart evidence; continue closed150%% keyboard and standalone checks')
 parser.add_argument('--resume-media-previews-checker',action='store_true',
     help='Resume closed photo acceptance after correcting keyboard targeting or animation-clock observation')
+parser.add_argument('--resume-m7-checker',action='store_true',
+    help='Resume closed M7 native acceptance after the client service whitelist and Settings-close selector correction')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -73,7 +75,9 @@ resume_menu_quit=args.resume_menu_quit
 resume_idle=args.resume_idle_checker
 resume_onboarding=args.resume_onboarding_checker
 resume_media=args.resume_media_previews_checker
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media))<=1
+resume_m7=args.resume_m7_checker
+assert not resume_m7 or args.case=='m7-regressions'
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7))<=1
 assert not resume_media or args.case=='media-previews'
 assert not resume_onboarding or args.case=='onboarding-shortcuts'
 assert not resume_idle or args.case=='idle'
@@ -81,12 +85,32 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if resume_media:
+m7_observer_repair=False
+if resume_m7:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='m7-regressions' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert set(previous['failures'])=={'audio-visualizer','no-library'}
+    m7_observer_repair='spectrometer-seek' in previous['failures']['audio-visualizer']
+    if m7_observer_repair:
+        assert "invalid loads value: '.3'" in previous['failures']['audio-visualizer']
+        assert 'direct-network-library' in previous['failures']['no-library'] and 'Expected one observation target; matched 0' in previous['failures']['no-library']
+        assert [case['name'] for case in previous['cases']]==['audio-visualizer-1-client-fixed','no-library-vlc-1-client-fixed','no-library-restart-vlc']
+        assert previous['cases'][1]['passed']
+    else:
+        assert 'invalid choice' in previous['failures']['audio-visualizer'] and 'redesignAudioVisualizer' in previous['failures']['audio-visualizer']
+        assert 'settings-cancel' in previous['failures']['no-library'] and 'matched 0' in previous['failures']['no-library']
+        assert [case['name'] for case in previous['cases']]==['audio-visualizer-1','no-library-vlc-1']
+    assert all(case['exit_code']==0 and case['owned_desktop_never_observed_as_input'] for case in previous['cases'])
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/('result-before-m7-observer-fix.json' if m7_observer_repair else 'result-before-m7-client-fix.json');assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_media:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert not previous['passed'] and previous['scope']=='media-previews' and previous['protected_profiles_unchanged']
     photo_mpv_clock=len(previous['cases'])==5 and previous['cases'][-1]['name']=='image-preview-mpv'
@@ -306,6 +330,19 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
+if resume_m7:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    if m7_observer_repair:
+        records['reused_m7_navigation']=previous['reused_m7_navigation']
+        records['cases']=[previous['cases'][1]]
+        records['resumed_m7_observers']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+            'scope':'Preserve the completed100% VLC no-library case; correct JSON numeric arguments and observe the library only after its loader has been mounted by the actual click.'}
+    else:
+        completed={step['label']:step['response'] for step in previous['cases'][1]['steps']}
+        labels=[prefix+section for section in ('home','videos','music','network','playlists','recent') for prefix in ('navigate-','no-indexing-')]
+        assert all(label in completed for label in labels)
+        records['reused_m7_navigation']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+            'steps':{label:completed[label] for label in labels},'scope':'Unchanged100% VLC disabled-library category rendering and no-indexing observations only. Original failed overall result remains false.'}
 if resume_media:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     records['previous_failed_acceptance']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
@@ -1711,7 +1748,8 @@ def audio_visualizer():
     """Real PCM effects stay inside the seek track and release on disable/handover."""
     identity='redesignAudioVisualizer'
     for scale in ('1','1.5','2'):
-        case=Case('audio-visualizer-'+scale,scale=scale,media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
+        suffix=('-observer-fixed' if m7_observer_repair else '-client-fixed') if resume_m7 and scale=='1' else ''
+        case=Case('audio-visualizer-'+scale+suffix,scale=scale,media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
         try:
             initial=case.inspect('audio-ready','snapshot','--await-service',identity,'--await-property','available','--await-value','true')
             baseline=nodes(initial,'progressSlider')[0]
@@ -1736,19 +1774,35 @@ def audio_visualizer():
                     assert abs(slider[field]-baseline[field])<.01,(mode,field,slider,baseline)
                 moving=case.inspect(mode+'-new-audio-frame','snapshot','--await-service',identity,
                     '--await-property','frameRevision','--await-value',str(values['frameRevision']+2),'--await-comparison','at_least')
+                case.inspect(mode+'-played-portion','snapshot','--await-core','position','--await-value','0.55','--await-comparison','at_least')
                 paused=case.click(mode+'-pause','playButton','--await-core','state','--await-value','3')
                 frozen=service(paused,identity)['frameRevision']
                 observed=case.inspect(mode+'-paused-frame','snapshot','--capture')
                 assert service(observed,identity)['frameRevision']==frozen
-                sought=case.click(mode+'-seek','progressSlider','--fraction-x','.3','--await-core','position','--await-value','.3','--await-tolerance','.035')
+                strip=nodes(observed,'liveAudioVisualizerStrip')[0]
+                with Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')) as picture:
+                    sx=picture.width/observed['window']['width'];sy=picture.height/observed['window']['height']
+                    played=picture.convert('RGB').crop((round((strip['x']+4)*sx),round((strip['y']+4)*sy),
+                        round((strip['x']+strip['width']*.5)*sx),round((strip['y']+strip['height']-4)*sy)))
+                accent=tuple(bytes.fromhex(observed['rendered_accent'].lstrip('#')))
+                pixels=list(played.getdata())
+                ink=sum(max(pixel)<12 for pixel in pixels)
+                fill=sum(max(abs(pixel[i]-accent[i]) for i in range(3))<5 for pixel in pixels)
+                assert ink>5 and fill>5,(mode,'Missing black effect on accent-filled progress',ink,fill)
+                case.record.setdefault('visualizer_inversion',{})[mode]={'black_effect_pixels':ink,'accent_fill_pixels':fill}
+                sought=case.click(mode+'-seek','progressSlider','--fraction-x','.3','--await-service',identity,'--await-property','active','--await-value','false')
                 assert not service(sought,identity)['samples'], 'Paused seek retained stale audio samples'
+                case.click(mode+'-resume-seek','playButton','--await-core','state','--await-value','2')
+                case.inspect(mode+'-actual-seek','snapshot','--await-core','position','--await-value','0.3','--await-tolerance','0.06')
+                case.inspect(mode+'-seek-new-pcm','snapshot','--await-service',identity,'--await-property','active','--await-value','true')
+                case.click(mode+'-seek-pause','playButton','--await-core','state','--await-value','3')
             case.click('disable-panel','toolsButton')
             case.inspect('disable-focus','focus','--target','seekbarVisualizerChoice')
             disabled=case.inspect('disable','key','--key','0x1000010','--await-service',identity,'--await-property','mode','--await-value','""')
             assert not service(disabled,identity)['active'] and not service(disabled,identity)['samples']
             case.inspect('disable-dismiss-panel','key','--key','0x1000000')
             case.click('disabled-playback','playButton','--await-core','state','--await-value','2')
-            advanced=case.inspect('disabled-audio-progress','snapshot','--await-core','position','--await-value','.4','--await-comparison','at_least')
+            advanced=case.inspect('disabled-audio-progress','snapshot','--await-core','position','--await-value','0.4','--await-comparison','at_least')
             assert service(advanced,identity)['frameRevision']==service(disabled,identity)['frameRevision']
             case.click('disabled-pause','playButton','--await-core','state','--await-value','3')
             if scale=='1':
@@ -1784,35 +1838,42 @@ def no_library():
     """The disabled backend keeps the real redesign, menus and video workflow."""
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
-            case=Case('no-library-'+engine+'-'+scale,engine=engine,scale=scale,extra=('--no-media-library',))
-            try:
-                case.inspect('viewport','resize','--width','1280','--height','800')
-                for section in ('home','videos','music','network','playlists','recent'):
-                    result=case.click('navigate-'+section,'libraryNav_'+section,
-                        '--await-target','fullLibrary','--await-property','ready','--await-value','true',
-                        *(['--capture'] if section=='home' else []))
-                    assert nodes(result,'playerTopBar') and nodes(result,'libraryDisabledMessage')
-                    assert result['media_library_available'] is False
-                    case.inspect('no-indexing-'+section,'snapshot','--await-target','fullLibrary',
-                        '--await-property','indexing','--await-value','false')
-                case.inspect('main-menu','click','--name','Main menu')
-                result=case.inspect('settings','click','--name','Settings')
-                assert any(row['id']=='redesignPreferences' for row in result['widgets'])
-                case.native('settings-cancel','preferencesCancel')
-                case.close(True)
-                assert not any(path.name.endswith(('.db','.db-wal','.db-shm')) for path in (case.path/'profile').rglob('*'))
-            finally:case.close()
+            reuse_navigation=resume_m7 and engine=='vlc' and scale=='1'
+            if m7_observer_repair and reuse_navigation:
+                profile_path=root/'no-library-vlc-1-client-fixed/profile'
+            else:
+                case=Case('no-library-'+engine+'-'+scale+('-client-fixed' if reuse_navigation else ''),engine=engine,scale=scale,extra=('--no-media-library',))
+                try:
+                    case.inspect('viewport','resize','--width','1280','--height','800')
+                    if reuse_navigation:
+                        case.inspect('resumed-library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
+                    for section in (() if reuse_navigation else ('home','videos','music','network','playlists','recent')):
+                        result=case.click('navigate-'+section,'libraryNav_'+section,
+                            '--await-target','fullLibrary','--await-property','ready','--await-value','true',
+                            *(['--capture'] if section=='home' else []))
+                        assert nodes(result,'playerTopBar') and nodes(result,'libraryDisabledMessage')
+                        assert result['media_library_available'] is False
+                        case.inspect('no-indexing-'+section,'snapshot','--await-target','fullLibrary',
+                            '--await-property','indexing','--await-value','false')
+                    case.inspect('main-menu','click','--name','Main menu')
+                    result=case.inspect('settings','click','--name','Settings')
+                    assert any(row['id']=='redesignPreferences' for row in result['widgets'])
+                    case.native('settings-close','preferencesClose')
+                    case.close(True)
+                    profile_path=case.path/'profile'
+                    assert not any(path.name.endswith(('.db','.db-wal','.db-shm')) for path in profile_path.rglob('*'))
+                finally:case.close()
             if scale=='1':
-                restarted=Case('no-library-restart-'+engine,engine=engine,
-                    reused_profile=case.path/'profile',extra=('--no-media-library',))
+                restarted=Case('no-library-restart-'+engine+('-observer-fixed' if m7_observer_repair else ''),engine=engine,
+                    reused_profile=profile_path,extra=('--no-media-library',))
                 try:
                     result=restarted.inspect('restart-follows-no-library','snapshot',
                         '--await-target','fullLibrary','--await-property','ready','--await-value','true')
                     assert nodes(result,'libraryDisabledMessage') and not result['media_library_available']
                     direct=drop_fixture(restarted,'direct-file','control.mkv')
                     assert direct['core']['engine']==engine
-                    restarted.inspect('direct-network-library','click','--name','Back to media',
-                        '--await-target','fullLibrary','--await-property','ready','--await-value','true')
+                    restarted.inspect('direct-network-library','click','--name','Back to media')
+                    restarted.inspect('direct-network-library-ready','snapshot','--await-target','fullLibrary','--await-property','ready','--await-value','true')
                     restarted.inspect('add-network-item','click','--name','Add item')
                     restarted.inspect('network-form','click','--name','Open network stream or playlist…')
                     url='http://127.0.0.1:'+str(server.server_port)+'/control.mkv'
@@ -1831,8 +1892,9 @@ def no_library():
         video=Case('no-library-video-'+engine,engine=engine,media=fixtures/'control.mkv',extra=('--no-media-library',))
         try:
             video.inspect('main-video','snapshot','--await-target','playerView','--await-property','visible','--await-value','true')
-            result=video.inspect('browse-during-video','click','--name','Back to media',
-                '--await-target','fullLibrary','--await-property','ready','--await-value','true','--capture')
+            browsed=video.inspect('browse-during-video','click','--name','Back to media')
+            library_target='compactLibrary' if nodes(browsed,'compactLibrary') else 'fullLibrary'
+            result=video.inspect('browse-during-video-ready','snapshot','--await-target',library_target,'--await-property','ready','--await-value','true','--capture')
             assert nodes(result,'libraryMiniSeek') and nodes(result,'libraryDisabledMessage')
             result=video.click('return-to-video','libraryReturnToPlayer',
                 '--await-target','playerView','--await-property','visible','--await-value','true')
@@ -2969,6 +3031,7 @@ try:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
     for name, operation in [('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+        if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue
@@ -2987,7 +3050,7 @@ try:
             if name=='subtitles':operation=lambda:subtitles(False)
         if args.case=='onboarding-shortcuts' and name not in ('welcome','shortcuts'):continue
         if name=='seek-policy' and args.case!='seek-policy':continue
-        if args.case not in ('all','onboarding-shortcuts','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction','settings-survey',name): continue
+        if args.case not in ('all','m7-regressions','onboarding-shortcuts','subtitles-mpv','playback-subtitles','integration-diagnostic','subtitle-tracks-diagnostic','preview-icons','correction','settings-survey',name): continue
         try:
             operation()
         except Exception as failure:

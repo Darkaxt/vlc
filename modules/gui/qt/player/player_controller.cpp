@@ -1102,6 +1102,8 @@ static void on_player_timer_seek(const struct vlc_player_timer_point *point,
         that->callAsync([that,point_copy = *point](){
             PlayerController* q = that->q_func();
 
+            // Core seeks include keyboard/menu actions outside the QML setter.
+            emit q->seekRequested(point_copy.position);
             that->m_player_time = point_copy;
             if (that->m_player_time.position > 0)
                 that->m_position = that->m_player_time.position;
@@ -1466,6 +1468,7 @@ void PlayerController::setPosition(double position)
     recordSeek("submitted");
 #endif
     vlc_player_SetPosition( d->m_player, position );
+    emit seekRequested(position);
 }
 
 void PlayerController::jumpFwd()

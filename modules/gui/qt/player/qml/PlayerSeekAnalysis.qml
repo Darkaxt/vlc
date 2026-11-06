@@ -9,6 +9,7 @@ Item {
     id: analysis
     required property Item overlayParent
     property real hoverPosition: 0
+    property real playedWidth: 0
     anchors.fill: parent
     function positionPreview() {
         const point = analysis.mapToItem(analysis.overlayParent, analysis.width * analysis.hoverPosition, 0)
@@ -27,7 +28,7 @@ Item {
         renderMode: MediaAnalysis.visualizer.mode
         samples: MediaAnalysis.visualizer.samples
         color: PlayerStyle.accent
-        opacity: 0.8
+        playedWidth: analysis.playedWidth
         // Paint only: slider pointer, keyboard and handle ownership stay intact.
     }
     PlayerAnalysisStrip {

@@ -122,9 +122,9 @@ Loader {
             Accessible.name:qsTr("Playback position");Accessible.description:Player.time.formatHMS(0)+" / "+Player.length.formatHMS(0);AccessibleCompat.id:"progressSlider"
             Binding on value{when:!seek.pressed;value:Player.position;restoreMode:Binding.RestoreNone}
             onMoved:Player.position=value
-            PlayerSeekAnalysis{overlayParent:control.popupParent}
+            PlayerSeekAnalysis{overlayParent:control.popupParent;playedWidth:seek.leftPadding+seek.availableWidth*seek.visualPosition}
             background:Rectangle{color:PlayerStyle.timeline;radius:PlayerStyle.px(6)
-                Rectangle{x:PlayerStyle.px(2);y:x;width:Math.max(0,(parent.width-PlayerStyle.px(4))*seek.visualPosition);height:parent.height-PlayerStyle.px(4);color:PlayerStyle.accent;opacity:0.24;radius:PlayerStyle.px(4)}
+                Rectangle{x:PlayerStyle.px(2);y:x;width:Math.max(0,(parent.width-PlayerStyle.px(4))*seek.visualPosition);height:parent.height-PlayerStyle.px(4);color:PlayerStyle.accent;opacity:MediaAnalysis.visualizer.active?1:0.24;radius:PlayerStyle.px(4)}
                 border.width:seek.visualFocus?PlayerStyle.px(2):0;border.color:PlayerStyle.accent}
             handle:Rectangle{x:seek.leftPadding+seek.visualPosition*(seek.availableWidth-width);y:seek.topPadding;width:PlayerStyle.px(8);height:seek.availableHeight;radius:PlayerStyle.px(4);color:PlayerStyle.accent}
         }

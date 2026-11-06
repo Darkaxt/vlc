@@ -7,10 +7,11 @@ NOT STARTED. M7's planned publication now belongs to M9 after both implementatio
 stages pass; no earlier release is authorized as completion of this expanded
 request. S9 Rust remains NOT STARTED. M7 resumed after the user's explicit choice:
 R104 effects animate inside the existing progress bar, with unchanged geometry
-and usable seeking, rather than above it. Its implementation will observe the
-current PCM audio path without a second decoder or visualization vout. Finish
-this output path and the taskbar identity lifetime repair before one coordinated
-affected native acceptance. Neither the uncompiled source nor1.1.9
+and usable seeking, rather than above it. Its implementation observes the
+current PCM audio path without a second decoder or visualization vout. The user
+accepted the first real capture and added progress-boundary inversion: accent
+effects over black, black effects over solid accent fill. That connected change
+and the seek-reset repair await the next incremental Qt assembly. Neither1.1.9
 is delivered. M8 has not begun.
 Normal60 closed0/group empty (63a4ef6196a64cd68b2f95cac30e4e6c), reused409 plugins,
 and passed stripped packaging/source/symbols, native VLC and actual MPV SDR/P5
@@ -22,7 +23,13 @@ fixing the application's capability-to-layout coupling. Record typed QML models
 without creating a backend; instantiate/query them only when a library exists.
 R102 source now keeps PlayerLibraryDisplay without a backend and lazily creates
 only available library models; direct URL playback uses the native queue. The
-both-engine/DPI/no-database acceptance case is prepared, not yet run. R104's
+both-engine/DPI/no-database acceptance remains incomplete. Diagnostic61 compiled
+in476s, closed0 with group empty/private mounts released and no OOM/max events.
+Its native run verified VLC disabled-library navigation at100/150/200%, Settings
+and private-profile restart/direct-file/HTTP/folder playback without a database.
+The compact video-to-library check used a full-library-only selector; the rendered
+tree instead shows the correct compact library/mini player. Its checker is fixed;
+MPV and the full return-to-video workflow remain required. R104's
 normal60 inactive-desktop reproduction closed0 with resources released: the
 visualizer starts but requests a second vout, rejected by the occupied Qt
 compositor and handled by a separate window. Its output placement during video
@@ -36,7 +43,14 @@ original VLC FFT, to the existing seek track; it requests no additional video
 output or decoder. Spectrometer/scope/spectrum/waveform use the original option
 icons, with explicit unavailability for MPV/no audio. DSP diagnostics establish
 silence, tone frequency/amplitude, unchanged PCM, multichannel capture and reset;
-the live filter lifecycle, rendering, seeking and native parity remain unverified.
+the first real native spectrometer now produces changing PCM frames inside the
+unchanged seek track with exactly one vout, and freezes on pause. The paused seek
+observation was cancelled explicitly after a read-only snapshot showed submitted
+seek0.285 with the old clock/sample image. The new filter listened to an existing
+seek signal emitted only by jumpToPos; the position setter and core seek callback
+now emit that same signal, so paused UI samples clear immediately without changing
+native seek semantics. Full four-mode, inversion, seek/disable/handover and MPV
+acceptance remains required; no failed overall result is relabeled as passed.
 Probe logs/results and isolated profile are retained
 outside its spent copied runtime. No further compilation before these coherent
 repairs are integrated. The class-icon diagnostic rules out Qt's class icon as

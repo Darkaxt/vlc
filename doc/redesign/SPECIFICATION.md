@@ -74,7 +74,11 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   The user explicitly clarified that the animated effects belong **inside the
   progress bar**, not above it or in a separate window. Keep the main video and
   bar geometry unchanged, preserve the seek handle, pointer/keyboard seeking,
-  previews and subtitle controls, and follow the active accent. Drive the effects
+  previews and subtitle controls, and follow the active accent. As requested on
+  6 November, use accent-colored effects on the unplayed black track and black
+  effects on the accent-colored played portion. The inversion boundary follows
+  the progress indicator without changing the bar's layout or sample mapping.
+  Drive the effects
   from the playing audio stream; do not simulate activity or decode the file a
   second time. Pause freezes the effect; seek/input/track/engine changes discard
   stale samples, and disabling releases its audio observer. Existing standalone
