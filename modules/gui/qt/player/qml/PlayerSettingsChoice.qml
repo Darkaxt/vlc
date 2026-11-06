@@ -25,14 +25,14 @@ T.ComboBox {
     }
     implicitWidth: PlayerStyle.px(150)
     implicitHeight: PlayerStyle.px(32)
-    padding: PlayerStyle.px(8)
-    rightPadding: PlayerStyle.px(22)
+    padding: PlayerStyle.px(outlined ? 16 : 8)
+    rightPadding: PlayerStyle.px(inputStyle ? 12 : 42)
     activeFocusOnTab: true
     focusPolicy: Qt.StrongFocus
     Accessible.name: label
     contentItem: Text {
         text: choice.displayText
-        color: choice.enabled ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground
+        color: choice.enabled ? PlayerStyle.foreground : PlayerStyle.sectionForeground
         font.family: PlayerStyle.fontFamily
         font.pixelSize: PlayerStyle.px(14)
         elide: Text.ElideRight
@@ -41,12 +41,12 @@ T.ComboBox {
     indicator: IconImage {
         visible: !choice.inputStyle
         smooth: false
-        x: choice.width - width - PlayerStyle.px(7)
+        x: choice.width - width - PlayerStyle.px(10)
         anchors.verticalCenter: parent.verticalCenter
         source: "qrc:/redesign/icons/chevron-down.svg"
-        sourceSize: Qt.size(PlayerStyle.px(12), PlayerStyle.px(12))
-        width: PlayerStyle.px(12); height: width
-        color: PlayerStyle.sectionForeground
+        sourceSize: Qt.size(width,height)
+        width: PlayerStyle.px(24); height: width
+        color: PlayerStyle.foreground
         rotation: choice.expandUp && !choice.popup.visible ? 180 : 0
     }
     background: Rectangle {

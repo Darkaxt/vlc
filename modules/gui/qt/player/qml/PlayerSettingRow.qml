@@ -50,7 +50,7 @@ Column {
             visible: !row.fullWidthChoice
             Layout.fillWidth: true
             text: row.option.label
-            color: PlayerStyle.trackForeground
+            color: PlayerStyle.sectionForeground
             font.family: PlayerStyle.fontFamily
             font.pixelSize: PlayerStyle.px(14)
             elide: Text.ElideRight
@@ -93,7 +93,7 @@ Column {
             implicitHeight: PlayerStyle.px(row.controlHeight)
             padding: PlayerStyle.px(12)
             rightPadding: PlayerStyle.px(row.option.color ? 36 : 6)
-            color: PlayerStyle.trackForeground
+            color: PlayerStyle.foreground
             selectionColor: PlayerStyle.accent
             font.family: PlayerStyle.fontFamily
             font.pixelSize: PlayerStyle.px(14)

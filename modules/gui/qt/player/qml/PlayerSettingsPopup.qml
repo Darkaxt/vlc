@@ -46,7 +46,7 @@ T.Popup {
     onPageChanged: body.contentY = 0
 
     component Label: Text {
-        color: PlayerStyle.trackForeground
+        color: PlayerStyle.sectionForeground
         font.family: PlayerStyle.fontFamily
         font.pixelSize: PlayerStyle.px(14)
         textFormat: Text.PlainText
@@ -65,7 +65,7 @@ T.Popup {
         Accessible.onPressAction: clicked()
         contentItem: Label {
             text: button.text
-            color: button.checked ? (!button.segmented && Player.playbackEngine==="mpv" ? PlayerStyle.accentForeground : PlayerStyle.accent) : PlayerStyle.trackForeground
+            color: button.checked ? (!button.segmented && Player.playbackEngine==="mpv" ? PlayerStyle.accentForeground : PlayerStyle.accent) : PlayerStyle.sectionForeground
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
@@ -237,7 +237,7 @@ T.Popup {
             text: parent.value; readOnly: true; selectByMouse: true
             padding: PlayerStyle.px(16)
             font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
-            color: PlayerStyle.trackForeground
+            color: PlayerStyle.foreground
             Accessible.name: parent.text; Accessible.description: parent.hint
             background: Rectangle { color: PlayerStyle.chrome; radius: PlayerStyle.px(4); border.color: PlayerStyle.timeline; border.width: PlayerStyle.px(2) }
         }
@@ -270,7 +270,7 @@ T.Popup {
                 enabled: timing.available
                 Layout.preferredWidth: PlayerStyle.px(140); implicitHeight: PlayerStyle.px(36)
                 text: Number(timing.value).toFixed(3) + (timing.unit.length ? " " + timing.unit : "")
-                color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
+                color: PlayerStyle.foreground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
                 padding: PlayerStyle.px(12); selectByMouse: true
                 Accessible.name: timing.text
                 onEditingFinished: { const number = Number(text.replace(timing.unit, "").trim()); if (isFinite(number)) timing.edited(number) }
@@ -377,7 +377,7 @@ T.Popup {
                                 color: PlayerStyle.dark ? "#404040" : PlayerStyle.sectionForeground
                             }
                         }
-                        Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(14); color: settingsPopup.page===parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground; Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
+                        Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(14); color: settingsPopup.page===parent.parent.index ? PlayerStyle.foreground : PlayerStyle.sectionForeground; Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
                     }
                     background: Item {
                         Rectangle { anchors.bottom: parent.bottom; width: parent.width - PlayerStyle.px(16); x: PlayerStyle.px(8); height: PlayerStyle.px(2); color: settingsPopup.page === parent.parent.index ? PlayerStyle.accent : "transparent" }
@@ -542,7 +542,7 @@ T.Popup {
                             Layout.preferredWidth: PlayerStyle.px(140); implicitHeight: PlayerStyle.px(36)
                             enabled: settingsPopup.vlcToolsAvailable
                             text: { const revision = settingsPopup.settingsRevision; return (MediaTools.filterEnabled("rotate") ? Number(MediaTools.value("rotate-angle")) : 0)+" deg" }
-                            color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); padding: PlayerStyle.px(12); selectByMouse: true
+                            color: PlayerStyle.foreground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); padding: PlayerStyle.px(12); selectByMouse: true
                             Accessible.name: qsTr("Video rotation in degrees")
                             onEditingFinished: { const angle = Number(text.replace(/deg|°/g,"").trim()); if (isFinite(angle) && MediaTools.setValue("rotate-angle",angle)) MediaTools.enableFilter("rotate",angle !== 0) }
                             background: Rectangle { color: PlayerStyle.timeline; radius: PlayerStyle.px(6); border.width: PlayerStyle.px(2); border.color: parent.activeFocus ? PlayerStyle.accent : PlayerStyle.chrome }
@@ -561,10 +561,10 @@ T.Popup {
                             Layout.preferredWidth: PlayerStyle.px(220); Layout.preferredHeight: PlayerStyle.px(48)
                             enabled: settingsPopup.vlcToolsAvailable
                             text: Player.rendererManager.useRenderer ? qsTr("External renderer") : qsTr("Local")
-                            rightPadding: PlayerStyle.px(36); leftPadding: PlayerStyle.px(16)
-                            contentItem: Label { text: rendererButton.text; verticalAlignment: Text.AlignVCenter }
+                            rightPadding: PlayerStyle.px(42); leftPadding: PlayerStyle.px(16)
+                            contentItem: Label { text: rendererButton.text; color: PlayerStyle.foreground; verticalAlignment: Text.AlignVCenter }
                             background: Rectangle { color: PlayerStyle.chrome; radius: PlayerStyle.px(4); border.width: PlayerStyle.px(2); border.color: rendererButton.visualFocus ? PlayerStyle.accent : PlayerStyle.timeline }
-                            IconImage { anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(16); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(16); height: width; sourceSize: Qt.size(width,height); smooth: false; source: "qrc:/redesign/icons/chevron-down.svg"; color: PlayerStyle.foreground }
+                            IconImage { anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(10); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(24); height: width; sourceSize: Qt.size(width,height); smooth: false; source: "qrc:/redesign/icons/chevron-down.svg"; color: PlayerStyle.foreground }
                             onClicked: rendererMenu.popup(mapToGlobal(0,height),false)
                             QmlRendererMenu { id: rendererMenu; ctx: MainCtx }
                         }
