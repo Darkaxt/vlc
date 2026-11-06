@@ -6,11 +6,18 @@
   "workflows_passed": true,
   "protected_profiles_unchanged": true,
   "composed_video_picture_verified": false,
-  "status": "BLOCKED",
+  "status": "ACTIVE",
+  "user_review_7_november": {
+    "engine": "mpv",
+    "video_picture": "User confirmed working; separate from independently captured proof",
+    "reported_defect": "Cannot move the window with queue expanded; toolbar icons do not blend with adjacent text like Figma",
+    "source_cause": "Expanded queue header has no drag handler. Toolbar inherits24-unit player glyphs and a brighter foreground.",
+    "remaining": "Verify native header drag dispatch,16-unit muted icons and actual composed picture after repair"
+  },
   "blocker": {
     "criterion": "R103 actual composed video and Figma appearance on a normal desktop in both engines",
-    "classification": "external verification input",
-    "reason": "Owned inactive desktops prove app workflows and Qt UI, but do not prove the composed video picture. Desktop controls are prohibited; current review launch is pending user input.",
+    "classification": "internal implementable repair; external actual-picture verification remains separate",
+    "reason": "The ordinary MPV review is open and video works according to the user; expanded-queue drag/style must be repaired before final picture acceptance.",
     "resolution": "User opens the prepared ordinary review player and minimizes playing video; capture only its bound window and inspect the real picture, controls and queue in VLC and MPV.",
     "dependent": "M8 closure and M10 final release"
   },

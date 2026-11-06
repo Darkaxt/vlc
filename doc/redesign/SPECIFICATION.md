@@ -80,6 +80,10 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   compact filename/folder footer,14-unit outer radius and an expandable queue
   above the picture. Use existing Inter/PlayerStyle tokens and original icons.
   Constrain drag/resize/queue expansion to the selected screen's usable area;
+  the expanded queue's header remains a native drag surface, with a hand cursor,
+  independently of its list and toolbar controls. Its sort/remove/add glyphs use
+  the reference's smaller16-unit scale and muted text tone, retaining usable hit
+  areas and their existing queue actions (7 November user comparison).
   test100/150/200% DPI and both playback engines. Restore/dismiss and natural EOF
   must use the existing player and queue owners; main geometry is preserved.
 - R104 (6 November reported regression): investigate the actual audio-visualizer
@@ -116,8 +120,10 @@ passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
 The expanded request also requires R102/R104 repairs and R103 floating-miniplayer
 acceptance and R105 player-panel parity before that single final release; no
 intermediate repair release. M8 retains the floating miniplayer; M9 owns R105;
-the final release is M10. M8 is parked BLOCKED on actual composed-picture verification; M9 is COMPLETE. No implementation stage is ACTIVE while that required review input remains unavailable.
-The normal review launch is pending user input because desktop controls are prohibited.
+the final release is M10. M8 is ACTIVE for the reported expanded-queue dragging
+and toolbar parity repair; M9 is COMPLETE. The user confirmed MPV floating video
+works, but the expanded queue did not drag. Preserve that report separately from
+the remaining actual composed-picture evidence; desktop controls are prohibited.
 M6's separately recorded native-cleanup capability blocker remains parked;
 it is neither waived nor relabeled as M7 completion.
 

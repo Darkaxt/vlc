@@ -1,11 +1,14 @@
 # VLC redesign stages and reconciliation
 
-**6 November current work: M9 player-panel Figma parity — COMPLETE; M8 composed-picture acceptance BLOCKED.**
-M8 is BLOCKED only on actual composed-picture verification; all isolated native
-workflows pass. Desktop controls remain prohibited. The current ordinary review
-launch awaits user input; capture its bound window in both engines to close R103.
-R105 native/rendered acceptance is complete. No implementation stage is ACTIVE
-while the required M8 ordinary-launch picture input remains unavailable.
+**7 November current work: M8 expanded-queue dragging and toolbar parity — ACTIVE.**
+The user confirmed MPV floating video works, then reported that the expanded
+queue could not drag. Its header has no drag handler; only the picture does.
+The toolbar also inherits24-unit glyphs instead of the reference's smaller,
+muted icons beside the item-count text. Repair these as one R103 change, then
+verify real queue interactions, native drag dispatch and original-style rendering.
+Desktop controls remain prohibited; actual composed picture evidence remains
+separate. R105/M9 stays COMPLETE and unchanged except the shared button's
+default-preserving configurable glyph size.
 M7 is COMPLETE under the user's explicit withdrawal of further taskbar resizing.
 The current blue MPV running button was captured and inspected by the user;
 its native icon and Shell resource/identity are verified. The10–15% enlargement
@@ -772,7 +775,7 @@ presentation and final delivery remain required.
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 | M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M10. | None. |
-| M8 Figma floating miniplayer | BLOCKED | Both engines at100/150/200%, seek/pause, real queue navigation, bounded resize, restore/reopen/dismiss, EOF replay and audio/idle exclusions pass; protected profiles unchanged. | External: actual composed video/Figma appearance requires the pending ordinary review launch; no desktop controls. M10 depends on this proof. | None. |
+| M8 Figma floating miniplayer | ACTIVE | Prior both-engine100/150/200% lifecycle/seek/queue/restore/EOF/exclusions pass; user confirms MPV floating video. | Expanded queue header drag and smaller muted toolbar icons; affected native/rendered verification and actual composed picture. M10 depends on this proof. | None. |
 | M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
 | M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 

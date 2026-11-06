@@ -687,6 +687,7 @@ private:
         m_pointerTrace.append(QJsonObject{{QStringLiteral("event_type"), int(type)},
             {QStringLiteral("x"), point.x()}, {QStringLiteral("y"), point.y()},
             {QStringLiteral("pressed"), item->property("pressed").toBool()},
+            {QStringLiteral("moving"), item->property("moving").toBool()},
             {QStringLiteral("value"), QJsonValue::fromVariant(item->property("value"))}});
     }
 

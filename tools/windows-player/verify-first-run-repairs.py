@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -1880,6 +1880,38 @@ def engine_accents():
     finally:case.close()
 
 
+def floating_queue():
+    """Complete expanded-queue drag, original toolbar and real item workflow."""
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            case=Case('floating-queue-'+engine+'-'+scale,engine=engine,scale=scale,
+                extra=('--input-repeat=-1',str(fixtures/'control.mkv'),str(fixtures/'embedded-text.mkv')))
+            try:
+                case.inspect('video-ready','snapshot','--await-core','state','--await-value','3')
+                case.click('play','playButton','--await-core','state','--await-value','2')
+                case.click('minimize','playerMinimize')
+                case.inspect('floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                expanded=case.click('expand-queue','floatingQueueToggle','--capture')
+                header=nodes(expanded,'floatingQueueHeader');assert len(header)==1
+                assert nodes(expanded,'floatingQueueList') and nodes(expanded,'floatingQueueItem0')
+                for glyph in ('sort','remove','add'):
+                    image=nodes(expanded,'playerGlyph-'+glyph)
+                    assert len(image)==1 and image[0]['width']==16 and image[0]['height']==16,(glyph,image)
+                    assert image[0]['color']=='#6b6b6b',(glyph,image[0]['color'])
+                dragged=case.inspect('drag-queue-header','drag','--target','floatingQueueHeader',
+                    '--end-x',str(header[0]['x']+header[0]['width']*.8),'--end-y',str(header[0]['y']+header[0]['height']*.5))
+                assert any(event.get('moving') for event in dragged['pointer_trace']),('Queue header did not enter its native drag handler',dragged['pointer_trace'])
+                assert dragged['main_window']['visibility']==3 and dragged['core']['state']==2
+                assert dragged['window']['width']<=dragged['window']['available_width'] and dragged['window']['height']<=dragged['window']['available_height']
+                case.click('sort-queue','floatingQueueSort')
+                case.click('play-queue-item','floatingQueueItem0')
+                case.inspect('selected-video-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                collapsed=case.click('collapse-queue','floatingQueueToggle')
+                assert not nodes(collapsed,'floatingQueueHeader')
+                case.click('restore-main','floatingRestore')
+                case.close(True)
+            finally:case.close()
+
 def floating_player():
     def current(case,label,capture=False):
         state=case.inspect(label,'snapshot','--await-target','floatingPlayer',
@@ -3413,7 +3445,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue

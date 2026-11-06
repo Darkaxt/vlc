@@ -54,11 +54,24 @@ FocusScope {
         id: queue
         width: parent.width; height: root.queueHeight
         visible: root.queueExpanded; clip: true
-        Rectangle { width: parent.width; height: PlayerStyle.px(44); color: PlayerStyle.timeline; radius: PlayerStyle.px(14) }
-        Text {
+        Item {
+            id: queueHeader
+            AccessibleCompat.id: "floatingQueueHeader"
+            Accessible.name: qsTr("Move miniplayer")
+            readonly property bool moving: queueMove.active
             width: parent.width; height: PlayerStyle.px(44)
-            text: qsTr("Queue"); horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-            font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); color: PlayerStyle.foreground
+            Rectangle { anchors.fill: parent; color: PlayerStyle.timeline; radius: PlayerStyle.px(14) }
+            Text {
+                anchors.fill: parent
+                text: qsTr("Queue"); horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); color: PlayerStyle.foreground
+            }
+            HoverHandler { cursorShape: queueMove.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor }
+            DragHandler {
+                id: queueMove
+                target: null
+                onActiveChanged: if (active) root.Window.window.startSystemMove()
+            }
         }
         RowLayout {
             x: PlayerStyle.px(16); y: PlayerStyle.px(48); width: parent.width-x*2; height: PlayerStyle.px(32)
@@ -69,18 +82,21 @@ FocusScope {
             }
             PlayerIconButton {
                 glyph: "sort"; description: qsTr("Sort queue by title")
+                glyphSize: PlayerStyle.px(16); foreground: PlayerStyle.sectionForeground
                 AccessibleCompat.id: "floatingQueueSort"
                 onClicked: MainPlaylistController.sort(PlaylistController.SORT_KEY_TITLE,
                     MainPlaylistController.sortOrder===PlaylistController.SORT_ORDER_ASC ? PlaylistController.SORT_ORDER_DESC : PlaylistController.SORT_ORDER_ASC)
             }
             PlayerIconButton {
                 glyph: "remove"; description: qsTr("Remove selected queue item")
+                glyphSize: PlayerStyle.px(16); foreground: PlayerStyle.sectionForeground
                 enabled: queueList.currentIndex >= 0
                 AccessibleCompat.id: "floatingQueueRemove"
                 onClicked: queueModel.removeItems([queueList.currentIndex])
             }
             PlayerIconButton {
                 glyph: "add"; description: qsTr("Add media to queue")
+                glyphSize: PlayerStyle.px(16); foreground: PlayerStyle.sectionForeground
                 AccessibleCompat.id: "floatingQueueAdd"
                 onClicked: DialogsProvider.simpleOpenDialog(false)
             }

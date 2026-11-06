@@ -14,6 +14,7 @@ T.ToolButton {
     property bool accented: false
     property real glyphRotation: 0
     property color foreground: PlayerStyle.foreground
+    property real glyphSize: PlayerStyle.px(24)
     implicitWidth: PlayerStyle.px(30)
     implicitHeight: PlayerStyle.px(32)
     padding: 0
@@ -56,11 +57,11 @@ T.ToolButton {
         // IconImage changes fillMode to Pad and crops physical-size PNGs.
         // Its SVG edges already contain antialiasing: applying another linear
         // filter at a half-physical-pixel position visibly softens the icon.
-        sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
+        sourceSize: Qt.size(button.glyphSize, button.glyphSize)
         smooth: false
         rotation: button.glyphRotation
-        width: PlayerStyle.px(24)
-        height: PlayerStyle.px(24)
+        width: button.glyphSize
+        height: button.glyphSize
         fillMode: Image.PreserveAspectFit
       }
     }
