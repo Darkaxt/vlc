@@ -11,10 +11,49 @@ pipeline identity with the exact225/137 interruption report. Keep the existing
 resource limits and one job, use native files without the Windows-header RAM
 cache, and observe host I/O/memory. The existing NTFS cohort is rollback, not
 another compilation destination. Preserve the current Windows checkout, dirty
-test/doc changes and untracked AGENTS.md. Migration/acceptance/build/release
-criteria remain unverified; no external blocker or tracked deferral is claimed.
+test/doc changes and untracked AGENTS.md. Storage copy/content/configuration and
+bounded equivalent filesystem checks now pass; native player acceptance, normal
+delivery, retained/weekly binding and legacy retirement remain pending. No
+external blocker or tracked deferral is claimed.
 No second ACTIVE stage, dependency reinstall, whole-WSL stop or premature
 release is introduced. The earlier explicit-pause record below remains history.
+
+R96 migration execution: original snapshot227 was scoped-stopped after its
+complete prefix was independently recovered and content-verified. Request228
+`0bdd72532c6e4f6d8de1e9c730321ecb` completed the remaining traversal,
+preserving the verified78,194-entry prefix and original run44 objects. The
+snapshot reader now uses one metadata lookup and fixed numeric ownership;
+the stdlib's repeated filesystem/user lookups were measured before this repair.
+A43,898,880-byte prerequisite image was selected from the pinned snapshot;
+Windows imported only this small bootstrap. Full restoration229
+`6e46abebad6c4c36bce4766b2b893d99` and verification230
+`b87d98bb1b5644aead89635dccb2f886` completed0/group empty. Every173,649 entry,
+23,660,168,873 source bytes, non-platform file/link timestamp, link and configured
+input matched; private mounts released. Native binding
+`83d35faf-0581-4379-97be-4484c904eed4` identifies the ext4 `/toolchain` root.
+The256-header workload improved23.69x and identical Windows-header preprocessing
+improved9.87x (7.50s to0.76s); these bounded measurements do not predict full-build
+speed or establish the historical freeze's cause. All original VM/cgroup limits,
+Ubuntu/Docker/default bindings and `.wslconfig` are unchanged. Exact reviewed
+cleanup `e8af615ceda22b21d030bd5b56bc9a1e` removed four spent migration TARs,
+47,981,839,360 bytes, with0 exclusions/errors; manifests/receipts and both
+toolchains remain. Managed continuation231
+`8bf1849c8bcb40eabaa5b0bf3b2fa1e9`, original session53009, completed the interrupted
+player step as pipeline attempt45 on ext4, one job, preserving all SDK/MPV/codec
+objects and409-plugin reuse. Qt compile/link took343.3 seconds; the managed
+operation completed0/group empty, no OOM, and private mounts released. The
+original `/work` paths remain inside the private pinned chroot.
+
+R91 acceptance caught a real photo classification defect before publication:
+the separate preparser retains its ten-second metadata; the untimed playback
+demux reports zero length, which core replaces with that cached item duration.
+The GUI incorrectly required a nonpositive player length. Read-only packaged
+DLL probes verified the instance option becomes minus one after Qt starts;
+the native JPEG has no seek capability. Preview classification now follows the
+effective instance policy and playback capability, preserving timed options.
+Original failed native acceptance and cancellation evidence are retained at
+`D:/Temp/vlc-s8-preview-1.1.8-20261105/media-previews`. M6 remains ACTIVE:
+fresh complete native feature acceptance and final1.1.8 delivery are pending.
 
 **M6 Font navigation, media preview and engine identity: ACTIVE (5 November).** R90–R95 are newly authorized. Investigation identified unconditional theme/font/shortcuts navigation, VLC's ten-second image-demux default, a fixed centered cone, session-only engine selection and an unthemed amber Playback-tab SVG. M5 cleanup and delivery closure passed; only M6 receives implementation. Acceptance: available-font forward/back bypass plus unchanged missing/corrupt/download/fallback flow; untimed still-image behavior across both engines and image/video replacement, preserving animation and explicit timed playback; engine-aware centered/window/taskbar identity; saved engine selection and restart in both directions without changing a failed selection; theme-aware two-tone accents with original artwork preserved; one normal1.1.8 release with independent delivered-package verification. These implementable gaps block M6 acceptance; no external blocker or tracked deferral. No M5 criterion is deferred into M6. These new requirements are not delivered in 1.1.7.
 

@@ -1,5 +1,26 @@
 # Windows x64 reproduction and recovery
 
+6 November M6 storage migration: keep normal1.1.7 as the delivered
+rollback. The interrupted optimized Qt assembly remains run44, original225
+`b8aa2029e76d416b8770072015525a2e`, with its exit137/group-empty report. The
+authorized native destination is the VLC-only distribution `VLC-Build-20261106`
+at `D:/VLC-Redesign/build/wsl-native-20261106`. Windows imports only a small
+bootstrap selected from the exact pinned snapshot; bulk restoration into
+`/toolchain` uses the supported WSL gate. A private chroot preserves `/work`
+paths, SDK/MPV/codec objects and source/input nanosecond mtimes. Restore229 and
+verification230 completed0/group empty with zero content/link/timestamp mismatches
+and unchanged configure inputs. Binding `83d35faf-0581-4379-97be-4484c904eed4`
+records the verified ext4 root; native assembly231 is still running. The existing NTFS cohort
+remains frozen rollback until content/configuration/performance verification,
+native compilation, full M6 acceptance, normal1.1.8 delivery and weekly binding
+verification pass. Ubuntu, Docker, the default distribution and `.wslconfig`
+must remain unchanged. No SDK installation/configure or global resource change
+is part of this migration. Use `with-isolated-toolchain.py
+--native` through the installed WSL gate, with one compiler job and the retained
+normal-mpv-current409-plugin guard; native storage disables the NTFS header-copy
+cache. The pending controls and original-operation records are under the exact
+M6 paths recorded in PLAN.md.
+
 Normal 1.1.7 is delivered from `e9caba476b64c27817ef935532d22921bae28f43`. Canonical `D:/VLC-Redesign/build/windows-x64` source/runtime/pipeline/objects and pinned dependencies passed read-only verification `10ede87d304f49a8ac4ab4245a45d4f6` after normal223/run43 (`bcdd28e63a3842c0a5a9f6969083be09`). Use `build-retention.json`, `verify-retained-build-1.1.7.py` and the matching optional1.1.7 symbols ZIP. Seed a fresh incomplete symbol manifest from verified unchanged pairs; never write into a completed manifest. Current native/artifact/delivery evidence, original checker failures and actual reviewed images are retained at `D:/VLC-Redesign/releases/1.1.7/verification`. Frozen snapshots preserve original paths and are not installed launchers.
 
 M5 reproduction: use a separate copy of the normal portable package with an empty portable profile. Click a shortcut keycap on the final setup page: capture, named conflicts, Reassign, Unset, Cancel and Escape stay inside the wizard. Finish saves accepted edits; cancel/failed save preserves previous bindings. Restart to apply shortcut changes. In Keyboard Shortcuts, searching Stream or Ctrl+S exposes the editable interface command. The complete 100% wizard/rollback/restart workflow, 150/200% layout/capture-cancellation/Finish/restart checks and standalone Stream save/restart/actual-dispatch evidence retain its real diagnostic producer `3c1ce0f16be7d21e558e2d966f3c52a85b9f7000`; the normal delivery has identical production blobs. The resumed release reused the completed assembly and did not compile again.

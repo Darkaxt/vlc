@@ -31,14 +31,16 @@ environment = ['PATH=/opt/tools/bin:/opt/tools/libexec:/opt/rust/cargo/bin:/usr/
 def native_toolchain():
     assert root == Path('/mnt/d/VLC-Redesign/build/windows-x64') and not args.initialize
     assert os.geteuid() == 0, 'Preserve the imported distribution default UID'
+    mount = Path('/toolchain')
     binding_path = root / 'native-storage.json'
     binding = json.loads(binding_path.read_text())
-    assert binding == json.loads(Path('/scratch/native-storage.json').read_text())
+    assert binding == json.loads((mount / 'scratch/native-storage.json').read_text())
     assert binding['schema'] == 'vlc_redesign.native_build_storage.v1' and binding['state'] == 'verified'
     assert binding['distribution'] == os.environ.get('WSL_DISTRO_NAME') == 'VLC-Build-20261106'
     assert binding['vhdx_directory'] == 'D:/VLC-Redesign/build/wsl-native-20261106'
-    assert json.loads(Path('/.vlc-s8-toolchain.json').read_text()) == binding['toolchain_marker']
-    filesystem = subprocess.check_output(['/usr/bin/findmnt', '-n', '-o', 'FSTYPE', '-T', '/work'], text=True).strip()
+    assert binding['toolchain_root'] == str(mount)
+    assert json.loads((mount / '.vlc-s8-toolchain.json').read_text()) == binding['toolchain_marker']
+    filesystem = subprocess.check_output(['/usr/bin/findmnt', '-n', '-o', 'FSTYPE', '-T', str(mount / 'work')], text=True).strip()
     assert filesystem == 'ext4', 'Compilation must use the migrated Linux filesystem'
     group = Path('/proc/self/cgroup').read_text().strip().split('::', 1)[1]
     assert group.startswith('/llm-coordinator/'), 'Use the installed WSL gate'
@@ -49,15 +51,24 @@ def native_toolchain():
     assert quota != 'max' and int(quota) <= int(period)
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
     assert command and command[0].startswith('/')
+    native_environment = [*environment, 'VLC_PLAYER_COMPILE_CACHE=0',
+        'VLC_PLAYER_COMPILE_CACHE_REASON=Verified native ext4 toolchain; no NTFS header-copy cache']
     if args.inside_namespace:
-        subprocess.run(['/usr/bin/mount', '-t', 'proc', 'proc', '/proc'], check=True)
-        raise SystemExit(subprocess.run(['/usr/bin/env', '-i', *environment, *command]).returncode)
+        subprocess.run(['/usr/bin/mount', '--bind', str(mount), str(mount)], check=True)
+        subprocess.run(['/usr/bin/mount', '-t', 'proc', 'proc', str(mount / 'proc')], check=True)
+        for original, relative, recursive in [('/dev', 'dev', True), ('/sys', 'sys', True),
+                (str(root), 'mnt/d/VLC-Redesign/build/windows-x64', False)]:
+            target = mount / relative
+            target.mkdir(parents=True, exist_ok=True)
+            subprocess.run(['/usr/bin/mount', '--rbind' if recursive else '--bind', original, str(target)], check=True)
+        raise SystemExit(subprocess.run(['/usr/sbin/chroot', str(mount), '/usr/bin/env', '-i',
+            *native_environment, *command]).returncode)
     staged = {}
     for value in command:
         if value.startswith('/scratch/'):
             relative = Path(value).relative_to('/scratch')
             assert len(relative.parts) == 1 and (root / relative).is_file()
-            shutil.copyfile(root / relative, Path('/scratch') / relative)
+            shutil.copyfile(root / relative, mount / 'scratch' / relative)
             staged[value] = hashlib.sha256((root / relative).read_bytes()).hexdigest()
     def cache_mounts():
         return [line.split()[4] for line in Path('/proc/self/mountinfo').read_text().splitlines()
@@ -67,10 +78,12 @@ def native_toolchain():
         '--propagation', 'private', sys.executable, str(Path(__file__).resolve()),
         '--inside-namespace', *sys.argv[1:]])
     assert not cache_mounts(), 'A cache mount escaped the private namespace'
+    assert not [line for line in Path('/proc/self/mountinfo').read_text().splitlines()
+        if line.split()[4] == str(mount) or line.split()[4].startswith(str(mount) + '/')], 'A toolchain mount escaped'
     receipt = {'schema': 'vlc_redesign.native_toolchain_execution.v1', 'group': group,
         'filesystem': filesystem, 'binding_sha256': hashlib.sha256(binding_path.read_bytes()).hexdigest(),
         'staged_control_files': staged, 'namespace_exit_code': result.returncode,
-        'private_mounts_released': True, 'environment': environment}
+        'private_mounts_released': True, 'environment': native_environment}
     (root / 'evidence/native-toolchain-filesystem.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt), flush=True)
     raise SystemExit(result.returncode)

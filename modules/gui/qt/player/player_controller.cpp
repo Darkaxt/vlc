@@ -2526,9 +2526,12 @@ bool PlayerController::isStillImagePreview() const
 {
     Q_D(const PlayerController);
     if (!d->m_currentItem || !d->m_stillImage) return false;
-    // Positive explicitly configured image durations retain timed playback.
-    return d->m_mpv ? var_InheritFloat(d->p_intf, "image-duration") < 0.f
-                    : d->m_length.toVLCTick() <= 0;
+    // The external preparser can supply its default ten-second metadata even
+    // when the playback demux is untimed. Length therefore cannot identify a
+    // photo preview. A positive instance option or seekable per-item slideshow
+    // still retains the normal playback controls.
+    return var_InheritFloat(d->p_intf, "image-duration") < 0.f
+        && (d->m_mpv || !(d->m_capabilities & VLC_PLAYER_CAP_SEEK));
 }
 
 bool PlayerController::isSeekable() const
