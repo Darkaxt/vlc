@@ -93,6 +93,9 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   Restoring republishes the main surface's complete size, position and DPI even
   when its layout did not change while minimized; no miniplayer-sized video or
   transparent uncovered video area may remain (7 November reported regression).
+  Video-overlay controls must remain distinguishable over bright/busy pictures:
+  use bright original glyphs on compact translucent dark backing, retaining
+  hover/pressed/focus feedback and the selected engine's focus accent.
   test100/150/200% DPI and both playback engines. Restore/dismiss and natural EOF
   must use the existing player and queue owners; main geometry is preserved.
 - R104 (6 November reported regression): investigate the actual audio-visualizer

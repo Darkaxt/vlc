@@ -1,12 +1,22 @@
 # VLC redesign stages and reconciliation
 
-**7 November current work: M8 — ACTIVE for restored video geometry.**
-The user confirms surrounding-area dragging and hover now work, but Restore
-leaves the composition video at miniplayer size/offset and exposes the desktop
-through the main video cutout. VideoSurface reconnection retains its local
-geometry cache and does not force a full publication to the shared renderer.
-Invalidate size/position/DPI on provider attachment and verify the published
-geometry after repeated compact and expanded restore, then inspect actual video.
+**7 November current work: M8 — ACTIVE for video-overlay contrast.**
+The user reports the current remaining issue is muted controls blending into the
+bright video. Apply bright original glyphs on compact translucent dark backing,
+preserving focus/hover/pressed feedback. Native geometry repair below passes;
+do not repeat unchanged geometry qualification solely for this palette delta.
+The user confirms dragging and hover work. The subsequently reported Restore
+defect came from VideoSurface retaining local geometry while another surface
+changed the shared renderer. Provider attachment now invalidates full state.
+Diagnostic76 from7c8396f400189acfefd40892c9d65b05494c9641 closes0/group empty,
+private mounts released, no max/OOM events. Both engines at100/150/200% pass
+full hover/drag/seek/queue workflows and compact/expanded repeated restoration:
+the published main size/position equals the actual surface at each DPI. Profiles
+are unchanged and every player exits0. Review launchers now bind runtime-restore;
+normal-desktop miniplayer and restored-main pictures remain externally required.
+No compilation is running. See resources/m8-1.1.9-verification.json for bindings.
+
+Historical hover checkpoint:
 Diagnostic75 from0addc211e9df5857ae3d7802cd888c544bef006e closes0/group empty,
 private mounts released, no max/OOM events. Both engines at100/150/200% pass
 compact/expanded playing/paused hover enter/exit, metadata/header/empty-queue
@@ -14,7 +24,7 @@ drag dispatch, seek exclusion, queue actions and restore; protected profiles are
 unchanged and every owned player exits0. Preserve the unsupported-opacity client
 failure and short-fixture natural EOF separately; same-binary resumed evidence
 passes. The longer retained synthetic fixture removes the EOF race.
-The source-bound ordinary review is `floating-m8-review/runtime-hover`; its
+The previous source-bound ordinary review was `floating-m8-review/runtime-hover`; its
 launchers use an isolated profile and600-second synthetic video. User launch and
 actual composed-picture capture remain required because inactive Qt grabs do not
 capture the separate video visual or prove physical Windows movement. M8 cannot
@@ -807,7 +817,7 @@ presentation and final delivery remain required.
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 | M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M10. | None. |
-| M8 Figma floating miniplayer | BLOCKED | Both-engine100/150/200% lifecycle and current hover/drag/seek/queue/restore checks pass; original16-unit muted toolbar inspected. | External normal-desktop composed picture and physical surrounding-area dragging; user-owned current review launch/capture resolves it. M10 depends on this proof. | None. |
+| M8 Figma floating miniplayer | BLOCKED | Both-engine100/150/200% lifecycle, hover/drag/seek/queue and full published geometry after repeated restore pass; user confirms surrounding-area dragging/hover. Original16-unit muted toolbar inspected. | External current normal-desktop miniplayer and restored-main composed pictures; user-owned runtime-restore review and window-bound capture resolve it. M10 depends on this proof. | None. |
 | M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
 | M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 

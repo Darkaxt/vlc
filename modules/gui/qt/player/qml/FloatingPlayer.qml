@@ -45,6 +45,18 @@ FocusScope {
         function onFloatingPlayerChanged() { if (MainCtx.floatingPlayer) root.rememberMedia() }
     }
     PlaylistListModel { id: queueModel; playlist: MainPlaylistController.playlist }
+    component VideoControl: PlayerIconButton {
+        id: control
+        foreground: "#f0f0f0"
+        background: Rectangle {
+            AccessibleCompat.id: "floatingVideoBacking-" + control.glyph
+            radius: PlayerStyle.px(6)
+            color: "black"
+            opacity: control.down ? 0.9 : control.hovered ? 0.8 : 0.6
+            border.width: control.visualFocus ? PlayerStyle.px(2) : 0
+            border.color: PlayerStyle.accent
+        }
+    }
     // One drag owner covers the card and expanded queue. Interactive children
     // retain their grabs (notably the seekbar); ordinary text/background can move.
     DragHandler {
@@ -174,14 +186,14 @@ FocusScope {
                 anchors.fill: parent
                 opacity: pictureHover.hovered || videoPointer.hovered || miniClose.visualFocus || miniRestore.visualFocus || miniPrevious.visualFocus || miniPlay.visualFocus || miniNext.visualFocus || MainCtx.usingTouch ? 1 : 0
                 Rectangle { anchors.fill: parent; color: "#66000000" }
-                PlayerIconButton {
+                VideoControl {
                     id: miniClose
                     x: PlayerStyle.px(4); y: PlayerStyle.px(4)
                     glyph: "close"; description: qsTr("Close miniplayer and stop playback")
                     AccessibleCompat.id: "floatingClose"
                     onClicked: MainCtx.dismissFloatingPlayer()
                 }
-                PlayerIconButton {
+                VideoControl {
                     id: miniRestore
                     anchors.right: parent.right; anchors.top: parent.top; anchors.margins: PlayerStyle.px(4)
                     glyph: "expand-library"; description: qsTr("Restore player")
@@ -190,19 +202,19 @@ FocusScope {
                 }
                 Row {
                     anchors.centerIn: parent; spacing: PlayerStyle.px(24)
-                    PlayerIconButton {
+                    VideoControl {
                         id: miniPrevious
                         glyph: "previous"; description: qsTr("Previous item"); enabled: MainPlaylistController.hasPrev
                         AccessibleCompat.id: "floatingPrevious"; onClicked: MainPlaylistController.prev()
                     }
-                    PlayerIconButton {
+                    VideoControl {
                         id: miniPlay
                         glyph: !Player.isStarted ? "replay" : Player.playingState===Player.PLAYING_STATE_PLAYING ? "pause" : "play"
                         description: !Player.isStarted ? qsTr("Replay") : qsTr("Play or pause")
                         AccessibleCompat.id: "floatingPlay"
                         onClicked: MainPlaylistController.togglePlayPause()
                     }
-                    PlayerIconButton {
+                    VideoControl {
                         id: miniNext
                         glyph: "next"; description: qsTr("Next item"); enabled: MainPlaylistController.hasNext
                         AccessibleCompat.id: "floatingNext"; onClicked: MainPlaylistController.next()

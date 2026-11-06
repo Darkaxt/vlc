@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['floating-contrast', 'floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -1904,6 +1904,41 @@ def engine_accents():
     finally:case.close()
 
 
+def floating_contrast():
+    """Real compact/expanded hover readability, without replaying unchanged geometry/drag acceptance."""
+    def luminance(byte):
+        value=byte/255
+        return value/12.92 if value<=.04045 else ((value+.055)/1.055)**2.4
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            case=Case('floating-contrast-'+engine+'-'+scale,engine=engine,scale=scale,extra=(str(fixtures/'miniplayer-long.mkv'),))
+            try:
+                case.inspect('video-ready','snapshot','--await-core','state','--await-value','3')
+                case.click('play','playButton','--await-core','state','--await-value','2')
+                case.click('minimize','playerMinimize')
+                case.inspect('floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                for expanded in (False,True):
+                    if expanded:case.click('expand-queue','floatingQueueToggle')
+                    label='expanded' if expanded else 'compact'
+                    case.inspect(label+'-hover','move','--target','floatingVideoSurface','--fraction-x','.25','--fraction-y','.25')
+                    state=case.inspect(label+'-painted','snapshot','--capture')
+                    assert nodes(state,'floatingVideoControls')[0]['opacity']==1
+                    ratios=[]
+                    for glyph in ('close','expand-library','previous','pause','next'):
+                        icon=nodes(state,'playerGlyph-'+glyph)[0]
+                        backing=nodes(state,'floatingVideoBacking-'+glyph)[0]
+                        assert icon['color']=='#f0f0f0' and backing['color']=='#000000'
+                        assert backing['width']>=icon['width']+6 and backing['height']>=icon['height']+6
+                        if icon['enabled']:
+                            worst=255*(1-backing['opacity'])
+                            ratio=(luminance(240)+.05)/(luminance(worst)+.05)
+                            assert ratio>=4.5,(glyph,ratio,backing)
+                            ratios.append(ratio)
+                    case.record.setdefault('overlay_contrast',[]).append({'layout':label,'enabled_icons_minimum_ratio_over_white':min(ratios)})
+                case.click('restore','floatingRestore')
+                case.close(True)
+            finally:case.close()
+
 def floating_queue():
     """Complete expanded-queue drag, original toolbar and real item workflow."""
     for engine in ('vlc','mpv'):
@@ -3525,7 +3560,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('floating-contrast',floating_contrast),('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue

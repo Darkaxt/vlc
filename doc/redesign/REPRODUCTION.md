@@ -10,6 +10,22 @@ protected-profile evidence are retained in that version's `verification` folder.
 Frozen control snapshots document original paths; they are not installed
 relocatable launchers.
 
+Unreleased1.1.9 R103 miniplayer repair currently binds production source
+`7c8396f400189acfefd40892c9d65b05494c9641`, optimized diagnostic assembly76.
+Coordinator264 `82d3a7e494c6440d95047e35204f50c2` closed0/group empty with
+private mounts released and no max/OOM events; the Qt-only delta took70.2s.
+`D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-restore-native/result.json`
+passes both engines at100/150/200%, including playing/paused hover, surrounding
+drag regions, seek exclusion, queue actions and repeated compact/expanded restore.
+Actual published size/position is checked against the main surface after each
+restore, with unchanged protected profiles and clean player exits. The read-only
+normal-desktop picture check remains required. Review launchers are under
+`D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review`, bind `runtime-restore`
+and use their own profiles plus the retained600-second synthetic video. These
+are diagnostic review copies with hooks dormant, not final release packages.
+Reuse the D:-backed native-ext4 binding, dependency objects and409-plugin guard;
+do not reinitialize/reconfigure or substitute the historical NTFS build path.
+
 Unreleased1.1.9 R105 panel acceptance is complete at production source
 `9c1059b8b2fc7666ff994a0d52291e50a0850b44`. Optimized diagnostic assembly72
 used the existing Qt-only409-plugin reuse path, not a full dependency rebuild.
