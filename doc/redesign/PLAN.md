@@ -9,6 +9,16 @@ The first taskbar checker incorrectly compared only native ICO sizes against a
 36px Shell rendering; its captured pixels/failure are retained. Fix the reference
 scaling, not its error threshold. Normal57 remains valid pre-R101 evidence and
 unpublished; no stale package may be released after this added requirement.
+Diagnostic58 (`baaeddc12f10406082832b835c7c9ee9`) closed0/group empty, with
+released private mounts and no memory/OOM events. The larger frames pass actual
+header/idle/window/Shell-resource checks at100/150/200% and the complete separate
+engine-palette workflow (`engine-icon-pixels-optical/result.json` and
+`engine-accents-optical-quantized/result.json`). Preserve the failed checker:
+30 near-white pixels had only one RGB level of chroma, making hue unstable;
+visible chroma still uses the unchanged hue tolerance. The failed assertion kept
+a Pillow ICO handle open after player exit0; the isolated profile is hash-verified
+in its recovery record. No native player remained. Normal59, refreshed package
+qualification, actual larger taskbar pixels and publication remain required.
 The user's later R100 request adds independent saved engine accents and matching
 custom-colored app/taskbar artwork to this same stage. Existing1.1.9 packages are
 unpublished qualification output, not delivery. Their native playback passes;

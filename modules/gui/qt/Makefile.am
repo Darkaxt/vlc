@@ -815,9 +815,16 @@ ui_%.h: %.ui
 
 EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
 	pixmaps/redesign/manifest.json pixmaps/redesign/README.md \
-	pixmaps/redesign/mpv-source.json
+	pixmaps/redesign/mpv-source.json pixmaps/redesign/mpv-display-source.json
 
 libqt_plugin_la_RES = \
+	pixmaps/redesign/mpv-display.ico \
+	pixmaps/redesign/mpv-display-16.png \
+	pixmaps/redesign/mpv-display-24.png \
+	pixmaps/redesign/mpv-display-32.png \
+	pixmaps/redesign/mpv-display-48.png \
+	pixmaps/redesign/mpv-display-64.png \
+	pixmaps/redesign/mpv-display-256.png \
 	pixmaps/redesign/mpv.ico \
 	pixmaps/redesign/mpv-16.png \
 	pixmaps/redesign/mpv-24.png \

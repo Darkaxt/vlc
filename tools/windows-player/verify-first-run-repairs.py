@@ -13,6 +13,7 @@ from ctypes import wintypes as W
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hashlib
 import importlib.util
+import io
 import json
 import math
 import os
@@ -1598,7 +1599,7 @@ def engine_accents():
             owned_main_window(case,snapshot),case.player.pid,reference,case.evidence/(label+'-window.png'),custom=True)))
         case.record.setdefault('custom_shell_icons',[]).append(owned_native_read(case,lambda:shell_identity(
             owned_main_window(case,snapshot),case.player.pid,engine,runtime/'vlc.exe',reference,custom_resource=reference)))
-        ico=Image.open(reference)
+        ico=Image.open(io.BytesIO(reference.read_bytes()))
         assert ico.ico.sizes()=={(n,n) for n in (16,24,32,48,64,256)}
         if engine=='mpv':
             mounted=nodes(snapshot,'playerGlyph-mpv');assert len(mounted)==1
@@ -1617,7 +1618,7 @@ def engine_accents():
             for size in sorted(ico.ico.sizes()):
                 observed=ico.ico.getimage(size).convert('RGBA');expected=original.ico.getimage(size).convert('RGBA')
                 assert observed.getchannel('A').tobytes()==expected.getchannel('A').tobytes()
-                chromatic=0
+                chromatic=0;stable_hue_pixels=0
                 for actual,wanted in zip(observed.get_flattened_data(),expected.get_flattened_data()):
                     hue,light,saturation=colorsys.rgb_to_hls(*[v/255 for v in wanted[:3]])
                     if not wanted[3] or saturation<.12:
@@ -1627,8 +1628,14 @@ def engine_accents():
                         actual_hue,actual_light,actual_saturation=colorsys.rgb_to_hls(*[v/255 for v in actual[:3]])
                         assert abs(actual_light-light)<.01
                         target_hue=colorsys.rgb_to_hls(*[v/255 for v in bytes.fromhex(accent[1:])])[0]
-                        if actual_saturation>.15:assert min(abs(actual_hue-target_hue),1-abs(actual_hue-target_hue))<.035
+                        # Near-white 8-bit pixels can have HSL saturation1
+                        # despite only one RGB level of chroma. Their hue is
+                        # quantization noise, not a visible accent deviation.
+                        if actual_saturation>.15 and max(actual[:3])-min(actual[:3])>=8:
+                            stable_hue_pixels+=1
+                            assert min(abs(actual_hue-target_hue),1-abs(actual_hue-target_hue))<.035
                 assert chromatic>0
+                assert stable_hue_pixels>0
         return snapshot
     def switch(label,engine):
         case.click(label+'-panel','toolsButton')

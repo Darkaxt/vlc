@@ -1,17 +1,17 @@
 {
-  "source_commit": "4076261d65482da8b0aec241e5b8a503cb1037df",
-  "qt_plugin_sha256": "585dfcc4b61dbee5b9e93eede1d057d41c6ec06ecf838818a948fac04f376480",
+  "source_commit": "f75f8fc837c31b40ab2ef663dc50a043050d8a94",
+  "qt_plugin_sha256": "d93a3308f4b00aeff00818797919fdbd3c5346c6a33b1c5739b9a2b6148066e6",
   "purpose": "Selected public README comparisons requested by user; isolated empty profiles, no private media",
   "captures_are": "Actual app-rendered Qt UI, not a desktop/video composition claim",
   "files": [
     {
       "file": "player-mpv.png",
-      "capture": "d650b3115409438ab909feb2af2734a8.png",
-      "capture_sha256": "53ad3dbba485b0c2895f5d4cb0b5237e5f695b42257fd1688b075d3a8602e3f6",
-      "sha256": "29e42557a367175e6f4921e457f7f397436910e27250faab972ba51bd81e0377",
+      "capture": "281066034d70476ca0d55e6962c81fa3.png",
+      "capture_sha256": "5527f58dcd41ca73de0cc4b5c55620209645489305abf0b6247ecc76a5b981d4",
+      "sha256": "6499fbae996a216e21cf28bac40a35ccf2f939c875b6f898fcd8308712197f41",
       "crop": null,
       "applicability": "Integrated engine accent defaults and original MPV artwork accepted at100/150/200 percent",
-      "source_commit": "4076261d65482da8b0aec241e5b8a503cb1037df"
+      "source_commit": "f75f8fc837c31b40ab2ef663dc50a043050d8a94"
     },
     {
       "file": "player-vlc.png",

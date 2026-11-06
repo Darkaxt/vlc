@@ -24,6 +24,8 @@ launch.
 VLC and MPV have separate saved accent palettes in General Settings. Their
 defaults are VLC orange and the MPV logo's purple; custom colors also tint the
 running window and taskbar icon while preserving the original icon shading.
+MPV display frames are downsampled from its original high-resolution artwork
+with transparent outer padding removed for a closer visual size match.
 
 - Redesigned player, media library, first-run guide and settings.
 - VLC and MPV playback engines, with in-session switching that preserves position

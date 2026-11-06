@@ -46,11 +46,16 @@ The combined Qt 6 application is conveyed under GNU GPL version 3, exercising
 the applicable later-version permissions of VLC's GPL-2.0-or-later components.
 Original component licenses remain in their sources and accompanying notices.
 
-The engine-specific MPV header emblem is the unchanged `etc/mpv-gradient.svg`
-from pinned MPV revision `e471496c56f0f49c133bd88b50aed62b845f1909`.
-Its original GPL-2.0-or-later provenance and hash are recorded in
-`modules/gui/qt/pixmaps/redesign/mpv-source.json`; the complete MPV source and
-license texts remain part of the corresponding-source/runtime distribution.
+The engine-specific MPV emblem comes from the original Windows ICO extracted
+from the user's installed MPV build. It matches upstream `etc/mpv-icon.ico`,
+Git blob `5467e4e5f67298c0134ddebbbdfd843039e2ee9d` at revision `3138fc8eea`.
+The extracted ICO and native PNG frames remain unchanged with their original
+GPL-2.0-or-later provenance and hashes in
+`modules/gui/qt/pixmaps/redesign/mpv-source.json`. Display frames remove only
+transparent outer padding from the original256px frame and downsample it;
+`mpv-display-source.json` records that recipe and every output hash. Custom
+accents recolor chromatic regions while preserving neutral details and shading.
+The complete MPV source and license texts remain in the source/runtime distribution.
 Preserve the complete GPLv3 text alongside the original GPLv2/LGPL texts.
 Qt's applicable licensing is documented in the
 [Qt 6.8 licensing reference](https://doc.qt.io/qt-6.8/licensing.html);
