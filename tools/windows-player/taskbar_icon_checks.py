@@ -87,17 +87,34 @@ def capture_mpv_button(expected_ico, output):
     assert width<=200 and height<=150,'Reject non-button/oversized capture'
     u=C.WinDLL('user32');u.SetThreadDpiAwarenessContext.argtypes=[W.HANDLE];u.SetThreadDpiAwarenessContext.restype=W.HANDLE
     previous=u.SetThreadDpiAwarenessContext(W.HANDLE(-4));assert previous
-    try:picture=ImageGrab.grab(bbox=(x,y,x+width,y+height),all_screens=True).convert('RGB')
+    u.GetDpiForWindow.argtypes=[W.HWND];u.GetDpiForWindow.restype=W.UINT
+    u.WindowFromPoint.argtypes=[W.POINT];u.WindowFromPoint.restype=W.HWND
+    u.GetAncestor.argtypes=[W.HWND,W.UINT];u.GetAncestor.restype=W.HWND
+    try:
+        tasklist=W.HWND(int(row['tasklist'],16))
+        # Auto-hidden taskbars can retain stale MSAA button rectangles. Refuse
+        # an occluded/background capture instead of calling it a wrong icon.
+        hit=u.WindowFromPoint(W.POINT(x+width//2,y+height//2))
+        if not hit or u.GetAncestor(hit,2)!=u.GetAncestor(tasklist,2):return None
+        dpi=u.GetDpiForWindow(tasklist);assert dpi
+        picture=ImageGrab.grab(bbox=(x,y,x+width,y+height),all_screens=True).convert('RGB')
     finally:u.SetThreadDpiAwarenessContext(previous)
     native=Image.open(expected_ico);best=None
-    for size in sorted(native.ico.sizes()):
+    # Shell sizes are logical pixels, independent of the embedded frame sizes.
+    # For example its24px icon is36 physical pixels at144DPI. Select the next
+    # native frame and downsample; never require an exact36px ICO payload.
+    sizes=sorted(native.ico.sizes())
+    for logical in (16,24,32,48,64):
+        physical=round(logical*dpi/96);size=(physical,physical)
         if size[0]>width or size[1]>height:continue
-        frame=native.ico.getimage(size).convert('RGBA');mask=frame.getchannel('A').point(lambda alpha:255 if alpha>=240 else 0)
+        source=next((value for value in sizes if value[0]>=physical),sizes[-1])
+        frame=native.ico.getimage(source).convert('RGBA').resize(size,Image.Resampling.LANCZOS)
+        mask=frame.getchannel('A').point(lambda alpha:255 if alpha>=240 else 0)
         for left in range(max(0,(width-size[0])//2-6),min(width-size[0],(width-size[0])//2+6)+1):
             for top in range(max(0,(height-size[1])//2-8),min(height-size[1],(height-size[1])//2+8)+1):
                 crop=picture.crop((left,top,left+size[0],top+size[1]))
                 error=sum(ImageStat.Stat(ImageChops.difference(crop,frame.convert('RGB')),mask).mean)/3
-                if best is None or error<best['mean_rgb_error']:best={'size':size,'origin':[left,top],'mean_rgb_error':error}
+                if best is None or error<best['mean_rgb_error']:best={'size':size,'logical_size':logical,'dpi':dpi,'source_frame':source,'origin':[left,top],'mean_rgb_error':error}
     picture.save(output)
     assert best and best['mean_rgb_error']<18,('Actual taskbar pixels differ from extracted MPV icon',best)
     return {'button':row,'match':best,'image':str(output),'image_sha256':hashlib.sha256(Path(output).read_bytes()).hexdigest(),

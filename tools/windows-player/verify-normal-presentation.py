@@ -201,7 +201,7 @@ observer_command = [sys.executable, '-B', str(repo / 'tools/windows-player/obser
 if args.verify_app_icon:
     from app_icon_checks import executable_icon
     result['executable_app_icon']=executable_icon(runtime/'vlc.exe',repo/'share/icons/vlc.ico')
-    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')]
+    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/mpv-display.ico')]
 observer = player = None
 if args.verify_taskbar_icon:
     from taskbar_icon_checks import running_buttons, capture_mpv_button
@@ -246,7 +246,7 @@ with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb'
                     if 'MPV picture presented' in text:
                         try:
                             assert input_desktop()==startup_desktop,'Input desktop changed before taskbar capture'
-                            result['actual_taskbar_icon']=capture_mpv_button(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico',scratch/'taskbar-mpv.png')
+                            result['actual_taskbar_icon']=capture_mpv_button(repo/'modules/gui/qt/pixmaps/redesign/mpv-display.ico',scratch/'taskbar-mpv.png')
                         except Exception as failure:
                             result['taskbar_observation_error']=repr(failure)
                         break

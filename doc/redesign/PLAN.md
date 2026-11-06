@@ -1,6 +1,14 @@
 # VLC redesign stages and reconciliation
 
 **6 November current work: M7 Runtime engine icon and accent parity — ACTIVE.**
+The user's normal-window review confirms the colored taskbar icon is present.
+R101 adds the requested optical size/edge correction before final publication:
+derive display frames from the256px original after removing only transparent
+padding, preserve the extracted originals, and apply the same artwork everywhere.
+The first taskbar checker incorrectly compared only native ICO sizes against a
+36px Shell rendering; its captured pixels/failure are retained. Fix the reference
+scaling, not its error threshold. Normal57 remains valid pre-R101 evidence and
+unpublished; no stale package may be released after this added requirement.
 The user's later R100 request adds independent saved engine accents and matching
 custom-colored app/taskbar artwork to this same stage. Existing1.1.9 packages are
 unpublished qualification output, not delivery. Their native playback passes;

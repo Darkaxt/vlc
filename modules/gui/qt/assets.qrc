@@ -3,12 +3,12 @@
         <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
     </qresource>
     <qresource prefix="/redesign/icons">
-        <file alias="mpv-16.png">pixmaps/redesign/mpv-16.png</file>
-        <file alias="mpv-24.png">pixmaps/redesign/mpv-24.png</file>
-        <file alias="mpv-32.png">pixmaps/redesign/mpv-32.png</file>
-        <file alias="mpv-48.png">pixmaps/redesign/mpv-48.png</file>
-        <file alias="mpv-64.png">pixmaps/redesign/mpv-64.png</file>
-        <file alias="mpv-256.png">pixmaps/redesign/mpv-256.png</file>
+        <file alias="mpv-16.png">pixmaps/redesign/mpv-display-16.png</file>
+        <file alias="mpv-24.png">pixmaps/redesign/mpv-display-24.png</file>
+        <file alias="mpv-32.png">pixmaps/redesign/mpv-display-32.png</file>
+        <file alias="mpv-48.png">pixmaps/redesign/mpv-display-48.png</file>
+        <file alias="mpv-64.png">pixmaps/redesign/mpv-display-64.png</file>
+        <file alias="mpv-256.png">pixmaps/redesign/mpv-display-256.png</file>
         <file alias="menu-file.svg">pixmaps/redesign/menu-file.svg</file>
         <file alias="menu-folder.svg">pixmaps/redesign/menu-folder.svg</file>
         <file alias="menu-network.svg">pixmaps/redesign/menu-network.svg</file>

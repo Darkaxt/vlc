@@ -38,6 +38,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   website-background purple or an additional excessively darkened substitute.
   Verify palette selection/save/cancel, engine handover, restart, custom-colored
   icon pixels and actual Shell resource/button behavior before final delivery.
+- R101 (6 November review feedback): the MPV source icon appears smaller than
+  neighbouring taskbar icons and has uneven small-frame edges. Increase its
+  apparent size by approximately10–15% using the preserved largest original
+  frame with transparent outer padding removed and cleanly downsampled display
+  frames. Preserve the original extracted ICO/PNGs and source hashes; record the
+  exact display derivation. Use the same derived artwork in header, idle, native
+  and taskbar icons, including custom colors. This explicitly supersedes the
+  earlier pixel-identical small-frame display requirement, not source preservation.
+  Verify unclipped artwork, optical dimensions,100/150/200% rendering and actual
+  taskbar pixels, accounting for the taskbar's own display scaling.
 
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.

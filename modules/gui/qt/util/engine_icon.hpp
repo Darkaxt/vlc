@@ -49,7 +49,7 @@ inline Assets create(bool mpv,const QColor &accent,const QString &cache)
     Assets result;
     const bool original=accent==defaultAccent(mpv);
     result.root=original ? QStringLiteral(":/redesign/icons") :
-        QDir(cache).filePath(QStringLiteral("engine-icons-v1/%1-%2").arg(mpv?"mpv":"vlc",accent.name().mid(1)));
+        QDir(cache).filePath(QStringLiteral("engine-icons-v2/%1-%2").arg(mpv?"mpv":"vlc",accent.name().mid(1)));
     if(!original && !QDir().mkpath(result.root))return result;
     QList<QByteArray> frames;QList<int> sizes;
     for(int size : {16,24,32,48,64,256}) {

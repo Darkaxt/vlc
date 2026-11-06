@@ -1,0 +1,61 @@
+{
+  "source": "mpv.ico",
+  "source_sha256": "c42ee25aeddb88e741cf94fb12867f61edd012cd82ef346e43c5f01c27898434",
+  "source_frame": [
+    256,
+    256
+  ],
+  "alpha_bounds": [
+    9,
+    11,
+    246,
+    248
+  ],
+  "resampling": "premultiplied RGBA Lanczos",
+  "recipe": "Crop only fully transparent outer padding from largest original frame, then downsample each display size",
+  "sha256": "b044884bb88234a44556515f7dd4106c4694d5cd86bc011d7bcf8942f8eca8d4",
+  "frames": [
+    {
+      "size": 16,
+      "sha256": "f327796e090a83e358cd309d8517b07152c625c12dd0c8ecdb9399db8d16fa3b",
+      "decoded_rgba_sha256": "18e247bea264c5ac51385158260ff31b3215c4c7ac2df825e0ae1cf4f4323af7",
+      "original_opaque_diameter": 14,
+      "display_opaque_diameter": 14
+    },
+    {
+      "size": 24,
+      "sha256": "88b99f77e0050e7413a6392fd5be4658692ff540aef769eca3131c287cca6bcf",
+      "decoded_rgba_sha256": "53ff5c6e2cac4681b685bc6273115029b80f8efc7f3739a2643d34680c71e019",
+      "original_opaque_diameter": 20,
+      "display_opaque_diameter": 22
+    },
+    {
+      "size": 32,
+      "sha256": "51942ed16aeecbcb0795629bdc28c60645ea3821d418c3eef44b82f283551b71",
+      "decoded_rgba_sha256": "158add8bd3c9e1377a0f4f6e50577e560c63eb93db7e73c150e92e34385b6785",
+      "original_opaque_diameter": 28,
+      "display_opaque_diameter": 30
+    },
+    {
+      "size": 48,
+      "sha256": "d45cb5ff3b8e90f6fb3f0caf31b65a63f0a47876155da1e4f13649d1a09f5591",
+      "decoded_rgba_sha256": "791f1117622c2a10f0c7a7d4e521425db0ff9f0782127b8093b58f7b92d4d5a9",
+      "original_opaque_diameter": 41,
+      "display_opaque_diameter": 45
+    },
+    {
+      "size": 64,
+      "sha256": "c7b58ce57013bb4fffaef9e45d973bbd86154d8ed4b3a39f6f47d161d5651551",
+      "decoded_rgba_sha256": "852c800cc09fb1f7e8df4cbbba70342c17581161af2722860a2f411cd6d205b1",
+      "original_opaque_diameter": 55,
+      "display_opaque_diameter": 60
+    },
+    {
+      "size": 256,
+      "sha256": "cfb76ea0986c3f89a34796acd677a72ddbec871d08fb33192a6ede1f33fc3539",
+      "decoded_rgba_sha256": "1f3d6d53066558fb220a42c80ac9e4f62aed043b1685b9cd2c12b96b90e76cda",
+      "original_opaque_diameter": 223,
+      "display_opaque_diameter": 240
+    }
+  ]
+}

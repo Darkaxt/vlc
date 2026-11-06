@@ -167,7 +167,7 @@ def window_icon(hwnd, expected_pid, expected_png, output, *, custom=False):
         image=Image.frombytes('RGBA',(bitmap.width,bitmap.height),pixels.raw,'raw','BGRA')
         image.save(output)
         opaque=[pixel for pixel in image.get_flattened_data() if pixel[3]==255]
-        mpv=Path(expected_png).name=='mpv.ico'
+        mpv=Path(expected_png).name in ('mpv.ico','mpv-display.ico')
         if not mpv and not custom:
             assert opaque and all(max(abs(pixel[index]-channel) for index,channel in enumerate((211,121,24)))<=2 for pixel in opaque),'Native icon retains the upstream artwork'
         assert any(pixel[3]==0 for pixel in image.get_flattened_data()),'Native icon lost transparency'
@@ -177,7 +177,8 @@ def window_icon(hwnd, expected_pid, expected_png, output, *, custom=False):
             # rather than accepting any purple/circular icon.
             import json
             if not custom:
-                provenance=json.loads(reference.with_name('mpv-source.json').read_text(encoding='utf-8'))
+                metadata='mpv-display-source.json' if reference.name=='mpv-display.ico' else 'mpv-source.json'
+                provenance=json.loads(reference.with_name(metadata).read_text(encoding='utf-8'))
                 assert hashlib.sha256(reference.read_bytes()).hexdigest() in json.dumps(provenance)
             native=Image.open(reference)
             sizes=native.ico.sizes()

@@ -607,13 +607,13 @@ def owned_native_read(case, reader):
 
 def verify_window_icon(case, snapshot):
     engine=snapshot['core']['engine']
-    name='mpv.ico' if engine=='mpv' else 'app.png'
+    name='mpv-display.ico' if engine=='mpv' else 'app.png'
     result=owned_native_read(case,lambda:window_icon(owned_main_window(case,snapshot),case.player.pid,
         repo/'modules/gui/qt/pixmaps/redesign'/name,case.evidence/('native-window-icon-'+engine+'.png')))
     case.record.setdefault('native_window_icons',[]).append(result)
     from app_icon_checks import shell_identity
     identity=owned_native_read(case,lambda:shell_identity(owned_main_window(case,snapshot),case.player.pid,
-        engine,runtime/'vlc.exe',repo/'modules/gui/qt/pixmaps/redesign/mpv.ico'))
+        engine,runtime/'vlc.exe',repo/'modules/gui/qt/pixmaps/redesign/mpv-display.ico'))
     case.record.setdefault('native_shell_identities',[]).append(identity)
 
 
@@ -1613,7 +1613,7 @@ def engine_accents():
                 picture.crop(tuple(round(v*ratio) for v in (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(crop)
                 pixels=qml_mpv_icon_pixels(crop,reference,tuple(math.floor(node[k]*ratio)-round(node[k]*ratio) for k in ('x','y')))
                 case.record.setdefault('custom_qml_icons',[]).append(dict(pixels,label=label,target=target))
-            original=Image.open(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')
+            original=Image.open(repo/'modules/gui/qt/pixmaps/redesign/mpv-display.ico')
             for size in sorted(ico.ico.sizes()):
                 observed=ico.ico.getimage(size).convert('RGBA');expected=original.ico.getimage(size).convert('RGBA')
                 assert observed.getchannel('A').tobytes()==expected.getchannel('A').tobytes()
@@ -1717,7 +1717,7 @@ def engine_icon_pixels():
                 picture.crop(tuple(round(value*ratio) for value in
                     (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(crop)
                 case.record.setdefault('native_qml_icon_pixels',[]).append(dict(
-                    qml_mpv_icon_pixels(crop,repo/'modules/gui/qt/pixmaps/redesign/mpv.ico',
+                    qml_mpv_icon_pixels(crop,repo/'modules/gui/qt/pixmaps/redesign/mpv-display.ico',
                         tuple(math.floor(node[key]*ratio)-round(node[key]*ratio) for key in ('x','y'))),target=identity,source=node['source']))
             if scale=='1' and not args.skip_documentation_capture:
                 # Current public UI documentation uses an empty owned profile.
@@ -1758,7 +1758,7 @@ def engine_icons():
             picture.crop(tuple(round(value*ratio) for value in
                 (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(case.evidence/(label+'-header.png'))
             if engine=='mpv':
-                pixels=qml_mpv_icon_pixels(case.evidence/(label+'-header.png'),repo/'modules/gui/qt/pixmaps/redesign/mpv.ico',
+                pixels=qml_mpv_icon_pixels(case.evidence/(label+'-header.png'),repo/'modules/gui/qt/pixmaps/redesign/mpv-display.ico',
                     tuple(math.floor(node[key]*ratio)-round(node[key]*ratio) for key in ('x','y')))
                 case.record.setdefault('native_qml_icon_pixels',[]).append(pixels)
             return snapshot

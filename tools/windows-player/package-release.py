@@ -151,12 +151,15 @@ def main():
     for source, target in [('COPYING', 'GPL-2.0.txt'), ('COPYING.LIB', 'LGPL-2.1.txt'),
             ('modules/gui/qt/fonts/redesign/LICENSE.txt', 'INTER-OFL-1.1.txt'),
             ('modules/gui/qt/pixmaps/redesign/mpv-source.json', 'MPV-ICON-SOURCE.json'),
+            ('modules/gui/qt/pixmaps/redesign/mpv-display-source.json', 'MPV-ICON-DISPLAY.json'),
             ('doc/redesign/resources/s7/FLUENT-ICONS-LICENSE.txt', 'FLUENT-ICONS-MIT.txt'),
             ('doc/redesign/resources/s7/THIRD-PARTY-NOTICES.md', 'THIRD-PARTY-NOTICES.md')]:
         blob = subprocess.check_output(['git', '-C', str(repo), 'show', args.source_commit + ':' + source])
         (notices / target).write_bytes(blob)
     icon_provenance=json.loads((notices/'MPV-ICON-SOURCE.json').read_text())
-    assert hashlib.sha256((package/'mpv.ico').read_bytes()).hexdigest()==icon_provenance['sha256']
+    icon_display=json.loads((notices/'MPV-ICON-DISPLAY.json').read_text())
+    assert icon_display['source_sha256']==icon_provenance['sha256']
+    assert hashlib.sha256((package/'mpv.ico').read_bytes()).hexdigest()==icon_display['sha256']
     shutil.copytree(args.dependency_notices, notices / 'dependencies')
     for version in ('GPL-3', 'LGPL-3'):
         source = args.dependency_notices / 'compiler-runtime/common-licenses' / version
