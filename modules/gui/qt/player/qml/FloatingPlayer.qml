@@ -124,7 +124,7 @@ FocusScope {
                         font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground
                     }
                 }
-                onClicked: { queueList.currentIndex=index; MainPlaylistController.goTo(index,true) }
+                onClicked: MainPlaylistController.goTo(index,true)
             }
         }
     }

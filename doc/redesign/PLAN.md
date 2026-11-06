@@ -21,6 +21,13 @@ with Linux group empty/private mounts released; no build remains running.
 M7 closure assessment found no additional required abstraction or refactor.
 M8 owns R103: real floating video on minimize, Figma compact/queue/hover/seek/
 metadata/replay controls, both engines, monitor bounds and restore/dismissal.
+The integrated M8 snapshot is `e14032bfd9c5a3f5edac59daad88ac838822e77c`.
+Diagnostic64 stopped on the incorrect `QWindow::titleChanged` signal name;
+the supported Qt signal is `windowTitleChanged`. The original request
+`531cae0ee902434fa7fd6309240c36db` closed with exit1, empty Linux group,
+released private mounts and no max/OOM events. Correct that connection and
+resume the affected Qt step with completed objects retained. M8 acceptance
+has not run; this is an internal compile defect, not an external impediment.
 M9 player-panel Figma parity (R105) is NOT STARTED, added by the user's four-tab
 comparison. It owns original selected two-tone icons, actual row/control/slider
 layout and footer parity, with real VLC/MPV bindings and rendered acceptance.

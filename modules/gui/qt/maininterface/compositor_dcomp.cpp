@@ -625,7 +625,7 @@ bool CompositorDirectComposition::showFloatingPlayer(Qt::WindowStates previousSt
             m_floatingView->setTitle(m_quickView->title() + QStringLiteral(" — ") + qtr("Miniplayer"));
             m_floatingView->setIcon(m_mainCtx->getRedesignWindowIcon());
         };
-        connect(m_quickView.get(), &QWindow::titleChanged, view, identity);
+        connect(m_quickView.get(), &QWindow::windowTitleChanged, view, identity);
         connect(m_mainCtx, &MainCtx::redesignAccentChanged, view, identity);
         identity();
         view->setSource(QUrl(QStringLiteral("qrc:/qt/qml/VLC/Player/FloatingPlayer.qml")));
