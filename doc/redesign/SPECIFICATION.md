@@ -49,8 +49,41 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   Verify unclipped artwork, optical dimensions,100/150/200% rendering and actual
   taskbar pixels, accounting for the taskbar's own display scaling.
 
+- R102 (6 November user correction): disabling the media library, including
+  `--no-media-library`, must retain the Figma interface, engine identity, menus,
+  playback and queue. Do not create a media-library instance, database or scanner
+  while disabled. Indexed views must show a truthful unavailable state; direct
+  file/folder/network playback and Settings must remain usable. Verify both
+  engines, restart, main/library/miniplayer transitions and representative DPI.
+- R103 (6 November user request): implement the complete Figma floating
+  miniplayer, automatically shown at the lower right of the active monitor when
+  the main player is minimized during video playback. Preserve the current input,
+  time, tracks, engine and playback state in both VLC and MPV. Include the Figma
+  compact card, expandable real queue, seekbar, filename/folder metadata, hover
+  previous/play-pause/next, close and restore controls and natural-EOF replay.
+  Use the selected engine's accent, current original icon artwork, rounded glass
+  and native-DPI rendering. Dragging/resizing must remain monitor-bounded; restore
+  the same main window and avoid resurrecting the mini after explicit dismissal.
+  Audio-only and idle playback must not automatically create the floating video
+  window. Move the existing in-library preview to the right as also requested.
+- R104 (6 November reported regression): investigate the actual audio-visualizer
+  selection during video playback. Supported enabled modes must have a visible
+  result; unsupported engine/input combinations must not accept a silent no-op.
+  Match the original Figma visualizer and EQ-preset option iconography, retain
+  native choice values and real processing, and verify output plus reset/disable.
+  The user explicitly clarified that the animated effects belong **inside the
+  progress bar**, not above it or in a separate window. Keep the main video and
+  bar geometry unchanged, preserve the seek handle, pointer/keyboard seeking,
+  previews and subtitle controls, and follow the active accent. Drive the effects
+  from the playing audio stream; do not simulate activity or decode the file a
+  second time. Pause freezes the effect; seek/input/track/engine changes discard
+  stale samples, and disabling releases its audio observer. Existing standalone
+  VLC visualization capabilities remain available through their native controls.
+
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
+The expanded request also requires R102/R104 repairs and R103 floating-miniplayer
+acceptance before that single final release; no intermediate repair release.
 M6's separately recorded native-cleanup capability blocker remains parked;
 it is neither waived nor relabeled as M7 completion.
 

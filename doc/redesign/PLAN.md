@@ -1,16 +1,62 @@
 # VLC redesign stages and reconciliation
 
 **6 November current work: M7 Runtime engine icon and accent parity — ACTIVE.**
+Expanded outcome: M7 retains R97-R102 and the reported R104 visualizer regression;
+M8 Figma floating miniplayer (R103) is NOT STARTED; M9 final1.1.9 delivery is
+NOT STARTED. M7's planned publication now belongs to M9 after both implementation
+stages pass; no earlier release is authorized as completion of this expanded
+request. S9 Rust remains NOT STARTED. M7 resumed after the user's explicit choice:
+R104 effects animate inside the existing progress bar, with unchanged geometry
+and usable seeking, rather than above it. Its implementation will observe the
+current PCM audio path without a second decoder or visualization vout. Finish
+this output path and the taskbar identity lifetime repair before one coordinated
+affected native acceptance. Neither the uncompiled source nor1.1.9
+is delivered. M8 has not begun.
+Normal60 closed0/group empty (63a4ef6196a64cd68b2f95cac30e4e6c), reused409 plugins,
+and passed stripped packaging/source/symbols, native VLC and actual MPV SDR/P5
+presentation. Its scoped taskbar-button rebind ran once but did not fix the actual
+pixel mismatch; remove that failed hypothesis rather than retaining a workaround.
+The user also exposed the review launcher's `--no-media-library` branch into the
+upstream UI. Correcting the launcher restores Figma; R102 additionally requires
+fixing the application's capability-to-layout coupling. Record typed QML models
+without creating a backend; instantiate/query them only when a library exists.
+R102 source now keeps PlayerLibraryDisplay without a backend and lazily creates
+only available library models; direct URL playback uses the native queue. The
+both-engine/DPI/no-database acceptance case is prepared, not yet run. R104's
+normal60 inactive-desktop reproduction closed0 with resources released: the
+visualizer starts but requests a second vout, rejected by the occupied Qt
+compositor and handled by a separate window. Its output placement during video
+is now specified as an animated effect inside the seek track. Original
+four visualizer and18 EQ-preset icon assets are extracted from the canonical
+archive and integrated through native-value mappings and the existing accent
+colorizer; source/hash and bounded rendering checks pass, native dropdown
+acceptance remains unmet. The replacement now has source wiring from a bounded
+pass-through PCM observer on the held main-player audio output, through the
+original VLC FFT, to the existing seek track; it requests no additional video
+output or decoder. Spectrometer/scope/spectrum/waveform use the original option
+icons, with explicit unavailability for MPV/no audio. DSP diagnostics establish
+silence, tone frequency/amplitude, unchanged PCM, multichannel capture and reset;
+the live filter lifecycle, rendering, seeking and native parity remain unverified.
+Probe logs/results and isolated profile are retained
+outside its spent copied runtime. No further compilation before these coherent
+repairs are integrated. The class-icon diagnostic rules out Qt's class icon as
+the old MPV image source (it is the generic class icon); current WM_GETICON pixels
+contain the derived MPV artwork. One teardown read was rejected and is retained
+as a diagnostic limit, not a failed player lifecycle: native exit0/resources
+closed. Source now corrects the documented metadata ordering during runtime
+changes by clearing only the owned window's explicit AppID before its relaunch
+metadata, then restoring the same stable engine AppID. The old rebind mechanism
+remains removed; actual taskbar pixel acceptance is still unmet. The existing
+volatile passive-window option now retains APPWINDOW alongside NOACTIVATE so
+normal package taskbar checks can run without focus or desktop controls.
 Normal59 qualification passed, but its user-opened actual taskbar capture still
 matches the pre-optical icon (old48-to36 RGB error5.59 versus new48-to36 error29.24).
 Both actual HWND HICONs and both Shell file-icon extraction routes contain the
 new artwork; the Shell file-cache indexes are distinct. No pinned shortcuts or
 second VLC process explain the stale group. R98/R100/R101 therefore remain
-unmet. Rebind only this player's registered taskbar button after icon identity
-changes, using ITaskbarList DeleteTab/AddTab; retain AppIDs, pins and global caches.
-The identity guard must prevent TaskbarButtonCreated recursion and passive windows
-must remain unregistered. Verify the affected native lifecycle and actual group
-pixels before publishing; do not repeat unchanged palette/asset acceptance.
+unmet. The tested ITaskbarList DeleteTab/AddTab hypothesis failed and has been
+removed from the working source. Preserve AppIDs, pins and global caches while
+tracing the actual group image; do not retain or repeat the failed mechanism.
 The user's normal-window review confirms the colored taskbar icon is present.
 R101 adds the requested optical size/edge correction before final publication:
 derive display frames from the256px original after removing only transparent
@@ -649,7 +695,7 @@ presentation and final delivery remain required.
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
-| M7 Runtime engine icon parity | ACTIVE | Installed MPV icon group extracted without modifying its PE; live1.1.8 HWND/Shell identity read; root cause and acceptance gap identified. | R97 original artwork integration; R98 actual taskbar identity/switch/restart; combined native/DPI/preservation acceptance and one independently verified normal1.1.9 update. | None. |
+| M7 Runtime engine icon parity | ACTIVE | Original/custom engine assets and independent palettes pass earlier applicable native checks; R102 source and R104 original dropdown assets are integrated. | R98/R101 actual larger taskbar image; R102 native no-library workflows; R104 in-bar output implementation and native acceptance. Final publication belongs to M9. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

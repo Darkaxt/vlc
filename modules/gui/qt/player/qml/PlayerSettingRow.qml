@@ -62,6 +62,13 @@ Column {
             model: row.option.choices || []
             textRole: "text"
             valueRole: "value"
+            optionIcons: row.option.key === "equalizer-preset" ? ({
+                flat:"eq-flat", classical:"eq-classical", club:"eq-club", dance:"eq-dance",
+                fullbass:"eq-fullbass", fullbasstreble:"eq-fullbasstreble", fulltreble:"eq-fulltreble",
+                headphones:"eq-headphones", largehall:"eq-largehall", live:"eq-live", party:"eq-party",
+                pop:"eq-pop", reggae:"eq-reggae", rock:"eq-rock", ska:"eq-ska", soft:"eq-soft",
+                softrock:"eq-softrock", techno:"eq-techno"
+            }) : ({})
             currentIndex: indexOfValue(row.current)
             onActivated: row.apply(currentValue)
         }

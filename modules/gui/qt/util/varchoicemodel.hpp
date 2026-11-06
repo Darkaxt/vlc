@@ -37,12 +37,14 @@ int VLCVarChoiceModel_on_variable_list_callback( vlc_object_t * object, char con
  * @brief The VLCVarChoiceModel class construct an Abstract List Model from a
  * vlc_var with the VLC_VAR_HASCHOICE flag and a type amongst string, int, float, bool
  *
- * available roles are DisplayRole and CheckStateRole
+ * available roles are DisplayRole, CheckStateRole and ValueRole
  */
 class VLCVarChoiceModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    enum Role { ValueRole = Qt::UserRole + 1 };
+    Q_ENUM(Role)
     Q_PROPERTY(bool hasCurrent READ hasCurrent NOTIFY hasCurrentChanged FINAL)
 
     template<typename T>

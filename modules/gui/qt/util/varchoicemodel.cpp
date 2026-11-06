@@ -49,6 +49,7 @@ QHash<int, QByteArray> VLCVarChoiceModel::roleNames() const
 {
     QHash<int, QByteArray> roleNames = this->QAbstractListModel::roleNames();
     roleNames[Qt::CheckStateRole] = QByteArrayLiteral("checked");
+    roleNames[ValueRole] = QByteArrayLiteral("value");
     return roleNames;
 }
 
@@ -72,6 +73,8 @@ QVariant VLCVarChoiceModel::data(const QModelIndex &index, int role) const
         return m_titles[row];
     else if (role == Qt::CheckStateRole)
         return row == m_current;
+    else if (role == ValueRole)
+        return m_values[row];
     return {};
 }
 

@@ -5,6 +5,33 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import { affine, pathCommands } from './player-assets.mjs';
 
+test('visualizer and EQ choices retain their original two-tone Figma artwork', async () => {
+  const {extractPlayerAssets, equalizerIcons}=await import('./player-assets.mjs');
+  const output=process.env.VLC_DESIGN_TEST_OUTPUT;
+  assert.ok(output);
+  const manifest=extractPlayerAssets(output);
+  const visualizers=manifest.icons.filter(icon=>icon.filename.startsWith('visualizer-'));
+  const resources=fs.readFileSync(new URL('../../modules/gui/qt/assets.qrc',import.meta.url),'utf8');
+  const distribution=fs.readFileSync(new URL('../../modules/gui/qt/Makefile.am',import.meta.url),'utf8');
+  assert.deepEqual(visualizers.map(icon=>icon.id), ['2138:8026','2139:8064','2139:8048','2139:8078']);
+  for(const icon of [...visualizers, ...manifest.icons.filter(icon=>icon.filename.startsWith('eq-'))]) {
+    assert.equal(icon.width,24);
+    assert.equal(icon.height,24);
+    assert.equal(icon.originalColors,true);
+    assert.ok(resources.includes(`alias="${icon.filename}"`),icon.filename);
+    assert.ok(distribution.includes('pixmaps/redesign/'+icon.filename),icon.filename);
+    const svg=fs.readFileSync(path.join(output,icon.filename),'utf8');
+    assert.match(svg,/fill="rgb\(143,143,143\)"/);
+    if(icon.filename!=='eq-flat.svg') assert.match(svg,/fill="rgb\((211,121,24|171,99,20)\)"/);
+    assert.doesNotMatch(svg,/<image|<text|scale\(14 -14\)/,'Extract only the original icon, not the dropdown label');
+    const distributed=fs.readFileSync(new URL('../../modules/gui/qt/pixmaps/redesign/'+icon.filename,import.meta.url));
+    assert.equal(createHash('sha256').update(distributed).digest('hex'),icon.sha256);
+  }
+  assert.deepEqual(manifest.icons.filter(icon=>icon.filename.startsWith('eq-')).map(icon=>icon.presetLabel),
+    ['Flat','Classical','Club','Dance','Full base','Full base & treble','Full treble','Headphones','Large hall','Live','Party','Pop','Reggae','Rock','Ska','Soft','Soft rock','Techno']);
+  assert.equal(equalizerIcons.length,18);
+});
+
 test('native settings reference existing, distributed original Qt icon resources', async () => {
   const {icons}=await import('./player-assets.mjs');
   assert.deepEqual(icons.find(([,name])=>name==='chevron-right'),['71:875','chevron-right']);

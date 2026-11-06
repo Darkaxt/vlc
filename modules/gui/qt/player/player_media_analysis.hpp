@@ -2,6 +2,7 @@
 #ifndef VLC_QT_PLAYER_MEDIA_ANALYSIS_HPP
 #define VLC_QT_PLAYER_MEDIA_ANALYSIS_HPP
 #include "player_controller.hpp"
+#include "player_audio_visualizer.hpp"
 #include <QImage>
 #include <QCache>
 #include <QElapsedTimer>
@@ -26,20 +27,23 @@ class PlayerAnalysisStrip : public QQuickPaintedItem
     Q_PROPERTY(double timeScale READ timeScale WRITE setTimeScale NOTIFY changed FINAL)
     Q_PROPERTY(double delayMS READ delayMS WRITE setDelayMS NOTIFY changed FINAL)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY changed FINAL)
+    Q_PROPERTY(QString renderMode READ renderMode WRITE setRenderMode NOTIFY changed FINAL)
 public:
-    explicit PlayerAnalysisStrip(QQuickItem *parent = nullptr) : QQuickPaintedItem(parent) {}
+    explicit PlayerAnalysisStrip(QQuickItem *parent = nullptr) : QQuickPaintedItem(parent) { setAcceptedMouseButtons(Qt::NoButton); }
     QVariantList samples() const { return m_samples; }
     QVariantList cues() const { return m_cues; }
     double durationMS() const { return m_duration; }
     double timeScale() const { return m_scale; }
     double delayMS() const { return m_delay; }
     QColor color() const { return m_color; }
+    QString renderMode() const { return m_renderMode; }
     void setSamples(const QVariantList &v) { if (m_samples == v) return; m_samples = v; update(); emit changed(); }
     void setCues(const QVariantList &v) { if (m_cues == v) return; m_cues = v; update(); emit changed(); }
     void setDurationMS(double v) { if (m_duration == v) return; m_duration = v; update(); emit changed(); }
     void setTimeScale(double v) { if (m_scale == v) return; m_scale = v; update(); emit changed(); }
     void setDelayMS(double v) { if (m_delay == v) return; m_delay = v; update(); emit changed(); }
     void setColor(const QColor &v) { if (m_color == v) return; m_color = v; update(); emit changed(); }
+    void setRenderMode(const QString &v) { if (m_renderMode == v) return; m_renderMode = v; update(); emit changed(); }
     void paint(QPainter *) override;
 signals:
     void changed();
@@ -47,6 +51,7 @@ private:
     QVariantList m_samples, m_cues;
     double m_duration = 0, m_scale = 1, m_delay = 0;
     QColor m_color;
+    QString m_renderMode;
 };
 
 struct PlayerPreviewImage { QMutex mutex; QImage image; };
@@ -74,10 +79,12 @@ class PlayerMediaAnalysis : public QObject
     Q_PROPERTY(bool waveformBusy READ waveformBusy NOTIFY waveformChanged FINAL)
     Q_PROPERTY(bool previewSupported READ previewSupported NOTIFY previewChanged FINAL)
     Q_PROPERTY(double durationMS READ durationMS NOTIFY previewChanged FINAL)
+    Q_PROPERTY(PlayerAudioVisualizer* visualizer READ visualizer CONSTANT FINAL)
 public:
     PlayerMediaAnalysis(qt_intf_t *, PlayerController *, PlayerMediaTools *);
     ~PlayerMediaAnalysis() override;
     std::shared_ptr<PlayerPreviewImage> previewImage() const { return m_image; }
+    PlayerAudioVisualizer *visualizer() const { return m_visualizer; }
     QString previewSource() const { return m_previewSource; }
     QString previewStatus() const;
     bool previewSupported() const { return !m_player->usesMpv() && m_player->isSeekable() && m_player->getLength().valid() && m_player->getVideoTracks()->getCount() > 0; }
@@ -100,6 +107,7 @@ private:
     qt_intf_t *m_intf;
     PlayerController *m_player;
     PlayerMediaTools *m_tools;
+    PlayerAudioVisualizer *m_visualizer;
     vlc_preparser_t *m_preparser = nullptr;
     vlc_preparser_req *m_request = nullptr;
     std::shared_ptr<PlayerPreviewImage> m_image = std::make_shared<PlayerPreviewImage>();

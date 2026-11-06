@@ -528,6 +528,42 @@
       "sha256": "263a923975b906a0d7fbe21b79c8ad7127324f773b3673c97378e144b0e10b53"
     },
     {
+      "id": "2138:8026",
+      "name": "name=spectometer, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "visualizer-spectrometer.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "e043f7feb57ac7505cada16c9862af229addd6173b1a30ef191ea1877395ad64"
+    },
+    {
+      "id": "2139:8064",
+      "name": "name=scope, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "visualizer-scope.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "478e862130f548b1f37ac863caaaced90d10652838f9ff19cda710af40cf9ae8"
+    },
+    {
+      "id": "2139:8048",
+      "name": "name=spectrum, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "visualizer-spectrum.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "40f3c441f9b18c007dfeb4f8bec4b7dab0fa9caf9ab716d0457e50b215dc6461"
+    },
+    {
+      "id": "2139:8078",
+      "name": "name=waveform, direction=default, state=default, value=default, EQ=default, two-tone=yes",
+      "filename": "visualizer-waveform.svg",
+      "width": 24,
+      "height": 24,
+      "originalColors": true,
+      "sha256": "cab0b54f707a192802ee1d28fecabcafa336f33121921d61c3e1a45f5057bf07"
+    },
+    {
       "id": "87:1026",
       "name": "name=home, direction=default, state=active, value=default, EQ=default, two-tone=no",
       "filename": "home-active.svg",
@@ -814,6 +850,186 @@
       "width": 24,
       "height": 24,
       "sha256": "9a65878c79085925fe85839a30f81422bcc47b77086d2c91cb66343f9b99827e"
+    },
+    {
+      "id": "2372:8493",
+      "name": "Icon",
+      "filename": "eq-flat.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Flat",
+      "originalColors": true,
+      "sha256": "2183631db63cd851c34a4171bb4e7498b7dc46310de57139fd4b330372c34797"
+    },
+    {
+      "id": "2372:8494",
+      "name": "Icon",
+      "filename": "eq-classical.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Classical",
+      "originalColors": true,
+      "sha256": "3cab65fe40e653b14a0049585f5d56e59406402f8b8d8b51d9b3a4c923c53338"
+    },
+    {
+      "id": "2372:8495",
+      "name": "Icon",
+      "filename": "eq-club.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Club",
+      "originalColors": true,
+      "sha256": "6104803cca36d234922e0831a20a4dd395d0901783f5588154cf85ce80513845"
+    },
+    {
+      "id": "2372:8496",
+      "name": "Icon",
+      "filename": "eq-dance.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Dance",
+      "originalColors": true,
+      "sha256": "a114a20bbd0a4eff48bd8ae8994bb5b2609973f389666aa82297aa3efa851924"
+    },
+    {
+      "id": "6114:14027",
+      "name": "Icon",
+      "filename": "eq-fullbass.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Full base",
+      "originalColors": true,
+      "sha256": "1472f20044c9371e12253098408cf15bf081758904bb1747e1b400b9b6492a8b"
+    },
+    {
+      "id": "6114:14036",
+      "name": "Icon",
+      "filename": "eq-fullbasstreble.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Full base & treble",
+      "originalColors": true,
+      "sha256": "fe54625fa50f7d8e25ac3227f839c68d7a3d0ec01efa0322c811f56686e06a53"
+    },
+    {
+      "id": "6114:14045",
+      "name": "Icon",
+      "filename": "eq-fulltreble.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Full treble",
+      "originalColors": true,
+      "sha256": "b2183335ec7d95bb8ed878a663d74f7224f44b9da1ccd51e0438c04db9d48851"
+    },
+    {
+      "id": "6114:14054",
+      "name": "Icon",
+      "filename": "eq-headphones.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Headphones",
+      "originalColors": true,
+      "sha256": "e173c92fcec81691b7ce3bce496c3df2e7e3493e063188e9c1e27783b1409bd3"
+    },
+    {
+      "id": "6114:14063",
+      "name": "Icon",
+      "filename": "eq-largehall.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Large hall",
+      "originalColors": true,
+      "sha256": "19fdf8397a6e8acda679a2d7145d70a1291fd273a8618d8d6f6de2e379d84757"
+    },
+    {
+      "id": "6114:14072",
+      "name": "Icon",
+      "filename": "eq-live.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Live",
+      "originalColors": true,
+      "sha256": "28cf3c7a6026a792e2df2277bff3bb9e385dd573f86db136ff5c20a19b3b80e0"
+    },
+    {
+      "id": "6114:14081",
+      "name": "Icon",
+      "filename": "eq-party.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Party",
+      "originalColors": true,
+      "sha256": "fb5efba6cb0bfa23b3ea5daa8fa77fbba183f3ff43ba65b44434dff13e1b469c"
+    },
+    {
+      "id": "6114:14090",
+      "name": "Icon",
+      "filename": "eq-pop.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Pop",
+      "originalColors": true,
+      "sha256": "2702f5dc762cad57a1313273a85879f1a138207634a72afad213842c01b22ad1"
+    },
+    {
+      "id": "6114:14099",
+      "name": "Icon",
+      "filename": "eq-reggae.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Reggae",
+      "originalColors": true,
+      "sha256": "401a1fc1ad6c990e5733f8ddc372eea84a44b3f697a026f7e6fdc7a711fa92a1"
+    },
+    {
+      "id": "6114:14108",
+      "name": "Icon",
+      "filename": "eq-rock.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Rock",
+      "originalColors": true,
+      "sha256": "5fce73f975943bf0a2df33a5ce89809e9e1684be58edd7053234e75388d26eae"
+    },
+    {
+      "id": "6114:14117",
+      "name": "Icon",
+      "filename": "eq-ska.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Ska",
+      "originalColors": true,
+      "sha256": "db54c69cf12c8a2ff2c2261b0247c9d5d2118a4fca816917950481e534e421c9"
+    },
+    {
+      "id": "6114:14126",
+      "name": "Icon",
+      "filename": "eq-soft.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Soft",
+      "originalColors": true,
+      "sha256": "d9a47c8d4efb070c1a4b7385ffefe7575e4f73fdd30e58ca58914c84cb53d5b7"
+    },
+    {
+      "id": "6114:14135",
+      "name": "Icon",
+      "filename": "eq-softrock.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Soft rock",
+      "originalColors": true,
+      "sha256": "ccb236f2bc52583a4d9d8b759160d8e1702124548d9f3e067defaed3adf95b80"
+    },
+    {
+      "id": "6114:14144",
+      "name": "Icon",
+      "filename": "eq-techno.svg",
+      "width": 24,
+      "height": 24,
+      "presetLabel": "Techno",
+      "originalColors": true,
+      "sha256": "c591ca06cb2a05207d489b00c71a48a6f87bdb4743e6fbfb0db0ceb31136a5b5"
     }
   ],
   "controls": [

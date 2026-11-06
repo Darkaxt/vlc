@@ -343,6 +343,7 @@ void MainUI::registerQMLTypes()
 
         // @uri VLC.Player
         qmlRegisterType<PlayerAnalysisStrip>(uri, versionMajor, versionMinor, "PlayerAnalysisStrip");
+        qmlRegisterUncreatableType<PlayerAudioVisualizer>(uri, versionMajor, versionMinor, "PlayerAudioVisualizer", "Audio visualization belongs to MediaAnalysis");
         qmlRegisterUncreatableType<TrackListModel>(uri, versionMajor, versionMinor, "TrackListModel", "available tracks of a media (audio/video/sub)" );
         qmlRegisterUncreatableType<TitleListModel>(uri, versionMajor, versionMinor, "TitleListModel", "available titles of a media" );
         qmlRegisterUncreatableType<ChapterListModel>(uri, versionMajor, versionMinor, "ChapterListModel", "available chapters of a media" );
@@ -500,15 +501,17 @@ void MainUI::registerQMLTypes()
         qmlProtectModule(uri, versionMajor);
     }
 
-    if (m_mainCtx->hasMediaLibrary())
     {
+        // Type metadata is needed by the shared library UI even when the
+        // optional backend is disabled. Registering types creates no models,
+        // database or scanner; the UI only instantiates them with a live owner.
         const char* uri = "VLC.MediaLibrary";
         const int versionMajor = 1;
         const int versionMinor = 0;
 
         // @uri VLC.MediaLibrary
-        assert(m_mainCtx->getMediaLibrary());
-        qmlRegisterSingletonInstance<MediaLib>(uri, versionMajor, versionMinor, "MediaLib", m_mainCtx->getMediaLibrary());
+        if (m_mainCtx->hasMediaLibrary())
+            qmlRegisterSingletonInstance<MediaLib>(uri, versionMajor, versionMinor, "MediaLib", m_mainCtx->getMediaLibrary());
 
         qmlRegisterUncreatableType<MLItemId>( uri, versionMajor, versionMinor, "mediaId", "");
         qmlRegisterUncreatableType<MLBaseModel>( uri, versionMajor, versionMinor, "MLBaseModel", "ML Base Model is uncreatable." );

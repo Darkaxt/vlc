@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import QtQuick.Templates as T
 import VLC.MainInterface
 import VLC.Player
+import VLC.Playlist
 import VLC.MediaLibrary
 import VLC.Util
 
@@ -32,7 +33,7 @@ T.Popup {
     Connections { target: dialog.contentItem.Window.window; function onActiveFocusItemChanged() { if (dialog.opened) dialog.keepFocusVisible() } }
     readonly property Item retainedBackdrop: background
     background: LibraryGlass { id: glass; backgroundSource: dialog.backgroundSource; active: dialog.opened }
-    MLPlaylistListModel { id: savedPlaylists; ml: MediaLib }
+    Loader { id: savedPlaylists; active: MainCtx.mediaLibraryAvailable; visible: false; sourceComponent: MLPlaylistListModel { ml: MediaLib } }
     component Label: Text {
         color: PlayerStyle.foreground; font.family: PlayerStyle.fontFamily
         font.pixelSize: PlayerStyle.px(16); textFormat: Text.PlainText
@@ -86,9 +87,10 @@ T.Popup {
                 }
                 Rectangle { Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(20); Layout.rightMargin: PlayerStyle.px(20); implicitHeight: PlayerStyle.px(1); color: PlayerStyle.hover; opacity: 0.3 }
                 Label { text: qsTr("Playlist Name (optional)"); Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(20) }
-                Label { text: qsTr("The playlist will be saved and displayed with this title."); color: PlayerStyle.sectionForeground; font.pixelSize: PlayerStyle.px(14); Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(20) }
+                Label { text: MainCtx.mediaLibraryAvailable ? qsTr("The playlist will be saved and displayed with this title.") : qsTr("The media library is disabled. Links will play in the current queue without saving a library playlist."); color: PlayerStyle.sectionForeground; font.pixelSize: PlayerStyle.px(14); Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(20) }
                 T.TextField {
                     id: playlistName
+                    enabled: MainCtx.mediaLibraryAvailable
                     Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(20); Layout.rightMargin: PlayerStyle.px(20)
                     implicitHeight: PlayerStyle.px(34); padding: PlayerStyle.px(12)
                     color: PlayerStyle.foreground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
@@ -104,14 +106,15 @@ T.Popup {
             Button { text: qsTr("Cancel"); onClicked: dialog.close() }
             Item { Layout.fillWidth: true }
             Button {
-                text: qsTr("Save"); primary: true
-                enabled: urls.text.trim() !== "" && !savedPlaylists.transactionPending
+                text: MainCtx.mediaLibraryAvailable ? qsTr("Save") : qsTr("Play"); primary: true
+                enabled: urls.text.trim() !== "" && (!savedPlaylists.item || !savedPlaylists.item.transactionPending)
                 AccessibleCompat.id: "networkStreamSave"
                 onClicked: {
                     // Materialize plain URL strings at the QML/native list boundary.
                     const entries = Array.from(MainCtx.networkUrls(urls.text), url => url.toString())
                     if (!entries.length) { dialog.error = qsTr("Enter a complete network URL on each line."); return }
-                    if (playlistName.text.trim()) savedPlaylists.create(playlistName.text.trim(),entries)
+                    if (!MainCtx.mediaLibraryAvailable) MainPlaylistController.append(entries,true)
+                    else if (playlistName.text.trim()) savedPlaylists.item.create(playlistName.text.trim(),entries)
                     else MediaLib.addAndPlay(entries)
                     dialog.close()
                 }

@@ -18,6 +18,9 @@ import VLC.Widgets as Widgets
 FocusScope {
     id: root
     property bool compact: false
+    readonly property bool libraryAvailable: MainCtx.mediaLibraryAvailable
+    readonly property var allFolders: allFoldersLoader.item
+    readonly property var allPlaylists: allPlaylistsLoader.item
     property string section: "home"
     property var path: []
     property var forwardPath: []
@@ -40,8 +43,9 @@ FocusScope {
     readonly property bool historyView: ["home","recent","network"].includes(category)
     readonly property bool containers: ["music", "folders", "albums", "artists", "genres", "playlists"].includes(category)
     readonly property var activeModel: modelLoader.item
-    readonly property bool indexing: MediaLib.discoveryPending || !MediaLib.idle
+    readonly property bool indexing: libraryAvailable && (MediaLib.discoveryPending || !MediaLib.idle)
     readonly property bool ready: {
+        if (!libraryAvailable) return true
         if (addressPending || !activeModel || MediaLib.discoveryPending) return false
         if (historyView && !MainCtx.historyEnabled) return category !== "home" || (homeLoader.item !== null && homeLoader.item.ready)
         if (activeModel.loading) return false
@@ -124,6 +128,7 @@ FocusScope {
         if (data.id) LibraryState.togglePin(data.id.toString(), data.title || data.name || qsTr("Untitled"), category)
     }
     function visitPin(pin) {
+        if (!libraryAvailable) return
         const request = ++addressGeneration
         addressPending = true; status = ""
         const source = pin.section === "folders" ? allFolders : allPlaylists
@@ -141,6 +146,7 @@ FocusScope {
     }
     function openAddress(value) {
         editingAddress = false
+        if (!libraryAvailable) { status = qsTr("The media library is disabled. Use Open folder to play files without indexing."); return }
         const request = ++addressGeneration
         addressPending = true; status = ""
         const normalized = MainCtx.directoryUrl(value)
@@ -314,7 +320,7 @@ FocusScope {
                     }
                 }
                 Repeater {
-                    model: root.compact ? [] : LibraryState.pins
+                    model: root.compact || !root.libraryAvailable ? [] : LibraryState.pins
                     delegate: Action {
                         required property var modelData
                         text: modelData.title; width: parent.width
@@ -374,10 +380,11 @@ FocusScope {
                 }
             }
             Label { visible: !root.compact; text: qsTr("%1 items").arg(root.itemCount); color: PlayerStyle.sectionForeground }
-            LibraryIcon { visible: !root.compact; glyph: "sort"; description: qsTr("Sort library"); enabled: !["music","home","network"].includes(root.category); onClicked: sortMenu.open() }
+            LibraryIcon { visible: !root.compact; glyph: "sort"; description: qsTr("Sort library"); enabled: root.libraryAvailable && !["music","home","network"].includes(root.category); onClicked: sortMenu.open() }
             LibraryIcon { visible: !root.compact; glyph: root.gridMode ? "grid" : "list"; description: qsTr("Change library view"); enabled: LibraryState.writable; onClicked: viewMenu.open() }
             T.TextField {
                 id: fullSearch
+                enabled: root.libraryAvailable
                 visible: !root.compact
                 Layout.preferredWidth: Math.min(PlayerStyle.px(325),root.width * 0.22)
                 implicitHeight: PlayerStyle.px(34)
@@ -396,12 +403,13 @@ FocusScope {
             Layout.topMargin: PlayerStyle.px(4)
             Layout.fillWidth: true; spacing: PlayerStyle.px(8)
             Label { text: qsTr("%1 items").arg(root.itemCount); color: PlayerStyle.sectionForeground; Layout.fillWidth: true }
-            LibraryIcon { glyph: "sort"; description: qsTr("Sort library"); AccessibleCompat.id: "librarySort"; enabled: !["music","home","network"].includes(root.category); onClicked: sortMenu.open() }
+            LibraryIcon { glyph: "sort"; description: qsTr("Sort library"); AccessibleCompat.id: "librarySort"; enabled: root.libraryAvailable && !["music","home","network"].includes(root.category); onClicked: sortMenu.open() }
             LibraryIcon { glyph: root.category === "home" ? "list" : root.gridMode ? "grid" : "list"; description: qsTr("Change library view"); AccessibleCompat.id: "libraryViewMode"; enabled: LibraryState.writable; onClicked: viewMenu.open() }
             LibraryIcon { visible: root.compact; glyph: "search"; description: qsTr("Search library"); onClicked: { search.visible = !search.visible; if (search.visible) search.forceActiveFocus() } }
         }
         T.TextField {
             id: search
+            enabled: root.libraryAvailable
             visible: false
             Layout.fillWidth: true; implicitHeight: PlayerStyle.px(34)
             padding: PlayerStyle.px(8); color: PlayerStyle.foreground
@@ -439,6 +447,7 @@ FocusScope {
         }
         Loader {
             id: modelLoader
+            active: root.libraryAvailable
             visible: false
             sourceComponent: {
                 if (root.historyView && !MainCtx.historyEnabled) return noHistory
@@ -461,7 +470,7 @@ FocusScope {
         }
         Loader {
             id: homeLoader
-            active: root.category === "home"
+            active: root.libraryAvailable && root.category === "home"
             visible: active
             Layout.fillWidth: true; Layout.fillHeight: true
             Layout.topMargin: root.compact ? 0 : PlayerStyle.px(21)
@@ -473,7 +482,7 @@ FocusScope {
         }
         Loader {
             id: childFolderLoader
-            active: root.category === "folderMedia"
+            active: root.libraryAvailable && root.category === "folderMedia"
             visible: active && item && item.folderCount > 0
             Layout.fillWidth: true
             Layout.fillHeight: root.activeModel && root.activeModel.count === 0
@@ -519,11 +528,11 @@ FocusScope {
         }
         GridView {
             id: items
-            visible: root.category !== "home" && !(root.category === "folderMedia" && root.activeModel && root.activeModel.count === 0 && childFolderLoader.item && childFolderLoader.item.folderCount > 0)
+            visible: root.libraryAvailable && root.category !== "home" && !(root.category === "folderMedia" && root.activeModel && root.activeModel.count === 0 && childFolderLoader.item && childFolderLoader.item.folderCount > 0)
             Layout.fillWidth: true; Layout.fillHeight: true
             Layout.topMargin: root.compact ? 0 : PlayerStyle.px(4)
             clip: true; focus: true
-            model: (root.historyView && !MainCtx.historyEnabled) ? null : root.category === "music" ? [ {name:qsTr("Songs")}, {name:qsTr("Albums")}, {name:qsTr("Artists")}, {name:qsTr("Genres")} ] : root.activeModel
+            model: !root.libraryAvailable || (root.historyView && !MainCtx.historyEnabled) ? null : root.category === "music" ? [ {name:qsTr("Songs")}, {name:qsTr("Albums")}, {name:qsTr("Artists")}, {name:qsTr("Genres")} ] : root.activeModel
             readonly property bool cards: root.gridMode
             readonly property bool videoCards: ["videos","folderMedia","recent","playlistMedia","network"].includes(root.category)
             Layout.rightMargin: cards ? -PlayerStyle.px(20) : 0
@@ -610,14 +619,25 @@ FocusScope {
             T.ScrollBar.vertical: T.ScrollBar { }
         }
         Label {
-            visible: root.category !== "home" && root.ready && !root.indexing && !root.itemCount
+            visible: root.libraryAvailable && root.category !== "home" && root.ready && !root.indexing && !root.itemCount
             text: root.historyView && !MainCtx.historyEnabled ? qsTr("Playback history is disabled.") : search.text ? qsTr("No matching items") : root.filter === "unwatched" ? qsTr("No unwatched videos") : qsTr("No items yet. Use Add item to open media or index a folder.")
             wrapMode: Text.WordWrap; elide: Text.ElideNone; Layout.fillWidth: true
         }
         Label { visible: !root.ready || root.indexing; text: root.indexing ? qsTr("Indexing media… %1%").arg(MediaLib.parsingProgress) : qsTr("Loading library…"); Layout.fillWidth: true }
         Label { visible: LibraryState.error !== "" || LibraryState.saveError !== "" || root.status !== ""; text: LibraryState.error || LibraryState.saveError || root.status; wrapMode: Text.WordWrap; elide: Text.ElideNone; Layout.fillWidth: true }
-        Action { visible: root.category === "playlists"; text: qsTr("New playlist"); AccessibleCompat.id: "libraryNewPlaylist"; onClicked: newPlaylist.open() }
-        Action { visible: root.category === "recent"; text: qsTr("Clear history"); onClicked: root.activeModel.clearHistory() }
+        Item {
+            visible: !root.libraryAvailable
+            Layout.fillWidth: true; Layout.fillHeight: true
+            Column {
+                anchors.centerIn: parent; width: parent.width
+                spacing: PlayerStyle.px(20)
+                Label { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: qsTr("The media library is disabled."); AccessibleCompat.id: "libraryDisabledMessage" }
+                Label { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: qsTr("Open media to play without indexing.") }
+                Action { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Open file…"); onClicked: DialogsProvider.simpleOpenDialog() }
+            }
+        }
+        Action { visible: root.category === "playlists"; enabled: root.libraryAvailable; text: qsTr("New playlist"); AccessibleCompat.id: "libraryNewPlaylist"; onClicked: newPlaylist.open() }
+        Action { visible: root.category === "recent"; enabled: root.libraryAvailable; text: qsTr("Clear history"); onClicked: root.activeModel.clearHistory() }
     }
     MLDragItem {
         id: dragPreview
@@ -648,7 +668,7 @@ FocusScope {
         MenuAction { visible: root.category === "folderMedia"; text: qsTr("Pin / unpin current folder"); enabled: LibraryState.writable; onClicked: { const folder = root.path[root.path.length-1]; LibraryState.togglePin(folder.id,folder.title,"folders"); openMenu.close() } }
         MenuAction { text: qsTr("Go to folder address…"); onClicked: { openMenu.close(); root.editingAddress = true; address.forceActiveFocus(); address.selectAll() } }
         Repeater {
-            model: root.compact ? LibraryState.pins : []
+            model: root.compact && root.libraryAvailable ? LibraryState.pins : []
             delegate: MenuAction {
                 required property var modelData
                 text: modelData.title
@@ -703,17 +723,20 @@ FocusScope {
         MenuAction { text: qsTr("Pin / unpin"); visible: ["folders","playlists"].includes(root.category); onClicked: { root.pin(root.currentRow); itemMenu.close() } }
     }
     PlayerLibraryNetworkDialog { id: networkDialog; parent: MainCtx.intfMainWindow.contentItem; backgroundSource: root }
-    MLFolderModel { id: indexedFolders; ctx: MainCtx; onOperationFailed: (op,url) => root.status = qsTr("Could not update library folder: %1").arg(url) }
+    Loader {
+        id: indexedFolders; active: root.libraryAvailable; visible: false
+        sourceComponent: MLFolderModel { ctx: MainCtx; onOperationFailed: (op,url) => root.status = qsTr("Could not update library folder: %1").arg(url) }
+    }
     PlayerLibraryTextDialog {
         id: folderDialog
         parent: root
         title: qsTr("Index library folder")
         hint: qsTr("Enter the full folder path or file URL. Existing files remain unchanged.")
         acceptedText: qsTr("Index folder")
-        onSubmitted: value => indexedFolders.add(MainCtx.directoryUrl(value))
+        onSubmitted: value => indexedFolders.item.add(MainCtx.directoryUrl(value))
     }
-    MLVideoFoldersModel { id: allFolders; ml: MediaLib }
-    MLPlaylistListModel { id: allPlaylists; ml: MediaLib }
+    Loader { id: allFoldersLoader; active: root.libraryAvailable; visible: false; sourceComponent: MLVideoFoldersModel { ml: MediaLib } }
+    Loader { id: allPlaylistsLoader; active: root.libraryAvailable; visible: false; sourceComponent: MLPlaylistListModel { ml: MediaLib } }
     PlayerLibraryTextDialog {
         id: newPlaylist
         parent: root

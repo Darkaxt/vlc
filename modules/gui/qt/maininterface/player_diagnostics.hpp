@@ -432,6 +432,7 @@ private:
             }
             const int contextType=qmlTypeId("VLC.MainInterface",1,0,"MainCtx");
             if(contextType>=0)if(auto *context=engine->singletonInstance<MainCtx *>(contextType)){
+                result[QStringLiteral("media_library_available")]=context->hasMediaLibrary();
                 result[QStringLiteral("native_backdrop_state")]=nativeBackdropState();
 #ifdef UPDATE_CHECK
                 if(auto *update=context->getUpdateModel())
@@ -458,9 +459,21 @@ private:
             }
         }
         if (m_player) {
+            result[QStringLiteral("native_vout_count")]=qint64(m_player->getVouts().size());
+            QJsonArray visualizationChoices;
+            auto *visualizations=m_player->getAudioVisualizations();
+            for(int row=0;row<visualizations->rowCount();++row) {
+                const auto index=visualizations->index(row,0);
+                visualizationChoices.append(QJsonObject{
+                    {QStringLiteral("text"),QJsonValue::fromVariant(visualizations->data(index,Qt::DisplayRole))},
+                    {QStringLiteral("value"),QJsonValue::fromVariant(visualizations->data(index,VLCVarChoiceModel::ValueRole))},
+                    {QStringLiteral("selected"),visualizations->data(index,Qt::CheckStateRole).toBool()}});
+            }
+            result[QStringLiteral("visualization_choices")]=visualizationChoices;
             QJsonObject services;
             for (const auto &entry : {std::pair{"redesignMediaTools", QStringList{QStringLiteral("status"), QStringLiteral("matches"), QStringLiteral("cues"), QStringLiteral("timelineStatus"), QStringLiteral("subtitleLoaded"), QStringLiteral("subtitleTimeScale"), QStringLiteral("subtitleFPSSupported"), QStringLiteral("statisticsVisible"), QStringLiteral("statisticsText"), QStringLiteral("presets"), QStringLiteral("activePreset"), QStringLiteral("timelineVisible"), QStringLiteral("waveformVisible"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("videoInfo")}},
                     std::pair{"redesignMediaAnalysis", QStringList{QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("previewLatencyMS"), QStringLiteral("waveform"), QStringLiteral("waveformStatus"), QStringLiteral("waveformBusy")}},
+                    std::pair{"redesignAudioVisualizer", QStringList{QStringLiteral("mode"), QStringLiteral("available"), QStringLiteral("active"), QStringLiteral("status"), QStringLiteral("frameRevision"), QStringLiteral("samples")}},
                     std::pair{"redesignSubtitleSearch", QStringList{QStringLiteral("provider"), QStringLiteral("configured"), QStringLiteral("busy"), QStringLiteral("status"), QStringLiteral("results"), QStringLiteral("archiveFiles")}}}) {
                 if (const auto service = m_player->findChild<QObject *>(QString::fromLatin1(entry.first))) {
                     QJsonObject values;
@@ -779,6 +792,7 @@ private:
             const QMap<QString, QStringList> allowed{
                 {QStringLiteral("redesignMediaTools"), {QStringLiteral("subtitleLoaded"), QStringLiteral("timelineStatus"), QStringLiteral("sleepMinutes"), QStringLiteral("sleepStatus"), QStringLiteral("status")}},
                 {QStringLiteral("redesignMediaAnalysis"), {QStringLiteral("waveformBusy"), QStringLiteral("previewSource"), QStringLiteral("previewStatus"), QStringLiteral("previewPosition"), QStringLiteral("waveformStatus")}},
+                {QStringLiteral("redesignAudioVisualizer"), {QStringLiteral("mode"), QStringLiteral("available"), QStringLiteral("active"), QStringLiteral("status"), QStringLiteral("frameRevision")}},
                 {QStringLiteral("redesignSubtitleSearch"), {QStringLiteral("busy"), QStringLiteral("status")}},
                 {QStringLiteral("forkUpdateModel"), {QStringLiteral("updateStatus")}}};
             if (m_player && allowed.value(name).contains(awaitProperty))

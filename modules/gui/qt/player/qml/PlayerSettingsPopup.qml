@@ -172,6 +172,7 @@ T.Popup {
         property var choices
         property bool requiresVlc: true
         property bool referenceControl: false
+        property var optionIcons: ({})
         readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
         width: body.width - PlayerStyle.px(40)
         height: PlayerStyle.px(referenceControl ? 68 : 48)
@@ -186,17 +187,9 @@ T.Popup {
             enabled: !Player.engineSwitching && (!choiceRow.requiresVlc || Player.playbackEngine === "vlc")
             model: parent.choices
             textRole: "display"
+            valueRole: "value"
+            optionIcons: choiceRow.optionIcons
             displayText: currentIndex < 0 ? qsTr("None") : currentText
-            delegate: T.ItemDelegate {
-                required property var model
-                width: parent ? parent.width : PlayerStyle.px(152)
-                implicitHeight: PlayerStyle.px(34)
-                text: model.display
-                padding: PlayerStyle.px(8)
-                onClicked: model.checked = true
-                contentItem: Label { text: parent.text }
-                background: Rectangle { color: parent.hovered ? PlayerStyle.hover : "transparent" }
-            }
             function refreshSelection() {
                 const source = choiceRow.choices
                 const count = source ? source.rowCount() : 0
@@ -387,7 +380,32 @@ T.Popup {
                             T.ToolTip.text: MediaTools.sleepStatus
                         }
                     }
-                    ChoiceRow { text: qsTr("Audio Visualizer"); choices: Player.audioVisualization; referenceControl: true }
+                    RowLayout {
+                        x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(68)
+                        Label { text: qsTr("Audio Visualizer"); Layout.fillWidth: true }
+                        PlayerSettingsChoice {
+                            objectName: "seekbarVisualizerChoice"
+                            Layout.preferredWidth: PlayerStyle.px(220); Layout.preferredHeight: PlayerStyle.px(48)
+                            outlined: true
+                            label: qsTr("Audio visualizer in progress bar")
+                            enabled: MediaAnalysis.visualizer.available && !Player.engineSwitching
+                            textRole: "text"; valueRole: "value"
+                            model: [{text:qsTr("Disabled"),value:""}, {text:qsTr("Spectrometer"),value:"spectrometer"},
+                                    {text:qsTr("Scope"),value:"scope"}, {text:qsTr("Spectrum"),value:"spectrum"},
+                                    {text:qsTr("Waveform"),value:"waveform"}]
+                            currentIndex: ["","spectrometer","scope","spectrum","waveform"].indexOf(MediaAnalysis.visualizer.mode)
+                            optionIcons: ({spectrometer:"visualizer-spectrometer", scope:"visualizer-scope", spectrum:"visualizer-spectrum", waveform:"visualizer-waveform"})
+                            onActivated: MediaAnalysis.visualizer.mode = currentValue
+                            Accessible.description: MediaAnalysis.visualizer.status
+                        }
+                    }
+                    Text {
+                        x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40)
+                        visible: text.length>0
+                        text: MediaAnalysis.visualizer.status
+                        font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(12)
+                        color: PlayerStyle.sectionForeground; wrapMode: Text.Wrap
+                    }
                     Item { width: 1; height: PlayerStyle.px(8) }
                     RowLayout {
                         x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(52)

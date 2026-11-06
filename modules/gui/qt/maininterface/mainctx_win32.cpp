@@ -636,7 +636,6 @@ WinTaskbarWidget::~WinTaskbarWidget()
 {
     QCoreApplication::instance()->removeNativeEventFilter(this);
     m_window->removeEventFilter(this);
-    releaseShellButton();
     clearShellIdentity();
     if( himl )
         ImageList_Destroy( himl );
@@ -649,10 +648,7 @@ bool WinTaskbarWidget::eventFilter(QObject *watched, QEvent *event)
     {
         const auto surface = static_cast<QPlatformSurfaceEvent*>(event);
         if (surface->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
-        {
-            releaseShellButton();
             clearShellIdentity();
-        }
         else
             updateShellIdentity();
     }
@@ -677,11 +673,22 @@ void WinTaskbarWidget::clearShellIdentity()
 void WinTaskbarWidget::updateShellIdentity()
 {
     const auto window = WinId(m_window);
+    if(window && var_InheritBool(p_intf,"qt-passive"))
+    {
+        // NOACTIVATE suppresses a taskbar button unless APPWINDOW is explicit.
+        // Keep unattended playback nonactivating while retaining its ordinary
+        // running-window identity. This touches only this application's HWND.
+        const auto style=GetWindowLongPtr(window,GWL_EXSTYLE);
+        if((style&WS_EX_NOACTIVATE) && !(style&WS_EX_APPWINDOW)) {
+            SetLastError(ERROR_SUCCESS);
+            if(!SetWindowLongPtr(window,GWL_EXSTYLE,style|WS_EX_APPWINDOW) && GetLastError()!=ERROR_SUCCESS)
+                msg_Err(p_intf,"Creating passive player taskbar identity failed: %lu",GetLastError());
+        }
+    }
     const bool mpv=THEMIM->usesMpv();
     if (!mpv && p_intf->p_mi->getRedesignAccent()==QColor(QStringLiteral("#d37918")))
     {
         clearShellIdentity();
-        refreshShellButton();
         return;
     }
     const QString icon=p_intf->p_mi->getRedesignShellIcon();
@@ -703,7 +710,12 @@ void WinTaskbarWidget::updateShellIdentity()
     {
         const QString command = QLatin1Char('"') + QDir::toNativeSeparators(
             QCoreApplication::applicationFilePath()) + (mpv ? QStringLiteral("\" --qt-playback-engine=mpv") : QStringLiteral("\" --qt-playback-engine=vlc"));
-        hr = setShellString(store.Get(), shellCommand, command);
+        // Relaunch metadata must be installed before an explicit window AppID.
+        // The previous ID also remains set during a runtime accent change;
+        // writing the same ID again does not establish that ordering.
+        PROPVARIANT empty = {};
+        hr = store->SetValue(shellId,empty);
+        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellCommand, command);
         if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellName, mpv?qtr("MPV Media Player"):qtr("VLC Media Player"));
         if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellIcon,
             QDir::toNativeSeparators(icon) + QStringLiteral(",0"));
@@ -713,47 +725,6 @@ void WinTaskbarWidget::updateShellIdentity()
     }
     if (FAILED(hr))
         msg_Err(p_intf, "Setting MPV Shell identity failed: %08lx", hr);
-    else
-        refreshShellButton();
-}
-
-void WinTaskbarWidget::refreshShellButton()
-{
-    // HWND icons and relaunch properties can be correct while an existing
-    // taskbar group still holds its previous icon. Rebind only our registered
-    // button, after the new relaunch properties and QIcon have been installed.
-    // Inactive/passive windows have no TaskbarButtonCreated registration.
-    const auto window = WinId(m_window);
-    if (!p_taskbl || !window || window != m_taskbarWindow)
-        return;
-    if (!m_identityWindow && m_taskbarIcon.isEmpty())
-        return; // Default VLC has no explicit group to rebind on first show.
-    const QString icon = p_intf->p_mi->getRedesignShellIcon();
-    if (icon.isEmpty() || icon == m_taskbarIcon)
-        return;
-    // AddTab sends TaskbarButtonCreated again. Commit this identity before
-    // rebinding so that event rebuilds the thumbbar without rebinding in a loop.
-    m_taskbarIcon = icon;
-    const auto taskbar = p_taskbl; // AddTab may synchronously recreate the thumbbar.
-    HRESULT hr = taskbar->DeleteTab(window);
-    if (SUCCEEDED(hr))
-    {
-        hr = taskbar->AddTab(window);
-        m_readdedTaskbarButton = SUCCEEDED(hr);
-    }
-    if (FAILED(hr))
-        msg_Err(p_intf, "Refreshing engine taskbar button failed: %08lx", hr);
-    else
-        msg_Dbg(p_intf, "Engine taskbar button rebound to %s", qtu(icon));
-}
-
-void WinTaskbarWidget::releaseShellButton()
-{
-    if (m_readdedTaskbarButton && p_taskbl && m_taskbarWindow)
-        p_taskbl->DeleteTab(m_taskbarWindow);
-    m_taskbarWindow = nullptr;
-    m_taskbarIcon.clear();
-    m_readdedTaskbarButton = false;
 }
 
 Q_GUI_EXPORT HBITMAP qt_pixmapToWinHBITMAP(const QPixmap &p, int hbitmapFormat = 0);
@@ -868,9 +839,7 @@ bool WinTaskbarWidget::nativeEventFilter(const QByteArray &, void *message, qint
     if (msg->message == taskbar_wmsg)
     {
         //We received the taskbarbuttoncreated, now we can really create the buttons
-        m_taskbarWindow = msg->hwnd;
         createTaskBarButtons();
-        refreshShellButton();
     }
 
     switch( msg->message )

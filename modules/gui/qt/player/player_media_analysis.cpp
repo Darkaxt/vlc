@@ -10,6 +10,7 @@
 #include <QThread>
 #include <QWaitCondition>
 #include <QPainter>
+#include <QPainterPath>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -19,6 +20,46 @@ void PlayerAnalysisStrip::paint(QPainter *painter)
 {
     if (width() <= 0 || height() <= 0) return;
     painter->setClipRect(boundingRect());
+    if (!m_renderMode.isEmpty()) {
+        QPainterPath clip;
+        clip.addRoundedRect(boundingRect(),std::min(6.,height()/2),std::min(6.,height()/2));
+        painter->setClipPath(clip,Qt::IntersectClip);
+        if(m_samples.isEmpty())return;
+        painter->setRenderHint(QPainter::Antialiasing);
+        if(m_renderMode==QStringLiteral("spectrometer")) {
+            const double step=width()/m_samples.size();
+            for(qsizetype i=0;i<m_samples.size();++i) {
+                const double h=std::clamp(m_samples[i].toDouble(),0.,1.)*height();
+                if(h<=0)continue;
+                painter->fillRect(QRectF(i*step,height()-h,std::max(0.5,step-1),h),m_color);
+                painter->fillRect(QRectF(i*step,std::max(0.,height()-h-2),std::max(0.5,step-1),1),m_color.lighter(140));
+            }
+        } else if(m_renderMode==QStringLiteral("spectrum") || m_renderMode==QStringLiteral("scope")) {
+            const bool spectrum=m_renderMode==QStringLiteral("spectrum");
+            QPainterPath path;
+            for(qsizetype i=0;i<m_samples.size();++i) {
+                const double value=std::clamp(m_samples[i].toDouble(),spectrum?0.:-1.,1.);
+                const QPointF point(double(i)/std::max(qsizetype(1),m_samples.size()-1)*width(),
+                    spectrum?height()*(1-value):height()/2-value*(height()-2)/2);
+                if(i==0)path.moveTo(point);else path.lineTo(point);
+            }
+            if(spectrum) {
+                path.lineTo(width(),height());path.lineTo(0,height());path.closeSubpath();
+                painter->fillPath(path,m_color);
+            } else { painter->setPen(QPen(m_color,1.5));painter->drawPath(path); }
+        } else if(m_renderMode==QStringLiteral("waveform")) {
+            const int columns=std::min(int(m_samples.size()),std::max(1,int(std::ceil(width()))));
+            for(int x=0;x<columns;++x) {
+                const auto first=qsizetype(double(x)/columns*m_samples.size());
+                const auto last=std::min(m_samples.size(),std::max(first+1,qsizetype(std::ceil(double(x+1)/columns*m_samples.size()))));
+                double peak=0;
+                for(auto i=first;i<last;++i)peak=std::max(peak,std::abs(m_samples[i].toDouble()));
+                const double h=std::clamp(peak,0.,1.)*height();
+                if(h>0)painter->fillRect(QRectF(double(x)/columns*width(),(height()-h)/2,width()/columns,h),m_color);
+            }
+        }
+        return;
+    }
     if (!m_samples.isEmpty()) {
         const int columns = std::min(4096, std::max(1, int(std::ceil(width()))));
         for (int x = 0; x < columns; ++x) {
@@ -144,7 +185,8 @@ private:
 };
 
 PlayerMediaAnalysis::PlayerMediaAnalysis(qt_intf_t *intf, PlayerController *player, PlayerMediaTools *tools)
-    : QObject(tools), m_intf(intf), m_player(player), m_tools(tools)
+    : QObject(tools), m_intf(intf), m_player(player), m_tools(tools),
+      m_visualizer(new PlayerAudioVisualizer(player,this))
 {
     vlc_preparser_cfg configuration{}; configuration.types = VLC_PREPARSER_TYPE_THUMBNAIL;
     configuration.max_thumbnailer_threads = 1; configuration.timeout = 0;

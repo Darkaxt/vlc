@@ -48,8 +48,6 @@ private:
     void createTaskBarButtons();
     void updateShellIdentity();
     void clearShellIdentity();
-    void refreshShellButton();
-    void releaseShellButton();
 
 private slots:
     void changeThumbbarButtons();
@@ -64,9 +62,6 @@ private:
     QWindow* m_window = nullptr;
     HWND m_identityWindow = nullptr;
     QString m_identityIcon;
-    HWND m_taskbarWindow = nullptr;
-    QString m_taskbarIcon;
-    bool m_readdedTaskbarButton = false;
 
     class ComHolder
     {

@@ -37,6 +37,10 @@ export const icons = [
   ['2493:9253', 'menu-shortcuts', true], ['2493:9283', 'menu-customize', true],
   ['2493:9293', 'menu-settings', true], ['2461:9651', 'menu-info', true],
   ['6073:13944', 'tab-playback', true],
+  ['2138:8026', 'visualizer-spectrometer', true],
+  ['2139:8064', 'visualizer-scope', true],
+  ['2139:8048', 'visualizer-spectrum', true],
+  ['2139:8078', 'visualizer-waveform', true],
   ['87:1026', 'home-active'], ['71:857', 'library-videos'], ['87:1015', 'library-videos-active'],
   ['71:851', 'library-music'], ['87:1009', 'library-music-active'],
   ['42:357', 'library-playlists'], ['858:5098', 'library-playlists-active'],
@@ -49,6 +53,20 @@ export const icons = [
   ['187:470', 'repeat'], ['187:474', 'shuffle'], ['463:417', 'move'],
   ['2127:7548', 'bookmarks'], ['2127:7531', 'chapters'], ['2127:7523', 'queue-tab'],
   ['999:4810', 'video'], ['999:4802', 'playback'], ['71:868', 'chevron-down'], ['71:875', 'chevron-right'], ['494:2394', 'choice-selected'], ['494:2400', 'choice-empty'],
+];
+
+// Preset rows contain saved overrides of the EQ component. Export the icon
+// instance from each original row so the individual curves and colors survive.
+export const equalizerIcons = [
+  ['2372:8493', 'flat'], ['2372:8494', 'classical'],
+  ['2372:8495', 'club'], ['2372:8496', 'dance'],
+  ['6114:14027', 'fullbass'], ['6114:14036', 'fullbasstreble'],
+  ['6114:14045', 'fulltreble'], ['6114:14054', 'headphones'],
+  ['6114:14063', 'largehall'], ['6114:14072', 'live'],
+  ['6114:14081', 'party'], ['6114:14090', 'pop'],
+  ['6114:14099', 'reggae'], ['6114:14108', 'rock'],
+  ['6114:14117', 'ska'], ['6114:14126', 'soft'],
+  ['6114:14135', 'softrock'], ['6114:14144', 'techno'],
 ];
 
 export function pathCommands(bytes) {
@@ -80,7 +98,8 @@ export function extractPlayerAssets(destination) {
   const bytes = fs.readFileSync(source);
   const decoded = decode(bytes);
   resolveStyleReferences(decoded.document);
-  const { document } = expandSelection(decoded.document, [...new Set(icons.map(([key]) => key))]);
+  const { document } = expandSelection(decoded.document,
+    [...new Set([...icons, ...equalizerIcons].map(([key]) => key))]);
   const nodes = new Map(document.nodeChanges.map(n => [id(n.guid), n]));
   const children = new Map();
   for (const node of nodes.values()) {
@@ -168,16 +187,24 @@ export function extractPlayerAssets(destination) {
     return `<g transform="${affine(node.transform)}" opacity="${node.opacity ?? 1}">${paths.join('')}${nested}</g>`;
   };
   fs.mkdirSync(destination, { recursive: true });
-  const exported = icons.map(([key, name, colored = false]) => {
+  const selections = icons.map(([key, name, colored = false]) => ({key, name, colored, root: nodes.get(key)}));
+  for (const [key, preset] of equalizerIcons) {
+    const row = children.get(key) ?? [];
+    const label = row.find(node => node.type === 'TEXT')?.textData?.characters;
+    const root = row.find(node => node.name === 'Icon');
+    if (!root || root.size.x !== 24 || root.size.y !== 24 || !label)
+      throw new Error(`Missing saved equalizer row icon/label: ${key}`);
+    selections.push({key, name: `eq-${preset}`, colored: true, root, label});
+  }
+  const exported = selections.map(({key, name, colored, root, label}) => {
     preserveColors = colored; clipSerial = 0;
-    const root = nodes.get(key);
     if (!root) throw new Error(`Missing selected icon ${key}`);
     // A symbol's fill is its Figma editing canvas, not part of the icon.
-    const content = (children.get(key) ?? []).map(render).join('');
+    const content = (children.get(id(root.guid)) ?? []).map(render).join('');
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${root.size.x}" height="${root.size.y}" viewBox="0 0 ${root.size.x} ${root.size.y}">${content}</svg>\n`;
     const filename = `${name}.svg`;
     fs.writeFileSync(path.join(destination, filename), svg);
-    return { id: key, name: root.name, filename, width: root.size.x, height: root.size.y, ...(colored ? {originalColors:true} : {}), sha256: hash(svg) };
+    return { id: key, name: root.name, filename, width: root.size.x, height: root.size.y, ...(label ? {presetLabel:label} : {}), ...(colored ? {originalColors:true} : {}), sha256: hash(svg) };
   });
   // The cone is a saved vector, too. SVG keeps it usable with VLC's existing
   // renderer without introducing the separately packaged QtQuick.Shapes module.

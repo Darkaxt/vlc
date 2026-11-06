@@ -21,9 +21,19 @@ Item {
         function onHeightChanged() { if (hover.hovered) analysis.positionPreview() }
     }
     PlayerAnalysisStrip {
+        objectName: "liveAudioVisualizerStrip"
+        anchors.fill: parent
+        visible: MediaAnalysis.visualizer.active
+        renderMode: MediaAnalysis.visualizer.mode
+        samples: MediaAnalysis.visualizer.samples
+        color: PlayerStyle.accent
+        opacity: 0.8
+        // Paint only: slider pointer, keyboard and handle ownership stay intact.
+    }
+    PlayerAnalysisStrip {
         objectName: "audioWaveformStrip"
         anchors.fill: parent
-        visible: MediaTools.waveformVisible && MediaAnalysis.waveform.length > 0
+        visible: !MediaAnalysis.visualizer.active && MediaTools.waveformVisible && MediaAnalysis.waveform.length > 0
         opacity: 0.65
         color: PlayerStyle.accent
         samples: MediaAnalysis.waveform

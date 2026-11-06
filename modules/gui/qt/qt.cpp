@@ -85,6 +85,7 @@ extern "C" char **environ;
 #include "qt.hpp"
 
 #include "player/player_controller.hpp"    /* THEMIM destruction */
+#include "player/player_audio_visualizer.hpp"
 #include "playlist/playlist_controller.hpp" /* THEMPL creation */
 #include "dialogs/dialogs_provider.hpp" /* THEDP creation */
 #include "dialogs/dialogs/dialogmodel.hpp"
@@ -674,6 +675,12 @@ vlc_module_begin ()
 #endif
 
     cannot_unload_broken_library()
+
+    add_submodule ()
+        set_description("Seekbar audio visualization observer")
+        set_capability("audio filter", 0)
+        add_shortcut("qt-seek-visualizer")
+        set_callback(QtAudioVisualizerOpen)
 
     add_submodule ()
         set_description( "Dialogs provider" )

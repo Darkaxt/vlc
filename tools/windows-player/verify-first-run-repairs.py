@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -403,6 +403,14 @@ class Peer(BaseHTTPRequestHandler):
     mode = 'current'
     calls = []
     def do_GET(self):
+        if self.path=='/control.mkv':
+            Peer.calls.append({'mode':'direct-network-playback','path':self.path})
+            payload=(fixtures/'control.mkv').read_bytes()
+            self.send_response(200)
+            self.send_header('Content-Type','video/x-matroska')
+            self.send_header('Content-Length',str(len(payload)))
+            self.end_headers();self.wfile.write(payload)
+            return
         if self.path=='/english.srt':
             Peer.calls.append({'mode':'remote-subtitle','path':self.path})
             payload=(fixtures/'english.srt').read_bytes()
@@ -1699,6 +1707,140 @@ def engine_accents():
     finally:case.close()
 
 
+def audio_visualizer():
+    """Real PCM effects stay inside the seek track and release on disable/handover."""
+    identity='redesignAudioVisualizer'
+    for scale in ('1','1.5','2'):
+        case=Case('audio-visualizer-'+scale,scale=scale,media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
+        try:
+            initial=case.inspect('audio-ready','snapshot','--await-service',identity,'--await-property','available','--await-value','true')
+            baseline=nodes(initial,'progressSlider')[0]
+            for index,mode in enumerate(('spectrometer','scope','spectrum','waveform'),1):
+                case.click(mode+'-panel','toolsButton')
+                case.inspect(mode+'-focus','focus','--target','seekbarVisualizerChoice')
+                selected=case.inspect(mode+'-choose','key','--key','0x1000015',
+                    '--await-service',identity,'--await-property','mode','--await-value',json.dumps(mode))
+                assert service(selected,identity)['mode']==mode
+                case.inspect(mode+'-dismiss-panel','key','--key','0x1000000')
+                case.click(mode+'-play','playButton','--await-core','state','--await-value','2')
+                active=case.inspect(mode+'-real-pcm','snapshot','--await-service',identity,
+                    '--await-property','active','--await-value','true','--capture')
+                values=service(active,identity)
+                assert len(values['samples'])==(64 if mode in ('spectrometer','spectrum') else 512)
+                assert any(abs(value)>0 for value in values['samples']), 'Audible synthetic tone produced no effect'
+                assert active['native_vout_count']==1, 'Visualizer created another video output'
+                strip=nodes(active,'liveAudioVisualizerStrip')[0]
+                slider=nodes(active,'progressSlider')[0]
+                for field in ('x','y','width','height'):
+                    assert abs(strip[field]-slider[field])<.01,(mode,field,strip,slider)
+                    assert abs(slider[field]-baseline[field])<.01,(mode,field,slider,baseline)
+                moving=case.inspect(mode+'-new-audio-frame','snapshot','--await-service',identity,
+                    '--await-property','frameRevision','--await-value',str(values['frameRevision']+2),'--await-comparison','at_least')
+                paused=case.click(mode+'-pause','playButton','--await-core','state','--await-value','3')
+                frozen=service(paused,identity)['frameRevision']
+                observed=case.inspect(mode+'-paused-frame','snapshot','--capture')
+                assert service(observed,identity)['frameRevision']==frozen
+                sought=case.click(mode+'-seek','progressSlider','--fraction-x','.3','--await-core','position','--await-value','.3','--await-tolerance','.035')
+                assert not service(sought,identity)['samples'], 'Paused seek retained stale audio samples'
+            case.click('disable-panel','toolsButton')
+            case.inspect('disable-focus','focus','--target','seekbarVisualizerChoice')
+            disabled=case.inspect('disable','key','--key','0x1000010','--await-service',identity,'--await-property','mode','--await-value','""')
+            assert not service(disabled,identity)['active'] and not service(disabled,identity)['samples']
+            case.inspect('disable-dismiss-panel','key','--key','0x1000000')
+            case.click('disabled-playback','playButton','--await-core','state','--await-value','2')
+            advanced=case.inspect('disabled-audio-progress','snapshot','--await-core','position','--await-value','.4','--await-comparison','at_least')
+            assert service(advanced,identity)['frameRevision']==service(disabled,identity)['frameRevision']
+            case.click('disabled-pause','playButton','--await-core','state','--await-value','3')
+            if scale=='1':
+                case.click('handover-panel','toolsButton')
+                case.inspect('handover-visualizer-focus','focus','--target','seekbarVisualizerChoice')
+                case.inspect('handover-enable','key','--key','0x1000015',
+                    '--await-service',identity,'--await-property','mode','--await-value','"spectrometer"')
+                case.inspect('handover-mpv-focus','focus','--name','MPV')
+                mpv=case.inspect('handover-mpv','click','--name','MPV','--await-core','engine','--await-value','"mpv"')
+                assert not service(mpv,identity)['active'] and not service(mpv,identity)['samples']
+                case.inspect('handover-vlc-focus','focus','--name','VLC')
+                case.inspect('handover-vlc','click','--name','VLC','--await-core','engine','--await-value','"vlc"')
+                case.inspect('handover-audio-restored','snapshot','--await-service',identity,'--await-property','available','--await-value','true')
+                case.inspect('handover-panel-dismiss','key','--key','0x1000000')
+                case.click('handover-play','playButton','--await-core','state','--await-value','2')
+                case.inspect('handover-new-pcm','snapshot','--await-service',identity,'--await-property','active','--await-value','true')
+                case.click('handover-pause','playButton','--await-core','state','--await-value','3')
+                no_audio=drop_fixture(case,'input-without-audio','wide.mkv')
+                assert not service(no_audio,identity)['available'] and not service(no_audio,identity)['samples']
+            case.close(True)
+        finally:case.close()
+    unsupported=Case('audio-visualizer-mpv',engine='mpv',media=fixtures/'control.mkv')
+    try:
+        result=unsupported.click('unsupported-panel','toolsButton','--capture')
+        assert not service(result,identity)['available']
+        assert not nodes(result,'seekbarVisualizerChoice')[0]['enabled']
+        assert 'VLC' in service(result,identity)['status']
+        unsupported.close(True)
+    finally:unsupported.close()
+
+
+def no_library():
+    """The disabled backend keeps the real redesign, menus and video workflow."""
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            case=Case('no-library-'+engine+'-'+scale,engine=engine,scale=scale,extra=('--no-media-library',))
+            try:
+                case.inspect('viewport','resize','--width','1280','--height','800')
+                for section in ('home','videos','music','network','playlists','recent'):
+                    result=case.click('navigate-'+section,'libraryNav_'+section,
+                        '--await-target','fullLibrary','--await-property','ready','--await-value','true',
+                        *(['--capture'] if section=='home' else []))
+                    assert nodes(result,'playerTopBar') and nodes(result,'libraryDisabledMessage')
+                    assert result['media_library_available'] is False
+                    case.inspect('no-indexing-'+section,'snapshot','--await-target','fullLibrary',
+                        '--await-property','indexing','--await-value','false')
+                case.inspect('main-menu','click','--name','Main menu')
+                result=case.inspect('settings','click','--name','Settings')
+                assert any(row['id']=='redesignPreferences' for row in result['widgets'])
+                case.native('settings-cancel','preferencesCancel')
+                case.close(True)
+                assert not any(path.name.endswith(('.db','.db-wal','.db-shm')) for path in (case.path/'profile').rglob('*'))
+            finally:case.close()
+            if scale=='1':
+                restarted=Case('no-library-restart-'+engine,engine=engine,
+                    reused_profile=case.path/'profile',extra=('--no-media-library',))
+                try:
+                    result=restarted.inspect('restart-follows-no-library','snapshot',
+                        '--await-target','fullLibrary','--await-property','ready','--await-value','true')
+                    assert nodes(result,'libraryDisabledMessage') and not result['media_library_available']
+                    direct=drop_fixture(restarted,'direct-file','control.mkv')
+                    assert direct['core']['engine']==engine
+                    restarted.inspect('direct-network-library','click','--name','Back to media',
+                        '--await-target','fullLibrary','--await-property','ready','--await-value','true')
+                    restarted.inspect('add-network-item','click','--name','Add item')
+                    restarted.inspect('network-form','click','--name','Open network stream or playlist…')
+                    url='http://127.0.0.1:'+str(server.server_port)+'/control.mkv'
+                    restarted.inspect('network-url-focus','focus','--target','networkUrlsInput')
+                    restarted.inspect('network-url-input','key','--key','0','--text',url)
+                    network=restarted.click('direct-network-play','networkStreamSave',
+                        '--await-core','url','--await-value',json.dumps(url))
+                    assert not network['media_library_available']
+                    folder=restarted.path/'direct-folder';folder.mkdir()
+                    shutil.copyfile(fixtures/'control.mkv',folder/'only-video.mkv')
+                    restarted.inspect('direct-folder','drop','--target','mainInterface','--url',folder.as_uri(),
+                        '--await-core','url','--await-value',json.dumps((folder/'only-video.mkv').as_uri()))
+                    restarted.close(True)
+                    assert not any(path.name.endswith(('.db','.db-wal','.db-shm')) for path in (restarted.path/'profile').rglob('*'))
+                finally:restarted.close()
+        video=Case('no-library-video-'+engine,engine=engine,media=fixtures/'control.mkv',extra=('--no-media-library',))
+        try:
+            video.inspect('main-video','snapshot','--await-target','playerView','--await-property','visible','--await-value','true')
+            result=video.inspect('browse-during-video','click','--name','Back to media',
+                '--await-target','fullLibrary','--await-property','ready','--await-value','true','--capture')
+            assert nodes(result,'libraryMiniSeek') and nodes(result,'libraryDisabledMessage')
+            result=video.click('return-to-video','libraryReturnToPlayer',
+                '--await-target','playerView','--await-property','visible','--await-value','true')
+            assert result['core']['engine']==engine
+            video.close(True)
+        finally:video.close()
+
+
 def engine_icon_pixels():
     """Verify changed PNG decode sizes; preserve unchanged handover evidence."""
     for scale in ('1','1.5','2'):
@@ -2826,7 +2968,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue

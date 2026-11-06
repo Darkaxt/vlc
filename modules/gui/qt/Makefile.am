@@ -305,6 +305,8 @@ libqt_plugin_la_SOURCES = \
 	player/player_media_tools.cpp player/player_media_tools.hpp player/subtitle_data.hpp player/subtitle_archive.hpp \
 	player/subtitle_search.cpp player/subtitle_search.hpp \
 	player/player_media_analysis.cpp player/player_media_analysis.hpp \
+	player/player_audio_visualizer.cpp player/player_audio_visualizer.hpp player/audio_visualization_data.hpp \
+	../../visualization/visual/fft.c ../../visualization/visual/fft.h \
 	player/player_controlbar_model.cpp player/player_controlbar_model.hpp \
 	player/control_list_model.cpp player/control_list_model.hpp \
 	player/control_list_filter.cpp \
@@ -515,6 +517,7 @@ nodist_libqt_plugin_la_SOURCES = \
 	player/player_media_tools.moc.cpp \
 	player/subtitle_search.moc.cpp \
 	player/player_media_analysis.moc.cpp \
+	player/player_audio_visualizer.moc.cpp \
 	player/player_controlbar_model.moc.cpp \
 	player/control_list_model.moc.cpp \
 	player/control_list_filter.moc.cpp \
@@ -834,6 +837,28 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/mpv-256.png \
 	player/qml/PlayerLayoutRules.js \
 	pixmaps/redesign/forward10.svg \
+	pixmaps/redesign/visualizer-spectrometer.svg \
+	pixmaps/redesign/visualizer-scope.svg \
+	pixmaps/redesign/visualizer-spectrum.svg \
+	pixmaps/redesign/visualizer-waveform.svg \
+	pixmaps/redesign/eq-flat.svg \
+	pixmaps/redesign/eq-classical.svg \
+	pixmaps/redesign/eq-club.svg \
+	pixmaps/redesign/eq-dance.svg \
+	pixmaps/redesign/eq-fullbass.svg \
+	pixmaps/redesign/eq-fullbasstreble.svg \
+	pixmaps/redesign/eq-fulltreble.svg \
+	pixmaps/redesign/eq-headphones.svg \
+	pixmaps/redesign/eq-largehall.svg \
+	pixmaps/redesign/eq-live.svg \
+	pixmaps/redesign/eq-party.svg \
+	pixmaps/redesign/eq-pop.svg \
+	pixmaps/redesign/eq-reggae.svg \
+	pixmaps/redesign/eq-rock.svg \
+	pixmaps/redesign/eq-ska.svg \
+	pixmaps/redesign/eq-soft.svg \
+	pixmaps/redesign/eq-softrock.svg \
+	pixmaps/redesign/eq-techno.svg \
 	pixmaps/redesign/backward10.svg \
 	pixmaps/redesign/forward15.svg \
 	pixmaps/redesign/backward15.svg \
@@ -1922,6 +1947,15 @@ base_model_test_LDADD = $(QT_LIBS) $(LIBS_qt)
 base_model_test_LDFLAGS = $(AM_LDFLAGS) $(QT_LDFLAGS)
 check_PROGRAMS = base_model_test
 TESTS = base_model_test
+
+audio_visualization_test_SOURCES = tests/test_audio_visualization.cpp \
+        player/audio_visualization_data.hpp \
+        ../../visualization/visual/fft.c ../../visualization/visual/fft.h
+audio_visualization_test_CPPFLAGS = $(AM_CPPFLAGS) -UNDEBUG
+audio_visualization_test_CXXFLAGS = $(AM_CXXFLAGS) -UNDEBUG
+audio_visualization_test_LDADD = -lm
+check_PROGRAMS += audio_visualization_test
+TESTS += audio_visualization_test
 
 if HAVE_QT_QTEST
 

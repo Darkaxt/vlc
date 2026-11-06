@@ -2,12 +2,16 @@
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
+import QtQuick.Layouts
 import VLC.Player
 
 T.ComboBox {
     id: choice
     property string label
     property bool outlined: false
+    // Native values, never translated labels, identify the original artwork.
+    property var optionIcons: ({})
+    readonly property bool referenceOptions: Object.keys(optionIcons).length > 0
     // The popup is reparented to Qt's overlay. Capture the scene/panel below
     // that overlay, never the overlay itself or this popup recursively.
     readonly property Item backdropSource: {
@@ -51,18 +55,40 @@ T.ComboBox {
         required property int index
         required property var model
         width: choice.width
-        implicitHeight: PlayerStyle.px(34)
+        implicitHeight: PlayerStyle.px(choice.referenceOptions ? 44 : 34)
         highlighted: choice.highlightedIndex === index
         text: choice.textAt(index)
         Accessible.name: text
         Accessible.onPressAction: clicked()
-        contentItem: Text {
-            text: choice.textAt(index)
-            color: PlayerStyle.trackForeground
-            font.family: PlayerStyle.fontFamily
-            font.pixelSize: PlayerStyle.px(14)
-            elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
+        contentItem: RowLayout {
+            spacing: PlayerStyle.px(8)
+            Image {
+                readonly property string glyph: choice.optionIcons[String(choice.valueAt(index))] || ""
+                visible: glyph.length > 0
+                Layout.preferredWidth: PlayerStyle.px(24)
+                Layout.preferredHeight: PlayerStyle.px(24)
+                source: visible ? PlayerStyle.themedIcon("qrc:/redesign/icons/" + glyph + ".svg") : ""
+                sourceSize: Qt.size(width,height)
+                smooth: false
+            }
+            Text {
+                Layout.fillWidth: true
+                text: choice.textAt(index)
+                color: PlayerStyle.trackForeground
+                font.family: PlayerStyle.fontFamily
+                font.pixelSize: PlayerStyle.px(14)
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+            IconImage {
+                visible: choice.referenceOptions && choice.currentIndex === index
+                Layout.preferredWidth: PlayerStyle.px(24)
+                Layout.preferredHeight: PlayerStyle.px(24)
+                source: "qrc:/redesign/icons/choice-selected.svg"
+                sourceSize: Qt.size(width,height)
+                color: PlayerStyle.accent
+                smooth: false
+            }
         }
         padding: PlayerStyle.px(8)
         background: Rectangle { color: parent.highlighted ? PlayerStyle.hover : "transparent" }

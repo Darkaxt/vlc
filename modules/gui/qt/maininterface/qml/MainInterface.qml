@@ -355,7 +355,7 @@ Item {
                 default:
                     console.error("unexpected interface mode", MainCtx.effectiveMainInterfaceMode)
                 case MainCtx.MAININTERFACE_MODE_MAINDISPLAY:
-                    return MainCtx.mediaLibraryAvailable ? "qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml" : "qrc:///qt/qml/VLC/MainInterface/MainDisplay.qml"
+                    return "qrc:///qt/qml/VLC/Player/PlayerLibraryDisplay.qml"
                 }
             }
         }
