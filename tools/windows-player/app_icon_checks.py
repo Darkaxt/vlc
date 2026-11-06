@@ -9,16 +9,24 @@ import pefile
 from PIL import Image, ImageChops, ImageStat
 
 
-def qml_mpv_icon_pixels(capture, expected_ico):
+def qml_mpv_icon_pixels(capture, expected_ico, pixel_offset=(0,0)):
     """Reject decoding a larger native frame back down to24px before DPI scaling."""
     actual=Image.open(capture).convert('RGB')
     native=Image.open(expected_ico)
     size=next(size for size in sorted(native.ico.sizes()) if size[0]>=actual.width)
     reference=native.ico.getimage(size).convert('RGBA').resize(actual.size,Image.Resampling.LANCZOS)
+    # The capture crops at rounded physical coordinates; a fractional item
+    # origin with nearest texture sampling starts at floor(origin). Apply that
+    # measured phase, never a searched alignment or a relaxed color threshold.
+    assert all(value in (-1,0) for value in pixel_offset),pixel_offset
+    if pixel_offset!=(0,0):
+        aligned=Image.new('RGBA',actual.size)
+        aligned.paste(reference,pixel_offset)
+        reference=aligned
     mask=reference.getchannel('A').point(lambda alpha:255 if alpha>=240 else 0)
     error=sum(ImageStat.Stat(ImageChops.difference(actual,reference.convert('RGB')),mask).mean)/3
     assert error<10,('QML icon lost the original native frame detail',actual.size,error)
-    return {'physical_size':actual.size,'reference_frame':size,'mean_rgb_error':error,
+    return {'physical_size':actual.size,'reference_frame':size,'mean_rgb_error':error,'capture_pixel_offset':pixel_offset,
         'native_detail_preserved':True,'capture_sha256':hashlib.sha256(Path(capture).read_bytes()).hexdigest()}
 
 

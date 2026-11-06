@@ -1,0 +1,45 @@
+{
+  "source_commit": "8ee7eac16aaeb40ce747cead653d072381a364a6",
+  "qt_plugin_sha256": "06d48c0b121bb0663cdf9b029a0cbb0885af99d3fad90cedcbd1d56ff1f30352",
+  "purpose": "Selected public README comparisons requested by user; isolated empty profiles, no private media",
+  "captures_are": "Actual app-rendered Qt UI, not a desktop/video composition claim",
+  "files": [
+    {
+      "file": "player-mpv.png",
+      "capture": "463126f7e0824a9ba27e4ebd6cfd1b49.png",
+      "capture_sha256": "a236de595816ad02ba18893469fd56c5bc717400e9cda323ce8a2270401db0e8",
+      "sha256": "af4c6f03bde41a3d3b2da31efc81dbcca4a4fdd4bdd6dad9bba0f8b51ef67486",
+      "crop": null,
+      "applicability": "Current accepted MPV rendering"
+    },
+    {
+      "file": "player-vlc.png",
+      "capture": "5d820aceabd3454e95070e59e9619416.png",
+      "capture_sha256": "ebc6ed1f2235e9ed04bff643b1cc67918623dcdafaf389228e893765815508d7",
+      "sha256": "dea1128f23109359bf295874c5001d0fec86a04f91810be74d4fde9c59d00c73",
+      "crop": null,
+      "applicability": "VLC/main-menu code and assets unchanged by MPV-only Image repair; original c257d3e producer retained"
+    },
+    {
+      "file": "main-menu-native.png",
+      "capture": "61c4aed183e047cf8b76fb945db7b0b1.png",
+      "capture_sha256": "ba0f81bc0987e7c46688f61d590ed1457b6247e51f2d25161da9e3f058d6ab90",
+      "sha256": "d631173511932a485c379132df83e3296edac471bdbbb95ffc2f95af00092880",
+      "crop": [
+        0,
+        0,
+        430,
+        650
+      ],
+      "applicability": "VLC/main-menu code and assets unchanged by MPV-only Image repair; original c257d3e producer retained"
+    },
+    {
+      "file": "main-menu-figma.png",
+      "capture": "codex-clipboard-78e4d643-b6f4-431f-bf6f-e1fb95f1428d.png",
+      "capture_sha256": "98f27d21045fc566f6490f82e0249597f31714e68c21f5578809895b09147813",
+      "sha256": "d7faa9417df034446146813b7b7419f3c80ee829b0bb00f7056423fbbba027ce",
+      "crop": null,
+      "applicability": "User-supplied Juxtopposed Figma reference; CC BY4 attribution in README"
+    }
+  ]
+}

@@ -13,6 +13,14 @@ symbols and SHA-256 checksums are provided separately with each release.
 
 ## The player
 
+| VLC engine | MPV engine |
+| --- | --- |
+| ![Actual VLC player with the redesigned cone](doc/redesign/screenshots/player-vlc.png) | ![Actual MPV player with its original icon and purple accent](doc/redesign/screenshots/player-mpv.png) |
+
+Actual Qt player captures from an empty, isolated profile. Selecting an engine
+also changes the title, accent and artwork, and saves the choice for the next
+launch.
+
 - Redesigned player, media library, first-run guide and settings.
 - VLC and MPV playback engines, with in-session switching that preserves position
   and play/pause state.
@@ -37,6 +45,17 @@ The original design is credited under
 This implementation adapts it to working desktop controls, responsive layouts
 and native settings; it also adds the engine switcher. Design attribution does
 not replace the separate software, font and bundled dependency licenses.
+
+### Reference and implementation
+
+| Juxtopposed's Figma reference | Working player menu |
+| --- | --- |
+| ![Original Figma main menu, credited to Juxtopposed](doc/redesign/screenshots/main-menu-figma.png) | ![Actual Qt player main menu](doc/redesign/screenshots/main-menu-native.png) |
+
+The comparison preserves the original menu order, two-tone icons and shortcuts.
+The reference image is from the linked Figma project; the implementation image
+is a cropped app-rendered capture. These captures show interface rendering,
+without media or personal library content. See the [capture provenance](doc/redesign/screenshots/provenance.json).
 
 The player builds on [VideoLAN VLC](https://www.videolan.org/vlc/),
 [MPV](https://mpv.io/), [libplacebo](https://code.videolan.org/videolan/libplacebo)

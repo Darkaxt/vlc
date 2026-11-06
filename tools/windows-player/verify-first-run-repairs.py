@@ -13,6 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -1579,7 +1580,9 @@ def engine_icon_pixels():
             case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
             case.click('idle-editor-cancel','layoutCancel')
             case.inspect('idle-logo-ready','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1')
-            snapshot=case.inspect('native-dpr-icons','snapshot','--await-target','playerGlyph-mpv','--await-property','status','--await-value','1','--capture')
+            mounted=case.inspect('visible-header','snapshot')
+            glyph=nodes(mounted,'playerGlyph-mpv');assert len(glyph)==1,glyph
+            snapshot=case.inspect('native-dpr-icons','snapshot','--await-node',str(glyph[0]['node']),'--await-property','status','--await-value','1','--capture')
             verify_window_icon(case,snapshot)
             picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png'))
             ratio=picture.width/snapshot['window']['width']
@@ -1589,7 +1592,8 @@ def engine_icon_pixels():
                 picture.crop(tuple(round(value*ratio) for value in
                     (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(crop)
                 case.record.setdefault('native_qml_icon_pixels',[]).append(dict(
-                    qml_mpv_icon_pixels(crop,repo/'modules/gui/qt/pixmaps/redesign/mpv.ico'),target=identity,source=node['source']))
+                    qml_mpv_icon_pixels(crop,repo/'modules/gui/qt/pixmaps/redesign/mpv.ico',
+                        tuple(math.floor(node[key]*ratio)-round(node[key]*ratio) for key in ('x','y'))),target=identity,source=node['source']))
             if scale=='1' and not args.skip_documentation_capture:
                 # Current public UI documentation uses an empty owned profile.
                 # No private movie, local path or user desktop is captured.
@@ -1616,7 +1620,9 @@ def engine_icons():
     for scale in ('1','1.5','2'):
         case=Case('engine-icons-'+scale,scale=scale,media=fixtures/'control.mkv')
         def identity(label,engine):
-            snapshot=case.inspect(label,'snapshot','--await-target','playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'),
+            mounted=case.inspect(label+'-locate','snapshot')
+            target=nodes(mounted,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'));assert len(target)==1,target
+            snapshot=case.inspect(label,'snapshot','--await-node',str(target[0]['node']),
                 '--await-property','status','--await-value','1','--capture')
             glyph=nodes(snapshot,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
             assert len(glyph)==1 and (mpv_frame(glyph[0]['source']) if engine=='mpv' else glyph[0]['source'].endswith('/vlc.svg')),glyph
@@ -1627,7 +1633,8 @@ def engine_icons():
             picture.crop(tuple(round(value*ratio) for value in
                 (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(case.evidence/(label+'-header.png'))
             if engine=='mpv':
-                pixels=qml_mpv_icon_pixels(case.evidence/(label+'-header.png'),repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')
+                pixels=qml_mpv_icon_pixels(case.evidence/(label+'-header.png'),repo/'modules/gui/qt/pixmaps/redesign/mpv.ico',
+                    tuple(math.floor(node[key]*ratio)-round(node[key]*ratio) for key in ('x','y')))
                 case.record.setdefault('native_qml_icon_pixels',[]).append(pixels)
             return snapshot
         try:

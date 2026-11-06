@@ -39,6 +39,17 @@ Original failed checker/format/pixel evidence remains retained; no product crash
 or build failure is claimed. Unchanged handover/storage/Windows identity evidence
 is reusable; verify the affected actual header/idle pixels once at all three DPIs.
 
+Raster242/run54 completed0 with an empty Linux group, no OOM and released private
+mounts. Corrected plain-Image header and idle artwork now pass actual pixel
+acceptance at100/150/200% against the original extracted frames, with protected
+profiles unchanged and all owned players exited0. At150%, the capture's measured
+half-pixel origin is accounted for deterministically; the old magnified/cropped
+renders still fail the unchanged detail threshold. The rejected enlarged image
+remains historical failure evidence. Selected actual empty-player screenshots and
+the user-provided Figma menu comparison now accompany the README credits (R99).
+Remaining: actual Shell taskbar-button pixels, normal stripped qualification,
+publication and independently verified1.1.9 delivery. M7 stays ACTIVE.
+
 **6 November current reconciliation: normal1.1.8 delivered; M6 BLOCKED only on native cleanup.**
 R90–R95 pass complete native workflows and are published in
 [normal1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8)
