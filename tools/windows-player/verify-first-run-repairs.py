@@ -25,7 +25,7 @@ import time
 import traceback
 import uuid
 from PIL import Image
-from app_icon_checks import executable_icon, window_icon
+from app_icon_checks import executable_icon, window_icon, qml_mpv_icon_pixels
 from isolated_desktop import IsolatedProcess, input_desktop, u, k
 from settings_layout_checks import check_settings_layout
 
@@ -1580,6 +1580,9 @@ def engine_icons():
             ratio=picture.width/snapshot['window']['width'];node=glyph[0]
             picture.crop(tuple(round(value*ratio) for value in
                 (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(case.evidence/(label+'-header.png'))
+            if engine=='mpv':
+                pixels=qml_mpv_icon_pixels(case.evidence/(label+'-header.png'),repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')
+                case.record.setdefault('native_qml_icon_pixels',[]).append(pixels)
             return snapshot
         try:
             case.inspect('reference-viewport','resize','--width','1280','--height','800')
@@ -1593,14 +1596,6 @@ def engine_icons():
                 assert settled['core']['engine']==engine and settled['core']['state']==3,settled['core']
                 case.inspect(label+'-close','key','--key','0x1000000')
                 identity(label,engine)
-            case.inspect('stop','key','--key','0x53','--text','s')
-            case.inspect('idle-menu','click','--name','Main menu')
-            case.inspect('idle-customize','click','--name','Customize Player')
-            case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
-            case.click('idle-editor-cancel','layoutCancel')
-            idle=case.inspect('idle-logo','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1','--capture')
-            assert mpv_frame(nodes(idle,'playerIdleCone')[0]['source'])
-            verify_window_icon(case,idle)
             case.close(True)
         finally:case.close()
         profile=case.path/'profile'
@@ -1608,6 +1603,23 @@ def engine_icons():
         try:
             case.inspect('restart-paused','snapshot','--await-core','state','--await-value','3')
             identity('saved-mpv','mpv')
+            case.close(True)
+        finally:case.close()
+        # Empty startup exercises the idle asset directly; stopping a loaded
+        # input is a separate already-covered media transition, not an icon
+        # observation predicate. The MPV native idle event does not wake the
+        # legacy player-state observation used by the original checker.
+        case=Case('engine-icons-idle-'+scale,scale=scale,engine=None,reused_profile=profile)
+        try:
+            case.inspect('idle-menu','click','--name','Main menu','--capture')
+            case.inspect('idle-customize','click','--name','Customize Player')
+            case.inspect('idle-player-mounted','snapshot','--await-target','viewLoader','--await-property','source',
+                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+            case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
+            case.click('idle-editor-cancel','layoutCancel')
+            idle=case.inspect('idle-logo','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1','--capture')
+            assert idle['core']['engine']=='mpv' and mpv_frame(nodes(idle,'playerIdleCone')[0]['source'])
+            verify_window_icon(case,idle)
             case.close(True)
         finally:case.close()
 

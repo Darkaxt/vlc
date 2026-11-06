@@ -6,7 +6,20 @@ from pathlib import Path
 import struct
 import uuid
 import pefile
-from PIL import Image
+from PIL import Image, ImageChops, ImageStat
+
+
+def qml_mpv_icon_pixels(capture, expected_ico):
+    """Reject decoding a larger native frame back down to24px before DPI scaling."""
+    actual=Image.open(capture).convert('RGB')
+    native=Image.open(expected_ico)
+    size=next(size for size in sorted(native.ico.sizes()) if size[0]>=actual.width)
+    reference=native.ico.getimage(size).convert('RGBA').resize(actual.size,Image.Resampling.LANCZOS)
+    mask=reference.getchannel('A').point(lambda alpha:255 if alpha>=240 else 0)
+    error=sum(ImageStat.Stat(ImageChops.difference(actual,reference.convert('RGB')),mask).mean)/3
+    assert error<10,('QML icon lost the original native frame detail',actual.size,error)
+    return {'physical_size':actual.size,'reference_frame':size,'mean_rgb_error':error,
+        'native_detail_preserved':True,'capture_sha256':hashlib.sha256(Path(capture).read_bytes()).hexdigest()}
 
 
 def shell_identity(hwnd, expected_pid, engine, executable, expected_mpv_icon):

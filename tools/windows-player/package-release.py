@@ -184,7 +184,8 @@ def main():
         with (package / 'README-MODERN-VLC.txt').open('a', encoding='utf-8') as guide:
             guide.write('\nPlayback settings can switch the open item between VLC and MPV, with a\n'
                 'brief interruption while the new engine restores its playback position.\n'
-                'Preferences separately choose the startup engine; VLC is the default.\n'
+                'Engine selection is saved for the next launch; VLC is the initial default.\n'
+                'The window and running taskbar identity follow the selected engine.\n'
                 'MPV converts supported Dolby Vision video to BT.709/sRGB SDR. Native\n'
                 'Dolby Vision display signaling and full Profile 7 FEL are not claimed.\n'
                 'Keep both packaged MPV DLLs beside vlc.exe. MPV color conversion requires\n'

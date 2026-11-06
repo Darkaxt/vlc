@@ -42,7 +42,9 @@ T.ToolButton {
         // Select an original MPV frame or rasterize SVG at the native ratio.
         // Its SVG edges already contain antialiasing: applying another linear
         // filter at a half-physical-pixel position visibly softens the icon.
-        sourceSize: Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
+        sourceSize: button.glyph === "mpv"
+            ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+            : Qt.size(PlayerStyle.px(24), PlayerStyle.px(24))
         smooth: false
         rotation: button.glyphRotation
         width: PlayerStyle.px(24)

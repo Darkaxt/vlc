@@ -320,7 +320,9 @@ FocusScope {
                     width: Math.min(PlayerStyle.px(128), parent.width / 2, parent.height / 2)
                     height: width
                     source: Player.playbackEngine === "mpv" ? PlayerStyle.mpvIcon(width, Screen.devicePixelRatio) : "qrc:///redesign/icons/app.svg"
-                    sourceSize: Qt.size(width, height)
+                    sourceSize: Player.playbackEngine === "mpv"
+                        ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+                        : Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
                     smooth: false
                     visible: MainCtx.bgCone

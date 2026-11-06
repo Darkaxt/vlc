@@ -33,10 +33,12 @@ parser.add_argument('--geometry-source', type=Path, required=True)
 parser.add_argument('--placement-proof', type=Path, required=True)
 parser.add_argument('--qt-sha256', required=True)
 parser.add_argument('--verify-app-icon',action='store_true',help='Read the packaged PE icon and the actual owned native window icon')
+parser.add_argument('--verify-taskbar-icon',action='store_true',help='Read the new actual Shell button after the first picture is presented, without input')
 parser.add_argument('--interactive-private', action='store_true',
     help='Verify ordinary default focus flags only on an owned inactive desktop; never issue a placement proof')
 args = parser.parse_args()
 assert not args.interactive_private or args.mode == 'private-playback'
+assert not args.verify_taskbar_icon or (args.mode=='offscreen' and args.verify_app_icon)
 k.GetCurrentThreadId.restype = W.DWORD
 u.GetThreadDesktop.argtypes = [W.DWORD]
 u.GetThreadDesktop.restype = W.HANDLE
@@ -201,6 +203,9 @@ if args.verify_app_icon:
     result['executable_app_icon']=executable_icon(runtime/'vlc.exe',repo/'share/icons/vlc.ico')
     observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')]
 observer = player = None
+if args.verify_taskbar_icon:
+    from taskbar_icon_checks import running_buttons, capture_mpv_button
+    assert not any((row['name'] or '').startswith('MPV Media Player - ') for row in running_buttons()),'Preserve an existing MPV taskbar group; actual-button ownership would be ambiguous'
 with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb') as error, \
         (evidence / 'observer.stdout').open('wb') as observer_output, (evidence / 'observer.stderr').open('wb') as observer_error:
     try:
@@ -228,6 +233,27 @@ with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb'
         result['pid'] = player.pid
         (scratch / 'target.json').write_text(json.dumps({'pid': player.pid, 'executable': str(runtime / 'vlc.exe')}))
         assert k.SetEvent(bound_event)
+        if args.verify_taskbar_icon:
+            # Observe a real presentation milestone, not an arbitrary delay.
+            # An absent/mismatched button remains a failure; the player still
+            # reaches its original natural completion and resource release.
+            notification=k.FindFirstChangeNotificationW(str(evidence),False,0x1|0x8|0x10)
+            assert notification and notification!=W.HANDLE(-1).value
+            try:
+                while True:
+                    logpath=evidence/'native-ui.log'
+                    text=logpath.read_text(encoding='utf-8',errors='replace') if logpath.exists() else ''
+                    if 'MPV picture presented' in text:
+                        try:
+                            assert input_desktop()==startup_desktop,'Input desktop changed before taskbar capture'
+                            result['actual_taskbar_icon']=capture_mpv_button(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico',scratch/'taskbar-mpv.png')
+                        except Exception as failure:
+                            result['taskbar_observation_error']=repr(failure)
+                        break
+                    outcome=k.WaitForMultipleObjects(2,(W.HANDLE*2)(notification,player._handle),False,0xFFFFFFFF)
+                    if outcome==1:break
+                    assert outcome==0 and k.FindNextChangeNotification(notification)
+            finally:k.FindCloseChangeNotification(notification)
         result['exit_code'] = (player.wait(permit_external_desktop_transition=True)
             if args.mode in {'private','private-playback'} else player.wait())
     finally:
@@ -269,6 +295,10 @@ checks = {'all_visible_owned_windows_offscreen': offscreen, 'no_observer_errors'
 if args.verify_app_icon:
     checks['native_engine_app_icon']=bool(window_events['native_window_icons']) and all(
         icon['official_mpv'] for icon in window_events['native_window_icons'].values())
+    checks['native_engine_shell_identity']=bool(window_events['native_shell_identities']) and all(
+        identity['engine']=='mpv' and identity['shell_resource_verified'] for identity in window_events['native_shell_identities'].values())
+if args.verify_taskbar_icon:
+    checks['actual_taskbar_icon']=bool(result.get('actual_taskbar_icon')) and not result.get('taskbar_observation_error')
 if args.mode in {'private','private-playback'}:
     # User lock/unlock is independent of our inactive desktop. Preserve that
     # observation without equating it to activation of the owned test desktop.

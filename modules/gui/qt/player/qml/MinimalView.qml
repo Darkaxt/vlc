@@ -101,7 +101,9 @@ FocusScope {
             anchors.centerIn: parent
             width: Math.min(parent.width / 2, Player.playbackEngine === "mpv" ? 64 : 24)
             height: Math.min(parent.height / 2, Player.playbackEngine === "mpv" ? 64 : 24)
-            sourceSize: Qt.size(width, height)
+            sourceSize: Player.playbackEngine === "mpv"
+                ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+                : Qt.size(width, height)
             fillMode: Image.PreserveAspectFit
             smooth: Player.playbackEngine !== "mpv"
             visible: MainCtx.bgCone
