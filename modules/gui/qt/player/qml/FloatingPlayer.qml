@@ -20,6 +20,7 @@ FocusScope {
     property int availableHeight: 1024
     property bool queueExpanded: false
     property bool ready: false // set after the native video visual is attached
+    readonly property bool moving: windowMove.active
     property string displayName: ""
     property string displayArtist: ""
     property url displayFolder: ""
@@ -44,6 +45,13 @@ FocusScope {
         function onFloatingPlayerChanged() { if (MainCtx.floatingPlayer) root.rememberMedia() }
     }
     PlaylistListModel { id: queueModel; playlist: MainPlaylistController.playlist }
+    // One drag owner covers the card and expanded queue. Interactive children
+    // retain their grabs (notably the seekbar); ordinary text/background can move.
+    DragHandler {
+        id: windowMove
+        target: null
+        onActiveChanged: if (active) root.Window.window.startSystemMove()
+    }
     Rectangle {
         anchors.fill: parent
         radius: PlayerStyle.px(14)
@@ -58,7 +66,7 @@ FocusScope {
             id: queueHeader
             AccessibleCompat.id: "floatingQueueHeader"
             Accessible.name: qsTr("Move miniplayer")
-            readonly property bool moving: queueMove.active
+            readonly property bool moving: root.moving
             width: parent.width; height: PlayerStyle.px(44)
             Rectangle { anchors.fill: parent; color: PlayerStyle.timeline; radius: PlayerStyle.px(14) }
             Text {
@@ -66,12 +74,7 @@ FocusScope {
                 text: qsTr("Queue"); horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                 font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); color: PlayerStyle.foreground
             }
-            HoverHandler { cursorShape: queueMove.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor }
-            DragHandler {
-                id: queueMove
-                target: null
-                onActiveChanged: if (active) root.Window.window.startSystemMove()
-            }
+            HoverHandler { cursorShape: root.moving ? Qt.ClosedHandCursor : Qt.OpenHandCursor }
         }
         RowLayout {
             x: PlayerStyle.px(16); y: PlayerStyle.px(48); width: parent.width-x*2; height: PlayerStyle.px(32)
@@ -108,6 +111,7 @@ FocusScope {
             x: PlayerStyle.px(16); y: PlayerStyle.px(84)
             width: parent.width-x*2; height: Math.max(0,parent.height-y-PlayerStyle.px(12))
             clip: true; model: queueModel
+            interactive: contentHeight > height
             currentIndex: queueModel.currentIndex
             delegate: T.ItemDelegate {
                 id: entry
@@ -161,10 +165,6 @@ FocusScope {
                 anchors.fill: parent
                 onClicked: MainPlaylistController.togglePlayPause()
                 onDoubleClicked: MainCtx.restoreFloatingPlayer()
-            }
-            DragHandler {
-                target: null
-                onActiveChanged: if (active) root.Window.window.startSystemMove()
             }
             HoverHandler { id: pictureHover }
             Item {
@@ -226,6 +226,8 @@ FocusScope {
             }
         }
         Text {
+            AccessibleCompat.id: "floatingMediaName"
+            readonly property bool moving: root.moving
             x: PlayerStyle.px(14); y: seek.y+seek.height+PlayerStyle.px(13); width: parent.width-x*2
             text: root.displayName; textFormat: Text.PlainText; elide: Text.ElideRight
             font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.foreground

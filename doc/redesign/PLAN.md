@@ -9,6 +9,11 @@ verify real queue interactions, native drag dispatch and original-style renderin
 Desktop controls remain prohibited; actual composed picture evidence remains
 separate. R105/M9 stays COMPLETE and unchanged except the shared button's
 default-preserving configurable glyph size.
+The subsequent review clarifies that video dragging works in both compact and
+expanded modes; the gap is surrounding UI coverage, not a demonstrated native
+move failure. Use one card-wide drag owner for text/background, retain seekbar
+and control grabs, and disable list flicking when the queue fits. The affected
+check includes compact/expanded metadata, header, empty queue and seek exclusion.
 M7 is COMPLETE under the user's explicit withdrawal of further taskbar resizing.
 The current blue MPV running button was captured and inspected by the user;
 its native icon and Shell resource/identity are verified. The10–15% enlargement

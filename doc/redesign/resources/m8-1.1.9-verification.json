@@ -12,6 +12,7 @@
     "video_picture": "User confirmed working; separate from independently captured proof",
     "reported_defect": "Cannot move the window with queue expanded; toolbar icons do not blend with adjacent text like Figma",
     "source_cause": "Expanded queue header has no drag handler. Toolbar inherits24-unit player glyphs and a brighter foreground.",
+    "clarification": "User confirms video dragging works in compact and expanded states; restore drag coverage across other non-control UI, preserving seek/control gestures. Native system movement is not itself shown broken.",
     "remaining": "Verify native header drag dispatch,16-unit muted icons and actual composed picture after repair"
   },
   "blocker": {

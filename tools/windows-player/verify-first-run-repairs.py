@@ -1891,6 +1891,11 @@ def floating_queue():
                 case.click('play','playButton','--await-core','state','--await-value','2')
                 case.click('minimize','playerMinimize')
                 case.inspect('floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                compact=case.inspect('compact-drag-target','snapshot')
+                title=nodes(compact,'floatingMediaName')[0]
+                moved=case.inspect('drag-compact-metadata','drag','--target','floatingMediaName',
+                    '--end-x',str(title['x']+title['width']*.8),'--end-y',str(title['y']+title['height']*.5))
+                assert any(event.get('moving') for event in moved['pointer_trace']),'Compact metadata did not enter window drag'
                 expanded=case.click('expand-queue','floatingQueueToggle','--capture')
                 header=nodes(expanded,'floatingQueueHeader');assert len(header)==1
                 assert nodes(expanded,'floatingQueueList') and nodes(expanded,'floatingQueueItem0')
@@ -1903,6 +1908,20 @@ def floating_queue():
                 assert any(event.get('moving') for event in dragged['pointer_trace']),('Queue header did not enter its native drag handler',dragged['pointer_trace'])
                 assert dragged['main_window']['visibility']==3 and dragged['core']['state']==2
                 assert dragged['window']['width']<=dragged['window']['available_width'] and dragged['window']['height']<=dragged['window']['available_height']
+                title=nodes(dragged,'floatingMediaName')[0]
+                moved=case.inspect('drag-expanded-metadata','drag','--target','floatingMediaName',
+                    '--end-x',str(title['x']+title['width']*.8),'--end-y',str(title['y']+title['height']*.5))
+                assert any(event.get('moving') for event in moved['pointer_trace']),'Expanded metadata did not enter window drag'
+                area=nodes(moved,'floatingQueueList')[0]
+                moved=case.inspect('drag-empty-queue','drag','--target','floatingPlayer','--fraction-x','0.25',
+                    '--fraction-y',str((area['y']+area['height']*.8)/nodes(moved,'floatingPlayer')[0]['height']),
+                    '--end-x',str(area['x']+area['width']*.65),'--end-y',str(area['y']+area['height']*.8))
+                assert any(event.get('moving') for event in moved['pointer_trace']),'Empty queue did not enter window drag'
+                case.inspect('seek-press','press','--target','floatingSeek','--fraction-x','0.2')
+                seeking=case.inspect('seek-move','move','--target','floatingSeek','--fraction-x','0.4')
+                assert not nodes(seeking,'floatingPlayer')[0]['moving'],'Seekbar gesture moved the window'
+                assert abs(nodes(seeking,'floatingSeek')[0]['value']-.4)<.04
+                case.inspect('seek-release','release','--target','floatingSeek','--fraction-x','0.4')
                 case.click('sort-queue','floatingQueueSort')
                 case.click('play-queue-item','floatingQueueItem0')
                 case.inspect('selected-video-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
