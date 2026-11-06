@@ -455,6 +455,7 @@ void PlayerController::switchPlaybackEngine(const QString &engine)
         d->m_engineAudioDelay = MS_FROM_VLC_TICK(vlc_player_GetAudioDelay(d->m_player));
         d->m_engineSubtitleDelay = MS_FROM_VLC_TICK(vlc_player_GetSubtitleDelay(d->m_player));
     }
+    d->m_engineWasStarted = d->m_engineRestart;
     d->m_engineSwitching = true;
     var_SetBool(vlc_object_instance(d->p_intf), "qt-mpv-active", true);
     {
@@ -579,7 +580,11 @@ void PlayerController::completeEngineSwitch()
     d->m_engineRestorePending = restart;
     if (!restart) {
         d->m_engineSwitching = false; emit engineSwitchingChanged();
-        emit playingStateChanged(PLAYING_STATE_STOPPED); return;
+        // Preserve the idle player view. Re-emitting an unchanged stopped
+        // state after the switch clears its guard and navigates to the library.
+        // A cancelled handover from active playback still reports its stop.
+        if (d->m_engineWasStarted) emit playingStateChanged(PLAYING_STATE_STOPPED);
+        return;
     }
     if (toMpv) playWithMpv(d->m_engineItem.get(), true);
     else {

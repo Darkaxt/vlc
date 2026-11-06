@@ -54,6 +54,8 @@ parser.add_argument('--resume-idle-checker',action='store_true',
     help='Resume the closed idle pass after correcting its pre-dispatch observation target')
 parser.add_argument('--resume-onboarding-checker',action='store_true',
     help='Retain passed100%% wizard/restart evidence; continue closed150%% keyboard and standalone checks')
+parser.add_argument('--resume-media-previews-checker',action='store_true',
+    help='Resume closed photo acceptance after correcting keyboard targeting or the animation observation fixture')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -66,19 +68,34 @@ resume_input=args.resume_settings_input
 resume_menu_quit=args.resume_menu_quit
 resume_idle=args.resume_idle_checker
 resume_onboarding=args.resume_onboarding_checker
-assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding))<=1
+resume_media=args.resume_media_previews_checker
+assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media))<=1
+assert not resume_media or args.case=='media-previews'
 assert not resume_onboarding or args.case=='onboarding-shortcuts'
 assert not resume_idle or args.case=='idle'
 assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding
+assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
-if resume_onboarding:
+if resume_media:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert not previous['passed'] and previous['scope']=='media-previews' and previous['protected_profiles_unchanged']
+    assert len(previous['cases'])==1 and previous['cases'][0]['name'] in ('image-preview-vlc','image-preview-vlc-focus','image-preview-vlc-window-key','image-preview-vlc-gif-observation')
+    assert previous['cases'][0]['exit_code']==0 and previous['cases'][0]['owned_desktop_never_observed_as_input']
+    photo_focus_unavailable='focus_action_unavailable_rejected_before_dispatch' in previous['failures']['media-previews']
+    photo_eof_race='second-animation-frame' in previous['failures']['media-previews'] and 'input_changed_or_ended_during_observation' in previous['failures']['media-previews']
+    photo_tab_duplicates='theme-0-vlc-rendered' in previous['failures']['media-previews'] and 'Expected one observation target; matched 4' in previous['failures']['media-previews']
+    assert photo_tab_duplicates or photo_eof_race or photo_focus_unavailable or 'Expected one visible focused Qt key target; matched 0' in previous['failures']['media-previews']
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    historical=root/('result-before-tab-observer.json' if photo_tab_duplicates else 'result-before-gif-observation.json' if photo_eof_race else 'result-before-photo-window-key.json' if photo_focus_unavailable else 'result-before-photo-focus-checker.json')
+    assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_onboarding:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='onboarding-shortcuts' and not previous['passed'] and previous['protected_profiles_unchanged']
     assert previous['cases'][0]['name']=='welcome-1' and previous['cases'][1]['name']=='restart-empty-1'
@@ -279,6 +296,10 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
+if resume_media:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    records['previous_failed_acceptance']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'reason':'Closed keyboard-target or last-frame animation observation failure; original result remains false. Completed photo/identity evidence is preserved.'}
 if resume_onboarding:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases'][:2]
@@ -1050,7 +1071,8 @@ def drop_fixture(case, label, file):
 
 def media_previews():
     """Real image/video replacement and engine identity, with no ten-second EOF."""
-    images = root / 'image-fixtures'
+    suffix='tab-node' if resume_media and photo_tab_duplicates else 'gif-observation' if resume_media and photo_eof_race else 'window-key' if resume_media and photo_focus_unavailable else 'focus' if resume_media else ''
+    images = root / ('image-fixtures'+('-'+suffix if suffix else ''))
     images.mkdir()
     photo = Image.new('RGB', (640, 360), '#296fba')
     for x in range(320, 640):
@@ -1059,7 +1081,9 @@ def media_previews():
     photo.save(images / 'still.png')
     # Long distinct frames permit native controls/state inspection without
     # racing an animation's EOF. Both engines must retain animation playback.
-    frames = [Image.new('RGB', (320, 180), color) for color in ('#f02d38', '#28a867')]
+    # Keep a later frame after the observed second-frame boundary: VLC may end
+    # at the last frame's timestamp instead of holding its final GIF delay.
+    frames = [Image.new('RGB', (320, 180), color) for color in ('#f02d38', '#28a867', '#276ee7')]
     frames[0].save(images / 'animated.gif', save_all=True, append_images=frames[1:], duration=6000, loop=0)
 
     def no_clock(snapshot):
@@ -1084,8 +1108,10 @@ def media_previews():
         verify_window_icon(case,snapshot)
 
     def theme_icon(case, label, engine, custom=True):
-        case.click(label+'-open', 'toolsButton')
-        snapshot=case.inspect(label+'-rendered','snapshot','--await-target','playerPlaybackTabIcon',
+        opened=case.click(label+'-open', 'toolsButton')
+        visible_icons=nodes(opened,'playerPlaybackTabIcon')
+        assert len(visible_icons)==1,visible_icons
+        snapshot=case.inspect(label+'-rendered','snapshot','--await-node',str(visible_icons[0]['node']),
             '--await-property','status','--await-value','1','--capture')
         icon=nodes(snapshot,'playerPlaybackTabIcon')[0]
         assert icon['source'].startswith('image://'),icon
@@ -1105,15 +1131,18 @@ def media_previews():
         assert any(max(rgb)-min(rgb)<4 and min(abs(rgb[0]-143),abs(rgb[0]-46))<5 for rgb in pixels),'Neutral outline lost'
         case.inspect(label+'-close','key','--key','0x1000000')
 
+    saved_profiles={}
     for engine in ('vlc', 'mpv'):
-        case = Case('image-preview-' + engine, engine=engine, media=images / 'still.jpg',extra=('--qt-accent-color=#3b82f6',))
+        case = Case('image-preview-' + engine + ('-'+suffix if suffix else ''), engine=engine, media=images / 'still.jpg',extra=('--qt-accent-color=#3b82f6',))
         try:
             case.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
             case.inspect('photo-video-surface','snapshot','--await-target','playerVideoSurface','--await-property','visible','--await-value','true')
             ready = case.inspect('still-preview', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'true', '--capture')
             no_clock(ready)
             identity(case,ready,engine)
-            case.inspect('play-photo', 'key', '--target', 'playerView', '--key', '0x20', '--text', ' ',
+            # Player is a focus scope, not an accessible focus action. Send the
+            # real shortcut to its window, as the existing Escape checks do.
+            case.inspect('play-photo', 'key', '--key', '0x20', '--text', ' ',
                 '--await-core', 'state', '--await-value', '2')
             started = time.monotonic_ns()
             # This bounded observation is the explicit beyond-old-10s acceptance
@@ -1140,7 +1169,7 @@ def media_previews():
             # an accidentally frozen still image must not qualify as animation.
             case.inspect('second-animation-frame','snapshot','--await-core','time_seconds','--await-value','6.2',
                 '--await-comparison','at_least','--capture')
-            case.inspect('stop-animation', 'key', '--target', 'playerView', '--key', '0x53', '--text', 's')
+            case.inspect('stop-animation', 'key', '--key', '0x53', '--text', 's')
             case.inspect('customize-menu', 'click', '--name', 'Main menu')
             case.inspect('customize-player', 'click', '--name', 'Customize Player')
             case.inspect('editor-ready', 'snapshot', '--await-target', 'playerLayoutEditor', '--await-property', 'ready', '--await-value', 'true')
@@ -1162,6 +1191,7 @@ def media_previews():
         finally: case.close()
 
         profile=case.path/'profile'
+        saved_profiles[engine]=profile
         restarted=Case('saved-engine-restart-'+engine,engine=None,media=fixtures/'control.mkv',reused_profile=profile)
         try:
             snapshot=restarted.inspect('saved-engine','snapshot','--await-core','state','--await-value','3','--capture')
@@ -1204,7 +1234,7 @@ def media_previews():
 
     # A real incompatible compositor rejects MPV before any engine preference
     # write. This is a supported native VLC path, not a diagnostic fake failure.
-    saved_vlc=root/'image-preview-vlc/profile'
+    saved_vlc=saved_profiles['vlc']
     rejected=Case('rejected-engine-preserves-choice',engine=None,media=fixtures/'control.mkv',
         reused_profile=saved_vlc,extra=('--qt-compositor=win7',))
     try:

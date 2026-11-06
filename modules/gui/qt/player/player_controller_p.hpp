@@ -108,6 +108,7 @@ public:
     bool m_acceptNativeEvents = true;
     bool m_engineSwitching = false, m_shutdownRequested = false;
     bool m_engineRestart = false, m_engineRestorePending = false, m_enginePaused = false;
+    bool m_engineWasStarted = false;
     bool m_engineCapabilitiesKnown = false;
     bool m_engineSeekPending = false, m_engineMpvSeekStarted = false;
     bool m_engineVlcReleased = false;
