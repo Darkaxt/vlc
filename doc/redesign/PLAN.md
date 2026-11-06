@@ -36,6 +36,15 @@ The floating target was being assigned a root from the main window's different
 device. Bind the root to the floating Qt device, share only the video child,
 and commit mutations on each owning device. Preserve the original native failure
 in `floating-m8-native-eligibility/result.json`; its exited runtime copy is retired.
+Diagnostic67 closes0/group empty and opens the floating window. Native evidence
+confirms seek submission/preroll; VLC's non-seeking paused clock is intentionally
+stale, so acceptance checks the selected UI point followed by resumed real time.
+The next pass verifies pause/seek/queue/resize/restore/reopen, then exposes main
+auto-raise on next input/vout. Suppress only those automatic raises while floating;
+explicit user Restore/Raise stays intact. The old checker also incorrectly awaited
+an MPV-only snapshot key in VLC; use its actual playback state and video tracks.
+Preserve both failed observation records, including supported cancellation and
+native exit0; no user window or desktop was controlled.
 M9 player-panel Figma parity (R105) is NOT STARTED, added by the user's four-tab
 comparison. It owns original selected two-tone icons, actual row/control/slider
 layout and footer parity, with real VLC/MPV bindings and rendered acceptance.

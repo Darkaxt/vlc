@@ -640,7 +640,10 @@ void MainCtx::reloadPrefs()
 
 void MainCtx::onInputChanged( bool hasInput )
 {
-    if( hasInput == false )
+    // Queue navigation inside the floating player must not restore the main
+    // window through playback's automatic-raise policy. Explicit raise/restore
+    // actions continue to use their existing paths.
+    if( hasInput == false || m_floatingPlayer )
         return;
     int autoRaise = var_InheritInteger( p_intf, "qt-auto-raise" );
     if ( autoRaise == MainCtx::RAISE_NEVER )
@@ -657,6 +660,7 @@ void MainCtx::onInputChanged( bool hasInput )
 
 void MainCtx::onVOutChanged( bool video )
 {
+    if (m_floatingPlayer) return;
     int autoRaise = var_InheritInteger( p_intf, "qt-auto-raise" );
     if ( video && ( autoRaise & MainCtx::RAISE_VIDEO ) )
         emit askRaise();

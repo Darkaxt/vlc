@@ -1829,7 +1829,7 @@ def floating_player():
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
             case=Case('floating-'+engine+'-'+scale,engine=engine,scale=scale,
-                media=fixtures/'control.mkv',extra=('--input-repeat=-1',))
+                extra=('--input-repeat=-1',str(fixtures/'control.mkv'),str(fixtures/'embedded-text.mkv')))
             try:
                 initial=case.inspect('video-ready','snapshot','--await-core','state','--await-value','3')
                 initial=case.inspect('seek-ready','snapshot','--await-core','seekable','--await-value','true')
@@ -1844,13 +1844,21 @@ def floating_player():
                 assert mini['playback_engine']==engine and mini['core']['url']==before['core']['url']
                 assert mini['main_window']['native_id_hex']==native and mini['core']['state']==2
                 case.click('pause-floating','floatingPlay','--await-core','state','--await-value','3')
-                case.inspect('seek-floating','click','--target','floatingSeek','--fraction-x','0.35')
-                paused=case.inspect('seek-observed','snapshot','--await-core','position','--await-value','0.35','--await-tolerance','0.03')
+                sought=case.inspect('seek-floating','click','--target','floatingSeek','--fraction-x','0.35')
+                assert abs(nodes(sought,'floatingSeek')[0]['value']-0.35)<0.03
+                if engine=='vlc':assert sought['seek_requests'][-1]['status']=='submitted'
+                # VLC's non-seeking timer point remains at its last paused
+                # presentation. Confirm the selected seek point in the UI,
+                # then observe the real resumed clock before pausing again.
+                case.click('resume-after-seek','floatingPlay','--await-core','state','--await-value','2')
+                advanced=case.inspect('seek-observed','snapshot','--await-core','position','--await-value','0.35','--await-comparison','at_least','--await-tolerance','0.03')
+                assert advanced['core']['position']<0.55,advanced['core']
+                paused=case.click('pause-after-seek','floatingPlay','--await-core','state','--await-value','3')
                 queued=case.click('expand-queue','floatingQueueToggle','--capture')
                 assert nodes(queued,'floatingQueueList') and nodes(queued,'floatingQueueItem0')
                 assert queued['window']['height']>mini['window']['height']
                 case.click('collapse-queue','floatingQueueToggle')
-                case.inspect('monitor-bounded-resize','resize','--width','10000','--height','10000')
+                case.inspect('monitor-bounded-resize','resize','--width','3840','--height','2160')
                 bounded=current(case,'bounded-result',True)
                 assert bounded['window']['width']<=640
                 restored=case.click('restore-main','floatingRestore','--capture')
@@ -1862,6 +1870,13 @@ def floating_player():
                 case.click('play-again','playButton','--await-core','state','--await-value','2')
                 case.click('minimize-again','playerMinimize')
                 current(case,'same-mini-reopened')
+                case.click('queue-reopened','floatingQueueToggle')
+                case.click('next-item','floatingNext','--await-core','url','--await-value',json.dumps((fixtures/'embedded-text.mkv').as_uri()))
+                next_video=case.inspect('next-video','snapshot','--await-core','mpv_video_ready' if engine=='mpv' else 'state','--await-value','true' if engine=='mpv' else '2')
+                assert next_video['main_window']['visibility']==3 and next_video['core']['video_tracks']
+                case.click('previous-item','floatingPrevious','--await-core','url','--await-value',json.dumps((fixtures/'control.mkv').as_uri()))
+                previous_video=case.inspect('previous-video','snapshot','--await-core','mpv_video_ready' if engine=='mpv' else 'state','--await-value','true' if engine=='mpv' else '2')
+                assert previous_video['main_window']['visibility']==3 and previous_video['core']['video_tracks']
                 dismissed=case.click('dismiss','floatingClose')
                 stopped=case.inspect('dismiss-stopped','snapshot','--await-core','state','--await-value','4')
                 assert stopped['main_window']['visibility']==3
