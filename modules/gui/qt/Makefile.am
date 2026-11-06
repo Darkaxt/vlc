@@ -92,7 +92,7 @@ endif
 
 if HAVE_WIN32
 libqt_plugin_la_CXXFLAGS += $(LIBCOMCXXFLAGS)
-libqt_plugin_la_LIBADD += $(LIBCOM) -lcomctl32 -luuid -ldwmapi -ld3d11 -ldxgi -ldcomp
+libqt_plugin_la_LIBADD += $(LIBCOM) -lcomctl32 -luuid -lshell32 -ldwmapi -ld3d11 -ldxgi -ldcomp
 endif
 if UPDATE_CHECK
 libqt_plugin_la_CPPFLAGS += -DUPDATE_CHECK
@@ -817,7 +817,7 @@ EXTRA_DIST += fonts/redesign/LICENSE.txt fonts/redesign/source.json \
 	pixmaps/redesign/mpv-source.json
 
 libqt_plugin_la_RES = \
-	pixmaps/redesign/mpv.svg \
+	pixmaps/redesign/mpv.ico \
 	player/qml/PlayerLayoutRules.js \
 	pixmaps/redesign/forward10.svg \
 	pixmaps/redesign/backward10.svg \

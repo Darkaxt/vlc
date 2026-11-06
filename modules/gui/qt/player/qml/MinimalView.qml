@@ -95,7 +95,7 @@ FocusScope {
         Image {
             id: logo
 
-            source: Player.playbackEngine === "mpv" ? "qrc:///redesign/icons/mpv.svg" : "qrc:///redesign/icons/app.svg"
+            source: Player.playbackEngine === "mpv" ? "qrc:///redesign/icons/mpv.ico" : "qrc:///redesign/icons/app.svg"
 
             anchors.centerIn: parent
             width: Math.min(parent.width / 2, sourceSize.width)

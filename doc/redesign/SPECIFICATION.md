@@ -4,6 +4,30 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**6 November runtime icon repair, R97–R98 (M7), already authorized:**
+
+- R97: extract the Windows icon group from the user's locally installed MPV
+  executable, preserve every embedded image payload, and use that artwork for
+  MPV's header, idle/minimal placeholder and native window/application icon.
+  Record executable/build/source provenance, group/frame hashes and applicable
+  existing MPV licensing. Compare actual native rendering at100/150/200% with
+  the extracted original; retain the original shapes, colors and transparency.
+  Do not redraw or vectorize the emblem, execute the reference binary, change
+  its installation, or replace the pinned playback DLLs.
+- R98: the running Windows taskbar/dock button must use MPV artwork while MPV
+  is selected and restore the redesign VLC cone when switching back, including
+  startup from a saved engine. Implement the application's window/Shell identity
+  through supported Windows APIs, preserving existing user pins, shortcuts,
+  icon caches, file associations and profile data. Launcher metadata must point
+  to this fork with the corresponding engine, never the separate MPV install.
+  Verify actual Shell identity/resource selection and visible running-button
+  pixels as well as HWND icons; the earlier WM_GETICON-only check is insufficient.
+
+Deliver one normal Windows update after the combined icon/switch/restart workflow
+passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
+M6's separately recorded native-cleanup capability blocker remains parked;
+it is neither waived nor relabeled as M7 completion.
+
 **6 November delivery evidence:** R90–R95 are verified in normal
 [1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8), source
 `4c8c98e6a269b852afc8f40e362580172f303ff9`. Independent four-asset verification,

@@ -4,10 +4,59 @@ from ctypes import wintypes as W
 import hashlib
 from pathlib import Path
 import struct
-import shutil
-import subprocess
+import uuid
 import pefile
 from PIL import Image
+
+
+def shell_identity(hwnd, expected_pid, engine, executable, expected_mpv_icon):
+    """Read the actual owned window's Shell identity, distinct from WM_GETICON."""
+    u=ctypes.WinDLL('user32',use_last_error=True)
+    u.GetAncestor.argtypes=[W.HWND,W.UINT];u.GetAncestor.restype=W.HWND
+    root=u.GetAncestor(hwnd,2)
+    u.GetWindowThreadProcessId.argtypes=[W.HWND,ctypes.POINTER(W.DWORD)]
+    pid=W.DWORD();u.GetWindowThreadProcessId(root,ctypes.byref(pid))
+    assert pid.value==expected_pid,'Shell identity target belongs to another process'
+    class GUID(ctypes.Structure):
+        _fields_=[('data',ctypes.c_ubyte*16)]
+        @classmethod
+        def parse(cls,text):return cls((ctypes.c_ubyte*16).from_buffer_copy(uuid.UUID(text).bytes_le))
+    class KEY(ctypes.Structure):_fields_=[('format',GUID),('pid',W.DWORD)]
+    class VALUE(ctypes.Union):_fields_=[('string',W.LPWSTR),('bytes',ctypes.c_ubyte*16)]
+    class VARIANT(ctypes.Structure):_fields_=[('type',W.USHORT),('a',W.USHORT),('b',W.USHORT),('c',W.USHORT),('value',VALUE)]
+    shell=ctypes.WinDLL('shell32');ole=ctypes.WinDLL('ole32')
+    ole.CoInitializeEx.argtypes=[W.LPVOID,W.DWORD];ole.PropVariantClear.argtypes=[ctypes.POINTER(VARIANT)]
+    shell.SHGetPropertyStoreForWindow.argtypes=[W.HWND,ctypes.POINTER(GUID),ctypes.POINTER(ctypes.c_void_p)]
+    assert ole.CoInitializeEx(None,2)>=0
+    pointer=ctypes.c_void_p();properties={}
+    try:
+        iid=GUID.parse('886d8eeb-8cf2-4446-8d02-cdba1dbdcf99')
+        assert shell.SHGetPropertyStoreForWindow(root,ctypes.byref(iid),ctypes.byref(pointer))>=0
+        table=ctypes.cast(pointer,ctypes.POINTER(ctypes.POINTER(ctypes.c_void_p))).contents
+        get=ctypes.WINFUNCTYPE(ctypes.c_long,ctypes.c_void_p,ctypes.POINTER(KEY),ctypes.POINTER(VARIANT))(table[5])
+        release=ctypes.WINFUNCTYPE(W.ULONG,ctypes.c_void_p)(table[2])
+        try:
+            for name,identity in (('id',5),('command',2),('icon',3),('name',4)):
+                value=VARIANT();key=KEY(GUID.parse('9f4c2855-9f79-4b39-a8d0-e1d42de1d5f3'),identity)
+                assert get(pointer,ctypes.byref(key),ctypes.byref(value))>=0
+                try:
+                    assert value.type in (0,31),(name,value.type)
+                    properties[name]=value.value.string if value.type==31 else None
+                finally:ole.PropVariantClear(ctypes.byref(value))
+        finally:release(pointer)
+    finally:ole.CoUninitialize()
+    if engine=='mpv':
+        assert properties['id']=='Darkaxt.ModernVLC.MPV',('MPV taskbar still inherits the VLC executable identity',properties)
+        executable=Path(executable)
+        expected_command='"'+str(executable)+'" --qt-playback-engine=mpv'
+        assert properties['command']==expected_command,properties
+        assert properties['name']=='MPV Media Player',properties
+        resource=executable.parent/'mpv.ico'
+        assert properties['icon']==str(resource)+',0',properties
+        assert resource.read_bytes()==Path(expected_mpv_icon).read_bytes(),'Shell icon differs from extracted native artwork'
+    else:
+        assert engine=='vlc' and all(value is None for value in properties.values()),('VLC did not restore its original Shell grouping',properties)
+    return {'root_window':format(root,'x'),'engine':engine,'properties':properties,'shell_resource_verified':True}
 
 
 def executable_icon(executable, expected_ico):
@@ -90,25 +139,25 @@ def window_icon(hwnd, expected_pid, expected_png, output):
         image=Image.frombytes('RGBA',(bitmap.width,bitmap.height),pixels.raw,'raw','BGRA')
         image.save(output)
         opaque=[pixel for pixel in image.get_flattened_data() if pixel[3]==255]
-        mpv=Path(expected_png).suffix.lower()=='.svg'
+        mpv=Path(expected_png).name=='mpv.ico'
         if not mpv:
             assert opaque and all(max(abs(pixel[index]-channel) for index,channel in enumerate((211,121,24)))<=2 for pixel in opaque),'Native icon retains the upstream artwork'
         assert any(pixel[3]==0 for pixel in image.get_flattened_data()),'Native icon lost transparency'
         reference=Path(expected_png)
         if mpv:
-            # Compare actual HWND artwork with a raster of the unchanged pinned
-            # official SVG, rather than accepting any purple/circular icon.
+            # Compare the actual HWND with the original native ICO frame,
+            # rather than accepting any purple/circular icon.
             import json
             provenance=json.loads(reference.with_name('mpv-source.json').read_text(encoding='utf-8'))
             assert hashlib.sha256(reference.read_bytes()).hexdigest() in json.dumps(provenance)
-            renderer=shutil.which('magick')
-            assert renderer,'Installed SVG renderer required for official MPV reference'
-            raster=Path(output).with_name(Path(output).stem+'-reference.png')
-            subprocess.run([renderer,'-background','none','-density','384',str(reference),
-                '-resize',str(image.width)+'x'+str(image.height)+'!',str(raster)],check=True,
-                creationflags=subprocess.CREATE_NO_WINDOW)
-            reference=raster
-        expected=Image.open(reference).convert('RGBA').resize(image.size,Image.Resampling.LANCZOS)
+            native=Image.open(reference)
+            sizes=native.ico.sizes()
+            selected=image.size if image.size in sizes else min(
+                (size for size in sizes if size[0]>=image.width),default=max(sizes),key=lambda size:size[0])
+            expected=native.ico.getimage(selected).convert('RGBA')
+        else:
+            expected=Image.open(reference).convert('RGBA')
+        expected=expected.resize(image.size,Image.Resampling.LANCZOS)
         observed_mask={index for index,pixel in enumerate(image.get_flattened_data()) if pixel[3]>=128}
         expected_mask={index for index,pixel in enumerate(expected.get_flattened_data()) if pixel[3]>=128}
         overlap=len(observed_mask & expected_mask)/len(observed_mask | expected_mask)

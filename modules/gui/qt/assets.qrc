@@ -3,7 +3,7 @@
         <file alias="InterVariable.ttf">fonts/redesign/InterVariable.ttf</file>
     </qresource>
     <qresource prefix="/redesign/icons">
-        <file alias="mpv.svg">pixmaps/redesign/mpv.svg</file>
+        <file alias="mpv.ico">pixmaps/redesign/mpv.ico</file>
         <file alias="menu-file.svg">pixmaps/redesign/menu-file.svg</file>
         <file alias="menu-folder.svg">pixmaps/redesign/menu-folder.svg</file>
         <file alias="menu-network.svg">pixmaps/redesign/menu-network.svg</file>

@@ -1,10 +1,67 @@
 {
   "source_repository": "https://github.com/mpv-player/mpv",
-  "source_commit": "e471496c56f0f49c133bd88b50aed62b845f1909",
-  "source_file": "etc/mpv-gradient.svg",
-  "sha256": "bf6082c81dcc8b8c6351326b53530f461258af9ca71c4642372654eba29c598f",
+  "source_commit": "3138fc8eea",
+  "source_file": "etc/mpv-icon.ico",
+  "source_git_blob": "5467e4e5f67298c0134ddebbbdfd843039e2ee9d",
+  "sha256": "c42ee25aeddb88e741cf94fb12867f61edd012cd82ef346e43c5f01c27898434",
+  "installed_distribution": "mpv-git 202611051247",
+  "source_executable_sha256": "a7980ce3855de0640feb5911476b5ec905bccdd52fe4a77271d5b5cb7cd20079",
+  "resource_group": "IDI_ICON1",
+  "resource_language": 1033,
+  "sizes": [
+    [
+      16,
+      16
+    ],
+    [
+      24,
+      24
+    ],
+    [
+      32,
+      32
+    ],
+    [
+      48,
+      48
+    ],
+    [
+      64,
+      64
+    ],
+    [
+      256,
+      256
+    ]
+  ],
+  "original_frame_payloads": [
+    {
+      "resource_id": 1,
+      "sha256": "bf139966efba9d1cc9277e5f4156ee8b08c481663c2d2e2e218ab04203cfe679"
+    },
+    {
+      "resource_id": 2,
+      "sha256": "13d1a30d4fbdb7a7e5b4b966ebfd965f070cd4b126443b5241fb895e82c6e621"
+    },
+    {
+      "resource_id": 3,
+      "sha256": "15879d4dfaa2ca3185c5b5c3037826f26f809069bda6de61aa3f916305b84459"
+    },
+    {
+      "resource_id": 4,
+      "sha256": "e544830c1a5a822a6b55a6bc982a182349db2a7a486f35ca49a5acd3f220b482"
+    },
+    {
+      "resource_id": 5,
+      "sha256": "a783594dcd42410c1c1e3474ad12cc49887261d7e6c5d7be9990cddc90e5acd5"
+    },
+    {
+      "resource_id": 6,
+      "sha256": "83042970b3bca6e0e831bd9659ada7dd9e2761ba7f69014eaf8dfbe73cf48f89"
+    }
+  ],
   "license": "GPL-2.0-or-later; retained MPV Copyright and LICENSE.GPL",
-  "changes": "None; copied byte for byte",
-  "reference_accent": "#420042",
-  "reference": "User mpv.io screenshot header, RGB 66/0/66"
+  "changes": "None; resource group extracted byte for byte and identical to the upstream ICO blob",
+  "reproduce": "python -B tools/windows-player/extract-pe-icons.py --executable <installed mpv.exe> --output <new output directory>",
+  "reference_accent": "#420042"
 }

@@ -44,7 +44,10 @@ public:
 
 private:
     bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
     void createTaskBarButtons();
+    void updateShellIdentity();
+    void clearShellIdentity();
 
 private slots:
     void changeThumbbarButtons();
@@ -57,6 +60,7 @@ private:
     Microsoft::WRL::ComPtr<ITaskbarList3> p_taskbl;
     UINT taskbar_wmsg = 0;
     QWindow* m_window = nullptr;
+    HWND m_identityWindow = nullptr;
 
     class ComHolder
     {
@@ -71,6 +75,8 @@ private:
         {
             CoUninitialize();
         }
+        ComHolder(const ComHolder&) = delete;
+        ComHolder& operator=(const ComHolder&) = delete;
     };
 
     std::optional<ComHolder> m_comHolder;

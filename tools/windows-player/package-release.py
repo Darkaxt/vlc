@@ -97,7 +97,7 @@ def main():
     package = destination / name
     package.mkdir()
     root_files = ['vlc.exe', 'vlc-cache-gen.exe', 'vlc-preparser.exe', 'libvlc.dll', 'libvlccore.dll',
-        'vlc.ico', 'AUTHORS.txt', 'COPYING.txt', 'NEWS.txt', 'README.txt', 'THANKS.txt']
+        'vlc.ico', 'mpv.ico', 'AUTHORS.txt', 'COPYING.txt', 'NEWS.txt', 'README.txt', 'THANKS.txt']
     if mpv:
         root_files += ['MPV-BUILDINFO.json', *[item['name'] for item in mpv['files']]]
     for filename in root_files:
@@ -150,10 +150,13 @@ def main():
     notices.mkdir()
     for source, target in [('COPYING', 'GPL-2.0.txt'), ('COPYING.LIB', 'LGPL-2.1.txt'),
             ('modules/gui/qt/fonts/redesign/LICENSE.txt', 'INTER-OFL-1.1.txt'),
+            ('modules/gui/qt/pixmaps/redesign/mpv-source.json', 'MPV-ICON-SOURCE.json'),
             ('doc/redesign/resources/s7/FLUENT-ICONS-LICENSE.txt', 'FLUENT-ICONS-MIT.txt'),
             ('doc/redesign/resources/s7/THIRD-PARTY-NOTICES.md', 'THIRD-PARTY-NOTICES.md')]:
         blob = subprocess.check_output(['git', '-C', str(repo), 'show', args.source_commit + ':' + source])
         (notices / target).write_bytes(blob)
+    icon_provenance=json.loads((notices/'MPV-ICON-SOURCE.json').read_text())
+    assert hashlib.sha256((package/'mpv.ico').read_bytes()).hexdigest()==icon_provenance['sha256']
     shutil.copytree(args.dependency_notices, notices / 'dependencies')
     for version in ('GPL-3', 'LGPL-3'):
         source = args.dependency_notices / 'compiler-runtime/common-licenses' / version

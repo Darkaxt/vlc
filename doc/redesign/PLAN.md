@@ -1,5 +1,21 @@
 # VLC redesign stages and reconciliation
 
+**6 November current work: M7 Runtime engine icon parity — ACTIVE.**
+R97–R98 are authorized by the user's installed-MPV icon/taskbar report.
+Prerequisite normal1.1.8 is independently verified; M6 remains BLOCKED only on
+its native cleanup capability. This is the sole ACTIVE stage, with no Rust work.
+The running1.1.8 player changes its HWND icon but has no explicit Shell AppID or
+relaunch icon. Previous acceptance only inspected WM_GETICON and did not prove
+the taskbar group. The local MPV202611051247 PE has one icon group with original
+16/24/32/48/64/256px payloads; extraction preserves every payload and modifies
+neither installation. Complete the icon resources, native/Shell lifecycle and
+packaging together, then verify both-engine switch/restart, DPI artwork and actual
+taskbar presentation before a single normal1.1.9 release. Preserve live user
+windows/profiles and existing pins; no desktop input or icon-cache reset.
+Required gaps: extracted-artwork integration, Shell identity implementation,
+combined acceptance and final delivery. No tracked deferral. Read-only extraction
+and HWND/Shell inspection use `E:/Temp/vlc-mpv-icons-1.1.9-20261106`.
+
 **6 November current reconciliation: normal1.1.8 delivered; M6 BLOCKED only on native cleanup.**
 R90–R95 pass complete native workflows and are published in
 [normal1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8)
@@ -551,6 +567,7 @@ presentation and final delivery remain required.
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
+| M7 Runtime engine icon parity | ACTIVE | Installed MPV icon group extracted without modifying its PE; live1.1.8 HWND/Shell identity read; root cause and acceptance gap identified. | R97 original artwork integration; R98 actual taskbar identity/switch/restart; combined native/DPI/preservation acceptance and one independently verified normal1.1.9 update. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

@@ -35,6 +35,9 @@
 
 #include <QBitmap>
 #include <QTimer>
+#include <QCoreApplication>
+#include <QDir>
+#include <QPlatformSurfaceEvent>
 
 #include <cassert>
 
@@ -43,6 +46,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dwmapi.h>
+#include <shellapi.h>
+#include <propsys.h>
 
 #define WM_APPCOMMAND 0x0319
 
@@ -112,6 +117,36 @@ HWND WinId( const QWindow *window )
     if (!window->handle())
         return NULL;
     return reinterpret_cast<HWND>(window->winId());
+}
+
+// Per-window Shell identity leaves existing VLC pins and the standalone MPV
+// application untouched. Relaunch properties must precede the explicit AppID.
+constexpr PROPERTYKEY shellCommand = {{0x9f4c2855, 0x9f79, 0x4b39,
+    {0xa8, 0xd0, 0xe1, 0xd4, 0x2d, 0xe1, 0xd5, 0xf3}}, 2};
+constexpr PROPERTYKEY shellName = {shellCommand.fmtid, 4};
+constexpr PROPERTYKEY shellIcon = {shellCommand.fmtid, 3};
+constexpr PROPERTYKEY shellId = {shellCommand.fmtid, 5};
+
+HRESULT setShellString(IPropertyStore *store, const PROPERTYKEY &key,
+                       const QString &text)
+{
+    PROPVARIANT value = {};
+    value.vt = VT_LPWSTR;
+    // SetValue copies this borrowed QString storage synchronously.
+    value.pwszVal = const_cast<wchar_t*>(reinterpret_cast<const wchar_t*>(text.utf16()));
+    return store->SetValue(key, value);
+}
+
+HRESULT clearShellProperties(IPropertyStore *store)
+{
+    PROPVARIANT empty = {};
+    HRESULT result = S_OK;
+    for (const auto &key : {shellId, shellCommand, shellName, shellIcon})
+    {
+        const HRESULT hr = store->SetValue(key, empty);
+        if (FAILED(hr)) result = hr;
+    }
+    return result;
 }
 
 class CSDWin32EventHandler : public QObject, public QAbstractNativeEventFilter
@@ -582,14 +617,92 @@ WinTaskbarWidget::WinTaskbarWidget(qt_intf_t *_p_intf, QWindow* windowHandle, QO
             this, &WinTaskbarWidget::playlistItemCountChanged);
     connect(THEMIM, &PlayerController::fullscreenChanged,
             this, &WinTaskbarWidget::onVideoFullscreenChanged);
+    connect(THEMIM, &PlayerController::playingStateChanged,
+            this, &WinTaskbarWidget::changeThumbbarButtons);
+    connect(THEMPL, &PlaylistController::hasPrevChanged,
+            this, &WinTaskbarWidget::changeThumbbarButtons);
+    connect(THEMPL, &PlaylistController::hasNextChanged,
+            this, &WinTaskbarWidget::changeThumbbarButtons);
+    connect(THEMIM, &PlayerController::playbackEngineChanged,
+            this, &WinTaskbarWidget::updateShellIdentity);
+    m_window->installEventFilter(this);
+    updateShellIdentity();
     msg_Info(p_intf, "WinTaskbarWidget::WinTaskbarWidget");
 }
 
 WinTaskbarWidget::~WinTaskbarWidget()
 {
+    QCoreApplication::instance()->removeNativeEventFilter(this);
+    m_window->removeEventFilter(this);
+    clearShellIdentity();
     if( himl )
         ImageList_Destroy( himl );
     p_taskbl.Reset();
+}
+
+bool WinTaskbarWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == m_window && event->type() == QEvent::PlatformSurface)
+    {
+        const auto surface = static_cast<QPlatformSurfaceEvent*>(event);
+        if (surface->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
+            clearShellIdentity();
+        else
+            updateShellIdentity();
+    }
+    return false;
+}
+
+void WinTaskbarWidget::clearShellIdentity()
+{
+    if (!m_identityWindow)
+        return;
+    Microsoft::WRL::ComPtr<IPropertyStore> store;
+    HRESULT hr = SHGetPropertyStoreForWindow(m_identityWindow, IID_PPV_ARGS(store.GetAddressOf()));
+    if (SUCCEEDED(hr)) hr = clearShellProperties(store.Get());
+    if (FAILED(hr))
+        msg_Err(p_intf, "Clearing playback Shell identity failed: %08lx", hr);
+    else
+        m_identityWindow = nullptr;
+}
+
+void WinTaskbarWidget::updateShellIdentity()
+{
+    const auto window = WinId(m_window);
+    if (!THEMIM->usesMpv())
+    {
+        clearShellIdentity();
+        return;
+    }
+    if (!window || window == m_identityWindow)
+        return;
+    clearShellIdentity();
+    try
+    {
+        if (!m_comHolder) m_comHolder.emplace();
+    }
+    catch (const std::exception &exception)
+    {
+        msg_Err(p_intf, "%s", exception.what());
+        return;
+    }
+    Microsoft::WRL::ComPtr<IPropertyStore> store;
+    HRESULT hr = SHGetPropertyStoreForWindow(window, IID_PPV_ARGS(store.GetAddressOf()));
+    if (SUCCEEDED(hr))
+    {
+        const QString directory = QCoreApplication::applicationDirPath();
+        const QString command = QLatin1Char('"') + QDir::toNativeSeparators(
+            QCoreApplication::applicationFilePath()) + QStringLiteral("\" --qt-playback-engine=mpv");
+        hr = setShellString(store.Get(), shellCommand, command);
+        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellName, qtr("MPV Media Player"));
+        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellIcon,
+            QDir::toNativeSeparators(directory + QStringLiteral("/mpv.ico")) + QStringLiteral(",0"));
+        if (SUCCEEDED(hr)) hr = setShellString(store.Get(), shellId, QStringLiteral("Darkaxt.ModernVLC.MPV"));
+        if (FAILED(hr)) clearShellProperties(store.Get());
+        else m_identityWindow = window;
+    }
+    if (FAILED(hr))
+        msg_Err(p_intf, "Setting MPV Shell identity failed: %08lx", hr);
 }
 
 Q_GUI_EXPORT HBITMAP qt_pixmapToWinHBITMAP(const QPixmap &p, int hbitmapFormat = 0);
@@ -606,15 +719,13 @@ void WinTaskbarWidget::createTaskBarButtons()
     /*Here is the code for the taskbar thumb buttons
     FIXME:We need pretty buttons in 16x16 px that are handled correctly by masks in Qt
     */
-    himl = NULL;
-
     auto winId = WinId(m_window);
     if (!winId)
         return;
 
     try
     {
-        m_comHolder = ComHolder();
+        if (!m_comHolder) m_comHolder.emplace();
     }
     catch( const std::exception& exception )
     {
@@ -622,11 +733,13 @@ void WinTaskbarWidget::createTaskBarButtons()
         return;
     }
 
+    if (himl) ImageList_Destroy(himl);
+    himl = nullptr;
+    p_taskbl.Reset();
     HRESULT hr = CoCreateInstance( __uuidof(TaskbarList), NULL, CLSCTX_INPROC_SERVER,
                                    IID_PPV_ARGS(p_taskbl.ReleaseAndGetAddressOf()));
     if( FAILED(hr) )
     {
-        m_comHolder.reset();
         return;
     }
 
@@ -639,7 +752,6 @@ void WinTaskbarWidget::createTaskBarButtons()
     if( himl == NULL )
     {
         p_taskbl.Reset();
-        m_comHolder.reset();
         return;
     }
 
@@ -692,14 +804,6 @@ void WinTaskbarWidget::createTaskBarButtons()
             msg_Err( p_intf, "%s failed with error %08lx",
                      "ThumbBarAddButtons", hr );
     }
-    connect( THEMIM, &PlayerController::playingStateChanged,
-             this, &WinTaskbarWidget::changeThumbbarButtons);
-    connect( THEMPL, &vlc::playlist::PlaylistController::countChanged,
-            this, &WinTaskbarWidget::playlistItemCountChanged );
-    connect( THEMPL, &vlc::playlist::PlaylistController::hasPrevChanged,
-            this, &WinTaskbarWidget::changeThumbbarButtons );
-    connect( THEMPL, &vlc::playlist::PlaylistController::hasNextChanged,
-            this, &WinTaskbarWidget::changeThumbbarButtons );
     if( THEMIM->getPlayingState() == PlayerController::PLAYING_STATE_PLAYING )
         changeThumbbarButtons( );
 }

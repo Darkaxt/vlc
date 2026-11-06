@@ -1,8 +1,11 @@
 # VLC player design assets
 
-`mpv.svg` is the unchanged official gradient emblem from the pinned MPV source,
-not a Figma mask. [mpv-source.json](mpv-source.json) records its source/hash and
-GPL-2.0-or-later provenance. It retains its original colors at native DPR. While
+`mpv.ico` contains the original16/24/32/48/64/256px Windows icon payloads extracted
+from the installed MPV202611051247 executable. The reconstructed group is byte
+identical to upstream `etc/mpv-icon.ico` at3138fc8eea. [mpv-source.json](mpv-source.json)
+records the PE, group, individual frames and upstream blob hashes, extraction
+command and GPL-2.0-or-later provenance. Qt chooses its original frames at native
+DPR; Windows uses the same packaged ICO for the MPV taskbar identity. While
 MPV is selected the effective accent is `#420042`, sampled from the user's
 mpv.io reference; the stored VLC/custom accent is preserved.
 

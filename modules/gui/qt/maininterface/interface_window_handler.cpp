@@ -102,10 +102,10 @@ InterfaceWindowHandler::InterfaceWindowHandler(qt_intf_t *_p_intf, MainCtx* main
         const QString media = var_InheritBool(p_intf, "qt-name-in-title") && THEMIM->isStarted()
             ? THEMIM->getName() : QString();
         m_window->setTitle(media.isEmpty() ? application : media + QStringLiteral(" — ") + application);
-        // QWindow updates the owned native HWND's small/big icons. Keep the
-        // executable identity and Windows taskbar grouping stable.
-        m_window->setIcon(QIcon(mpv ? QStringLiteral(":/redesign/icons/mpv.svg")
-                                   : QStringLiteral(":/redesign/icons/app.png")));
+        const QIcon icon(mpv ? QStringLiteral(":/redesign/icons/mpv.ico")
+                             : QStringLiteral(":/redesign/icons/app.png"));
+        QGuiApplication::setWindowIcon(icon);
+        m_window->setIcon(icon);
     };
     connect(THEMIM, &PlayerController::playbackEngineChanged, this, updateIdentity);
     connect(THEMIM, &PlayerController::nameChanged, this, updateIdentity);

@@ -34,7 +34,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
     help='Resume the closed settings pass after its completed150%% matrix lost the input-desktop preservation check')
@@ -603,10 +603,14 @@ def owned_native_read(case, reader):
 
 def verify_window_icon(case, snapshot):
     engine=snapshot['core']['engine']
-    name='mpv.svg' if engine=='mpv' else 'app.png'
+    name='mpv.ico' if engine=='mpv' else 'app.png'
     result=owned_native_read(case,lambda:window_icon(owned_main_window(case,snapshot),case.player.pid,
         repo/'modules/gui/qt/pixmaps/redesign'/name,case.evidence/('native-window-icon-'+engine+'.png')))
     case.record.setdefault('native_window_icons',[]).append(result)
+    from app_icon_checks import shell_identity
+    identity=owned_native_read(case,lambda:shell_identity(owned_main_window(case,snapshot),case.player.pid,
+        engine,runtime/'vlc.exe',repo/'modules/gui/qt/pixmaps/redesign/mpv.ico'))
+    case.record.setdefault('native_shell_identities',[]).append(identity)
 
 
 def settings_window_region(case, dialog):
@@ -1195,7 +1199,7 @@ def media_previews():
                     case.inspect('close-engine-panel-' + label, 'key', '--key', '0x1000000')
                 idle = case.inspect('centered-logo-' + label, 'snapshot', '--await-target', 'playerIdleCone',
                     '--await-property', 'status', '--await-value', '1', '--capture')
-                assert nodes(idle, 'playerIdleCone')[0]['source'].endswith('/' + ('mpv' if target == 'mpv' else 'app') + '.svg')
+                assert nodes(idle, 'playerIdleCone')[0]['source'].endswith('/mpv.ico' if target == 'mpv' else '/app.svg')
                 identity(case,idle,target,False)
                 theme_icon(case,'theme-'+label,target)
             case.record['untimed_image_replacement_animation_and_engine_branding'] = True
@@ -1559,6 +1563,53 @@ def preview():
         case.close(True)
     finally: case.close()
 
+def engine_icons():
+    """Complete mode identity handover, original artwork and persisted restart."""
+    for scale in ('1','1.5','2'):
+        case=Case('engine-icons-'+scale,scale=scale,media=fixtures/'control.mkv')
+        def identity(label,engine):
+            snapshot=case.inspect(label,'snapshot','--await-target','playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'),
+                '--await-property','status','--await-value','1','--capture')
+            glyph=nodes(snapshot,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
+            assert len(glyph)==1 and glyph[0]['source'].endswith('/mpv.ico' if engine=='mpv' else '/vlc.svg'),glyph
+            assert snapshot['window']['title'].endswith(('MPV' if engine=='mpv' else 'VLC')+' Media Player')
+            verify_window_icon(case,snapshot)
+            picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png'))
+            ratio=picture.width/snapshot['window']['width'];node=glyph[0]
+            picture.crop(tuple(round(value*ratio) for value in
+                (node['x'],node['y'],node['x']+node['width'],node['y']+node['height']))).save(case.evidence/(label+'-header.png'))
+            return snapshot
+        try:
+            case.inspect('reference-viewport','resize','--width','1280','--height','800')
+            case.inspect('initial-paused','snapshot','--await-core','state','--await-value','3')
+            identity('initial-vlc','vlc')
+            for index,engine in enumerate(('mpv','vlc','mpv')):
+                label='switch-'+str(index)+'-'+engine
+                case.click(label+'-panel','toolsButton')
+                case.inspect(label+'-select','click','--name','MPV' if engine=='mpv' else 'VLC')
+                settled=case.inspect(label+'-settled','snapshot','--await-core','engine_switching','--await-value','false')
+                assert settled['core']['engine']==engine and settled['core']['state']==3,settled['core']
+                case.inspect(label+'-close','key','--key','0x1000000')
+                identity(label,engine)
+            case.inspect('stop','key','--key','0x53','--text','s')
+            case.inspect('idle-menu','click','--name','Main menu')
+            case.inspect('idle-customize','click','--name','Customize Player')
+            case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
+            case.click('idle-editor-cancel','layoutCancel')
+            idle=case.inspect('idle-logo','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1','--capture')
+            assert nodes(idle,'playerIdleCone')[0]['source'].endswith('/mpv.ico')
+            verify_window_icon(case,idle)
+            case.close(True)
+        finally:case.close()
+        profile=case.path/'profile'
+        case=Case('engine-icons-restart-'+scale,scale=scale,engine=None,media=fixtures/'control.mkv',reused_profile=profile)
+        try:
+            case.inspect('restart-paused','snapshot','--await-core','state','--await-value','3')
+            identity('saved-mpv','mpv')
+            case.close(True)
+        finally:case.close()
+
+
 def icons():
     for scale in ('1','1.25','1.5','2'):
         case=Case('transport-icons-'+scale,scale=scale,media=fixtures/'control.mkv',
@@ -1740,7 +1791,7 @@ def menus_normal():
             assert settled['rendered_accent']==('#420042' if engine=='mpv' else '#2f87b5')
             assert settled['presentation']==saved_presentation, 'Engine selection rewrote the saved appearance'
             glyph=nodes(settled,'playerGlyph-'+('mpv' if engine=='mpv' else 'vlc'))
-            assert len(glyph)==1 and glyph[0]['source'].endswith('/'+('mpv' if engine=='mpv' else 'vlc')+'.svg'),glyph
+            assert len(glyph)==1 and glyph[0]['source'].endswith('/mpv.ico' if engine=='mpv' else '/vlc.svg'),glyph
             playing=case.click('panel-play-retained-'+engine,'playButton','--await-core','state','--await-value','2')
             assert nodes(playing,'mediaSettingsBody'), 'Play dismissed the settings panel'
             paused=case.click('panel-pause-retained-'+engine,'playButton','--await-core','state','--await-value','3')
@@ -2576,7 +2627,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue
         if args.case=='settings-survey':
             if name!='settings':continue

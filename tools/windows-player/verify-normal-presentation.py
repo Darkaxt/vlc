@@ -199,7 +199,7 @@ observer_command = [sys.executable, '-B', str(repo / 'tools/windows-player/obser
 if args.verify_app_icon:
     from app_icon_checks import executable_icon
     result['executable_app_icon']=executable_icon(runtime/'vlc.exe',repo/'share/icons/vlc.ico')
-    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/mpv.svg')]
+    observer_command+=['--expected-icon',str(repo/'modules/gui/qt/pixmaps/redesign/mpv.ico')]
 observer = player = None
 with (evidence / 'stdout').open('wb') as output, (evidence / 'stderr').open('wb') as error, \
         (evidence / 'observer.stdout').open('wb') as observer_output, (evidence / 'observer.stderr').open('wb') as observer_error:
