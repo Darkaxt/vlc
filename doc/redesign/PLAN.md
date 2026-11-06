@@ -18,6 +18,24 @@ external blocker or tracked deferral is claimed.
 No second ACTIVE stage, dependency reinstall, whole-WSL stop or premature
 release is introduced. The earlier explicit-pause record below remains history.
 
+Current acceptance producer is `c9fbd50e4dd3b1f2e222a1ff957005a20537fca3`.
+Managed235 (`afa2749d350546a7831e4c28fa1ef7e4`), pipeline49, completed0
+with an empty cgroup, no max/OOM events and private mounts released. Its affected
+Qt compile/link took27.0 seconds; the full managed operation took59.2 seconds.
+Full media/engine acceptance and100/150/200% wizard navigation now pass at
+`D:/Temp/vlc-s8-preview-1.1.8-mpv-photo-20261106`. A checker-only animation
+observation was corrected: the pinned MPV sparse GIF clock reports actual frame
+PTS6.0, not a continuous6.2 sample. Independent native rendering at6.0 confirms
+the second frame; the original failed result remains retained, passed VLC cases
+were reused, and no production change/rebuild followed that checker repair.
+Cached/corrupt font acceptance and main-agent inspection of the actual native
+wizard/artwork/accent captures now also pass. Protected VLC/Nuvio profile
+snapshots are unchanged. Normal stripped assembly, delivery verification and
+the retained native weekly binding remain pending. The scoped closure review
+found no additional abstraction or refactoring required for R90–R95; existing
+font, engine, settings, icon and build ownership paths remain authoritative.
+No new dependency, compiler flag, stage or external blocker was introduced.
+
 R96 migration execution: original snapshot227 was scoped-stopped after its
 complete prefix was independently recovered and content-verified. Request228
 `0bdd72532c6e4f6d8de1e9c730321ecb` completed the remaining traversal,

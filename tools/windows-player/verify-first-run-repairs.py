@@ -55,7 +55,7 @@ parser.add_argument('--resume-idle-checker',action='store_true',
 parser.add_argument('--resume-onboarding-checker',action='store_true',
     help='Retain passed100%% wizard/restart evidence; continue closed150%% keyboard and standalone checks')
 parser.add_argument('--resume-media-previews-checker',action='store_true',
-    help='Resume closed photo acceptance after correcting keyboard targeting or the animation observation fixture')
+    help='Resume closed photo acceptance after correcting keyboard targeting or animation-clock observation')
 args = parser.parse_args()
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
 assert root.parent.parent == Path('D:/Temp') and root.parent.name.startswith('vlc-s8-')
@@ -85,10 +85,16 @@ runtime = root / 'runtime'
 if resume_media:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert not previous['passed'] and previous['scope']=='media-previews' and previous['protected_profiles_unchanged']
-    assert len(previous['cases'])==1 and previous['cases'][0]['name'] in ('image-preview-vlc','image-preview-vlc-focus','image-preview-vlc-window-key','image-preview-vlc-gif-observation')
-    assert previous['cases'][0]['exit_code']==0 and previous['cases'][0]['owned_desktop_never_observed_as_input']
+    photo_mpv_clock=len(previous['cases'])==5 and previous['cases'][-1]['name']=='image-preview-mpv'
+    if photo_mpv_clock:
+        assert all(row['passed'] for row in previous['cases'][:4])
+        assert previous['cases'][-1]['steps'][-2]['label']=='animation-controls'
+    else:
+        assert len(previous['cases'])==1 and previous['cases'][0]['name'] in ('image-preview-vlc','image-preview-vlc-focus','image-preview-vlc-window-key','image-preview-vlc-gif-observation')
+    assert all(row['exit_code']==0 and row['owned_desktop_never_observed_as_input'] for row in previous['cases'])
     photo_focus_unavailable='focus_action_unavailable_rejected_before_dispatch' in previous['failures']['media-previews']
     photo_eof_race='second-animation-frame' in previous['failures']['media-previews'] and 'input_changed_or_ended_during_observation' in previous['failures']['media-previews']
+    assert not photo_mpv_clock or photo_eof_race
     photo_tab_duplicates='theme-0-vlc-rendered' in previous['failures']['media-previews'] and 'Expected one observation target; matched 4' in previous['failures']['media-previews']
     assert photo_tab_duplicates or photo_eof_race or photo_focus_unavailable or 'Expected one visible focused Qt key target; matched 0' in previous['failures']['media-previews']
     assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
@@ -300,6 +306,8 @@ if resume_media:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     records['previous_failed_acceptance']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
         'reason':'Closed keyboard-target or last-frame animation observation failure; original result remains false. Completed photo/identity evidence is preserved.'}
+    if photo_mpv_clock:
+        records['cases']=previous['cases'][:4]
 if resume_onboarding:
     assert previous['source_commit']==records['source_commit'] and previous['production_tree_sha256']==records['production_tree_sha256']
     records['cases']=previous['cases'][:2]
@@ -1131,8 +1139,9 @@ def media_previews():
         assert any(max(rgb)-min(rgb)<4 and min(abs(rgb[0]-143),abs(rgb[0]-46))<5 for rgb in pixels),'Neutral outline lost'
         case.inspect(label+'-close','key','--key','0x1000000')
 
-    saved_profiles={}
+    saved_profiles={'vlc':root/'image-preview-vlc/profile'} if resume_media and photo_mpv_clock else {}
     for engine in ('vlc', 'mpv'):
+        if resume_media and photo_mpv_clock and engine=='vlc':continue
         case = Case('image-preview-' + engine + ('-'+suffix if suffix else ''), engine=engine, media=images / 'still.jpg',extra=('--qt-accent-color=#3b82f6',))
         try:
             case.inspect('reference-viewport', 'resize', '--width', '1280', '--height', '800')
@@ -1167,9 +1176,10 @@ def media_previews():
             animated = case.inspect('animation-controls', 'snapshot', '--await-core', 'still_image_preview', '--await-value', 'false', '--capture')
             assert any(item['visible'] for item in nodes(animated, 'playButton'))
             assert any(item['visible'] for item in nodes(animated, 'progressSlider'))
-            # Observe the real animation clock cross its second frame boundary;
-            # an accidentally frozen still image must not qualify as animation.
-            case.inspect('second-animation-frame','snapshot','--await-core','time_seconds','--await-value','6.2',
+            # MPV time-pos advances at the sparse frame timestamps, not at a
+            # continuous UI clock. Observe the actual second-frame PTS (6s),
+            # which the independent pinned-runtime renderer also confirms.
+            case.inspect('second-animation-frame','snapshot','--await-core','time_seconds','--await-value','6',
                 '--await-comparison','at_least','--capture')
             case.inspect('stop-animation', 'key', '--key', '0x53', '--text', 's')
             case.inspect('customize-menu', 'click', '--name', 'Main menu')

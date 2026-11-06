@@ -10,7 +10,12 @@ bootstrap selected from the exact pinned snapshot; bulk restoration into
 paths, SDK/MPV/codec objects and source/input nanosecond mtimes. Restore229 and
 verification230 completed0/group empty with zero content/link/timestamp mismatches
 and unchanged configure inputs. Binding `83d35faf-0581-4379-97be-4484c904eed4`
-records the verified ext4 root; native assembly231 is still running. The existing NTFS cohort
+records the verified ext4 root. Native continuation231 and affected repairs232–235
+have completed0/group empty with released private mounts;235 is pipeline49 from
+`c9fbd50e4dd3b1f2e222a1ff957005a20537fca3`. The affected Qt step took27.0 seconds.
+The complete native media/engine and wizard checks use
+`D:/Temp/vlc-s8-preview-1.1.8-mpv-photo-20261106`; original failed checks remain
+historical evidence. The existing NTFS cohort
 remains frozen rollback until content/configuration/performance verification,
 native compilation, full M6 acceptance, normal1.1.8 delivery and weekly binding
 verification pass. Ubuntu, Docker, the default distribution and `.wslconfig`
