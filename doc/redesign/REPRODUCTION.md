@@ -10,6 +10,26 @@ protected-profile evidence are retained in that version's `verification` folder.
 Frozen control snapshots document original paths; they are not installed
 relocatable launchers.
 
+Unreleased1.1.9 R105 panel acceptance is complete at production source
+`9c1059b8b2fc7666ff994a0d52291e50a0850b44`. Optimized diagnostic assembly72
+used the existing Qt-only409-plugin reuse path, not a full dependency rebuild.
+Coordinator260 `862ce7fced564880b7f90fc8cac4b0e7` closed0 with an empty Linux
+group and released private mounts; Qt took22.9 seconds. Native four-tab checks
+and inspected captures pass in both engines at100/150/200 percent, preserving
+profiles. [R105 evidence](resources/m9-1.1.9-verification.json) retains the
+original unexpected-minimize observation and same-binary scoped completion.
+The retired test-runtime copy is not a usable review path.
+
+The current user-owned review launchers are
+`D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review/review-mpv.cmd` and
+`review-vlc.cmd` in that directory. Their hash-verified `runtime-m9` copy uses
+the current source, dormant diagnostics, its own profile and synthetic video.
+Do not add `--no-media-library`; the redesigned no-library mode has its own
+verified path. M8 still requires actual composed floating-video picture evidence;
+inactive native workflows do not prove that picture. Normal1.1.9 release remains
+M10, after M8 acceptance. The next managed pipeline identity is73, with closed72
+as predecessor; retain the native ext4 objects/toolchain and current build binding.
+
 The continuing build consumer is now `VLC-Build-20261106` with its D:-backed ext4
 root `/toolchain`. Source is `/toolchain/work/src`, build is
 `/toolchain/work/build/win64`, runtime is

@@ -66,6 +66,8 @@ parser.add_argument('--resume-m7-lifecycle',action='store_true',
     help='Retain completed modes and VLC no-library cases; finish handover, DPI and the remaining no-library paths')
 parser.add_argument('--visualizer-options-only',action='store_true',help='Inspect the complete Figma visualizer/EQ option rendering on the real player')
 parser.add_argument('--resume-floating-stopped-observer',action='store_true',help='Retain completed VLC100%% miniplayer evidence after correcting STOPPING versus STOPPED in the observer')
+parser.add_argument('--resume-player-panels-observation',action='store_true',
+    help='Preserve completed same-binary panel cases and the closed unexpected-minimize evidence; observe only unfinished engine/DPI cases')
 args = parser.parse_args()
 assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -85,6 +87,9 @@ resume_media=args.resume_media_previews_checker
 resume_m7=args.resume_m7_checker
 resume_m7_lifecycle=args.resume_m7_lifecycle
 resume_floating=args.resume_floating_stopped_observer
+resume_panels=args.resume_player_panels_observation
+assert not resume_panels or args.case=='player-panels'
+assert not resume_panels or not any((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7,resume_m7_lifecycle,resume_floating,resume_visualizer_options))
 assert not resume_floating or args.case=='floating-player'
 assert not resume_m7_lifecycle or args.case=='m7-regressions'
 assert not resume_m7 or args.case=='m7-regressions'
@@ -96,14 +101,28 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
+assert not root.exists() or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
 m7_final_path=False
-if resume_floating:
+if resume_panels:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='player-panels' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert [case['name'] for case in previous['cases']]==['player-panels-vlc-1','player-panels-vlc-1.5','player-panels-vlc-2']
+    assert all(case['passed'] for case in previous['cases'][:2]) and not previous['cases'][-1]['passed']
+    assert all(case['exit_code']==0 and case['owned_desktop_never_observed_as_input'] for case in previous['cases'])
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    failed=previous['cases'][-1]
+    transition=json.loads((root/next(step['response'] for step in failed['steps'] if step['label']=='render-Video')).read_text(encoding='utf-8'))
+    assert transition['window']['visibility']==3 and transition['frame_observed_ms'] is None
+    assert not transition.get('capture_saved') and transition['observation_boundary']=='UI dispatcher; no visible render window'
+    assert not any((runtime/'portable').iterdir())
+    historical=root/'result-before-panel-window-observation.json';assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_floating:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='floating-player' and not previous['passed'] and previous['protected_profiles_unchanged']
     floating_eof_repair='replay' in previous['failures']['floating-player']
@@ -413,6 +432,12 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
+if resume_panels:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    records['cases']=previous['cases'][:2]
+    records['resumed_player_panels']={'historical_result':str(historical),
+        'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'scope':'Reuse passed VLC100/150% on identical production source and binary; observe VLC200% and MPV100/150/200% once. Original minimized-window cause remains unproven; no production workaround or automatic restore/retry.'}
 if resume_floating:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     if floating_eof_scope_repair or floating_eof_notification_repair:records['cases']=previous['cases'][:9]
@@ -2356,10 +2381,11 @@ def player_panels():
     names=('Playback','Video','Audio','Subtitles')
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
+            if resume_panels and engine=='vlc' and scale!='2':continue
             custom=scale=='1.5'
             color='#2f87b5' if custom else '#9859ad' if engine=='mpv' else '#d37918'
             extra=(('--qt-mpv-accent-color=' if engine=='mpv' else '--qt-accent-color=')+color,)
-            case=Case('player-panels-'+engine+'-'+scale,engine=engine,scale=scale,
+            case=Case('player-panels-'+engine+'-'+scale+('-window-observation' if resume_panels else ''),engine=engine,scale=scale,
                       media=fixtures/'embedded-text.mkv',extra=extra)
             try:
                 case.inspect('reference-viewport','resize','--width','1280','--height','1100')
@@ -2372,6 +2398,8 @@ def player_panels():
                     assert len(icon)==1,(label,icon)
                     snapshot=case.inspect('render-'+label,'snapshot','--await-node',icon[0]['node'],
                         '--await-property','status','--await-value','1','--capture')
+                    assert snapshot.get('capture_saved') and snapshot.get('frame_observed_ms') is not None,(
+                        'Panel capture did not reach a rendered frame',label,snapshot.get('window'),snapshot.get('observation_boundary'))
                     assert snapshot['rendered_accent']==color,(engine,scale,snapshot['rendered_accent'])
                     assert len(nodes(snapshot,identity))==1
                     assert not nodes(snapshot,'playerTabNeutral_'+str(page))

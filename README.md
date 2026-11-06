@@ -65,6 +65,16 @@ The reference image is from the linked Figma project; the implementation image
 is a cropped app-rendered capture. These captures show interface rendering,
 without media or personal library content. See the [capture provenance](doc/redesign/screenshots/provenance.json).
 
+| Figma Video panel | Working Video panel |
+| --- | --- |
+| ![Original Figma Video panel, credited to Juxtopposed](doc/redesign/screenshots/video-panel-figma.png) | ![Actual VLC Video panel with selected two-tone icon and grouped controls](doc/redesign/screenshots/video-panel-native.png) |
+
+The four player-settings tabs use the original selected two-tone artwork with
+the engine's saved accent. Section dividers, field sizes, flip segments,
+synchronization sliders and the preset footer follow the reference. Values come
+from the current media and engine; unsupported controls remain unavailable.
+The native image is an exact crop of the rendered Qt interface.
+
 ![Live scope inside the seekbar, using a synthetic audio fixture](doc/redesign/screenshots/seekbar-scope-native.png)
 
 The scope uses the playing audio stream. Its line changes from black over the

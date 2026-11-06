@@ -116,7 +116,7 @@ passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
 The expanded request also requires R102/R104 repairs and R103 floating-miniplayer
 acceptance and R105 player-panel parity before that single final release; no
 intermediate repair release. M8 retains the floating miniplayer; M9 owns R105;
-the final release is M10. M8 is parked BLOCKED on actual composed-picture verification; M9 alone is ACTIVE.
+the final release is M10. M8 is parked BLOCKED on actual composed-picture verification; M9 is COMPLETE. No implementation stage is ACTIVE while that required review input remains unavailable.
 The normal review launch is pending user input because desktop controls are prohibited.
 M6's separately recorded native-cleanup capability blocker remains parked;
 it is neither waived nor relabeled as M7 completion.

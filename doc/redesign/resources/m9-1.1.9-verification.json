@@ -1,0 +1,92 @@
+{
+  "status": "COMPLETE",
+  "requirement": "R105",
+  "source_commit": "9c1059b8b2fc7666ff994a0d52291e50a0850b44",
+  "qt_plugin_sha256": "88027e1471bba1e25d70ab7c4841353108ad23a35a4c6ef1103e3ae754cfefe6",
+  "native_result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\panels-m9-final\\result.json",
+  "native_result_sha256": "bd24287055943d3de69cc7894ade99655e8c9bae8518d957f7cd9d064509de03",
+  "build": {
+    "pipeline_run": 72,
+    "coordinator_ticket": "862ce7fced564880b7f90fc8cac4b0e7",
+    "exit_code": 0,
+    "linux_group_empty": true,
+    "private_mounts_released": true
+  },
+  "verified": [
+    "Original selected two-tone Playback/Video/Audio/Subtitles artwork, neutral inactive tabs, engine/custom accent pixels",
+    "Actual Qt layouts at100/150/200 percent in both engines; native captures visually inspected against the three supplied Figma panels",
+    "Reference field sizes, flip segments, grouped/divided controls, zero-centered timing sliders, preset/footer separation",
+    "Audio125ms and subtitle-250ms edits reach real engine state in VLC and MPV",
+    "VLC equalizer preset enables its filter; None disables it; expanded controls are reachable",
+    "Native exits0, owned desktops never input, protected profiles unchanged"
+  ],
+  "limits": [
+    "Qt-rendered UI is not composed-video/backdrop evidence; unchanged material acceptance remains separate",
+    "HDR/resolution show actual read-only state. Unsupported engine-specific tools and subtitle FPS editing remain unavailable rather than fake controls",
+    "The reference Stereo Test has no existing backend action; no nonfunctional button was introduced",
+    "Original VLC200% capture observed an unexpected minimize; source/pointer evidence found no dispatched minimize action. Same-binary scoped remaining pass did not reproduce it; its cause is unproven and no production workaround was added"
+  ],
+  "historical_failure": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\panels-m9-final\\result-before-panel-window-observation.json",
+  "readme_comparison": "doc/redesign/screenshots/video-panel-native.png",
+  "refactoring_assessment": "Existing media/engine/config owners and original asset pipeline retained. No new abstraction, state owner or required consolidation.",
+  "remaining": {
+    "M8": "BLOCKED: actual composed floating-player video picture requires pending ordinary review launch",
+    "M10": "NOT STARTED: final normal1.1.9 publication follows M8 acceptance",
+    "M8_review": {
+      "path": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-review",
+      "source_commit": "9c1059b8b2fc7666ff994a0d52291e50a0850b44",
+      "cleanup_transaction": "ef5dc66c37a1d31fda8a3e65c4edfe4a"
+    }
+  },
+  "cases": [
+    {
+      "name": "player-panels-vlc-1",
+      "engine": "vlc",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "player-panels-vlc-1.5",
+      "engine": "vlc",
+      "scale": "1.5",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "player-panels-vlc-2-window-observation",
+      "engine": "vlc",
+      "scale": "2",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "player-panels-mpv-1-window-observation",
+      "engine": "mpv",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "player-panels-mpv-1.5-window-observation",
+      "engine": "mpv",
+      "scale": "1.5",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "player-panels-mpv-2-window-observation",
+      "engine": "mpv",
+      "scale": "2",
+      "passed": true,
+      "exit_code": 0
+    }
+  ],
+  "native_runtime_retirement": {
+    "transaction_id": "543405e66d1a67e7811a3f105d35beba",
+    "manifest_sha256": "39f73acd59e240cb0960c71ce6a021bde1ee9edcc295a52b3dc898fa59b27c16",
+    "count": 2603,
+    "bytes": 367626360,
+    "state": "APPLIED; required evidence/profiles retained outside runtime"
+  }
+}

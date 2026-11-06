@@ -51,6 +51,29 @@
       "source_commit": "f05eb6c06debaf06f74efc1716c476c927274f2d",
       "qt_plugin_sha256": "ed4a68e0e590b81aa833872da5a7f20664c394e0d78f172d0a334dc8a11aeaf5",
       "applicability": "Actual Qt rendering using public synthetic control.mkv; live scope and playhead inversion, isolated profile; no desktop or private media"
+    },
+    {
+      "file": "video-panel-native.png",
+      "capture": "d1c86ea4a9904379b1f544e501ea4566.png",
+      "capture_sha256": "f06da5ab45912113386e66955804f78be8a15ae0893034798e59dbf81ddd9202",
+      "sha256": "d8aa4ecda21ee33ec71f0fe36ac4487c97f27667d0191f5c594e4a88d894d9a5",
+      "crop": [
+        860,
+        80,
+        1260,
+        1023
+      ],
+      "applicability": "Actual app-rendered VLC orange panel, synthetic embedded-text.mkv, isolated profile; exact crop without resampling or retouching. Qt UI only, not composed-video/backdrop evidence.",
+      "source_commit": "9c1059b8b2fc7666ff994a0d52291e50a0850b44",
+      "qt_plugin_sha256": "88027e1471bba1e25d70ab7c4841353108ad23a35a4c6ef1103e3ae754cfefe6"
+    },
+    {
+      "file": "video-panel-figma.png",
+      "capture": "codex-clipboard-56c7a0fc-038c-49dd-bec0-8e3a0b3b0d47.png",
+      "capture_sha256": "b861ad74942ccf0322387ca216891600e7a70cada31666d1f5d4974c89ffbcc7",
+      "sha256": "c737b227d177bc43da63fd7707ed2406a5a6ab8fb33f9e0d55ac5377887102f5",
+      "crop": null,
+      "applicability": "Original user-supplied Juxtopposed Figma reference; CC BY4 attribution in README"
     }
   ]
 }

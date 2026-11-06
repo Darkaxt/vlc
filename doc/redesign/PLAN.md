@@ -1,10 +1,11 @@
 # VLC redesign stages and reconciliation
 
-**6 November current work: M9 player-panel Figma parity — ACTIVE.**
+**6 November current work: M9 player-panel Figma parity — COMPLETE; M8 composed-picture acceptance BLOCKED.**
 M8 is BLOCKED only on actual composed-picture verification; all isolated native
 workflows pass. Desktop controls remain prohibited. The current ordinary review
 launch awaits user input; capture its bound window in both engines to close R103.
-M9 is independent of that input and is the sole ACTIVE implementation stage.
+R105 native/rendered acceptance is complete. No implementation stage is ACTIVE
+while the required M8 ordinary-launch picture input remains unavailable.
 M7 is COMPLETE under the user's explicit withdrawal of further taskbar resizing.
 The current blue MPV running button was captured and inspected by the user;
 its native icon and Shell resource/identity are verified. The10–15% enlargement
@@ -50,9 +51,13 @@ explicit user Restore/Raise stays intact. The old checker also incorrectly await
 an MPV-only snapshot key in VLC; use its actual playback state and video tracks.
 Preserve both failed observation records, including supported cancellation and
 native exit0; no user window or desktop was controlled.
-M9 player-panel Figma parity (R105) is ACTIVE, added by the user's four-tab
-comparison. It owns original selected two-tone icons, actual row/control/slider
-layout and footer parity, with real VLC/MPV bindings and rendered acceptance.
+M9 player-panel Figma parity (R105) is COMPLETE. Original selected two-tone
+artwork, reference control/group/slider/footer styling and real VLC/MPV timing
+bindings pass native100/150/200% acceptance. Actual Qt captures were inspected
+against the supplied Figma panels, and README includes a source-bound comparison.
+[Verification](resources/m9-1.1.9-verification.json) records the original unexpected
+minimize, scoped same-binary completion, truthful unsupported controls and clean
+profile/lifecycle results. No production minimize workaround was added.
 M10 normal1.1.9 release remains NOT STARTED until M8 and M9 pass. M6's exact native
 cleanup capability blocker remains parked; S9 Rust is NOT STARTED.
 
@@ -768,7 +773,7 @@ presentation and final delivery remain required.
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
 | M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M10. | None. |
 | M8 Figma floating miniplayer | BLOCKED | Both engines at100/150/200%, seek/pause, real queue navigation, bounded resize, restore/reopen/dismiss, EOF replay and audio/idle exclusions pass; protected profiles unchanged. | External: actual composed video/Figma appearance requires the pending ordinary review launch; no desktop controls. M10 depends on this proof. | None. |
-| M9 Player-panel Figma parity | ACTIVE | User's four-tab comparison recorded as R105. | Selected original two-tone icons; Playback/Video/Audio/Subtitles row/control/slider/layout and footer parity; real engine bindings and native rendered acceptance. | None. |
+| M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
 | M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
