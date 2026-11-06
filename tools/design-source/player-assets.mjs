@@ -37,6 +37,10 @@ export const icons = [
   ['2493:9253', 'menu-shortcuts', true], ['2493:9283', 'menu-customize', true],
   ['2493:9293', 'menu-settings', true], ['2461:9651', 'menu-info', true],
   ['6073:13944', 'tab-playback', true],
+  // Export the selected panel instances, including their two-tone overrides.
+  // The solid Global Settings variants have different artwork.
+  ['2127:7755', 'tab-video', true], ['2127:7761', 'tab-audio', true],
+  ['2127:7699', 'tab-subtitles', true],
   ['2138:8026', 'visualizer-spectrometer', true],
   ['2139:8064', 'visualizer-scope', true],
   ['2139:8048', 'visualizer-spectrum', true],

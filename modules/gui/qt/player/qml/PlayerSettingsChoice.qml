@@ -9,6 +9,8 @@ T.ComboBox {
     id: choice
     property string label
     property bool outlined: false
+    property bool inputStyle: false
+    property bool expandUp: false
     // Native values, never translated labels, identify the original artwork.
     property var optionIcons: ({})
     readonly property bool referenceOptions: Object.keys(optionIcons).length > 0
@@ -37,6 +39,7 @@ T.ComboBox {
         verticalAlignment: Text.AlignVCenter
     }
     indicator: IconImage {
+        visible: !choice.inputStyle
         smooth: false
         x: choice.width - width - PlayerStyle.px(7)
         anchors.verticalCenter: parent.verticalCenter
@@ -44,12 +47,13 @@ T.ComboBox {
         sourceSize: Qt.size(PlayerStyle.px(12), PlayerStyle.px(12))
         width: PlayerStyle.px(12); height: width
         color: PlayerStyle.sectionForeground
+        rotation: choice.expandUp && !choice.popup.visible ? 180 : 0
     }
     background: Rectangle {
-        color: choice.outlined ? PlayerStyle.chrome : PlayerStyle.timeline
+        color: choice.inputStyle ? PlayerStyle.timeline : choice.outlined ? PlayerStyle.chrome : PlayerStyle.timeline
         radius: PlayerStyle.px(4)
-        border.width: choice.visualFocus || choice.outlined ? PlayerStyle.px(2) : 0
-        border.color: choice.visualFocus ? PlayerStyle.accent : PlayerStyle.timeline
+        border.width: choice.visualFocus || choice.outlined || choice.inputStyle ? PlayerStyle.px(2) : 0
+        border.color: choice.visualFocus ? PlayerStyle.accent : choice.inputStyle ? PlayerStyle.chrome : PlayerStyle.timeline
     }
     delegate: T.ItemDelegate {
         required property int index
@@ -96,7 +100,7 @@ T.ComboBox {
     readonly property T.Popup retainedPopup: popup
     popup: T.Popup {
         readonly property Item retainedBackdrop: background
-        y: choice.height
+        y: choice.expandUp ? -height : choice.height
         width: choice.width
         height: Math.min(contentItem.implicitHeight + 2, PlayerStyle.px(240))
         padding: PlayerStyle.px(1)

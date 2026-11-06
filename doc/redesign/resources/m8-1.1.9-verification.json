@@ -1,0 +1,104 @@
+{
+  "source_commit": "996317a43a8789bf3cade32545a4c2087dfda612",
+  "qt_plugin_sha256": "9fad95be6927bfd5b8146a9ad777fe85f0c30876467164cbbea8288515a67b27",
+  "native_result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-native-lifecycle\\result.json",
+  "native_result_sha256": "3e75c7522dda645c28edf52a0f3b8098e5e01f30c6dc063bf1b7ead94bb7d7b1",
+  "workflows_passed": true,
+  "protected_profiles_unchanged": true,
+  "composed_video_picture_verified": false,
+  "status": "BLOCKED",
+  "blocker": {
+    "criterion": "R103 actual composed video and Figma appearance on a normal desktop in both engines",
+    "classification": "external verification input",
+    "reason": "Owned inactive desktops prove app workflows and Qt UI, but do not prove the composed video picture. Desktop controls are prohibited; current review launch is pending user input.",
+    "resolution": "User opens the prepared ordinary review player and minimizes playing video; capture only its bound window and inspect the real picture, controls and queue in VLC and MPV.",
+    "dependent": "M8 closure and M10 final release"
+  },
+  "review": "D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review",
+  "cases": [
+    {
+      "name": "floating-vlc-1",
+      "engine": "vlc",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-vlc-1.5",
+      "engine": "vlc",
+      "scale": "1.5",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-vlc-2",
+      "engine": "vlc",
+      "scale": "2",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-eof-vlc-replay-resumed",
+      "engine": "vlc",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-excludes-idle-vlc",
+      "engine": "vlc",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-excludes-audio-vlc",
+      "engine": "vlc",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-mpv-1-seek-resumed",
+      "engine": "mpv",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-mpv-1.5",
+      "engine": "mpv",
+      "scale": "1.5",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-mpv-2",
+      "engine": "mpv",
+      "scale": "2",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-eof-mpv-notification-resumed",
+      "engine": "mpv",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-excludes-idle-mpv",
+      "engine": "mpv",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "floating-excludes-audio-mpv",
+      "engine": "mpv",
+      "scale": "1",
+      "passed": true,
+      "exit_code": 0
+    }
+  ]
+}

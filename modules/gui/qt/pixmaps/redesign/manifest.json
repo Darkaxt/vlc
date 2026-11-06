@@ -528,6 +528,33 @@
       "sha256": "263a923975b906a0d7fbe21b79c8ad7127324f773b3673c97378e144b0e10b53"
     },
     {
+      "id": "2127:7755",
+      "name": "Icon",
+      "filename": "tab-video.svg",
+      "width": 20,
+      "height": 20,
+      "originalColors": true,
+      "sha256": "d882882cec935f1590d1610c948fc7d7840f84762e844de7213d62358509c5bc"
+    },
+    {
+      "id": "2127:7761",
+      "name": "Icon",
+      "filename": "tab-audio.svg",
+      "width": 20,
+      "height": 20,
+      "originalColors": true,
+      "sha256": "c4ac9f652c3618a1a0930dc1495395857674cdf54ed78cc92b22909892e1203e"
+    },
+    {
+      "id": "2127:7699",
+      "name": "Icon",
+      "filename": "tab-subtitles.svg",
+      "width": 20,
+      "height": 20,
+      "originalColors": true,
+      "sha256": "98728c66b8835f9622c524cafb1ceb05bdde1007234e8afd45a02b40d7dca823"
+    },
+    {
       "id": "2138:8026",
       "name": "name=spectometer, direction=default, state=default, value=default, EQ=default, two-tone=yes",
       "filename": "visualizer-spectrometer.svg",

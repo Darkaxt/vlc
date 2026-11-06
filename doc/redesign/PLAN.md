@@ -1,6 +1,10 @@
 # VLC redesign stages and reconciliation
 
-**6 November current work: M8 Figma floating miniplayer — ACTIVE.**
+**6 November current work: M9 player-panel Figma parity — ACTIVE.**
+M8 is BLOCKED only on actual composed-picture verification; all isolated native
+workflows pass. Desktop controls remain prohibited. The current ordinary review
+launch awaits user input; capture its bound window in both engines to close R103.
+M9 is independent of that input and is the sole ACTIVE implementation stage.
 M7 is COMPLETE under the user's explicit withdrawal of further taskbar resizing.
 The current blue MPV running button was captured and inspected by the user;
 its native icon and Shell resource/identity are verified. The10–15% enlargement
@@ -29,7 +33,8 @@ Its snapshot proves the visualizer's "Disable" row is selected; the existing
 hasAudioVisualization getter incorrectly counted any selected row as active.
 Correct the getter to exclude row zero and resume affected Qt acceptance.
 Preserve `floating-m8-native/result.json` and its original failure evidence.
-M8 remains ACTIVE; full floating workflow and real rendering are not verified.
+This earlier failure is historical. Current native workflow evidence passes; actual
+composed-picture verification remains blocked as recorded above.
 Diagnostic66 closed0/group empty after the disabled-choice correction. Its native
 case progressed into floating composition, where Windows returned E_INVALIDARG.
 The floating target was being assigned a root from the main window's different
@@ -45,7 +50,7 @@ explicit user Restore/Raise stays intact. The old checker also incorrectly await
 an MPV-only snapshot key in VLC; use its actual playback state and video tracks.
 Preserve both failed observation records, including supported cancellation and
 native exit0; no user window or desktop was controlled.
-M9 player-panel Figma parity (R105) is NOT STARTED, added by the user's four-tab
+M9 player-panel Figma parity (R105) is ACTIVE, added by the user's four-tab
 comparison. It owns original selected two-tone icons, actual row/control/slider
 layout and footer parity, with real VLC/MPV bindings and rendered acceptance.
 M10 normal1.1.9 release remains NOT STARTED until M8 and M9 pass. M6's exact native
@@ -761,9 +766,9 @@ presentation and final delivery remain required.
 | M4 Settings and menu parity | COMPLETE | Normal1.1.6 delivered and independently verified; R83–R87 reconciled under the explicit minor-UI manual-review waiver. Current native playback/presentation, packaging, source/symbol mappings, preservation, retained/weekly binding and obsolete cleanup pass. | None. | None. |
 | M5 Onboarding and interface shortcuts | COMPLETE | R88–R89 verified through native wizard/editor/restart/dispatch, optimized artifacts and independently retrieved normal1.1.7. | None. | No blockers or tracked deferrals. |
 | M6 Font navigation, media preview and engine identity | BLOCKED | R90–R95 native workflows and independently downloaded normal1.1.8 pass; R96 ext4 migration, optimized build, retained cohort, weekly binding and Windows retirement pass. | External helper capability: retire the three exact spent native output roots through a supported Linux transactional backend. Active runtime/pipeline/objects remain preserved;1.1.8 delivery is verified. | None. |
-| M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M9. | None. |
-| M8 Figma floating miniplayer | ACTIVE | Existing embedding and reference assets identified. | R103 automatic floating video, full Figma card/queue/controls, both-engine continuity, bounds/restore/dismissal and actual rendering. | None. |
-| M9 Player-panel Figma parity | NOT STARTED | User's four-tab comparison recorded as R105. | Selected original two-tone icons; Playback/Video/Audio/Subtitles row/control/slider/layout and footer parity; real engine bindings and native rendered acceptance. | None. |
+| M7 Runtime engine icon parity | COMPLETE | R97–R100 original/custom artwork, saved engine palettes, actual colored running-button review, README/credits; R102 both-engine no-library and R104 live in-bar effects/original dropdowns pass. R101 further enlargement explicitly withdrawn by user; failed size evidence retained. | None within revised scope. Normal final delivery belongs to M10. | None. |
+| M8 Figma floating miniplayer | BLOCKED | Both engines at100/150/200%, seek/pause, real queue navigation, bounded resize, restore/reopen/dismiss, EOF replay and audio/idle exclusions pass; protected profiles unchanged. | External: actual composed video/Figma appearance requires the pending ordinary review launch; no desktop controls. M10 depends on this proof. | None. |
+| M9 Player-panel Figma parity | ACTIVE | User's four-tab comparison recorded as R105. | Selected original two-tone icons; Playback/Video/Audio/Subtitles row/control/slider/layout and footer parity; real engine bindings and native rendered acceptance. | None. |
 | M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8 and M9, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.

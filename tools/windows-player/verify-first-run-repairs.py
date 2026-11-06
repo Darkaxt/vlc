@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -65,6 +65,7 @@ parser.add_argument('--resume-m7-checker',action='store_true',
 parser.add_argument('--resume-m7-lifecycle',action='store_true',
     help='Retain completed modes and VLC no-library cases; finish handover, DPI and the remaining no-library paths')
 parser.add_argument('--visualizer-options-only',action='store_true',help='Inspect the complete Figma visualizer/EQ option rendering on the real player')
+parser.add_argument('--resume-floating-stopped-observer',action='store_true',help='Retain completed VLC100%% miniplayer evidence after correcting STOPPING versus STOPPED in the observer')
 args = parser.parse_args()
 assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -83,6 +84,8 @@ resume_onboarding=args.resume_onboarding_checker
 resume_media=args.resume_media_previews_checker
 resume_m7=args.resume_m7_checker
 resume_m7_lifecycle=args.resume_m7_lifecycle
+resume_floating=args.resume_floating_stopped_observer
+assert not resume_floating or args.case=='floating-player'
 assert not resume_m7_lifecycle or args.case=='m7-regressions'
 assert not resume_m7 or args.case=='m7-regressions'
 assert sum((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7,resume_m7_lifecycle))<=1
@@ -93,14 +96,46 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
+assert not root.exists() or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
 m7_final_path=False
-if resume_visualizer_options:
+if resume_floating:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='floating-player' and not previous['passed'] and previous['protected_profiles_unchanged']
+    floating_eof_repair='replay' in previous['failures']['floating-player']
+    floating_mpv_seek_repair=previous['cases'][-1]['name']=='floating-mpv-1'
+    floating_eof_scope_repair=previous['failures']['floating-player']==repr(NameError("name 'current' is not defined"))
+    floating_eof_notification_repair=previous['cases'][-1]['name']=='floating-eof-mpv-scope-resumed' and 'natural-eof' in previous['failures']['floating-player']
+    assert all(c['exit_code']==0 and c['owned_desktop_never_observed_as_input'] for c in previous['cases'])
+    if floating_eof_notification_repair:
+        assert len(previous['cases'])==10 and all(c['passed'] for c in previous['cases'][:9])
+    elif floating_eof_scope_repair:
+        assert len(previous['cases'])==10 and all(c['passed'] for c in previous['cases'][:9])
+        assert previous['cases'][-1]['name']=='floating-eof-mpv' and previous['cases'][-1]['steps'][-2]['label']=='minimize'
+    elif floating_mpv_seek_repair:
+        assert len(previous['cases'])==7 and all(c['passed'] for c in previous['cases'][:6])
+        assert previous['cases'][-1]['steps'][-2]['label']=='seek-floating'
+    elif floating_eof_repair:
+        assert len(previous['cases'])==4 and all(c['passed'] for c in previous['cases'][:3])
+        assert previous['cases'][-1]['name']=='floating-eof-vlc'
+        assert previous['cases'][-1]['steps'][-2]['label']=='natural-eof'
+    else:
+        assert len(previous['cases'])==1 and previous['cases'][0]['name']=='floating-vlc-1'
+        completed=previous['cases'][0]
+        assert completed['steps'][-2]['label']=='dismiss' and 'dismiss-stopped' in previous['failures']['floating-player']
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    terminal=root/'floating-vlc-1/evidence/fdfc0a02fb344a44b215c2daf9516d39.json'
+    dismissed=json.loads(terminal.read_text())
+    assert dismissed['core']['state']==0 and dismissed['main_window']['visibility']==3
+    assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in dismissed['windows'])
+    historical=root/('result-before-mpv-eof-notification.json' if floating_eof_notification_repair else 'result-before-eof-observer-scope.json' if floating_eof_scope_repair else 'result-before-mpv-seek-readiness.json' if floating_mpv_seek_repair else 'result-before-replay-start-paused.json' if floating_eof_repair else 'result-before-stopped-observer.json');assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_visualizer_options:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='visualizer-options' and not previous['passed'] and previous['protected_profiles_unchanged']
     options_utf8_repair=previous['failures']['audio-visualizer'].startswith('UnicodeDecodeError(')
@@ -378,6 +413,17 @@ newer_version='.'.join(map(str,(*map(int,fork_version.split('.')[:2]),int(fork_v
 production=subprocess.check_output(['git','-C',str(repo),'ls-tree','-r','-z',records['source_commit'],'--',
     'include','src','lib','compat','modules','share','configure.ac','Makefile.am','extras/package/win32'])
 records['production_tree_sha256']=hashlib.sha256(production).hexdigest()
+if resume_floating:
+    assert previous['production_tree_sha256']==records['production_tree_sha256']
+    if floating_eof_scope_repair or floating_eof_notification_repair:records['cases']=previous['cases'][:9]
+    elif floating_mpv_seek_repair:records['cases']=previous['cases'][:6]
+    elif floating_eof_repair:records['cases']=previous['cases'][:3]
+    else:
+        completed['passed']=True
+        completed['verified_terminal_snapshot']=str(terminal.relative_to(root))
+        records['cases']=[completed]
+    records['resumed_floating']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'scope':'Reuse completed same-binary VLC100% minimize/seek/queue/bounds/restore/reopen/navigation/dismiss evidence; terminal stopped0 independently observed. Finish remaining DPI/engine/EOF/exclusion cases.'}
 if resume_visualizer_options:
     assert previous['production_tree_sha256']==records['production_tree_sha256']
     records['resumed_visualizer_options']={'historical_result':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
@@ -1828,7 +1874,8 @@ def floating_player():
 
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
-            case=Case('floating-'+engine+'-'+scale,engine=engine,scale=scale,
+            if any(c['name'].startswith('floating-'+engine+'-'+scale) and c['engine']==engine and c['scale']==scale and c['passed'] for c in records['cases']):continue
+            case=Case('floating-'+engine+'-'+scale+('-seek-resumed' if resume_floating and floating_mpv_seek_repair and engine=='mpv' and scale=='1' else ''),engine=engine,scale=scale,
                 extra=('--input-repeat=-1',str(fixtures/'control.mkv'),str(fixtures/'embedded-text.mkv')))
             try:
                 initial=case.inspect('video-ready','snapshot','--await-core','state','--await-value','3')
@@ -1845,6 +1892,7 @@ def floating_player():
                 assert mini['main_window']['native_id_hex']==native and mini['core']['state']==2
                 case.click('pause-floating','floatingPlay','--await-core','state','--await-value','3')
                 sought=case.inspect('seek-floating','click','--target','floatingSeek','--fraction-x','0.35')
+                sought=case.inspect('seek-ui-observed','snapshot','--await-target','floatingSeek','--await-property','value','--await-value','0.35','--await-tolerance','0.03')
                 assert abs(nodes(sought,'floatingSeek')[0]['value']-0.35)<0.03
                 if engine=='vlc':assert sought['seek_requests'][-1]['status']=='submitted'
                 # VLC's non-seeking timer point remains at its last paused
@@ -1878,25 +1926,15 @@ def floating_player():
                 previous_video=case.inspect('previous-video','snapshot','--await-core','mpv_video_ready' if engine=='mpv' else 'state','--await-value','true' if engine=='mpv' else '2')
                 assert previous_video['main_window']['visibility']==3 and previous_video['core']['video_tracks']
                 dismissed=case.click('dismiss','floatingClose')
-                stopped=case.inspect('dismiss-stopped','snapshot','--await-core','state','--await-value','4')
+                stopped=case.inspect('dismiss-stopped','snapshot','--await-core','state','--await-value','0')
                 assert stopped['main_window']['visibility']==3
                 assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in stopped['windows'])
                 case.close(True)
             finally:case.close()
-        eof=Case('floating-eof-'+engine,engine=engine,media=fixtures/'control.mkv')
-        try:
-            eof.inspect('paused','snapshot','--await-core','state','--await-value','3')
-            eof.click('play','playButton','--await-core','state','--await-value','2')
-            eof.click('minimize','playerMinimize')
-            current(eof,'floating-ready')
-            stopped=eof.inspect('natural-eof','snapshot','--await-core','state','--await-value','4','--capture')
-            assert nodes(stopped,'floatingPlay') and nodes(stopped,'floatingRestore')
-            replay=eof.click('replay','floatingPlay','--await-core','state','--await-value','2')
-            assert replay['main_window']['visibility']==3
-            current(eof,'replay-surface-ready',True)
-            eof.close(True)
-        finally:eof.close()
+        if not any(c['name'].startswith('floating-eof-'+engine) and c['passed'] for c in records['cases']):
+            floating_eof(engine,current)
         for name,media in (('idle',None),('audio',fixtures/'audio-only.mka')):
+            if any(c['name']=='floating-excludes-'+name+'-'+engine and c['passed'] for c in records['cases']):continue
             negative=Case('floating-excludes-'+name+'-'+engine,engine=engine,media=media)
             try:
                 if media:
@@ -1909,6 +1947,23 @@ def floating_player():
                 assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in state['windows'])
                 negative.close(True)
             finally:negative.close()
+
+
+def floating_eof(engine,current):
+        eof=Case('floating-eof-'+engine+('-notification-resumed' if resume_floating and floating_eof_notification_repair and engine=='mpv' else '-scope-resumed' if resume_floating and floating_eof_scope_repair and engine=='mpv' else '-replay-resumed' if resume_floating and floating_eof_repair and engine=='vlc' else ''),
+            engine=engine,media=fixtures/'control.mkv',extra=('--no-start-paused',))
+        try:
+            eof.inspect('playing','snapshot','--await-core','state','--await-value','2')
+            eof.click('minimize','playerMinimize')
+            current(eof,'floating-ready')
+            stopped=eof.inspect('natural-eof','snapshot','--await-target','floatingPlay','--await-property','description','--await-value',json.dumps('Replay'),'--capture')
+            assert stopped['core']['state']==0,stopped['core']
+            assert nodes(stopped,'floatingPlay') and nodes(stopped,'floatingRestore')
+            replay=eof.click('replay','floatingPlay','--await-core','state','--await-value','2')
+            assert replay['main_window']['visibility']==3
+            current(eof,'replay-surface-ready',True)
+            eof.close(True)
+        finally:eof.close()
 
 
 def visualizer_options():
@@ -2295,6 +2350,71 @@ def sidebar():
                         'qml_viewport':{key:surface[key] for key in ('x','y','width','height')}})
             case.close(True)
         finally: case.close()
+
+def player_panels():
+    """Four complete native panels: original selected artwork, layout and bindings."""
+    names=('Playback','Video','Audio','Subtitles')
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            custom=scale=='1.5'
+            color='#2f87b5' if custom else '#9859ad' if engine=='mpv' else '#d37918'
+            extra=(('--qt-mpv-accent-color=' if engine=='mpv' else '--qt-accent-color=')+color,)
+            case=Case('player-panels-'+engine+'-'+scale,engine=engine,scale=scale,
+                      media=fixtures/'embedded-text.mkv',extra=extra)
+            try:
+                case.inspect('reference-viewport','resize','--width','1280','--height','1100')
+                case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+                case.click('open-panels','toolsButton')
+                for page,label in enumerate(names):
+                    selected=case.click('select-'+label,'playerSettingsTab_'+str(page))
+                    identity='playerPlaybackTabIcon' if page==0 else 'playerTabIcon_'+str(page)
+                    icon=nodes(selected,identity)
+                    assert len(icon)==1,(label,icon)
+                    snapshot=case.inspect('render-'+label,'snapshot','--await-node',icon[0]['node'],
+                        '--await-property','status','--await-value','1','--capture')
+                    assert snapshot['rendered_accent']==color,(engine,scale,snapshot['rendered_accent'])
+                    assert len(nodes(snapshot,identity))==1
+                    assert not nodes(snapshot,'playerTabNeutral_'+str(page))
+                    assert all(nodes(snapshot,'playerTabNeutral_'+str(other)) for other in range(4) if other!=page)
+                    picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')).convert('RGB')
+                    ratio=picture.width/snapshot['window']['width']
+                    icon=nodes(snapshot,identity)[0]
+                    crop=picture.crop(tuple(round(v*ratio) for v in
+                        (icon['x'],icon['y'],icon['x']+icon['width'],icon['y']+icon['height'])))
+                    crop.save(case.evidence/('selected-'+label+'.png'))
+                    pixels=list(crop.getdata())
+                    expected=colorsys.rgb_to_hsv(*(int(color[i:i+2],16)/255 for i in (1,3,5)))[0]
+                    colored=[p for p in pixels if max(p)-min(p)>25 and max(p)>80]
+                    assert colored and any(abs(colorsys.rgb_to_hsv(*(v/255 for v in p))[0]-expected)<.035 for p in colored),(label,color,'selected accent absent')
+                    assert any(max(p)-min(p)<4 and 60<=p[0]<=160 for p in pixels),(label,'neutral geometry lost')
+                    body_node=nodes(snapshot,'mediaSettingsBody')[0]
+                    if page:
+                        footer=nodes(snapshot,'mediaSettingsFooter')[0]
+                        assert body_node['y']+body_node['height']<=footer['y']+1,'Body overlaps fixed preset footer'
+                        fields=[n for n in snapshot['tree'] if n['visible'] and n['id'].startswith('playerChoice_')]
+                        assert fields
+                        assert all(abs(n['width']-220)<1 for n in fields if n['id']!='playerChoice_Stereo Mode'),fields
+                    if page==1:
+                        assert any(n.get('name')=='Flip video: Horizontal' and n['visible'] and n['enabled']==(engine=='vlc') for n in snapshot['tree'])
+                        assert not any(n.get('text')=='Defaults' and n['visible'] for n in snapshot['tree'])
+                    if page in (2,3):
+                        editor='audioDelayEditor' if page==2 else 'subtitleDelayEditor'
+                        value='0.125 s' if page==2 else '-0.250 s'
+                        core='audio_delay_ms' if page==2 else 'subtitle_delay_ms'
+                        case.inspect('focus-delay-'+label,'focus','--target',editor)
+                        case.inspect('select-delay-'+label,'key','--key','0x41','--modifiers','0x4000000','--text','a')
+                        case.inspect('edit-delay-'+label,'key','--key','0','--text',value)
+                        case.inspect('apply-delay-'+label,'key','--key','0x1000004',
+                            '--await-core',core,'--await-value','125' if page==2 else '-250')
+                    case.record.setdefault('panel_rendering',[]).append({'page':label,'accent':color,
+                        'original_two_tone_selected':True,'neutral_inactive_tabs':True,'fixed_footer':page!=0})
+                if engine=='vlc':
+                    case.click('return-audio','playerSettingsTab_2')
+                    case.inspect('reveal-equalizer','focus','--name','Equalizer: Expand Settings')
+                    expanded=case.inspect('expand-equalizer','click','--name','Equalizer: Expand Settings','--capture')
+                    assert any(n['visible'] and n['id']=='mediaOption_equalizer-bands' for n in expanded['tree']) or any(n.get('text')=='60' and n['visible'] for n in expanded['tree'])
+                case.close(True)
+            finally:case.close()
 
 def menus_normal():
     """Reference menu, real Settings route and Playback controls as one workflow."""
@@ -3259,7 +3379,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue

@@ -837,6 +837,9 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/mpv-256.png \
 	player/qml/PlayerLayoutRules.js \
 	pixmaps/redesign/forward10.svg \
+	pixmaps/redesign/tab-video.svg \
+	pixmaps/redesign/tab-audio.svg \
+	pixmaps/redesign/tab-subtitles.svg \
 	pixmaps/redesign/visualizer-spectrometer.svg \
 	pixmaps/redesign/visualizer-scope.svg \
 	pixmaps/redesign/visualizer-spectrum.svg \

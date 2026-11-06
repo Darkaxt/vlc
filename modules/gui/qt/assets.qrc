@@ -22,6 +22,9 @@
         <file alias="menu-settings.svg">pixmaps/redesign/menu-settings.svg</file>
         <file alias="menu-info.svg">pixmaps/redesign/menu-info.svg</file>
         <file alias="tab-playback.svg">pixmaps/redesign/tab-playback.svg</file>
+        <file alias="tab-video.svg">pixmaps/redesign/tab-video.svg</file>
+        <file alias="tab-audio.svg">pixmaps/redesign/tab-audio.svg</file>
+        <file alias="tab-subtitles.svg">pixmaps/redesign/tab-subtitles.svg</file>
         <file alias="visualizer-spectrometer.svg">pixmaps/redesign/visualizer-spectrometer.svg</file>
         <file alias="visualizer-scope.svg">pixmaps/redesign/visualizer-scope.svg</file>
         <file alias="visualizer-spectrum.svg">pixmaps/redesign/visualizer-spectrum.svg</file>

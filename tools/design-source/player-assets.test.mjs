@@ -5,6 +5,21 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import { affine, pathCommands } from './player-assets.mjs';
 
+test('selected player tabs preserve original two-tone panel instances', async () => {
+  const {extractPlayerAssets}=await import('./player-assets.mjs');
+  const output=process.env.VLC_DESIGN_TEST_OUTPUT;
+  const manifest=extractPlayerAssets(output);
+  for (const [filename,key] of [['tab-video.svg','2127:7755'],['tab-audio.svg','2127:7761'],['tab-subtitles.svg','2127:7699']]) {
+    const entry=manifest.icons.find(icon=>icon.filename===filename);
+    assert.equal(entry.id,key);
+    assert.equal(entry.originalColors,true);
+    const svg=fs.readFileSync(path.join(output,filename),'utf8');
+    assert.match(svg,/rgb\((211,121,24|171,99,20)\)/);
+    assert.match(svg,/rgb\((107,107,107|143,143,143)\)/);
+    assert.doesNotMatch(svg,/<image|<text/);
+  }
+});
+
 test('visualizer and EQ choices retain their original two-tone Figma artwork', async () => {
   const {extractPlayerAssets, equalizerIcons}=await import('./player-assets.mjs');
   const output=process.env.VLC_DESIGN_TEST_OUTPUT;

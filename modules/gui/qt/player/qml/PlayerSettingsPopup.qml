@@ -17,6 +17,8 @@ T.Popup {
     required property Item layoutRoot
     // Materialize the declared background before the first video presentation.
     readonly property Item retainedBackdrop: background
+    readonly property bool vlcToolsAvailable: Player.playbackEngine === "vlc" && !Player.engineSwitching
+    readonly property string vlcToolsHint: qsTr("Requires VLC playback. Track selection and timing work with either engine.")
     Connections { target: MediaTools; function onChanged() { settingsPopup.settingsRevision++ } }
     function filterEnabled(module) { const revision = settingsRevision; return MediaTools.filterEnabled(module) }
     property var presetFolder: ""
@@ -52,6 +54,8 @@ T.Popup {
     }
     component Button: T.Button {
         id: button
+        property bool segmented: false
+        property bool plain: false
         implicitWidth: Math.max(PlayerStyle.px(64), implicitContentWidth + leftPadding + rightPadding)
         implicitHeight: PlayerStyle.px(32)
         padding: PlayerStyle.px(8)
@@ -61,24 +65,29 @@ T.Popup {
         Accessible.onPressAction: clicked()
         contentItem: Label {
             text: button.text
-            color: button.checked ? (Player.playbackEngine === "mpv" ? PlayerStyle.accentForeground : PlayerStyle.accent) : PlayerStyle.trackForeground
+            color: button.checked ? (!button.segmented && Player.playbackEngine==="mpv" ? PlayerStyle.accentForeground : PlayerStyle.accent) : PlayerStyle.trackForeground
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             wrapMode: Text.NoWrap
         }
         background: Rectangle {
-            color: button.checked && Player.playbackEngine === "mpv" ? PlayerStyle.accent : button.hovered ? PlayerStyle.hover : PlayerStyle.timeline
+            color: button.checked ? (!button.segmented && Player.playbackEngine==="mpv" ? PlayerStyle.accent : PlayerStyle.accentWell) : button.hovered ? PlayerStyle.hover : button.plain ? "transparent" : button.segmented ? PlayerStyle.chrome : PlayerStyle.timeline
             radius: PlayerStyle.px(4)
             border.color: PlayerStyle.accent
-            border.width: button.visualFocus || button.checked ? PlayerStyle.px(2) : 0
+            border.width: button.visualFocus ? PlayerStyle.px(2) : 0
         }
+    }
+    component Divider: Item {
+        width: body.width
+        height: PlayerStyle.px(1)
+        Rectangle { anchors.fill: parent; color: PlayerStyle.foreground; opacity: 0.12 }
     }
     component Section: Item {
         property string text
         width: body.width
-        height: PlayerStyle.px(39)
-        Label { x: PlayerStyle.px(24); anchors.bottom: parent.bottom; text: parent.text; color: PlayerStyle.trackForeground; font.pixelSize: PlayerStyle.px(16) }
+        height: PlayerStyle.px(60)
+        Label { x: PlayerStyle.px(24); anchors.verticalCenter: parent.verticalCenter; text: parent.text; color: PlayerStyle.trackForeground; font.pixelSize: PlayerStyle.px(16) }
     }
     component Toggle: RowLayout {
         property string text
@@ -86,7 +95,7 @@ T.Popup {
         property bool available: true
         property bool requiresVlc: false
         property string unavailableReason: ""
-        readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
+        readonly property string displayLabel: text
         signal toggled(bool enabled)
         width: body.width - PlayerStyle.px(40)
         height: PlayerStyle.px(52)
@@ -101,25 +110,30 @@ T.Popup {
             onClicked: parent.toggled(!parent.checked)
         }
         HoverHandler { id: reasonHover }
-        T.ToolTip.visible: reasonHover.hovered && unavailableReason.length>0
-        T.ToolTip.text: unavailableReason
+        T.ToolTip.visible: reasonHover.hovered && (unavailableReason.length>0 || (requiresVlc && !settingsPopup.vlcToolsAvailable))
+        T.ToolTip.text: unavailableReason.length ? unavailableReason : settingsPopup.vlcToolsHint
     }
     component Effect: Column {
         id: effect
         property string title
         property string module
         property string section
+        property var excludedKeys: []
+        property bool showToggle: true
+        property bool showDivider: true
         width: body.width
-        topPadding: PlayerStyle.px(10)
+        topPadding: 0
         bottomPadding: PlayerStyle.px(20)
         spacing: PlayerStyle.px(10)
+        Divider { visible: effect.showDivider }
         RowLayout {
             x: PlayerStyle.px(20)
             width: parent.width - PlayerStyle.px(40)
-            height: PlayerStyle.px(37)
+            visible: effect.title.length>0
+            height: visible ? PlayerStyle.px(37) : 0
             Label { Layout.fillWidth: true; Layout.leftMargin: PlayerStyle.px(4); text: effect.title }
             PlayerSettingsSwitch {
-                visible: effect.module.length > 0
+                visible: effect.showToggle && effect.module.length > 0
                 enabled: Player.playbackEngine === "vlc" && !Player.engineSwitching
                 Layout.preferredWidth: PlayerStyle.px(68)
                 value: settingsPopup.filterEnabled(effect.module)
@@ -135,16 +149,16 @@ T.Popup {
             padding: PlayerStyle.px(16)
             rightPadding: PlayerStyle.px(42)
             text: settingsPopup.expanded === effect.section ? qsTr("Collapse Settings") : qsTr("Expand Settings")
-            Accessible.name: effect.title + ": " + text
+            Accessible.name: (effect.title.length ? effect.title : qsTr("Equalizer")) + ": " + text
             contentItem: Label { text: expandEffect.text; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
             IconImage {
                 smooth: false
                 anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(10); anchors.verticalCenter: parent.verticalCenter
                 width: PlayerStyle.px(24); height: width
                 sourceSize: Qt.size(width, height)
-                source: "qrc:/redesign/icons/chevron-down.svg"
+                source: "qrc:/redesign/icons/chevron-right.svg"
                 color: PlayerStyle.trackForeground
-                rotation: settingsPopup.expanded === effect.section ? 180 : 0
+                rotation: settingsPopup.expanded === effect.section ? 90 : 0
             }
             onClicked: settingsPopup.expanded = settingsPopup.expanded === effect.section ? "" : effect.section
         }
@@ -153,13 +167,10 @@ T.Popup {
             width: parent.width - PlayerStyle.px(40)
             visible: settingsPopup.expanded === effect.section
             Repeater {
-                model: effect.section === "crop" ? ["crop-top", "crop-bottom", "crop-left", "crop-right"] : MediaTools.options(effect.section)
+                model: { const revision=settingsPopup.settingsRevision; return MediaTools.options(effect.section).filter(option => effect.excludedKeys.indexOf(option.key)<0) }
                 PlayerSettingRow {
                     required property var modelData
-                    option: {
-                        const revision = settingsPopup.settingsRevision
-                        return effect.section === "crop" ? MediaTools.options("crop").find(option => option.key === modelData) : modelData
-                    }
+                    option: modelData
                     slider: true
                 }
             }
@@ -171,15 +182,18 @@ T.Popup {
         property string text
         property var choices
         property bool requiresVlc: true
-        property bool referenceControl: false
+        property bool referenceControl: true
+        property bool fullWidth: false
         property var optionIcons: ({})
-        readonly property string displayLabel: text + (requiresVlc && Player.playbackEngine === "mpv" ? qsTr(" (VLC)") : "")
+        readonly property string displayLabel: text
         width: body.width - PlayerStyle.px(40)
         height: PlayerStyle.px(referenceControl ? 68 : 48)
         x: PlayerStyle.px(20)
-        Label { Layout.fillWidth: true; text: parent.displayLabel }
+        Label { visible: !choiceRow.fullWidth; Layout.fillWidth: true; text: parent.displayLabel }
         PlayerSettingsChoice {
             id: trackChoice
+            objectName: "playerChoice_" + choiceRow.text
+            Layout.fillWidth: choiceRow.fullWidth
             Layout.preferredWidth: PlayerStyle.px(choiceRow.referenceControl ? 220 : 140)
             Layout.preferredHeight: PlayerStyle.px(choiceRow.referenceControl ? 48 : 32)
             outlined: choiceRow.referenceControl
@@ -208,6 +222,28 @@ T.Popup {
             }
             onActivated: if (parent.choices) parent.choices.setData(parent.choices.index(currentIndex, 0), true, Qt.CheckStateRole)
         }
+        HoverHandler { id: choiceHover }
+        T.ToolTip.visible: choiceHover.hovered && choiceRow.requiresVlc && !settingsPopup.vlcToolsAvailable
+        T.ToolTip.text: settingsPopup.vlcToolsHint
+    }
+    component ReadoutRow: RowLayout {
+        property string text
+        property string value
+        property string hint: ""
+        width: body.width-PlayerStyle.px(40); height: PlayerStyle.px(68); x: PlayerStyle.px(20)
+        Label { Layout.fillWidth: true; text: parent.text }
+        T.TextField {
+            Layout.preferredWidth: PlayerStyle.px(220); Layout.preferredHeight: PlayerStyle.px(48)
+            text: parent.value; readOnly: true; selectByMouse: true
+            padding: PlayerStyle.px(16)
+            font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
+            color: PlayerStyle.trackForeground
+            Accessible.name: parent.text; Accessible.description: parent.hint
+            background: Rectangle { color: PlayerStyle.chrome; radius: PlayerStyle.px(4); border.color: PlayerStyle.timeline; border.width: PlayerStyle.px(2) }
+        }
+        HoverHandler { id: readoutHover }
+        T.ToolTip.visible: readoutHover.hovered && hint.length>0
+        T.ToolTip.text: value+"\n"+hint
     }
     component TimingRow: Column {
         id: timing
@@ -231,10 +267,10 @@ T.Popup {
                 Layout.preferredWidth: PlayerStyle.px(140); implicitHeight: PlayerStyle.px(36)
                 text: Number(timing.value).toFixed(3) + (timing.unit.length ? " " + timing.unit : "")
                 color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14)
-                padding: PlayerStyle.px(8); selectByMouse: true
+                padding: PlayerStyle.px(12); selectByMouse: true
                 Accessible.name: timing.text
                 onEditingFinished: { const number = Number(text.replace(timing.unit, "").trim()); if (isFinite(number)) timing.edited(number) }
-                background: Rectangle { color: PlayerStyle.timeline; radius: PlayerStyle.px(4); border.width: parent.activeFocus ? PlayerStyle.px(2) : 0; border.color: PlayerStyle.accent }
+                background: Rectangle { color: PlayerStyle.timeline; radius: PlayerStyle.px(6); border.width: PlayerStyle.px(2); border.color: parent.activeFocus ? PlayerStyle.accent : PlayerStyle.chrome }
             }
         }
         Item { width: 1; height: PlayerStyle.px(5) }
@@ -242,9 +278,18 @@ T.Popup {
             id: timeSlider
             width: parent.width; height: PlayerStyle.px(24)
             from: timing.minimum; to: timing.maximum; value: timing.value; stepSize: timing.step
+            padding: 0
             activeFocusOnTab: true; Accessible.name: timing.text
             onMoved: timing.edited(value)
-            background: Rectangle { x: timeSlider.leftPadding; y: (timeSlider.height - height)/2; width: timeSlider.availableWidth; height: PlayerStyle.px(12); radius: height/2; color: PlayerStyle.timeline; Rectangle { width: parent.width * timeSlider.visualPosition; height: parent.height; radius: parent.radius; color: PlayerStyle.accent; opacity: 0.45 } }
+            background: Rectangle {
+                y: (timeSlider.height-height)/2; width: timeSlider.availableWidth; height: PlayerStyle.px(16); radius: PlayerStyle.px(6); color: PlayerStyle.timeline
+                Rectangle {
+                    readonly property real origin: timing.minimum<0 && timing.maximum>0 ? -timing.minimum/(timing.maximum-timing.minimum) : 0
+                    x: parent.width*Math.min(origin,timeSlider.position)
+                    width: parent.width*Math.abs(timeSlider.position-origin)
+                    height: parent.height; radius: parent.radius; color: PlayerStyle.accentWell
+                }
+            }
             handle: Rectangle { x: timeSlider.leftPadding + timeSlider.visualPosition * (timeSlider.availableWidth - width); y: (timeSlider.height-height)/2; width: PlayerStyle.px(8); height: PlayerStyle.px(24); radius: width/2; color: PlayerStyle.accent; border.width: timeSlider.visualFocus ? 1 : 0; border.color: PlayerStyle.trackForeground }
         }
         RowLayout {
@@ -261,11 +306,13 @@ T.Popup {
     component LanguageRow: RowLayout {
         id: languageRow
         property bool subtitle: false
-        width: body.width - PlayerStyle.px(40); height: PlayerStyle.px(48); x: PlayerStyle.px(20)
+        width: body.width - PlayerStyle.px(40); height: PlayerStyle.px(62); x: PlayerStyle.px(20)
         Label { Layout.fillWidth: true; text: parent.subtitle ? qsTr("Subtitle Language") : qsTr("Audio Language") }
         PlayerSettingsChoice {
             id: languageChoice
             Layout.preferredWidth: PlayerStyle.px(140)
+            Layout.preferredHeight: PlayerStyle.px(36)
+            inputStyle: true
             label: parent.subtitle ? qsTr("Subtitle language") : qsTr("Audio language")
             textRole: "text"; valueRole: "value"
             model: { const revision = settingsPopup.settingsRevision; return MediaTools.trackLanguages(languageRow.subtitle) }
@@ -283,17 +330,20 @@ T.Popup {
         Accessible.role: Accessible.Pane
         Rectangle { width: parent.width; height: PlayerStyle.px(50); color: PlayerStyle.timeline; radius: PlayerStyle.px(10) }
         RowLayout {
-            width: parent.width
+            x: PlayerStyle.px(6)
+            width: parent.width-PlayerStyle.px(12)
             height: PlayerStyle.px(50)
-            spacing: 0
+            spacing: PlayerStyle.px(1)
             Repeater {
                 model: [qsTr("Playback"), qsTr("Video"), qsTr("Audio"), qsTr("Subtitles")]
                 T.Button {
+                    id: tabButton
+                    objectName: "playerSettingsTab_"+index
                     required property int index
                     required property string modelData
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.preferredWidth: 0
+                    Layout.preferredWidth: PlayerStyle.px(index===0 || index===3 ? 107.5 : 85)
                     padding: PlayerStyle.px(4)
                     activeFocusOnTab: true
                     Accessible.name: modelData
@@ -303,9 +353,21 @@ T.Popup {
                     contentItem: RowLayout {
                         spacing: PlayerStyle.px(4)
                         Item {
-                            Layout.preferredWidth: PlayerStyle.px(24); Layout.preferredHeight: PlayerStyle.px(24)
-                            Image { objectName:"playerPlaybackTabIcon"; visible: parent.parent.parent.index===0; anchors.fill: parent; smooth: false; source: PlayerStyle.themedIcon("qrc:/redesign/icons/tab-playback.svg"); sourceSize: Qt.size(width,height) }
-                            IconImage { visible: parent.parent.parent.index!==0; anchors.fill: parent; smooth: false; source: "qrc:/redesign/icons/" + ["playback","video","audio","subtitles"][parent.parent.parent.index] + ".svg"; sourceSize: Qt.size(width,height); color: PlayerStyle.sectionForeground }
+                            Layout.preferredWidth: PlayerStyle.px(20); Layout.preferredHeight: PlayerStyle.px(20)
+                            readonly property string artwork: "qrc:/redesign/icons/tab-"+["playback","video","audio","subtitles"][tabButton.index]+".svg"
+                            Image {
+                                objectName: tabButton.index===0 ? "playerPlaybackTabIcon" : "playerTabIcon_"+tabButton.index
+                                visible: settingsPopup.page===tabButton.index
+                                anchors.fill: parent; smooth: false
+                                source: PlayerStyle.themedIcon(parent.artwork); sourceSize: Qt.size(width,height)
+                            }
+                            IconImage {
+                                objectName: "playerTabNeutral_"+tabButton.index
+                                visible: settingsPopup.page!==tabButton.index
+                                anchors.fill: parent; smooth: false
+                                source: parent.artwork; sourceSize: Qt.size(width,height)
+                                color: PlayerStyle.dark ? "#404040" : PlayerStyle.sectionForeground
+                            }
                         }
                         Label { text: parent.parent.modelData; font.pixelSize: PlayerStyle.px(14); color: settingsPopup.page===parent.parent.index ? PlayerStyle.trackForeground : PlayerStyle.sectionForeground; Layout.fillWidth: true; verticalAlignment: Text.AlignVCenter; wrapMode: Text.NoWrap; elide: Text.ElideRight }
                     }
@@ -329,32 +391,6 @@ T.Popup {
             Column {
                 id: pages
                 width: parent.width
-                Label {
-                    visible: Player.playbackEngine === "mpv"
-                    x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
-                    text: qsTr("VLC effects, appearance, recording and statistics require VLC playback. Switch engines on the Playback tab; track selection and delays work with either engine.")
-                    font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground
-                    topPadding: PlayerStyle.px(12); bottomPadding: PlayerStyle.px(12)
-                }
-                Button {
-                    visible: settingsPopup.page !== 0
-                    enabled: Player.playbackEngine === "vlc" && !Player.engineSwitching
-                    x: PlayerStyle.px(20)
-                    width: parent.width - PlayerStyle.px(40)
-                    text: qsTr("Defaults")
-                    implicitHeight: PlayerStyle.px(39)
-                    Accessible.name: qsTr("Reset this page to defaults")
-                    contentItem: Label { text: qsTr("Defaults"); font.pixelSize: PlayerStyle.px(16); verticalAlignment: Text.AlignBottom }
-                    background: Rectangle { color: "transparent"; border.color: PlayerStyle.accent; border.width: parent.visualFocus ? 1 : 0 }
-                    onClicked: {
-                        if (settingsPopup.page === 3) MediaTools.resetSection("subtitle")
-                        else if (settingsPopup.page === 2) for (const section of ["equalizer", "compressor", "spatializer", "stereo_widen", "pitch"]) MediaTools.resetSection(section)
-                        else {
-                            for (const section of ["essential", "crop", "colors", "geometry"]) MediaTools.resetSection(section)
-                            MediaTools.enableFilter("invert", false)
-                        }
-                    }
-                }
                 Column {
                     visible: settingsPopup.page === 0
                     width: parent.width
@@ -469,40 +505,67 @@ T.Popup {
                 Column {
                     visible: settingsPopup.page === 1
                     width: parent.width
+                    topPadding: PlayerStyle.px(4)
                     RowLayout {
-                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(53)
-                        Label { text: qsTr("Flip"); Layout.fillWidth: true }
-                        PlayerSettingsChoice {
-                            Layout.preferredWidth: PlayerStyle.px(138)
-                            label: qsTr("Flip video")
+                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(44)
+                        spacing: PlayerStyle.px(2)
+                        Repeater {
                             model: [qsTr("None"), qsTr("Horizontal"), qsTr("Vertical")]
-                            currentIndex: { const revision = settingsPopup.settingsRevision; return !MediaTools.filterEnabled("transform") ? 0 : ["", "hflip", "vflip"].indexOf(String(MediaTools.value("transform-type"))) }
-                            displayText: currentIndex < 0 ? qsTr("Custom transform") : currentText
-                            onActivated: { if (currentIndex === 0) MediaTools.enableFilter("transform",false); else if (MediaTools.setValue("transform-type",["", "hflip", "vflip"][currentIndex])) MediaTools.enableFilter("transform",true) }
+                            Button {
+                                required property int index
+                                required property string modelData
+                                Layout.fillWidth: true; Layout.preferredWidth: 0; Layout.fillHeight: true
+                                text: modelData; segmented: true
+                                enabled: settingsPopup.vlcToolsAvailable
+                                checked: { const revision=settingsPopup.settingsRevision; return index===(!MediaTools.filterEnabled("transform") ? 0 : ["","hflip","vflip"].indexOf(String(MediaTools.value("transform-type")))) }
+                                Accessible.name: qsTr("Flip video: %1").arg(modelData)
+                                onClicked: { if (index===0) MediaTools.enableFilter("transform",false); else if(MediaTools.setValue("transform-type",["","hflip","vflip"][index]))MediaTools.enableFilter("transform",true) }
+                            }
                         }
+                        HoverHandler { id: flipHover }
+                        T.ToolTip.visible: flipHover.hovered && !settingsPopup.vlcToolsAvailable
+                        T.ToolTip.text: settingsPopup.vlcToolsHint
                     }
+                    Item { height: PlayerStyle.px(14); width: 1 }
                     RowLayout {
-                        x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(53)
+                        x: PlayerStyle.px(24); width: parent.width - PlayerStyle.px(44); height: PlayerStyle.px(68)
                         Label { text: qsTr("Rotate"); Layout.fillWidth: true }
                         T.TextField {
-                            Layout.preferredWidth: PlayerStyle.px(138); implicitHeight: PlayerStyle.px(36)
-                            text: { const revision = settingsPopup.settingsRevision; return (MediaTools.filterEnabled("rotate") ? Number(MediaTools.value("rotate-angle")) : 0).toFixed(1) }
-                            color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; padding: PlayerStyle.px(8); selectByMouse: true
+                            Layout.preferredWidth: PlayerStyle.px(140); implicitHeight: PlayerStyle.px(36)
+                            enabled: settingsPopup.vlcToolsAvailable
+                            text: { const revision = settingsPopup.settingsRevision; return (MediaTools.filterEnabled("rotate") ? Number(MediaTools.value("rotate-angle")) : 0)+" deg" }
+                            color: PlayerStyle.trackForeground; font.family: PlayerStyle.fontFamily; font.pixelSize: PlayerStyle.px(14); padding: PlayerStyle.px(12); selectByMouse: true
                             Accessible.name: qsTr("Video rotation in degrees")
-                            onEditingFinished: { const angle = Number(text); if (isFinite(angle) && MediaTools.setValue("rotate-angle",angle)) MediaTools.enableFilter("rotate",angle !== 0) }
-                            background: Rectangle { color: PlayerStyle.timeline; radius: PlayerStyle.px(4); border.width: parent.activeFocus ? 1 : 0; border.color: PlayerStyle.accent }
+                            onEditingFinished: { const angle = Number(text.replace(/deg|°/g,"").trim()); if (isFinite(angle) && MediaTools.setValue("rotate-angle",angle)) MediaTools.enableFilter("rotate",angle !== 0) }
+                            background: Rectangle { color: PlayerStyle.timeline; radius: PlayerStyle.px(6); border.width: PlayerStyle.px(2); border.color: parent.activeFocus ? PlayerStyle.accent : PlayerStyle.chrome }
                         }
                     }
                     ChoiceRow { text: qsTr("Zoom"); choices: Player.zoom }
-                    RowLayout { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(53); Label { text: qsTr("HDR"); Layout.fillWidth: true } Label { text: MediaTools.videoInfo.hdr; color: PlayerStyle.sectionForeground; font.pixelSize: PlayerStyle.px(12); Layout.preferredWidth: PlayerStyle.px(138) } }
-                    RowLayout { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); height: PlayerStyle.px(53); Label { text: qsTr("Resolution"); Layout.fillWidth: true } Label { text: MediaTools.videoInfo.resolution; color: PlayerStyle.sectionForeground; Layout.preferredWidth: PlayerStyle.px(138) } }
+                    ReadoutRow { text: qsTr("HDR"); value: MediaTools.videoInfo.hdr; hint: Player.playbackEngine==="mpv" ? qsTr("Source transfer and current SDR output. MPV retains Dolby Vision color processing.") : qsTr("Source transfer. Output follows VLC's renderer and display.") }
+                    ReadoutRow { text: qsTr("Resolution"); value: MediaTools.videoInfo.resolution; hint: qsTr("Source video dimensions.") }
                     ChoiceRow { text: qsTr("Aspect Ratio"); choices: Player.aspectRatio }
                     ChoiceRow { text: qsTr("Crop"); choices: Player.crop }
+                    RowLayout {
+                        x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(68)
+                        Label { text: qsTr("Render"); Layout.fillWidth: true }
+                        Button {
+                            id: rendererButton
+                            Layout.preferredWidth: PlayerStyle.px(220); Layout.preferredHeight: PlayerStyle.px(48)
+                            enabled: settingsPopup.vlcToolsAvailable
+                            text: Player.rendererManager.useRenderer ? qsTr("External renderer") : qsTr("Local")
+                            rightPadding: PlayerStyle.px(36); leftPadding: PlayerStyle.px(16)
+                            contentItem: Label { text: rendererButton.text; verticalAlignment: Text.AlignVCenter }
+                            background: Rectangle { color: PlayerStyle.chrome; radius: PlayerStyle.px(4); border.width: PlayerStyle.px(2); border.color: rendererButton.visualFocus ? PlayerStyle.accent : PlayerStyle.timeline }
+                            IconImage { anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(16); anchors.verticalCenter: parent.verticalCenter; width: PlayerStyle.px(16); height: width; sourceSize: Qt.size(width,height); smooth: false; source: "qrc:/redesign/icons/chevron-down.svg"; color: PlayerStyle.foreground }
+                            onClicked: rendererMenu.popup(mapToGlobal(0,height),false)
+                            QmlRendererMenu { id: rendererMenu; ctx: MainCtx }
+                        }
+                    }
                     ChoiceRow { text: qsTr("Deinterlace"); choices: Player.deinterlace }
                     ChoiceRow { text: qsTr("Deinterlace Mode"); choices: Player.deinterlaceMode }
-                    Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: Player.playbackEngine === "mpv" ? qsTr("HDR and resolution describe the source. MPV converts video, including Dolby Vision, to SDR output.") : qsTr("HDR and resolution describe the source. Output follows VLC's renderer and display; forced conversion and display-mode changes are unavailable here."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
+                    Divider { }
                     Section { text: qsTr("Filters") }
-                    Effect { title: qsTr("Essential"); module: "adjust"; section: "essential" }
+                    Effect { title: qsTr("Essential"); module: "adjust"; section: "essential"; showDivider: false; showToggle: false }
                     Effect { title: qsTr("Crop"); module: ""; section: "crop" }
                     Effect { title: qsTr("Colors"); module: "colorthres"; section: "colors" }
                     Effect { title: qsTr("Geometry"); module: "transform"; section: "geometry" }
@@ -513,11 +576,21 @@ T.Popup {
                     width: parent.width
                     ChoiceRow { text: qsTr("Audio Track"); requiresVlc: false; choices: Player.audioTracks }
                     LanguageRow { }
-                    ChoiceRow { text: qsTr("Stereo Mode"); choices: Player.audioStereoMode }
+                    Item { height: PlayerStyle.px(16); width: 1 }
+                    Label { x: PlayerStyle.px(24); text: qsTr("Stereo Mode"); height: PlayerStyle.px(32) }
+                    ChoiceRow { text: qsTr("Stereo Mode"); choices: Player.audioStereoMode; fullWidth: true }
+                    Divider { }
                     Section { text: qsTr("Synchronization") }
-                    TimingRow { text: qsTr("Audio Track Delay"); unit: "s"; value: Player.audioDelayMS / 1000; onEdited: number => Player.audioDelayMS = Math.round(Math.max(-600,Math.min(600,number))*1000) }
+                    TimingRow { text: qsTr("Audio Track Delay"); editorName: "audioDelayEditor"; unit: "s"; value: Player.audioDelayMS / 1000; onEdited: number => Player.audioDelayMS = Math.round(Math.max(-600,Math.min(600,number))*1000) }
+                    Divider { }
                     Section { text: qsTr("Filters") }
-                    Effect { title: qsTr("Equalizer"); module: "equalizer"; section: "equalizer" }
+                    Label { x: PlayerStyle.px(24); text: qsTr("Equalizer"); height: PlayerStyle.px(32) }
+                    Repeater {
+                        model: { const revision=settingsPopup.settingsRevision; return MediaTools.options("equalizer").filter(option=>option.key==="equalizer-preset") }
+                        PlayerSettingRow { required property var modelData; option: modelData; fullWidthChoice: true; x: PlayerStyle.px(20); width: body.width-PlayerStyle.px(40); controlHeight: 48; valueWidth: 360; topPadding: 0; bottomPadding: PlayerStyle.px(10) }
+                    }
+                    Effect { title: ""; module: "equalizer"; section: "equalizer"; showDivider: false; showToggle: false; excludedKeys: ["equalizer-preset","equalizer-2pass"] }
+                    Toggle { text: qsTr("2 Pass"); requiresVlc: true; checked: { const revision=settingsPopup.settingsRevision; return Boolean(MediaTools.value("equalizer-2pass")) }; onToggled: value=>MediaTools.setValue("equalizer-2pass",value) }
                     Effect { title: qsTr("Compressor"); module: "compressor"; section: "compressor" }
                     Effect { title: qsTr("Spatializer"); module: "spatializer"; section: "spatializer" }
                     Effect { title: qsTr("Stereo Widener"); module: "stereo_widen"; section: "stereo_widen" }
@@ -534,6 +607,7 @@ T.Popup {
                         ChoiceRow { text: qsTr("Subtitle Track"); requiresVlc: false; choices: Player.subtitleTracks }
                         LanguageRow { subtitle: true }
                     }
+                    Divider { }
                     Section { text: qsTr("Synchronization") }
                     Column {
                         width: parent.width
@@ -542,8 +616,9 @@ T.Popup {
                         TimingRow { text: qsTr("Subtitle Track Delay"); editorName: "subtitleDelayEditor"; unit: "s"; value: Player.subtitleDelayMS / 1000; onEdited: number => Player.subtitleDelayMS = Math.round(Math.max(-600,Math.min(600,number))*1000) }
                         TimingRow { text: qsTr("Subtitle Speed"); enabled: MediaTools.subtitleFPSSupported; opacity: enabled ? 1 : 0.5; rangeLabels: false; unit: "fps"; minimum: 0; maximum: 120; value: Player.subtitleFPS; onEdited: number => { if (number >= 0 && number <= 1000) Player.subtitleFPS = number } }
                         Label { width: parent.width; visible: !MediaTools.subtitleFPSSupported; text: qsTr("FPS correction applies to added SRT, ASS and SSA tracks. This track uses its original timing."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
-                        TimingRow { text: qsTr("Subtitle Duration Factor"); rangeLabels: false; minimum: 0; maximum: 20; value: { const revision = settingsPopup.settingsRevision; return settingsPopup.filterEnabled("subsdelay") ? Number(MediaTools.value("subsdelay-factor")) : 0 } onEdited: number => { if (MediaTools.setValue("subsdelay-factor",number)) MediaTools.enableFilter("subsdelay",number > 0) } }
+                        TimingRow { text: qsTr("Subtitle Duration Factor"); enabled: settingsPopup.vlcToolsAvailable; rangeLabels: false; minimum: 0; maximum: 20; value: { const revision = settingsPopup.settingsRevision; return settingsPopup.filterEnabled("subsdelay") ? Number(MediaTools.value("subsdelay-factor")) : 0 } onEdited: number => { if (MediaTools.setValue("subsdelay-factor",number)) MediaTools.enableFilter("subsdelay",number > 0) } }
                     }
+                    Divider { }
                     Section { text: qsTr("Appearance") }
                     Column {
                         x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40)
@@ -551,7 +626,7 @@ T.Popup {
                         RowLayout {
                             width: parent.width; height: PlayerStyle.px(48)
                             Label { text: qsTr("Embedded Sub Format"); Layout.fillWidth: true }
-                            Label { text: qsTr("Track authored"); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
+                            Label { text: qsTr("Track authored"); width: PlayerStyle.px(140); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
                             HoverHandler { id: authoredHover }
                             T.ToolTip.visible: authoredHover.hovered
                             T.ToolTip.text: qsTr("Authored ASS styles and image subtitles retain their own formatting. Appearance controls apply where the text renderer supports them.")
@@ -564,8 +639,8 @@ T.Popup {
                         RowLayout {
                             width: parent.width; height: PlayerStyle.px(50)
                             Label { text: qsTr("Size Values"); Layout.fillWidth: true }
-                            Button { Layout.preferredWidth: PlayerStyle.px(87); text: qsTr("Relative"); checked: !settingsPopup.pixelSizes; onClicked: { settingsPopup.pixelSizes = false; MediaTools.setValue("freetype-absolute-fontsize",0) } }
-                            Button { Layout.preferredWidth: PlayerStyle.px(87); text: qsTr("Pixels"); checked: settingsPopup.pixelSizes; onClicked: settingsPopup.pixelSizes = true }
+                            Button { Layout.preferredWidth: PlayerStyle.px(87); segmented: true; enabled: settingsPopup.vlcToolsAvailable; text: qsTr("Relative"); checked: !settingsPopup.pixelSizes; onClicked: { settingsPopup.pixelSizes = false; MediaTools.setValue("freetype-absolute-fontsize",0) } }
+                            Button { Layout.preferredWidth: PlayerStyle.px(87); segmented: true; enabled: settingsPopup.vlcToolsAvailable; text: qsTr("Pixels"); checked: settingsPopup.pixelSizes; onClicked: settingsPopup.pixelSizes = true }
                         }
                         Repeater { model: MediaTools.options("subtitle").filter(option => option.key === "freetype-outline-thickness" || option.key === "freetype-background-opacity" || (settingsPopup.pixelSizes ? option.key === "freetype-absolute-fontsize" : option.key === "sub-text-scale")); PlayerSettingRow {
                             required property var modelData
@@ -594,16 +669,41 @@ T.Popup {
                     Button { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: qsTr("Remove %1").arg(MediaTools.activePreset || qsTr("Preset")); enabled: MediaTools.activePreset.length > 0; onClicked: MediaTools.removePreset(MediaTools.activePreset) }
                 }
                 Label { x: PlayerStyle.px(20); width: parent.width - PlayerStyle.px(40); text: MediaTools.status; visible: text.length > 0; font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
+                Button {
+                    visible: settingsPopup.page!==0
+                    enabled: settingsPopup.vlcToolsAvailable
+                    x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40)
+                    text: qsTr("Reset this page to defaults")
+                    onClicked: {
+                        if(settingsPopup.page===3)MediaTools.resetSection("subtitle")
+                        else if(settingsPopup.page===2)for(const section of ["equalizer","compressor","spatializer","stereo_widen","pitch"])MediaTools.resetSection(section)
+                        else {for(const section of ["essential","crop","colors","geometry"])MediaTools.resetSection(section);MediaTools.enableFilter("invert",false)}
+                    }
+                }
             }
         }
         Column {
             visible: settingsPopup.page!==0
-            x: PlayerStyle.px(20)
-            y: parent.height - PlayerStyle.px(104)
-            width: parent.width - PlayerStyle.px(40)
+            objectName: "mediaSettingsFooter"
+            y: parent.height - PlayerStyle.px(124)
+            width: parent.width
             spacing: PlayerStyle.px(10)
-            PlayerSettingsChoice { width: parent.width; height: PlayerStyle.px(42); label: qsTr("Show preset"); model: MediaTools.presets; displayText: MediaTools.activePreset || qsTr("Default Preset"); onActivated: { MediaTools.applyPreset(currentText); settingsPopup.pixelSizes = Number(MediaTools.value("freetype-absolute-fontsize")) > 0 } }
-            Button { width: parent.width; text: qsTr("Open Advanced Settings"); onClicked: { settingsPopup.close(); DialogsProvider.extendedDialog() } }
+            Divider { }
+            PlayerSettingsChoice { x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(42); expandUp: true; label: qsTr("Show preset"); model: MediaTools.presets; displayText: MediaTools.activePreset || qsTr("Default Preset"); onActivated: { MediaTools.applyPreset(currentText); settingsPopup.pixelSizes = Number(MediaTools.value("freetype-absolute-fontsize")) > 0 } }
+            Button {
+                id: advancedSettings
+                x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(38)
+                plain: true
+                text: qsTr("Open Advanced Settings")
+                contentItem: Item {
+                    Row {
+                        anchors.centerIn: parent; spacing: PlayerStyle.px(6)
+                        IconImage { width: PlayerStyle.px(20); height: width; sourceSize: Qt.size(width,height); smooth: false; source: "qrc:/redesign/icons/menu-settings.svg"; color: PlayerStyle.sectionForeground }
+                        Label { text: advancedSettings.text; anchors.verticalCenter: parent.verticalCenter }
+                    }
+                }
+                onClicked: { settingsPopup.close(); DialogsProvider.extendedDialog() }
+            }
         }
     }
 }

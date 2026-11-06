@@ -8,6 +8,7 @@ Column {
     id: row
     required property var option
     property bool slider: false
+    property bool fullWidthChoice: false
     property int controlHeight: 32
     property int rangeHeight: 22
     property int valueWidth: option.choices && option.choices.length > 0 ? 152 : option.kind === "number" ? 110 : 152
@@ -42,6 +43,7 @@ Column {
         height: PlayerStyle.px(row.controlHeight)
         spacing: PlayerStyle.px(12)
         Text {
+            visible: !row.fullWidthChoice
             Layout.fillWidth: true
             text: row.option.label
             color: PlayerStyle.trackForeground
@@ -58,6 +60,9 @@ Column {
         PlayerSettingsChoice {
             visible: !row.option.color && row.option.choices && row.option.choices.length > 0
             Layout.preferredWidth: PlayerStyle.px(row.valueWidth)
+            Layout.fillWidth: row.fullWidthChoice
+            Layout.preferredHeight: PlayerStyle.px(row.controlHeight)
+            outlined: true
             label: row.option.label
             model: row.option.choices || []
             textRole: "text"
@@ -78,13 +83,13 @@ Column {
             visible: row.option.key !== "equalizer-bands" && row.option.kind !== "bool" && (row.option.color || !row.option.choices || row.option.choices.length === 0)
             Layout.preferredWidth: PlayerStyle.px(row.valueWidth)
             implicitHeight: PlayerStyle.px(row.controlHeight)
-            padding: PlayerStyle.px(6)
+            padding: PlayerStyle.px(12)
             rightPadding: PlayerStyle.px(row.option.color ? 36 : 6)
             color: PlayerStyle.trackForeground
             selectionColor: PlayerStyle.accent
             font.family: PlayerStyle.fontFamily
             font.pixelSize: PlayerStyle.px(14)
-            horizontalAlignment: row.slider ? TextInput.AlignRight : TextInput.AlignLeft
+            horizontalAlignment: TextInput.AlignLeft
             selectByMouse: true
             maximumLength: 512
             Accessible.name: row.option.label
@@ -93,10 +98,10 @@ Column {
                 row.refresh()
             }
             background: Rectangle {
-                color: row.slider ? "transparent" : PlayerStyle.timeline
-                radius: PlayerStyle.px(4)
-                border.color: PlayerStyle.accent
-                border.width: editor.activeFocus ? PlayerStyle.px(2) : 0
+                color: PlayerStyle.timeline
+                radius: PlayerStyle.px(6)
+                border.color: editor.activeFocus ? PlayerStyle.accent : PlayerStyle.chrome
+                border.width: PlayerStyle.px(2)
                 Rectangle {
                     visible: Boolean(row.option.color)
                     anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(7)
