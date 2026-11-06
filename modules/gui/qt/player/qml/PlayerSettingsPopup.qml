@@ -590,7 +590,7 @@ T.Popup {
                         PlayerSettingRow { required property var modelData; option: modelData; fullWidthChoice: true; x: PlayerStyle.px(20); width: body.width-PlayerStyle.px(40); controlHeight: 48; valueWidth: 360; topPadding: 0; bottomPadding: PlayerStyle.px(10) }
                     }
                     Effect { title: ""; module: "equalizer"; section: "equalizer"; showDivider: false; showToggle: false; excludedKeys: ["equalizer-preset","equalizer-2pass"] }
-                    Toggle { text: qsTr("2 Pass"); requiresVlc: true; checked: { const revision=settingsPopup.settingsRevision; return Boolean(MediaTools.value("equalizer-2pass")) }; onToggled: value=>MediaTools.setValue("equalizer-2pass",value) }
+                    Toggle { text: qsTr("2 Pass"); requiresVlc: true; checked: { const revision=settingsPopup.settingsRevision; return Boolean(MediaTools.value("equalizer-2pass")) } onToggled: value=>MediaTools.setValue("equalizer-2pass",value) }
                     Effect { title: qsTr("Compressor"); module: "compressor"; section: "compressor" }
                     Effect { title: qsTr("Spatializer"); module: "spatializer"; section: "spatializer" }
                     Effect { title: qsTr("Stereo Widener"); module: "stereo_widen"; section: "stereo_widen" }
