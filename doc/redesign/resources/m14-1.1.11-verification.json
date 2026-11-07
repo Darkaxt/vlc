@@ -1,0 +1,177 @@
+{
+  "status": "COMPLETE",
+  "requirements": [
+    "R110"
+  ],
+  "version": "1.1.11",
+  "source_commit": "9b421345116abb28917edfac30a8a64c9b2884d0",
+  "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11",
+  "local_executable": "D:\\VLC-Redesign\\releases\\1.1.11\\Modern-VLC-Fork-1.1.11-win64-portable\\vlc.exe",
+  "normal_published_release": true,
+  "independent_delivery_verified": true,
+  "asset_sha256": {
+    "Modern-VLC-Fork-1.1.11-win64-portable.zip": "8fd8af134277c6e00bb3ade29e667b719c60a6b42d7a0041636a7b8cb34394ab",
+    "Modern-VLC-Fork-1.1.11-corresponding-source.tar.gz": "3e22268f83c8dedb80cf5ad466ae9daa1b65ef12a3fa1982e6f646ad3333b614",
+    "Modern-VLC-Fork-1.1.11-win64-symbols.zip": "f2c5a9abb73025b90cee04db3e4d2bbcfbe42dc9a8b874ec7e00c3d96ce34485"
+  },
+  "portable_zip_bytes": 145696766,
+  "stripped_pe_count": 417,
+  "plugin_count": 410,
+  "module_count": 603,
+  "logging_acceptance": {
+    "passed": true,
+    "cases": [
+      {
+        "case": "default",
+        "exit_code": 0,
+        "default_log_created": true,
+        "startup_phases": [
+          [
+            "plugins-begin",
+            "0"
+          ],
+          [
+            "plugins-ready",
+            "15"
+          ],
+          [
+            "config-ready",
+            "15"
+          ],
+          [
+            "logger-ready",
+            "15"
+          ]
+        ],
+        "owned_desktop_never_input": true
+      },
+      {
+        "case": "qt-default",
+        "exit_code": 0,
+        "default_log_created": true,
+        "startup_phases": [
+          [
+            "plugins-begin",
+            "0"
+          ],
+          [
+            "plugins-ready",
+            "16"
+          ],
+          [
+            "config-ready",
+            "16"
+          ],
+          [
+            "logger-ready",
+            "16"
+          ]
+        ],
+        "owned_desktop_never_input": true
+      },
+      {
+        "case": "cli-off",
+        "exit_code": 0,
+        "default_log_created": false,
+        "startup_phases": [],
+        "owned_desktop_never_input": true
+      },
+      {
+        "case": "saved-off",
+        "exit_code": 0,
+        "default_log_created": false,
+        "startup_phases": [],
+        "owned_desktop_never_input": true
+      },
+      {
+        "case": "saved-on",
+        "exit_code": 0,
+        "default_log_created": true,
+        "startup_phases": [
+          [
+            "plugins-begin",
+            "0"
+          ],
+          [
+            "plugins-ready",
+            "16"
+          ],
+          [
+            "config-ready",
+            "16"
+          ],
+          [
+            "logger-ready",
+            "16"
+          ]
+        ],
+        "owned_desktop_never_input": true
+      },
+      {
+        "case": "unwritable-auto",
+        "exit_code": 0,
+        "default_log_created": false,
+        "startup_phases": [],
+        "owned_desktop_never_input": true
+      }
+    ]
+  },
+  "retention": "Today and preceding two UTC dates, pruned on launch/day/4MiB rollover; eight4MiB files maximum. No cleanup task runs while closed. Explicit destinations remain user-managed.",
+  "native_retention_contract": "Exact production header passes calendar-boundary expiry, daily rollover,4MiB rotation,32MiB bound, live-writer protection, unrelated-file preservation and unwritable destination. Three concurrent processes exit0 with eightfiles and27262976bytes retained.",
+  "startup_attribution": "The full intermittent30+s user report remains unattributed. Available Windows events show no matching hang/crash/storage warning; observed launches span1.1.9/1.1.10 and process lifetime is not startup time.",
+  "timing_correction": "Use stable Windows GetTickCount64 across vlc_threads_setup clock-source change. Buffered core phases carry original elapsed time; logger receipt UTC is identified separately.",
+  "helper_isolation": "Cache generator and preparser explicitly disable file logging. Shipped profile remains empty.",
+  "native_acceptance": "Real VLC startup/picture/naturalEOF/cleanrelease; MPV SDR/P5 actual normal presentation and independently downloaded lifecycle. Downloaded MPV picture reused only after whole-package hash and relevant geometry/runtime identity match.",
+  "normal_build": {
+    "run": 85,
+    "ticket": "0b66389faa21411d954b862ad626ed03",
+    "exit_code": 0,
+    "player_wall_seconds": 30.6,
+    "linux_group_empty": true,
+    "private_mounts_released": true
+  },
+  "profiles": "Installed profiles unchanged; own isolated profiles only. No deployment over actual stable folder, OS changes, uploads or desktop controls.",
+  "reusable_build": {
+    "schema": "vlc_redesign.retained_build_verification.v1",
+    "source_commit": "9b421345116abb28917edfac30a8a64c9b2884d0",
+    "group": "/llm-coordinator/2dd74294b81945e485e6aaf0c2a401bd",
+    "configured_inputs_valid": true,
+    "release_profile": {
+      "application_optimization": "-O3",
+      "debug_information": "-g0",
+      "assertions": false,
+      "qml_debugger": false,
+      "diagnostic_hooks_are_a_separate_build_option": true
+    },
+    "source_clean": true,
+    "private_source_tree": "e5fda47983c987ece96cbb56dcbdf4afe048c8fb",
+    "qt_plugin_sha256": "71e63d1278905f0de956486cbe247e2d55b210a442af63b643539bb9c3f3f728",
+    "next_pipeline_directory_absent": "/scratch/preview-1.1.8/compilation/run-0086",
+    "runtime_identities_verified": [
+      {
+        "name": "libmpv-2.dll",
+        "sha256": "a8a9c10fcd7d8d776fc0982ceb1ea087087c49257cf7cf1b0816e55b010ca1f9",
+        "bytes": 47747091
+      },
+      {
+        "name": "libspirv-cross-c-shared.dll",
+        "sha256": "ab3c6739f61b044bf14353dad1bcfe7cfd5ea98ccd42adbf66a6a875d027a402",
+        "bytes": 1821203
+      }
+    ],
+    "coherent_plugin_count": 410,
+    "plugin_cohort_sha256": "5c71c1030cbaf5ca2a217fc558d82a983e7522757be77d8a414236efb5d59484",
+    "all_pe_files_stripped_and_mapped": 417,
+    "codec_linkage_sha256": "f9ad27fa303b9dd49078c6a377480e5dfd10579359e90728640b85470a767b07",
+    "diagnostic_markers_absent": true,
+    "no_build_or_initialization_performed": true
+  },
+  "cleanup": {
+    "transaction": "1097acde9942ba3c14c88c07ae11e5a0",
+    "deleted_bytes": 10062595459,
+    "state": "APPLIED"
+  },
+  "historical_M6": "Unsupported native Linux cleanup remains parked; exact spent symbol aliases are recorded separately and no raw deletion bypass was used.",
+  "blockers": [],
+  "tracked_deferrals": []
+}

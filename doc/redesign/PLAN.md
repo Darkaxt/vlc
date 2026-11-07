@@ -1,16 +1,20 @@
 # VLC redesign stages and reconciliation
 
-**7 November stabilization logging: M14 — ACTIVE (R110).**
-Implement default Windows file diagnostics with explicit opt-out, profile-local
-automatic logs, UTC/elapsed startup evidence,72hour expiry and bounded storage.
-Verify the integrated logger, retention/rotation, concurrent writers, storage
-failure and normal VLC/MPV startup/playback in one coordinated acceptance pass.
-Then build/package/publish/independently verify normal1.1.11, update the continuing
-build/weekly binding and retire superseded packages. No other stage is ACTIVE.
-Current advancement blockers: R110 implementation and all corresponding native
-acceptance/delivery criteria remain outstanding; these are internal work, not
-an external impediment. No tracked deferrals. Preserve M13's completed evidence
-and the unproven attribution of the full reported30s delay.
+**7 November stabilization logging: M14 — COMPLETE (R110); normal1.1.11 delivered.**
+Windows automatic local diagnostics default on, with saved/CLI opt-out and
+user-managed explicit destinations. Retention keeps today and the preceding two
+UTC dates, pruning on launch/day/size rotation, capped at eight4MiB files.
+Native production-header retention/concurrency and real-player default/off/
+unwritable cases pass. Stable startup timing avoids the Windows initialization
+clock switch; preparser and cachegen remain opted out. Full30s startup attribution
+is still unknown; this release supplies evidence, not an unproven startup cure.
+VLC playback, MPV SDR/P5 picture, all four independently retrieved assets,
+417 stripped PEs,410 plugins/603 modules, profiles, native retained/weekly binding
+and superseded1.1.10 retirement pass. Normal276/run85 closed0/group empty;
+private mounts released. Next normal pipeline directory0086. Current player:
+`D:/VLC-Redesign/releases/1.1.11/Modern-VLC-Fork-1.1.11-win64-portable/vlc.exe`.
+[R110 reconciliation](resources/m14-1.1.11-verification.json). No M14 blockers or
+deferrals. Historical M6 native-cleanup capability remains parked; S9 not started.
 
 **7 November delivery: M13 — COMPLETE; normal1.1.10 is published and independently verified.**
 R109 ships a native index for the exact410 stripped plugins, with matching ZIP

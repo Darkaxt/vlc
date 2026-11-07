@@ -6,6 +6,8 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 **7 November stabilization logging, R110 (M14), already authorized:**
 
+Delivered in normal1.1.11; [reconciliation](resources/m14-1.1.11-verification.json) records bounded retention, opt-out, startup timing, actual playback and independently verified release.
+
 The user requests file logging enabled by default until a stable release, with
 no more than about three days retained, after an intermittent reported30+s
 startup. The current portable profile has no explicit file-logging override;

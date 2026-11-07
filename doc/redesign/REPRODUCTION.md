@@ -1,5 +1,37 @@
 # Windows x64 reproduction and recovery
 
+## Current1.1.11 stabilization diagnostics
+
+Normal [1.1.11](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11)
+binds source `9b421345116abb28917edfac30a8a64c9b2884d0`. Current usable player:
+`D:/VLC-Redesign/releases/1.1.11/Modern-VLC-Fork-1.1.11-win64-portable/vlc.exe`.
+All four published assets were independently retrieved and hash-checked;
+downloaded VLC starts with the shipped cache untouched and plays/exits normally.
+MPV SDR/P5 actual presentation and downloaded lifecycle pass. Automatic logging
+keeps today and two preceding UTC dates, pruning at launch/day/size rotation,
+eight4MiB files maximum. Explicit saved/CLI disable works; explicit destinations
+remain user-managed. No background cleanup runs while closed. Cachegen and
+preparser opt out. UTC receipt timestamps differ from buffered core-phase elapsed
+timings; the latter use a stable clock across Windows thread initialization.
+The full intermittent30s report is not yet attributed to app or system.
+
+Normal276/run85 `0b66389faa21411d954b862ad626ed03` closes0/group empty, private
+mounts released, no OOM,30.6s affected player build. Current read-only receipt is
+in1.1.11/verification/retained-build-result.json. The retained native ext4 runtime
+and pipeline remain `/scratch/preview-1.1.8/runtime` and `compilation/state.json`;
+Windows mirrors are `scratch-share/logging-ready-1.1.11/runtime` and `compilation`.
+Native symbols are `/scratch/logging-ready-1.1.11-release-symbols`; next pipeline
+directory0086. Reuse the installed WSL gate and
+`verify-retained-build-1.1.11.py /scratch/retention-delivery-1.1.11.json` through
+the current native private chroot. Preserve3.5GiB/512MiB/oneCPU/onecompiler,
+-O3/-g0,NDEBUG,QML debugger disabled, pinned prefixes and unchanged mtimes.
+Do not initialize SDKs or rerun configure for unchanged inputs. Old1.1.10 paths
+below are historical; its recovery evidence is read-back on G:. Required current
+release assets and runtime/pipeline stay retained; spent Windows acceptance output
+is retired. Unsupported native symbol-alias cleanup remains explicitly recorded
+under historical M6 rather than using raw Linux/UNC deletion.
+
+
 ## Current1.1.10 startup delivery
 
 Normal [1.1.10](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.10)
