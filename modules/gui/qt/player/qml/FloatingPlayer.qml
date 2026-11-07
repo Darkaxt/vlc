@@ -189,7 +189,7 @@ FocusScope {
                 VideoControl {
                     id: miniClose
                     x: PlayerStyle.px(4); y: PlayerStyle.px(4)
-                    glyph: "close"; description: qsTr("Close miniplayer and stop playback")
+                    glyph: "close"; description: qsTr("Dismiss miniplayer; keep playing in background")
                     AccessibleCompat.id: "floatingClose"
                     onClicked: MainCtx.dismissFloatingPlayer()
                 }

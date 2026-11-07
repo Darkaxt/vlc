@@ -777,10 +777,10 @@ void CompositorDirectComposition::restoreFloatingPlayer()
 
 void CompositorDirectComposition::dismissFloatingPlayer()
 {
+    m_mainCtx->dismissFloatingPlayerUntilRestore();
     hideFloatingPlayer();
     // No visibility/state callback reopens it. Only a later explicit minimize
     // of a playing video can start another floating-player lifecycle.
-    m_intf->p_mainPlaylistController->stop();
 }
 
 void CompositorDirectComposition::constrainFloatingPlayer()

@@ -269,6 +269,7 @@ public:
     Q_INVOKABLE void addBookmark();
     bool floatingPlayer() const { return m_floatingPlayer; }
     void setFloatingPlayer(bool enabled);
+    void dismissFloatingPlayerUntilRestore() { m_floatingPlayerDismissed = true; }
     Q_INVOKABLE void restoreFloatingPlayer();
     Q_INVOKABLE void dismissFloatingPlayer();
     Q_INVOKABLE QVariantMap presentationSettings() const;
@@ -517,6 +518,7 @@ protected:
 
     bool m_hasEmbededVideo = false;
     bool m_floatingPlayer = false;
+    bool m_floatingPlayerDismissed = false;
     VideoSurfaceProvider* m_videoSurfaceProvider = nullptr;
     bool m_showRemainingTime = false;
     QSet<QMenu *> m_playerMenus;

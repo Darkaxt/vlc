@@ -20,7 +20,7 @@ def visible_label(text):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'widget_scroll', 'resize', 'cancel', 'quit'])
+    parser.add_argument('op', choices=['snapshot', 'click', 'press', 'release', 'move', 'drag', 'scroll', 'drop', 'focus', 'key', 'widget_click', 'widget_key', 'widget_resize', 'widget_scroll', 'resize', 'restore', 'cancel', 'quit'])
     parser.add_argument('--target')
     parser.add_argument('--name', help='Exact accessible name of an actionable Qt Quick item')
     parser.add_argument('--item-url', help='Exact URL of one rendered queue row')

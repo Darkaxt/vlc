@@ -37,7 +37,7 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--root', type=Path, required=True)
 parser.add_argument('--fixtures', type=Path, required=True)
 parser.add_argument('--policies', type=Path, help='Native production-policy test executable from this same managed assembly')
-parser.add_argument('--case', choices=['inline-subtitles', 'floating-contrast', 'floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
+parser.add_argument('--case', choices=['volume-dismiss', 'inline-subtitle-tracks', 'inline-subtitles', 'floating-contrast', 'floating-queue', 'player-panels', 'floating-player', 'm7-regressions', 'audio-visualizer', 'no-library', 'engine-accents', 'engine-icon-pixels', 'engine-icons', 'idle', 'media-previews', 'welcome', 'shortcuts', 'onboarding-shortcuts', 'playback', 'subtitles', 'subtitles-mpv', 'preview', 'icons', 'sidebar', 'menus', 'settings', 'settings-survey', 'settings-backdrop', 'preview-icons', 'correction', 'updates', 'playback-subtitles', 'seek-policy', 'integration-diagnostic', 'subtitle-tracks-diagnostic', 'all'], default='all')
 parser.add_argument('--preview-media', type=Path, help='Read-only actual reported media for preview acceptance')
 parser.add_argument('--skip-documentation-capture',action='store_true',help='Reuse unchanged completed documentation captures during PNG rendering repair')
 parser.add_argument('--resume-settings-after-desktop-change', action='store_true',
@@ -70,6 +70,10 @@ parser.add_argument('--resume-player-panels-observation',action='store_true',
     help='Preserve completed same-binary panel cases and the closed unexpected-minimize evidence; observe only unfinished engine/DPI cases')
 parser.add_argument('--resume-floating-hover-observation',action='store_true',
     help='Preserve the closed unsupported-opacity observation and resume the same miniplayer binary')
+parser.add_argument('--resume-inline-observation',action='store_true',
+    help='Retain completed VLC cases and the closed exact-float MPV observation; resume the same binary with numeric tolerance')
+parser.add_argument('--resume-inline-tracks-observation',action='store_true',
+    help='Preserve the closed missing snapshot-field failure; verify target clipping through actual click dispatch')
 args = parser.parse_args()
 assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -91,6 +95,9 @@ resume_m7_lifecycle=args.resume_m7_lifecycle
 resume_floating=args.resume_floating_stopped_observer
 resume_panels=args.resume_player_panels_observation
 resume_hover=args.resume_floating_hover_observation
+resume_inline=args.resume_inline_observation
+resume_inline_tracks=args.resume_inline_tracks_observation
+assert not resume_inline or args.case=='inline-subtitles'
 assert not resume_hover or args.case=='floating-queue'
 assert not resume_panels or args.case=='player-panels'
 assert not resume_panels or not any((resume_settings,resume_history,resume_behaviour,collect_layouts,resume_input,resume_menu_quit,resume_idle,resume_onboarding,resume_media,resume_m7,resume_m7_lifecycle,resume_floating,resume_visualizer_options))
@@ -105,14 +112,36 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_hover or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
+assert not root.exists() or resume_inline_tracks or resume_inline or resume_hover or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
 m7_final_path=False
-if resume_hover:
+if resume_inline_tracks:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert args.case=='inline-subtitle-tracks' and previous['scope']==args.case
+    assert not previous['passed'] and previous['protected_profiles_unchanged']
+    assert previous['failures']['inline-subtitle-tracks']==repr(KeyError('center_visible'))
+    assert len(previous['cases'])==1 and previous['cases'][0]['exit_code']==0
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/'result-before-missing-snapshot-field.json';assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_inline:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert previous['scope']=='inline-subtitles' and not previous['passed'] and previous['protected_profiles_unchanged']
+    assert len(previous['cases'])==4 and all(c['passed'] and c['exit_code']==0 for c in previous['cases'][:3])
+    assert previous['cases'][-1]['name']=='inline-subtitles-mpv-1' and previous['cases'][-1]['exit_code']==0
+    assert 'observation_cancelled_action_not_undone' in previous['failures']['inline-subtitles']
+    actual=json.loads((root/'inline-subtitles-mpv-1/evidence/3189d1d4a61c448a8ce44e3e752a827a.json').read_text(encoding='utf-8'))
+    assert abs(actual['core']['subtitle_delay_ms']-50)<.001
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/'result-before-exact-float-observation.json';assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_hover:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert previous['scope']=='floating-queue' and not previous['passed'] and previous['protected_profiles_unchanged']
     hover_eof_resume=len(previous['cases'])==4
@@ -444,6 +473,13 @@ records = {'schema': 'vlc_redesign.m2_native_acceptance.v1', 'scope': args.case,
     'qt_plugin_sha256': hashlib.sha256(plugin.read_bytes()).hexdigest(), 'cases': [],
     'no_os_input_or_desktop_switching': True, 'passed': False}
 records['verification_helper_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+if resume_inline_tracks:
+    records['previous_inline_track_observation']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'reason':'QML snapshots do not have the native-widget center_visible field. Actual click dispatch enforces clipping instead.'}
+if resume_inline:
+    records['cases']=previous['cases'][:3]
+    records['reused_inline_observation']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'reason':'Closed exact-float observer required50 despite actual49.99999999999999; same production binary, completed VLC cases retained.'}
 if resume_hover:
     if hover_eof_resume:records['cases']=previous['cases'][:3]
     records['reused_observation_failure']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
@@ -1908,7 +1944,8 @@ def inline_subtitles():
     """Cue synchronization and ordinary seeking share one reference-height bar."""
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
-            case=Case('inline-subtitles-'+engine+'-'+scale,engine=engine,scale=scale,media=fixtures/'embedded-text.mkv')
+            if resume_inline and engine=='vlc':continue
+            case=Case('inline-subtitles-'+engine+'-'+scale+('-numeric-resumed' if resume_inline else ''),engine=engine,scale=scale,media=fixtures/'embedded-text.mkv')
             try:
                 initial=case.inspect('paused','snapshot','--await-core','state','--await-value','3')
                 case.inspect('full-width','resize','--width','1280','--height','720')
@@ -1928,11 +1965,11 @@ def inline_subtitles():
                 buttons=[nodes(state,key)[0] for key in ('previousSubtitleCue','subtitleDelayEarlier','subtitleDelayLater','nextSubtitleCue')]
                 assert all(slider['x']-.5<=b['x'] and b['x']+b['width']<=slider['x']+slider['width']+.5 for b in buttons)
                 base=state['core']['subtitle_delay_ms']
-                case.click('later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50)
-                case.click('earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base)
+                case.click('later','subtitleDelayLater','--await-core','subtitle_delay_ms','--await-value',base+50,'--await-tolerance','.001')
+                case.click('earlier','subtitleDelayEarlier','--await-core','subtitle_delay_ms','--await-value',base,'--await-tolerance','.001')
                 case.key('keyboard-later',0x1000014,target='subtitleTimelineOffset')
                 state=case.key('keyboard-earlier',0x1000012,target='subtitleTimelineOffset')
-                assert state['core']['subtitle_delay_ms']==base
+                assert abs(state['core']['subtitle_delay_ms']-base)<.001
                 duration=state['core']['length_seconds']*1000
                 cues=service(state)['cues']
                 fraction=(cues[0]['start']+cues[0]['end'])/2/duration
@@ -1944,7 +1981,8 @@ def inline_subtitles():
                 delay=moved['core']['subtitle_delay_ms']
                 # A gap, rather than a cue, must retain the slider's seek owner.
                 sought=case.inspect('gap-seek','click','--target','subtitleTimelineOffset','--fraction-x','.02')
-                assert sought['core']['subtitle_delay_ms']==delay
+                assert abs(sought['core']['subtitle_delay_ms']-delay)<.001
+                assert abs(nodes(sought,'progressSlider')[0]['value']-.02)<.02
                 case.click('next-cue','nextSubtitleCue')
                 case.click('previous-cue','previousSubtitleCue')
                 case.inspect('narrow-window','resize','--width','600','--height','420')
@@ -1956,6 +1994,119 @@ def inline_subtitles():
                 regular=case.inspect('regular-bar','snapshot','--capture')
                 assert not nodes(regular,'subtitleTimelineOffset')
                 case.record['inline_geometry_seek_sync']=True
+                case.close(True)
+            finally:case.close()
+
+
+def inline_subtitle_tracks():
+    """Selected/external cues, no-track state and a narrow customized top seekbar."""
+    for engine in ('vlc','mpv'):
+        suffix='-observation-resumed' if resume_inline_tracks else ''
+        seed=root/('top-layout-profile-'+engine+suffix)
+        (seed/'vlc').mkdir(parents=True)
+        layout={'topLeft':['more','browser','divider','folder'],'topCenter':['seek'],'topRight':['fullscreen'],
+            'bottomLeft':['previous','play','next'],'bottomCenter':['elapsed','filename','duration'],
+            'bottomRight':['mute','volume','audio','subtitles','tools','queue']}
+        store={'version':1,'layout':layout,'profiles':[],'selected':''}
+        (seed/'vlc/vlc-qt-interface.ini').write_text('[redesign]\ncustomization-v1='+json.dumps(json.dumps(store,separators=(',',':')))+'\n',encoding='utf-8')
+        case=Case('inline-tracks-'+engine+suffix,engine=engine,media=fixtures/'embedded-text.mkv',reused_profile=seed)
+        try:
+            case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+            case.inspect('viewport','resize','--width','960','--height','720')
+            case.click('tools','toolsButton')
+            case.inspect('enable-timeline','click','--name','Show Subtitle Timeline on Seekbar',
+                '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('3 embedded source cues; positions follow the selected track and subtitle delay.'))
+            case.inspect('close-tools','key','--key','0x1000000')
+            top=case.inspect('custom-top-inline','snapshot','--capture')
+            graph=nodes(top,'subtitleTimelineOffset')[0]
+            assert graph['y']<100 and graph['width']>100
+            case.inspect('narrow-top','resize','--width','600','--height','420')
+            for key in ('previousSubtitleCue','subtitleDelayEarlier','subtitleDelayLater','nextSubtitleCue'):
+                focused=case.inspect('focus-'+key,'focus','--target',key)
+                case.click('activate-'+key,key)
+            case.inspect('restore-viewport','resize','--width','960','--height','720')
+            tracks=case.click('tracks','subtitleButton')
+            alternate=[node for node in subtitle_choices(tracks) if node.get('name')!='None' and not node['selected']]
+            assert len(alternate)==1
+            case.inspect('select-alternate','click','--name',alternate[0]['name'])
+            selected=cue_result(case,'alternate-cues',2)
+            assert service(selected)['cues'][0]['start']==2000
+            case.inspect('disable-track','click','--name','None',
+                '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('No subtitle track selected.'))
+            case.inspect('dismiss-tracks','key','--key','0x1000000')
+            none=case.inspect('no-track-ordinary-bar','snapshot','--capture')
+            assert not nodes(none,'subtitleTimelineOffset') and nodes(none,'progressSlider')
+            case.inspect('external-subtitles','drop','--target','mainInterface','--url',(fixtures/'english.srt').as_uri(),
+                '--await-service','redesignMediaTools','--await-property','timelineStatus','--await-value',json.dumps('3 source cues; positions follow subtitle FPS and track delay. Duration filters can extend the displayed cue ends.'))
+            external=case.inspect('external-inline','snapshot','--capture')
+            assert len(service(external)['cues'])==3 and nodes(external,'subtitleTimelineOffset')
+            case.close(True)
+        finally:case.close()
+
+
+def volume_accent_and_dismissal():
+    """Engine-themed original wedge plus background-only miniplayer dismissal."""
+    for engine in ('vlc','mpv'):
+        for scale in ('1','1.5','2'):
+            case=Case('volume-dismiss-'+engine+'-'+scale,engine=engine,media=fixtures/'miniplayer-long.mkv',scale=scale)
+            try:
+                case.inspect('paused','snapshot','--await-core','state','--await-value','3')
+                case.inspect('viewport','resize','--width','1280','--height','720')
+                case.click('volume-level','volumeSlider','--fraction-x','.8')
+                def rendered(label,expected):
+                    before=case.inspect(label+'-image','snapshot')
+                    item=nodes(before,'volumeGradient')[0]
+                    state=case.inspect(label,'snapshot','--await-node',item['node'],'--await-property','status','--await-value','1','--capture')
+                    assert state['rendered_accent']==expected
+                    picture=Image.open((root/case.record['steps'][-1]['response']).with_suffix('.png')).convert('RGB')
+                    ratio=picture.width/state['window']['width']
+                    item=nodes(state,'volumeGradient')[0]
+                    points=[picture.getpixel((round((item['x']+item['width']*fraction)*ratio),round((item['y']+item['height']/2)*ratio))) for fraction in (.2,.65)]
+                    wanted=colorsys.rgb_to_hsv(*[v/255 for v in bytes.fromhex(expected[1:])])[0]
+                    for pixel in points:
+                        hue,saturation,value=colorsys.rgb_to_hsv(*[v/255 for v in pixel])
+                        assert saturation>.2 and value>.15 and min(abs(hue-wanted),1-abs(hue-wanted))<.04,(expected,points)
+                    assert max(points[0])-max(points[1])>8,points
+                    case.record.setdefault('gradient_pixels',[]).append({'label':label,'accent':expected,'pixels':points})
+                    return state
+                default='#9859ad' if engine=='mpv' else '#d37918'
+                rendered('default-gradient',default)
+                case.inspect('open-settings','key','--key','0x50','--modifiers','0x4000000')
+                case.inspect('custom-color','widget_click','--widget-name',engine.upper()+' accent color #2f87b5')
+                case.native('save-color','preferencesSave')
+                rendered('custom-gradient','#2f87b5')
+                case.click('mute','muteButton')
+                muted=case.inspect('muted-wedge','snapshot')
+                assert abs(nodes(muted,'volumeWedge')[0]['opacity']-.45)<.001
+                case.click('unmute','muteButton')
+                case.key('keyboard-volume-down',0x1000012,target='volumeSlider')
+                case.key('keyboard-volume-up',0x1000014,target='volumeSlider')
+                other='vlc' if engine=='mpv' else 'mpv'
+                case.click('handover-tools','toolsButton')
+                case.inspect('handover-engine','click','--name',other.upper())
+                case.inspect('handover-settled','snapshot','--await-core','engine_switching','--await-value','false')
+                case.inspect('dismiss-tools','key','--key','0x1000000')
+                case.click('handover-volume','volumeSlider','--fraction-x','.8')
+                rendered('handover-gradient','#9859ad' if other=='mpv' else '#d37918')
+                case.click('play','playButton','--await-core','state','--await-value','2')
+                case.click('minimize','playerMinimize')
+                case.inspect('floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                case.inspect('hover','move','--target','floatingVideoSurface')
+                case.click('close-only-mini','floatingClose')
+                background=case.inspect('background-playing','snapshot','--await-core','state','--await-value','2')
+                assert background['main_window']['visibility']==3
+                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in background['windows'])
+                case.inspect('next-input-while-dismissed','drop','--target','mainInterface','--url',(fixtures/'embedded-text.mkv').as_uri(),
+                    '--await-core','url','--await-value',json.dumps((fixtures/'embedded-text.mkv').as_uri()))
+                next_input=case.inspect('dismiss-stays-minimized','snapshot','--await-core','state','--await-value','2')
+                assert next_input['main_window']['visibility']==3
+                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in next_input['windows'])
+                case.inspect('explicit-window-restore','restore')
+                restored=case.inspect('main-restored','snapshot')
+                assert restored['main_window']['visibility']!=3
+                case.click('new-minimize-cycle','playerMinimize')
+                case.inspect('new-floating-ready','snapshot','--await-target','floatingPlayer','--await-property','ready','--await-value','true')
+                case.click('restore-from-mini','floatingRestore')
                 case.close(True)
             finally:case.close()
 
@@ -2154,9 +2305,9 @@ def floating_player():
                 previous_video=case.inspect('previous-video','snapshot','--await-core','mpv_video_ready' if engine=='mpv' else 'state','--await-value','true' if engine=='mpv' else '2')
                 assert previous_video['main_window']['visibility']==3 and previous_video['core']['video_tracks']
                 dismissed=case.click('dismiss','floatingClose')
-                stopped=case.inspect('dismiss-stopped','snapshot','--await-core','state','--await-value','0')
-                assert stopped['main_window']['visibility']==3
-                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in stopped['windows'])
+                background=case.inspect('dismiss-keeps-playing','snapshot','--await-core','state','--await-value','2')
+                assert background['main_window']['visibility']==3
+                assert not any(w.get('name')=='floatingPlayerWindow' and w['visible'] for w in background['windows'])
                 case.close(True)
             finally:case.close()
         if not any(c['name'].startswith('floating-eof-'+engine) and c['passed'] for c in records['cases']):
@@ -3616,7 +3767,7 @@ try:
     except AssertionError as failure:
         records.setdefault('failures',{})['executable_icon']=repr(failure)
         save()
-    for name, operation in [('inline-subtitles',inline_subtitles),('floating-contrast',floating_contrast),('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
+    for name, operation in [('volume-dismiss',volume_accent_and_dismissal),('inline-subtitle-tracks',inline_subtitle_tracks),('inline-subtitles',inline_subtitles),('floating-contrast',floating_contrast),('floating-queue',floating_queue),('player-panels',player_panels),('floating-player',floating_player),('audio-visualizer',audio_visualizer),('no-library',no_library),('engine-accents',engine_accents),('engine-icon-pixels',engine_icon_pixels),('engine-icons',engine_icons),('media-previews',media_previews),('idle',idle),('settings-backdrop',settings_backdrop),('settings',settings),('menus',menus),('welcome',welcome),('shortcuts',interface_shortcuts),('playback',playback),('subtitles',subtitles),('preview',preview),('icons',icons),('sidebar',sidebar),('updates',updates),('seek-policy',seek_policy)]:
         if args.visualizer_options_only and name!='audio-visualizer':continue
         if args.case=='m7-regressions' and name not in ('audio-visualizer','no-library'):continue
         if name=='settings-backdrop' and args.case!='settings-backdrop':continue

@@ -861,6 +861,11 @@ private:
                 else actions->doAction(QAccessibleActionInterface::setFocusAction());
             }
         }
+        else if (op == QStringLiteral("restore")) {
+            // Owned inactive-window lifecycle observation, without activation
+            // or native desktop input. Exercise QWindow's real restore event.
+            m_root->window()->setWindowStates(m_root->window()->windowStates() & ~Qt::WindowMinimized);
+        }
         else if (op == QStringLiteral("resize")) {
             const int width = command.value(QStringLiteral("width")).toInt();
             const int height = command.value(QStringLiteral("height")).toInt();

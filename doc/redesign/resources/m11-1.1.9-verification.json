@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETE",
+  "requirements": [
+    "R106"
+  ],
+  "source_commit": "43a84b62565c5587a79e10cbca208b1ccc91ee65",
+  "evidence": [
+    {
+      "path": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\inline-subtitles-native\\result.json",
+      "sha256": "eee060700df3204a8529671d566ef62a392648662c8e0e85c73be7a7608c15d1",
+      "source_commit": "43a84b62565c5587a79e10cbca208b1ccc91ee65",
+      "qt_plugin_sha256": "ec93dbb6e35bce9c77c709f7232165cabf406e2ae3c63e3bbdf5ade8356c8e89",
+      "cases": [
+        "inline-subtitles-vlc-1",
+        "inline-subtitles-vlc-1.5",
+        "inline-subtitles-vlc-2",
+        "inline-subtitles-mpv-1-numeric-resumed",
+        "inline-subtitles-mpv-1.5-numeric-resumed",
+        "inline-subtitles-mpv-2-numeric-resumed"
+      ]
+    },
+    {
+      "path": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\inline-tracks-native\\result.json",
+      "sha256": "0a237b9ee56fa6bbcd23edc9d2777fe52c0af7561b2baf6120469cec80a89cc9",
+      "source_commit": "43a84b62565c5587a79e10cbca208b1ccc91ee65",
+      "qt_plugin_sha256": "ec93dbb6e35bce9c77c709f7232165cabf406e2ae3c63e3bbdf5ade8356c8e89",
+      "cases": [
+        "inline-tracks-vlc-observation-resumed",
+        "inline-tracks-mpv-observation-resumed"
+      ]
+    }
+  ],
+  "acceptance": "Inline cue bands and four timing/navigation buttons share existing seekbar; original bar height. Both engines100/150/200 pointer cue synchronization, ordinary gap seeking, keyboard50ms, toggle-off and narrow layout. Customized top bar, all four actual narrow-target actions, alternate embedded track, no-track and external subtitles pass both engines.",
+  "inspection": "VLC100, MPV200 bottom bar and MPV custom top-bar captures inspected against supplied reference. Original hidden separate row removed.",
+  "reused_unaffected": "Existing extraction, still-image exclusion, waveform/visualizer painter and saved settings owners retained; ordinary slider behavior remains its original owner.",
+  "closure_assessment": "Reuse existing analysis, slider and control layout owners; no new state service or duplicate timing model. No further required consolidation.",
+  "blockers": [],
+  "tracked_deferrals": []
+}

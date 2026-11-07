@@ -25,6 +25,9 @@ QtObject {
     readonly property color accentForeground: MainCtx.redesignAccentText
     readonly property color accentWell: Qt.colorEqual(accent,"#d37918") ? "#371f06" : Qt.darker(accent,4)
     readonly property color accentKnob: Qt.colorEqual(accent,"#d37918") ? "#ab6314" : Qt.darker(accent,1.25)
+    readonly property url volumeGradientSource: SVGColorImage.colorize("qrc:/redesign/icons/volume-level.svg")
+        .color1(Qt.lighter(accent,1.5)).color2(Qt.lighter(accent,1.12))
+        .accent(accent).any({"#FFFF00":Qt.darker(accent,1.35)}).uri()
     readonly property color timeline: dark ? "#090909" : "#dedede"
     readonly property color hover: dark ? "#3b3b3b" : "#c5c5c5"
     readonly property FontLoader inter: FontLoader { source: "qrc:/redesign/fonts/InterVariable.ttf" }

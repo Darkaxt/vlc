@@ -140,9 +140,9 @@ Loader {
             Binding on value{when:!volume.pressed;value:Player.volume;restoreMode:Binding.RestoreNone}
             onMoved:{Player.volume=value;Player.muted=false}
             handle:Item{}
-            background:Item{clip:true;opacity:Player.muted?0.45:1
+            background:Item{objectName:"volumeWedge";clip:true;opacity:Player.muted?0.45:1
                 IconImage{smooth:false; width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:"qrc:/redesign/icons/volume-cone.svg";color:PlayerStyle.dark?"#090909":"#888888"}
-                Item{width:parent.width*volume.position;height:parent.height;clip:true;Image{smooth:false;width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:"qrc:/redesign/icons/volume-level.svg"}}
+                Item{width:parent.width*volume.position;height:parent.height;clip:true;Image{objectName:"volumeGradient";smooth:false;width:volume.width*89/88;height:volume.height;sourceSize:Qt.size(width,height);source:PlayerStyle.volumeGradientSource}}
                 Rectangle{anchors.fill:parent;color:"transparent";border.color:PlayerStyle.accent;border.width:volume.visualFocus?PlayerStyle.px(2):0;radius:PlayerStyle.px(4)}
             }
         }

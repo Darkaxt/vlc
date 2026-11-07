@@ -74,6 +74,20 @@
       "sha256": "c737b227d177bc43da63fd7707ed2406a5a6ab8fb33f9e0d55ac5377887102f5",
       "crop": null,
       "applicability": "Original user-supplied Juxtopposed Figma reference; CC BY4 attribution in README"
+    },
+    {
+      "file": "subtitle-seekbar-native.png",
+      "capture": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\inline-subtitles-native\\inline-subtitles-vlc-1\\evidence\\2a9b07300c1b45588dc088881d369ac9.png",
+      "capture_sha256": "20cce9c38718c10ba5bc79c987b122758e6793a464f49a9e17386ea9e8d624e8",
+      "sha256": "5798a37022d0404ea203b168a23f060ea1cc97791ffad1aa2a3a16073d82d082",
+      "crop": [
+        0,
+        666,
+        1280,
+        720
+      ],
+      "source_commit": "43a84b62565c5587a79e10cbca208b1ccc91ee65",
+      "applicability": "R106 actual Qt inline subtitle seekbar, synthetic embedded text fixture; no desktop/private media."
     }
   ]
 }

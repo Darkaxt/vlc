@@ -32,8 +32,8 @@ the Windows taskbar controls the displayed button size.
   and play/pause state.
 - MPV playback with integrated libplacebo/libdovi processing for supported
   Dolby Vision sources, converted to the verified Windows SDR output path.
-- Seek previews, subtitle timing/navigation and a subtitle timeline for supported
-  text tracks.
+- Seek previews and inline subtitle cue bands for supported text tracks, with
+  cue navigation,50ms timing buttons and drag-to-sync inside the progress bar.
 - Live VLC audio visualization inside the seekbar, with colors inverted across
   the playhead; unavailable engine/input combinations are identified explicitly.
 - Native VLC specialist options remain available through Advanced Options and
@@ -79,6 +79,12 @@ The native image is an exact crop of the rendered Qt interface.
 
 The scope uses the playing audio stream. Its line changes from black over the
 played accent fill to the active accent over the unplayed track.
+
+![Actual inline subtitle timing and navigation inside the seekbar](doc/redesign/screenshots/subtitle-seekbar-native.png)
+
+Subtitle cues share the progress track: click to seek, drag a cue to synchronize,
+or use the previous/next and timing buttons. This capture uses synthetic text
+subtitles; the timeline follows the selected embedded or external text track.
 
 The player builds on [VideoLAN VLC](https://www.videolan.org/vlc/),
 [MPV](https://mpv.io/), [libplacebo](https://code.videolan.org/videolan/libplacebo)

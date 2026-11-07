@@ -139,13 +139,27 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
   native100/150/200% layout, cue timing, pointer/keyboard gestures and both-engine
   playback; preserve in-bar visualizer/waveform behavior and saved settings.
 
+- R107 (7 November user request): the volume wedge uses a gradient derived from
+  the active engine's effective accent instead of fixed green/yellow/orange.
+  Keep the original wedge silhouette, clipping to actual volume, mute feedback,
+  pointer/keyboard behavior and native-DPI rendering. Saved independent engine
+  colors and live switches update the gradient immediately. Verify both engines,
+  default/custom accents and rendered wedge colors at100/150/200 percent.
+- R108 (7 November clarification): closing the floating player dismisses only
+  that window. Keep media playing and the main player minimized. Suppress
+  automatic raising/reopening through input/output callbacks until the user
+  explicitly restores the main window; a subsequent explicit minimize can show
+  the miniplayer again. Restore remains separate. This supersedes the earlier
+  stop-on-dismiss behavior and its historical M8 acceptance. M12 owns this
+  bounded interaction correction alongside R107 before final delivery.
+
 Deliver one normal Windows update after the combined icon/switch/restart workflow
 passes, reusing unaffected1.1.8 acceptance and the verified native ext4 cache.
 The expanded request also requires R102/R104 repairs and R103 floating-miniplayer
 acceptance, R105 player-panel parity and R106 inline subtitle synchronization
 before that single final release; no
 intermediate repair release. M8 retains the floating miniplayer; M9 owns R105;
-M11 owns R106 and runs before final delivery M10. M8's current native repair
+M11 owns R106 and M12 owns R107; both run before final delivery M10. M8's current native repair
 acceptance and remaining actual composed-picture condition are recorded in PLAN;
 M9 is COMPLETE. Preserve original drag/restore/readability reports separately
 from current verification; desktop controls remain prohibited.

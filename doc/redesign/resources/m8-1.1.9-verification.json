@@ -5,15 +5,15 @@
   "native_result_sha256": "ebfb7bf7003665965a35599e5558a33a92cd6a4d8970fa3e794e46371ce0f7a9",
   "workflows_passed": true,
   "protected_profiles_unchanged": true,
-  "composed_video_picture_verified": false,
-  "status": "BLOCKED",
+  "composed_video_picture_verified": true,
+  "status": "COMPLETE",
   "user_review_7_november": {
     "engine": "mpv",
     "video_picture": "User confirmed working; separate from independently captured proof",
     "reported_defect": "Cannot move the window with queue expanded; toolbar icons do not blend with adjacent text like Figma",
     "source_cause": "Expanded queue header has no drag handler. Toolbar inherits24-unit player glyphs and a brighter foreground.",
     "clarification": "User confirms video dragging works in compact and expanded states; restore drag coverage across other non-control UI, preserving seek/control gestures. Native system movement is not itself shown broken.",
-    "remaining": "Actual composed floating/restored-main pictures; user confirms surrounding-area drag and hover work, and native restored size/position now pass.",
+    "remaining": "None: user confirmed surrounding-area dragging and hover; actual floating/main video pictures captured and inspected in both engines. MPV actual Restore transition observed; repeated full geometry publication in both engines remains source-bound native evidence.",
     "restoration_regression": {
       "reported": "Restore leaves miniplayer-sized video and transparent main cutout",
       "image": "C:/Users/darka/AppData/Local/Temp/codex-clipboard-16844bcb-f68b-4477-9d64-790110f079f0.png",
@@ -23,13 +23,7 @@
       "actual_picture": "Pending current normal-desktop observation"
     }
   },
-  "blocker": {
-    "criterion": "R103 composed miniplayer and restored-main video picture",
-    "classification": "external picture/physical-movement observation",
-    "reason": "Inactive-desktop checks cannot prove the separately composed video or actual Windows movement; current user-opened picture is required.",
-    "resolution": "Capture current runtime-contrast floating and restored-main actual pictures in both engines after the user opens the source-bound review. Reuse confirmed dragging and native geometry evidence.",
-    "dependent": "M8 closure and M10 final1.1.9 delivery; independent M11 is actionable."
-  },
+  "blocker": null,
   "review": "D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review",
   "cases": [
     {
@@ -63,7 +57,7 @@
       "exit_code": 0
     }
   ],
-  "current_source_commit": "7c8396f400189acfefd40892c9d65b05494c9641",
+  "current_source_commit": "91d22dd2f8fd4bd4ca97b14b144da55d72feac94",
   "hover_drag_verification": {
     "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-hover-native\\result.json",
     "result_sha256": "a33a68552756884a4bfccb70fd93cd88e91664141df115965e526766223efcaf",
@@ -203,7 +197,7 @@
       }
     ]
   },
-  "closure_assessment": "One root drag owner, surface-owned hover and full state publication on provider handover reuse existing Qt owners; child controls keep their grabs. No further consolidation is required for R103. Actual composed-picture acceptance still requires the normal desktop.",
+  "closure_assessment": "Existing shared video visual, root drag and surface hover owners satisfy R103; actual pictures and native published geometry pass. No additional abstraction or refactor required.",
   "restoration_verification": {
     "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-restore-native\\result.json",
     "result_sha256": "ebfb7bf7003665965a35599e5558a33a92cd6a4d8970fa3e794e46371ce0f7a9",
@@ -251,5 +245,31 @@
     "sha256": "ec4b5fe2e416e75a0240df6083e3f1a671433c064797b1e8da4f3db072a276ed",
     "scope": "Both engines at100/150/200 percent, compact and expanded hover controls, bright foreground and local dark backing, clean exits and unchanged protected profiles.",
     "inspection": "Expanded MPV150 Qt capture inspected; original glyphs and queue toolbar preserved. Separately composed video is absent from inactive Qt capture."
-  }
+  },
+  "actual_picture_evidence": [
+    {
+      "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-review\\picture-evidence\\mpv\\result.json",
+      "sha256": "bd3a478dd4c39bca3edf02fb2c83c38b79763ed5bd2f811bbe7d8c6a8e826039",
+      "image_sha256": "3ad56388c35c49d6e71b7a64c036042e8c10ff0805903bbedb7d39948b9f41bb",
+      "engine": "mpv"
+    },
+    {
+      "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-review\\picture-evidence\\restored-mpv\\result.json",
+      "sha256": "e9705650a640063954e79ef255f8692c91c8c5f351de6c4d4914f9d7bfbca8d5",
+      "image_sha256": "0307e4422e0e0c81e70c1bd9848f9e179c6c20cd04a54fe6c5a2633d1400b4af",
+      "engine": "mpv"
+    },
+    {
+      "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-review\\picture-evidence\\vlc\\result.json",
+      "sha256": "98e301a090ecdb6c4f374a4212191b1a45e1a86571ed8f59af8561a0e36d8063",
+      "image_sha256": "e279a430ffc6f50ddeda8b85344b46203386bd742d9370e394d8f37ba7a63d15",
+      "engine": "vlc"
+    },
+    {
+      "result": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\floating-m8-review\\picture-evidence\\restored-vlc\\result.json",
+      "sha256": "1be46fb60dfce5df560e6943e3cdf2162986f1906a1b230b45b0aac9b5cd7d5c",
+      "image_sha256": "eeb24ae2812df13152529afbdfb02ceed4dd288da543dcc2c50f8773653e7146",
+      "engine": "vlc"
+    }
+  ]
 }
