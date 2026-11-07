@@ -17,8 +17,9 @@ VLC still validates changed plugins normally.
 During stabilization, Windows file diagnostics are enabled by default. With the
 Log file field empty, timestamped logs go in `portable/logs` beside the player
 (or the installed VLC profile's `logs` directory). Automatic logs expire after
-72 hours on the next logging/rotation or launch, and retain at most eight 4 MiB
-files (32 MiB). No background cleanup runs while the player is closed. Disable
+three UTC calendar days (today and the preceding two), pruned at launch and daily
+or size rotation, and retain at most eight 4 MiB files (32 MiB). No background
+cleanup runs while the player is closed. Disable
 **Settings → General → Save a log** to opt out; an explicit log filename remains
 user-managed. Logs stay local and can include media paths/URLs. UTC timestamps,
 process age and core startup phases help distinguish early loading from UI work.

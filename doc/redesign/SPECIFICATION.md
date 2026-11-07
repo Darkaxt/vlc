@@ -17,8 +17,10 @@ or claim that the30s cause is established.
 Enable the Windows fork's native file logger by default at diagnostic verbosity,
 preserving explicit saved/command-line disable and explicit user log destinations.
 For the automatic destination, use the actual portable/installed profile's logs
-directory, timestamped process/session files, retention of at most72hours when
-the app is running, and bounded per-file/aggregate storage. Prune only precisely
+directory and timestamped process/session files. Keep today and the preceding
+two UTC dates, pruned at launch and daily/size rotation (up to72hours), with
+bounded per-file/aggregate storage. No cleanup task runs while the app is closed.
+Prune only precisely
 owned diagnostic files; preserve live writers, unrelated files and user-selected
 destinations. Rotate during long-running sessions, not only at the next launch.
 Include UTC and elapsed timing plus core startup milestones so buffered early

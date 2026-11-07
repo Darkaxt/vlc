@@ -63,6 +63,12 @@ int wmain(int argc, wchar_t **argv)
     swprintf(stale, 96, L"vlc-%020llu-%010lu-%06u.log",
              (unsigned long long)(now-FORK_LOG_RETENTION), 123ul, 0u);
     fixture(retention, stale);
+    /* At a daily rollover, a third-previous-date file must expire even when
+     * its rolling age is less than72h; otherwise it could survive almost96h. */
+    uint64_t day_boundary = (now / FORK_LOG_DAY) * FORK_LOG_DAY;
+    swprintf(stale, 96, L"vlc-%020llu-%010lu-%06u.log",
+             (unsigned long long)(day_boundary - 2*FORK_LOG_DAY - 1), 124ul, 0u);
+    fixture(retention, stale);
     fixture(retention, L"personal.log");
     fixture(retention, L"vlc-not-a-generated-log.log");
     fork_log_t log;

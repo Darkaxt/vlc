@@ -95,8 +95,12 @@ static bool fork_log_prune(fork_log_t *log, uint64_t now)
             qsort(entries, count, sizeof(*entries), fork_log_compare);
         size_t retained = count;
         for (size_t i = 0; i < count; ++i) {
-            bool expired = now >= entries[i].created
-                        && now - entries[i].created >= FORK_LOG_RETENTION;
+            /* Keep today and the two previous UTC dates. Pruning on the daily
+             * rollover then never carries yesterday's expired file through an
+             * additional day (a rolling72h test alone could retain almost96h). */
+            uint64_t day = now / FORK_LOG_DAY;
+            uint64_t oldest_day = day >= 2 ? day - 2 : 0;
+            bool expired = entries[i].created / FORK_LOG_DAY < oldest_day;
             if (!expired && retained < FORK_LOG_FILES)
                 continue;
             swprintf(path, length, L"%ls\\%ls", log->directory, entries[i].name);
