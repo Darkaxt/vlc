@@ -61,7 +61,7 @@ struct {
 #if defined(_WIN32)
     {"dcomp", &instanciateCompositor<CompositorDirectComposition> },
 #endif
-#if defined(_WIN32) || defined(__APPLE__)
+#if defined(_WIN32) || defined(__APPLE__) || defined(QT_HAS_X11_COMPOSITOR)
     {"platform", &instanciateCompositor<CompositorPlatform> },
 #endif
 #if defined(_WIN32)

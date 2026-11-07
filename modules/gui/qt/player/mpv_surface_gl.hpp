@@ -1,0 +1,174 @@
+/* Copyright (C) 2026 VLC authors and VideoLAN
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ * Included by mpv_playback.cpp after Api, inside its private namespace.
+ */
+
+// A single native OpenGL view follows the compositor's video window. MPV's
+// render context is created, used and destroyed on that view's Qt GUI thread;
+// native VLC window operations remain on Surface's worker because they call
+// back into the GUI synchronously. All core commands use MPV's async API.
+class GlView final : public QOpenGLWindow {
+    std::shared_ptr<Api> api;
+    mpv_handle *player;
+    mpv_render_context *render = nullptr;
+    std::function<void(QString)> report;
+    std::atomic_bool updatePending{false};
+
+    static void *getProcAddress(void *, const char *name) {
+        return reinterpret_cast<void *>(QOpenGLContext::currentContext()->getProcAddress(name));
+    }
+    static void updated(void *opaque) {
+        auto self = static_cast<GlView *>(opaque);
+        if (!self->updatePending.exchange(true))
+            QMetaObject::invokeMethod(self, [self] {
+                self->updatePending = false;
+                self->update();
+            }, Qt::QueuedConnection);
+    }
+protected:
+    void initializeGL() override {
+        mpv_opengl_init_params init{getProcAddress, nullptr};
+        mpv_render_param params[] = {
+            {MPV_RENDER_PARAM_API_TYPE, const_cast<char *>(MPV_RENDER_API_TYPE_OPENGL)},
+            {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &init},
+            {MPV_RENDER_PARAM_INVALID, nullptr}};
+        const int code = api->render_context_create(&render, player, params);
+        if (code < 0) { report(QString::fromUtf8(api->error_string(code))); return; }
+        api->render_context_set_update_callback(render, updated, this);
+        report({});
+    }
+    void paintGL() override {
+        if (!render) return;
+        api->render_context_update(render);
+        const qreal dpr = devicePixelRatio();
+        mpv_opengl_fbo fbo{int(defaultFramebufferObject()),
+            qRound(width() * dpr), qRound(height() * dpr), 0};
+        int flip = 1;
+        mpv_render_param params[] = {{MPV_RENDER_PARAM_OPENGL_FBO, &fbo},
+            {MPV_RENDER_PARAM_FLIP_Y, &flip}, {MPV_RENDER_PARAM_INVALID, nullptr}};
+        const int code = api->render_context_render(render, params);
+        if (code < 0) report(QString::fromUtf8(api->error_string(code)));
+    }
+public:
+    GlView(std::shared_ptr<Api> api, mpv_handle *player,
+           std::function<void(QString)> report)
+        : QOpenGLWindow(NoPartialUpdate), api(std::move(api)), player(player), report(std::move(report)) {
+        QSurfaceFormat format;
+        format.setRenderableType(QSurfaceFormat::OpenGL);
+        format.setVersion(3, 2);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        setFormat(format);
+        connect(this, &QOpenGLWindow::frameSwapped, this, [this] {
+            if (render) this->api->render_context_report_swap(render);
+        });
+    }
+    void releaseRenderContext() {
+        if (!render) return;
+        makeCurrent();
+        api->render_context_set_update_callback(render, nullptr, nullptr);
+        api->render_context_free(render);
+        render = nullptr;
+        doneCurrent();
+    }
+    ~GlView() override { Q_ASSERT(!render); }
+};
+
+class Surface final : public QObject {
+    std::shared_ptr<Api> api;
+    mpv_handle *player;
+    qt_intf_t *intf;
+    QObject *owner;
+    std::function<void(QString)> ready;
+    vlc_window_t *window = nullptr;
+    QPointer<QWindow> foreign;
+    QPointer<GlView> view;
+    bool enabled = false, closing = false;
+
+    void report(const QString &error) {
+        QMetaObject::invokeMethod(owner, [callback = ready, error] { callback(error); }, Qt::QueuedConnection);
+    }
+    static void resized(vlc_window_t *wnd, unsigned width, unsigned height,
+                        vlc_window_ack_cb ack, void *opaque) {
+        QPointer<Surface> self = static_cast<Surface *>(wnd->owner.sys);
+        // The callback can arrive on the GUI thread. Never synchronously
+        // invoke that thread from itself or retain VLC's acknowledgement.
+        QMetaObject::invokeMethod(self->owner, [self, width, height] {
+            if (self && self->view && width && height) {
+                const auto dpr = self->view->devicePixelRatio();
+                self->view->resize(int(std::ceil(width / dpr)), int(std::ceil(height / dpr)));
+                self->view->update();
+            }
+        }, Qt::QueuedConnection);
+        if (ack) ack(wnd, width, height, opaque);
+    }
+public:
+    Surface(std::shared_ptr<Api> api, mpv_handle *player, qt_intf_t *intf, QObject *owner,
+            std::function<void(QString)> ready)
+        : api(std::move(api)), player(player), intf(intf), owner(owner), ready(std::move(ready)) { }
+    void initialize() {
+        static const vlc_window_callbacks callbacks = [] {
+            vlc_window_callbacks value{};
+            value.resized = resized;
+            value.keyboard_event = [](vlc_window_t *wnd, unsigned key) {
+                var_SetInteger(vlc_object_instance(wnd), "key-pressed", key);
+            };
+            value.mouse_event = [](vlc_window_t *wnd, const vlc_window_mouse_event_t *event) {
+                if (event->button_mask == MOUSE_BUTTON_RIGHT &&
+                    (event->type == VLC_WINDOW_MOUSE_PRESSED || event->type == VLC_WINDOW_MOUSE_RELEASED))
+                    var_SetBool(vlc_object_instance(wnd), "intf-popupmenu", event->type == VLC_WINDOW_MOUSE_RELEASED);
+                else if (event->type == VLC_WINDOW_MOUSE_DOUBLE_CLICK && event->button_mask == MOUSE_BUTTON_LEFT)
+                    var_SetInteger(vlc_object_instance(wnd), "qt-mpv-action", ACTIONID_TOGGLE_FULLSCREEN);
+                else if (event->type == VLC_WINDOW_MOUSE_RELEASED && event->button_mask == MOUSE_BUTTON_LEFT) {
+                    char *policy = var_InheritString(wnd, "mouse-pause-policy");
+                    const bool pause = !policy || strcmp(policy, "disabled");
+                    free(policy);
+                    if (pause) var_SetInteger(vlc_object_instance(wnd), "qt-mpv-action", ACTIONID_PLAY_PAUSE);
+                }
+            };
+            return value;
+        }();
+        const vlc_window_owner_t windowOwner{&callbacks, this};
+        vlc_window_cfg_t cfg{}; cfg.width = 640; cfg.height = 360;
+        window = vlc_window_New(VLC_OBJECT(intf), "qt", &windowOwner, &cfg);
+        WId handle = 0;
+        if (window) {
+#ifdef __APPLE__
+            if (window->type == VLC_WINDOW_TYPE_NSOBJECT) handle = WId(window->handle.nsobject);
+#else
+            if (window->type == VLC_WINDOW_TYPE_XID) handle = WId(window->handle.xid);
+#endif
+        }
+        if (!handle) { report(tr("MPV requires the native Qt video compositor (Cocoa or X11/XWayland).")); return; }
+        if (vlc_window_Enable(window) != VLC_SUCCESS) {
+            report(tr("The embedded MPV video surface could not be enabled.")); return;
+        }
+        enabled = true;
+        QMetaObject::invokeMethod(owner, [this, handle] {
+            foreign = QWindow::fromWinId(handle);
+            if (!foreign) { report(tr("Qt could not attach the native MPV video view.")); return; }
+            view = new GlView(api, player, [this](const QString &error) { report(error); });
+            view->setParent(foreign);
+            view->resize(640, 360);
+            view->show();
+        }, Qt::BlockingQueuedConnection);
+    }
+    void setVideoActive(bool active) {
+        if (closing || !window || active == enabled) return;
+        if (active) {
+            if (vlc_window_Enable(window) != VLC_SUCCESS) {
+                report(tr("The embedded MPV video surface could not be enabled.")); return;
+            }
+            enabled = true;
+        } else { vlc_window_Disable(window); enabled = false; }
+    }
+    void close() {
+        if (closing) return;
+        closing = true;
+        QMetaObject::invokeMethod(owner, [this] {
+            if (view) { view->releaseRenderContext(); delete view; }
+            delete foreign;
+        }, Qt::BlockingQueuedConnection);
+        if (enabled) { vlc_window_Disable(window); enabled = false; }
+        if (window) { vlc_window_Delete(window); window = nullptr; }
+    }
+};

@@ -121,6 +121,13 @@ void PlayerController::initializeMpvPlayback()
             d->m_playing_status = value.toBool() ? PLAYING_STATE_PAUSED : PLAYING_STATE_PLAYING;
             emit playingStateChanged(d->m_playing_status);
             if (value.toBool()) saveMpvHistory();
+#ifndef _WIN32
+        } else if (name == QStringLiteral("volume") && value.isValid()) {
+            d->m_volume = float(std::cbrt(std::max(0., value.toDouble()) / 100.));
+            emit volumeChanged(d->m_volume);
+        } else if (name == QStringLiteral("mute") && value.isValid()) {
+            d->m_muted = value.toBool(); emit soundMuteChanged(d->m_muted);
+#endif
         } else if (name == QStringLiteral("speed")) {
             d->m_rate = value.toFloat(); emit rateChanged(d->m_rate);
         } else if (name == QStringLiteral("audio-delay")) {
@@ -229,6 +236,9 @@ void PlayerController::initializeMpvPlayback()
         // writing a guessed default here could erase the remembered level.
         if (d->m_volume >= 0.f) setVolume(d->m_volume);
         else d->m_mpv->set(QStringLiteral("volume"), 100.);
+#ifndef _WIN32
+        d->m_mpv->set(QStringLiteral("mute"), d->m_muted);
+#endif
         emit volumeChanged(d->m_volume);
         emit soundMuteChanged(d->m_muted);
     }
@@ -424,9 +434,15 @@ void PlayerController::switchPlaybackEngine(const QString &engine)
     if (engine != QStringLiteral("vlc") && engine != QStringLiteral("mpv")) return;
     cancelMpvPlaylist();
     if (engine == QStringLiteral("mpv")) {
-        if (!d->p_intf->p_compositor || d->p_intf->p_compositor->type() != vlc::Compositor::DirectCompositionCompositor) {
+        if (!d->p_intf->p_compositor || d->p_intf->p_compositor->type() !=
+#ifdef _WIN32
+            vlc::Compositor::DirectCompositionCompositor
+#else
+            vlc::Compositor::PlatformCompositor
+#endif
+        ) {
             vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playback", "%s",
-                qtu(tr("MPV requires the DirectComposition video surface. VLC remains selected.")));
+                qtu(tr("MPV requires this platform's native Qt video compositor. VLC remains selected.")));
             return;
         }
         d->m_mpvCandidate = std::make_unique<MpvPlayback>(d->p_intf, this);

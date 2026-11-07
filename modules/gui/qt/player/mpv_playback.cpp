@@ -8,7 +8,7 @@
 #include "mpv/client.h"
 #include "mpv/render.h"
 #include "mpv/render_d3d11.h"
-#if defined(_WIN32) && defined(VLC_MPV_RUNTIME_IDENTITY)
+#if defined(VLC_MPV_RUNTIME_IDENTITY)
 #include "mpv_runtime_identity.hpp"
 #endif
 #include <QCoreApplication>
@@ -24,6 +24,7 @@
 #include <atomic>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <utility>
 #include <vector>
 #include <vlc_actions.h>
@@ -31,13 +32,21 @@
 #include <vlc_player.h>
 #include <vlc_aout.h>
 #include <vlc_iso_lang.h>
+#include <vlc_window.h>
 
 #ifdef _WIN32
-#include <vlc_window.h>
 #include <d3d11.h>
 #include <dxgi1_2.h>
 #include <dcomp.h>
 #include <wrl/client.h>
+#else
+#include "mpv/render_gl.h"
+#include <QLibrary>
+#include <QOpenGLWindow>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QPointer>
+#include <QWindow>
 #endif
 
 namespace {
@@ -45,6 +54,8 @@ struct Api {
 #ifdef _WIN32
     HMODULE library = nullptr;
     ~Api() { if (library) FreeLibrary(library); }
+#else
+    QLibrary library;
 #endif
 #define MPV_API(name) decltype(&mpv_##name) name = nullptr
     MPV_API(create); MPV_API(initialize); MPV_API(set_option_string);
@@ -58,10 +69,7 @@ struct Api {
 
     bool load(QString &error)
     {
-#ifndef _WIN32
-        error = QObject::tr("The MPV engine is available in this Windows build only.");
-        return false;
-#elif !defined(VLC_MPV_RUNTIME_IDENTITY)
+#if !defined(VLC_MPV_RUNTIME_IDENTITY)
         error = QObject::tr("This build does not include the MPV runtime. Select VLC or use the complete MPV-enabled portable package.");
         return false;
 #else
@@ -78,6 +86,7 @@ struct Api {
                 return false;
             }
         }
+#ifdef _WIN32
         const QString path = directory.filePath(QStringLiteral("libmpv-2.dll"));
         // winvlc restricts the process-wide DLL search to System32. Include
         // only this verified payload's directory for its bundled dependencies;
@@ -89,6 +98,16 @@ struct Api {
             return false;
         }
 #define RESOLVE(name) name = reinterpret_cast<decltype(name)>(GetProcAddress(library,"mpv_" #name)); if (!name) { error = QObject::tr("The MPV library has an incompatible API."); return false; }
+#else
+        // The package generator places libmpv first, followed by its exact
+        // dependency closure. Load only the compiled-in, verified payload.
+        library.setFileName(directory.filePath(QString::fromUtf8(MpvRuntimeIdentity::files[0].name)));
+        if (!library.load()) {
+            error = QObject::tr("The application's MPV runtime could not be loaded: %1").arg(library.errorString());
+            return false;
+        }
+#define RESOLVE(name) name = reinterpret_cast<decltype(name)>(library.resolve("mpv_" #name)); if (!name) { error = QObject::tr("The MPV library has an incompatible API."); return false; }
+#endif
         RESOLVE(create); RESOLVE(initialize); RESOLVE(set_option_string);
         RESOLVE(command_async); RESOLVE(set_property_async); RESOLVE(observe_property);
         RESOLVE(get_property_async); RESOLVE(request_log_messages);
@@ -333,6 +352,8 @@ public:
         deviceContext.Reset(); device.Reset();
     }
 };
+#else
+#include "mpv_surface_gl.hpp"
 #endif
 } // namespace
 
@@ -357,10 +378,8 @@ struct MpvPlayback::Private {
     QUrl pending;
     bool pendingPaused = false;
     std::vector<std::function<void()>> completions;
-#ifdef _WIN32
     QThread renderThread;
     Surface *surface = nullptr;
-#endif
 
     Private(MpvPlayback *q, qt_intf_t *intf) : q(q), intf(intf) { }
     static QString languageCode(const QString &value) {
@@ -442,12 +461,10 @@ struct MpvPlayback::Private {
     }
     void deliverProperty(const QString &name, const QVariant &value) {
         properties[name] = value;
-#ifdef _WIN32
         if (surface && name == QStringLiteral("video-params")) {
             const bool active = !value.toMap().isEmpty();
             QMetaObject::invokeMethod(surface, [this, active] { surface->setVideoActive(active); }, Qt::QueuedConnection);
         }
-#endif
         emit q->changed(name, value);
     }
     void receive(const Event &event) {
@@ -501,9 +518,7 @@ struct MpvPlayback::Private {
             if (event.reason == MPV_END_FILE_REASON_EOF) msg_Dbg(intf, "MPV natural EOF reached");
             loaded = false;
             stopping = false; fileQueries.clear();
-#ifdef _WIN32
             if (surface) QMetaObject::invokeMethod(surface, [this] { surface->setVideoActive(false); }, Qt::QueuedConnection);
-#endif
             emit q->ended(event.reason == MPV_END_FILE_REASON_EOF,
                 event.error < 0 ? QString::fromUtf8(api->error_string(event.error)) : QString());
         }
@@ -545,12 +560,15 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
     if (!d->player) { d->error = tr("The MPV player could not be created."); return; }
     const std::pair<const char *, const char *> options[] = {{"config", "no"}, {"vo", "libmpv"},
         {"terminal", "no"}, {"input-default-bindings", "no"},
-        {"idle", "yes"}, {"demuxer", "lavf"}, {"ao", "wasapi"},
+        {"idle", "yes"}, {"demuxer", "lavf"},
+        {"input-vo-keyboard", "no"}, {"input-media-keys", "no"},
+#ifdef _WIN32
+        {"ao", "wasapi"},
         {"audio-exclusive", "no"}, {"wasapi-device-role", "console"},
         // Direct D3D11 hardware frames lost DV correction at the FFmpeg filter
         // boundary in the pinned build. Explicit copy-back retains metadata;
         // its rendered Profile 5 pixels match the software reference.
-        {"input-vo-keyboard", "no"}, {"input-media-keys", "no"}, {"hwdec", "d3d11va-copy"},
+        {"hwdec", "d3d11va-copy"},
         {"gpu-shader-cache", "no"},
         // libmpv's D3D11 render API uses the legacy gl_video renderer, which
         // restores base-layer mapping and cannot reshape Dolby Vision itself.
@@ -559,7 +577,13 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
         // This avoids guessing an unset base-layer matrix or tone-mapping the
         // result again in the legacy presentation renderer.
         {"vf", "lavfi=[libplacebo=apply_dolbyvision=1:colorspace=bt709:color_primaries=bt709:color_trc=iec61966-2-1:range=pc:format=rgba]"},
-        {"target-prim", "bt.709"}, {"target-trc", "srgb"}, {"target-peak", "100"}};
+        {"target-prim", "bt.709"}, {"target-trc", "srgb"}, {"target-peak", "100"}
+#else
+        // Stock libmpv owns native audio and color conversion. Copy-back also
+        // permits Qt's OpenGL context to move with the floating video view.
+        {"hwdec", "auto-copy"}, {"gpu-shader-cache", "no"}
+#endif
+    };
     int code = 0;
     const double maximumUiVolume = std::max(1., var_InheritInteger(intf, "qt-max-volume") / 100.);
     const auto maximumVolume = QByteArray::number(100. * maximumUiVolume * maximumUiVolume * maximumUiVolume);
@@ -574,6 +598,7 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
         code=d->api->set_option_string(d->player,name,value.constData());
         if(code<0)d->error=tr("MPV could not apply the configured %1.").arg(QString::fromLatin1(name));
     }
+#ifdef _WIN32
     // Reuse mmdevice's existing persisted Windows session, or its nonpersistent
     // default session when volume-save is disabled. No second settings owner.
     const char *session = var_InheritBool(intf, "volume-save")
@@ -587,6 +612,7 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
         code=d->api->set_option_string(d->player,"volume",initial.constData());
         if(code<0)d->error=tr("MPV could not apply the configured startup volume.");
     }
+#endif
     if (code >= 0 && var_InheritBool(intf,"sub-ass-style-override"))
         code=d->api->set_option_string(d->player,"sub-ass-override","force");
     if (code >= 0) {
@@ -595,6 +621,7 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
         code = d->api->set_option_string(d->player, "image-display-duration", displayDuration.constData());
         if (code < 0) d->error = tr("MPV could not apply the image display duration.");
     }
+#ifdef _WIN32
     if (code >= 0) {
         // A previously selected native endpoint and the volume owner must refer
         // to the same device. An empty id retains default eConsole routing.
@@ -610,6 +637,7 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
             aout_Release(audio);
         }
     }
+#endif
     for (const auto &[name, value] : options) {
         if (code < 0) break;
         code = d->api->set_option_string(d->player, name, value);
@@ -639,9 +667,7 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
             prepareToClose([] {});
             return;
         }
-#ifdef _WIN32
         if (d->surface) return; // Render teardown still owns the player handle.
-#endif
         d->complete();
     });
     // Startup failure before Qt's event loop begins must not leave an event
@@ -657,9 +683,7 @@ MpvPlayback::~MpvPlayback()
     // Before the event loop has ever run, no render surface exists and the
     // native core can be destroyed directly on the constructor's owner thread.
     if (d->player && d->events && !d->events->isRunning()) {
-#ifdef _WIN32
         assert(!d->surface);
-#endif
         d->api->terminate_destroy(d->player); d->player = nullptr;
     }
     assert(!d->player);
@@ -737,7 +761,6 @@ void MpvPlayback::load(const QUrl &url, bool paused)
     for (const auto *name : {"time-pos", "duration", "track-list", "metadata", "media-title", "path", "video-params", "video-out-params", "chapter-list", "chapter", "seekable"})
         d->properties.remove(QString::fromUtf8(name));
     d->pending = url; d->pendingPaused = paused;
-#ifdef _WIN32
     if (!d->surface) {
         d->surface = new Surface(d->api, d->player, d->intf, this, [this](const QString &error) {
             if (!error.isEmpty()) { d->error = error; emit ended(false, error); return; }
@@ -749,7 +772,6 @@ void MpvPlayback::load(const QUrl &url, bool paused)
         connect(&d->renderThread, &QThread::finished, d->surface, &QObject::deleteLater);
         d->renderThread.start();
     }
-#endif
     if (!d->ready || d->loadStarting) return;
     d->prepareLanguages();
     d->replacing = true;
@@ -783,7 +805,6 @@ void MpvPlayback::prepareToClose(std::function<void()> completion)
     if (d->closing) return;
     d->closing = true;
     d->loaded = false;
-#ifdef _WIN32
     if (d->surface) {
         connect(&d->renderThread, &QThread::finished, this, [this] {
             // Surface::close has completed every UI-dependent window callback.
@@ -794,7 +815,6 @@ void MpvPlayback::prepareToClose(std::function<void()> completion)
         QMetaObject::invokeMethod(d->surface, [this] { d->surface->close(); d->renderThread.quit(); }, Qt::QueuedConnection);
         return;
     }
-#endif
     if (d->player) d->finishCore();
     else QMetaObject::invokeMethod(this, [this] { d->complete(); }, Qt::QueuedConnection);
 }

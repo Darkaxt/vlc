@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/mpv-player/mpv",
+  "version": "0.42.0",
+  "commit": "b0841e8c4d156b8403dc1876c4cbd9011eb583f3",
+  "patches": [],
+  "headers": {"render_gl.h": "aa2719d5c4ebfa1ecaee469b563d138e10b1df4e"},
+  "header_license": "ISC; original notice retained unchanged",
+  "render_api": "OpenGL on Cocoa and X11/XWayland",
+  "windows": "Separate source.json and existing D3D11/Dolby Vision runtime remain authoritative"
+}

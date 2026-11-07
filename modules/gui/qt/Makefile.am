@@ -301,7 +301,9 @@ libqt_plugin_la_SOURCES = \
 	player/player_controller.cpp player/player_controller.hpp player/player_controller_p.hpp \
 	player/player_controller_mpv.cpp \
 	player/mpv_playback.cpp player/mpv_playback.hpp \
-	player/mpv/client.h player/mpv/render.h player/mpv/render_d3d11.h player/mpv/source.json \
+	player/mpv/client.h player/mpv/render.h player/mpv/render_d3d11.h player/mpv/render_gl.h player/mpv/source.json \
+	player/mpv_surface_gl.hpp \
+	player/mpv/source-portable.json \
 	player/player_media_tools.cpp player/player_media_tools.hpp player/subtitle_data.hpp player/subtitle_archive.hpp \
 	player/subtitle_search.cpp player/subtitle_search.hpp \
 	player/player_media_analysis.cpp player/player_media_analysis.hpp \

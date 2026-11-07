@@ -4,6 +4,51 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**8 November native desktop packages, R111/R112, already authorized:**
+
+The user requests macOS and Linux builds before contacting Juxtopposed, all
+available desktop packages to establish a deployment pipeline, and removal of
+the Windows-only MPV restriction. They explicitly permit plain upstream MPV on
+the new platforms instead of requiring the custom Dolby Vision patch. Preserve
+the existing verified Windows x64 MPV/Dolby Vision runtime and its provenance.
+Creator outreach is pending; no message has been sent or approved for sending.
+
+R111: produce native macOS (Apple Silicon and Intel), Linux (x86_64 and aarch64)
+and the maintained Windows x64 delivery from one identified source revision.
+Inventory and attempt applicable desktop packaging routes, including macOS app
+ZIP/DMG, Linux portable archive/AppImage/DEB/RPM/Snap, and Windows portable
+ZIP/7z and installer routes. Record exact unavailable prerequisites or failures;
+do not label a broken build unsupported merely to remove it from acceptance.
+Mobile/TV, OS/2 and WebAssembly libVLC targets are not this desktop redesign.
+Do not publish to new stores or install over users' existing players/profiles.
+Use native hosted CI where available, with pinned sources/actions, explicit
+architecture/toolchain/runtime/license manifests and reusable dependency caches.
+No paid runner, signing account or new credential is assumed. Use ad-hoc signing
+where required to run macOS binaries; distinguish it from Developer ID signing
+and notarization. Preserve the existing unsigned Windows distribution policy.
+
+R112: use the same Qt/QML/Figma interface and queue/settings owner on each
+platform. Implement native MPV loading, render-surface ownership, native audio,
+and deterministic shutdown/replacement without Windows DLL/D3D11/WASAPI
+assumptions outside the existing Windows backend. Ordinary MPV is sufficient on
+macOS/Linux; do not promise the Windows Dolby Vision patch or native DV display
+signaling there. Keep engine choice, separate accents, subtitles, seeking,
+volume, image handling, live handover and floating-player behavior integrated.
+Packaging an upstream Cocoa interface or launching a separate mpv application
+does not satisfy this requirement. Platform capability differences must be
+truthful and recorded, without silently removing existing Windows capabilities.
+
+Acceptance requires native executable architecture/dependency checks, relocation,
+actual Qt redesign and video evidence, VLC/MPV playback/audio/subtitles/seek,
+handover, miniplayer/restore/dismissal, clean exit and profile preservation.
+Verify each installable format in an isolated matching environment where its
+platform permits it. Keep source/license obligations and matching optional
+symbols separate from release binaries. A successful compile or archive alone
+is not native acceptance. After the complete integrated outcome passes, publish
+one normal versioned release through Darkaxt/vlc's established GitHub channel,
+independently retrieve/check its assets and update the existing weekly pipeline.
+Preserve verified1.1.11 until the new delivery and continuing build binding pass.
+
 **7 November stabilization logging, R110 (M14), already authorized:**
 
 Delivered in normal1.1.11; [reconciliation](resources/m14-1.1.11-verification.json) records bounded retention, opt-out, startup timing, actual playback and independently verified release.

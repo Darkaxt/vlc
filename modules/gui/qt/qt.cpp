@@ -668,9 +668,9 @@ vlc_module_begin ()
     add_string( "qt-accent-color", "default", ACCENT_COLOR_TEXT, ACCENT_COLOR_LONGTEXT )
     add_string( "qt-mpv-accent-color", "default", N_("MPV accent color"),
                 N_("Saved MPV accent: default artwork purple, system, or a hexadecimal color. Independent of the VLC accent.") )
-#ifdef _WIN32
+#if defined(_WIN32) || defined(VLC_MPV_RUNTIME_IDENTITY)
     add_string("qt-playback-engine", "vlc", N_("Startup playback engine"),
-        N_("Choose the engine used when the application starts. During playback, switch between VLC and MPV on the in-player Playback settings tab without closing the application. VLC preserves its native tools; MPV applies Dolby Vision metadata through libplacebo."))
+        N_("Choose the engine used when the application starts. During playback, switch between VLC and MPV on the in-player Playback settings tab without closing the application. VLC preserves its native tools; the Windows MPV runtime also applies Dolby Vision metadata through libplacebo."))
         change_string_list(playback_engine_values, playback_engine_labels)
 #endif
 
@@ -849,7 +849,7 @@ static int OpenInternal( qt_intf_t *p_intf )
         var_Create(instance, "image-duration", VLC_VAR_FLOAT);
         var_SetFloat(instance, "image-duration", -1.f);
     }
-#ifdef _WIN32
+#if defined(VLC_MPV_RUNTIME_IDENTITY)
     const auto engine = vlc::wrap_cptr(var_InheritString(p_intf, "qt-playback-engine"));
     p_intf->mpvPlayback = !p_intf->b_isDialogProvider && engine && !strcmp(engine.get(), "mpv");
     if (p_intf->mpvPlayback) {
@@ -1235,6 +1235,14 @@ static void *Thread( void *obj )
     }
 #endif
 
+#ifdef __APPLE__
+    // The fork bundle identifier gives VLC its own native configuration root.
+    // QSettings' hardcoded "vlc" organization would otherwise share upstream's
+    // preferences despite that bundle separation.
+    const auto nativeConfig = vlc::wrap_cptr(config_GetUserDir(VLC_CONFIG_DIR));
+    p_intf->mainSettings = new QSettings(QDir(qfu(nativeConfig.get())).filePath(
+        QStringLiteral("vlc-qt-interface.ini")), QSettings::IniFormat);
+#else
     p_intf->mainSettings = new QSettings(
 #ifdef _WIN32
             QSettings::IniFormat,
@@ -1242,6 +1250,7 @@ static void *Thread( void *obj )
             QSettings::NativeFormat,
 #endif
             QSettings::UserScope, "vlc", "vlc-qt-interface" );
+#endif
 
     // It is guaranteed that the returned format is supported, if a format is returned.
     static const auto createCompatibleOpenGLFormat = []() -> std::optional<QSurfaceFormat> {

@@ -46,6 +46,9 @@ public:
     QQuickWindow* quickWindow() const override;
     Type type() const override;
     QQuickItem * activeFocusItem() const override;
+    bool showFloatingPlayer(Qt::WindowStates previousState) override;
+    void restoreFloatingPlayer() override;
+    void dismissFloatingPlayer() override;
 
     bool eventFilter(QObject *watched, QEvent *event) override;
 
@@ -62,9 +65,16 @@ private slots:
     void onSurfaceSizeChanged(const QSizeF& size) override;
 
 private:
+    void hideFloatingPlayer();
+    void constrainFloatingPlayer();
     std::unique_ptr<QWindow> m_rootWindow;
     QPointer<QWindow> m_videoWindow;
     QPointer<QQuickView> m_quickWindow;
+    std::unique_ptr<QWindow> m_floatingRoot;
+    QPointer<QQuickView> m_floatingView;
+    Qt::WindowStates m_mainStateBeforeFloating;
+    bool m_constrainingFloating = false;
+    QByteArray m_x11Display;
 
     std::optional<QSize> m_pendingSize;
     std::optional<QPoint> m_pendingPosition;

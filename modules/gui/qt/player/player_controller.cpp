@@ -1924,7 +1924,12 @@ void PlayerController::setVolume(float volume)
     // native output does; attenuating here as well would apply volume twice.
     if (d->m_mpv) {
         d->m_mpvVolumeReady = true;
-        d->m_mpv->set(QStringLiteral("volume"), 100. * std::max(1., double(volume) * volume * volume));
+        const double gain = double(volume) * volume * volume;
+#ifdef _WIN32
+        d->m_mpv->set(QStringLiteral("volume"), 100. * std::max(1., gain));
+#else
+        d->m_mpv->set(QStringLiteral("volume"), 100. * gain);
+#endif
     }
     vlc_player_locker lock{ d->m_player };
     vlc_player_aout_SetVolume( d->m_player, volume );
@@ -1951,6 +1956,9 @@ void PlayerController::setMuted(bool muted)
     Q_D(PlayerController);
     if( d->m_muted == muted )
         return;
+#ifndef _WIN32
+    if (d->m_mpv) d->m_mpv->set(QStringLiteral("mute"), muted);
+#endif
     vlc_player_locker lock{ d->m_player };
     vlc_player_aout_Mute( d->m_player, muted );
 }

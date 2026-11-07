@@ -20,6 +20,7 @@ FocusScope {
     property int availableHeight: 1024
     property bool queueExpanded: false
     property bool ready: false // set after the native video visual is attached
+    property var nativeWindow: root.Window.window
     readonly property bool moving: windowMove.active
     property string displayName: ""
     property string displayArtist: ""
@@ -62,7 +63,7 @@ FocusScope {
     DragHandler {
         id: windowMove
         target: null
-        onActiveChanged: if (active) root.Window.window.startSystemMove()
+        onActiveChanged: if (active) root.nativeWindow.startSystemMove()
     }
     Rectangle {
         anchors.fill: parent
@@ -276,7 +277,7 @@ FocusScope {
     MouseArea {
         anchors.bottom: parent.bottom; anchors.right: parent.right
         width: PlayerStyle.px(8); height: width; cursorShape: Qt.SizeFDiagCursor
-        onPressed: root.Window.window.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
+        onPressed: root.nativeWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
     }
     Keys.onEscapePressed: MainCtx.restoreFloatingPlayer()
 }

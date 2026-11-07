@@ -1,5 +1,25 @@
 # VLC redesign stages and reconciliation
 
+**8 November native desktop delivery: M15 — ACTIVE (R111/R112).**
+Implement native macOS/Linux plain MPV integration and the desktop build/package
+matrix while preserving the verified Windows backend and Figma interface.
+Native hosted GitHub Actions is enabled; no workflows or self-hosted runners
+currently exist. Upstream supplies macOS Qt/platform compositor support, but Qt
+is disabled in its normal macOS configuration. The fork's MPV loader, D3D11
+surface and WASAPI options currently reject or assume Windows. These are
+internal implementation gaps, not external blockers. Native package dependencies,
+actual rendering/handover and each format's installation acceptance remain to be
+verified. No M15 tracked deferrals. One ACTIVE implementation stage only.
+
+| Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
+| --- | --- | --- | --- | --- |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 is preserved; native CI availability and upstream package routes identified. | R111 native package generation/relocation/provenance and R112 integrated native MPV plus real platform workflows. | Internal implementation/acceptance gaps above; no tracked deferrals. |
+| M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
+
+Preserve historical M6's exact native-cleanup limitation. S9 Rust has not started.
+Creator contact remains pending until usable macOS delivery; the selected X
+conversation was read and released without composing or sending a message.
+
 **7 November stabilization logging: M14 — COMPLETE (R110); normal1.1.11 delivered.**
 Windows automatic local diagnostics default on, with saved/CLI opt-out and
 user-managed explicit destinations. Retention keeps today and the preceding two

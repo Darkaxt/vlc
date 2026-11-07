@@ -20,8 +20,14 @@
 #include <QApplication>
 #include <QQuickView>
 #include <QOperatingSystemVersion>
+#include <QQuickItem>
+#include <QScreen>
+#include <algorithm>
+#include <cmath>
 
 #include "maininterface/interface_window_handler.hpp"
+#include "mainctx.hpp"
+#include "videosurface.hpp"
 
 #include <vlc_window.h>
 
@@ -66,6 +72,12 @@ bool CompositorPlatform::init()
 #ifdef __APPLE__
     if (platformName == QLatin1String("cocoa") || platformName == QLatin1String("ios"))
         return true;
+#endif
+
+#ifdef QT_HAS_X11_COMPOSITOR
+    // Use native child windows under X11/XWayland, just as Cocoa does. A
+    // Wayland foreign wl_surface cannot be wrapped by QWindow::fromWinId.
+    if (platformName == QLatin1String("xcb")) return true;
 #endif
 
     return false;
@@ -125,6 +137,9 @@ void CompositorPlatform::destroyMainInterface()
 
 void CompositorPlatform::unloadGUI()
 {
+    hideFloatingPlayer();
+    if (m_floatingView) m_floatingView->setSource(QUrl());
+    m_floatingRoot.reset();
     m_rootWindow->removeEventFilter(this);
     m_interfaceWindowHandler.reset();
     m_quickWindow->setSource(QUrl());
@@ -152,6 +167,14 @@ bool CompositorPlatform::setupVoutWindow(vlc_window_t *p_wnd, VoutDestroyCb dest
     return true;
 #endif
 
+#ifdef QT_HAS_X11_COMPOSITOR
+    p_wnd->type = VLC_WINDOW_TYPE_XID;
+    p_wnd->handle.xid = m_videoWindow->winId();
+    m_x11Display = qgetenv("DISPLAY");
+    p_wnd->display.x11 = m_x11Display.constData();
+    return true;
+#endif
+
     vlc_assert_unreachable();
 }
 
@@ -173,11 +196,126 @@ Compositor::Type CompositorPlatform::type() const
 QQuickItem *CompositorPlatform::activeFocusItem() const
 {
     assert(m_quickWindow);
+    if (m_floatingView && m_floatingRoot->isActive()) return m_floatingView->activeFocusItem();
     return m_quickWindow->activeFocusItem();
+}
+
+bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
+{
+#ifdef _WIN32
+    // The Windows DComp implementation retains its own visual ownership.
+    Q_UNUSED(previousState);
+    return false;
+#else
+    if (!m_videoWindow || !m_videoSurfaceProvider->isEnabled()) return false;
+    if (m_mainCtx->floatingPlayer()) return true;
+    m_mainStateBeforeFloating = previousState & ~Qt::WindowMinimized;
+    if (!m_floatingRoot) {
+        m_floatingRoot = std::make_unique<QWindow>();
+        auto root = m_floatingRoot.get();
+        root->setObjectName(QStringLiteral("floatingPlayerWindow"));
+        root->setFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        root->setProperty("_q_showWithoutActivating", true);
+        m_floatingView = new QQuickView(m_quickWindow->engine(), root);
+        auto view = m_floatingView.get();
+        view->setColor(Qt::transparent);
+        auto format = view->format(); format.setAlphaBufferSize(8); view->setFormat(format);
+        view->setPersistentGraphics(true);
+        view->setPersistentSceneGraph(true);
+        view->setResizeMode(QQuickView::SizeRootObjectToView);
+        connect(root, &QWindow::widthChanged, view, &QWindow::setWidth);
+        connect(root, &QWindow::heightChanged, view, &QWindow::setHeight);
+        root->installEventFilter(this);
+        view->setSource(QUrl(QStringLiteral("qrc:/qt/qml/VLC/Player/FloatingPlayer.qml")));
+        if (view->status() != QQuickView::Ready || !view->rootObject()) {
+            msg_Err(m_intf, "Floating player QML failed to load");
+            m_floatingRoot.reset();
+            return false;
+        }
+        // QML drag/resize acts on the top-level native window, not its
+        // transparent Quick overlay child. It still uses the same controllers.
+        view->rootObject()->setProperty("nativeWindow", QVariant::fromValue(root));
+        connect(view->rootObject(), &QQuickItem::implicitHeightChanged, this, &CompositorPlatform::constrainFloatingPlayer);
+        connect(root, &QWindow::screenChanged, this, &CompositorPlatform::constrainFloatingPlayer);
+        connect(root, &QWindow::xChanged, this, &CompositorPlatform::constrainFloatingPlayer);
+        connect(root, &QWindow::yChanged, this, &CompositorPlatform::constrainFloatingPlayer);
+        connect(root, &QWindow::widthChanged, this, &CompositorPlatform::constrainFloatingPlayer);
+        const auto identity = [this] {
+            m_floatingRoot->setTitle(m_rootWindow->title() + QStringLiteral(" — ") + tr("Miniplayer"));
+            m_floatingRoot->setIcon(m_mainCtx->getRedesignWindowIcon());
+        };
+        connect(m_rootWindow.get(), &QWindow::windowTitleChanged, view, identity);
+        connect(m_mainCtx, &MainCtx::redesignAccentChanged, view, identity);
+        identity();
+    }
+    const auto screen = m_rootWindow->screen();
+    const auto area = screen->availableGeometry();
+    m_floatingRoot->setScreen(screen);
+    m_floatingRoot->resize(std::min(360, area.width() - 32), 280);
+    m_floatingRoot->setPosition(area.right() + 1 - m_floatingRoot->width() - 16,
+                                area.bottom() + 1 - m_floatingRoot->height() - 16);
+    m_videoWindow->setParent(m_floatingRoot.get());
+    m_mainCtx->setFloatingPlayer(true);
+    constrainFloatingPlayer();
+    m_floatingRoot->show();
+    m_videoWindow->show();
+    m_floatingView->show();
+    m_floatingView->raise();
+    m_floatingView->rootObject()->setProperty("ready", true);
+    return true;
+#endif
+}
+
+void CompositorPlatform::hideFloatingPlayer()
+{
+    if (!m_floatingRoot || !m_mainCtx || !m_mainCtx->floatingPlayer()) return;
+    m_videoWindow->setParent(m_rootWindow.get());
+    m_mainCtx->setFloatingPlayer(false);
+    m_floatingView->rootObject()->setProperty("ready", false);
+    m_floatingRoot->hide();
+    m_videoWindow->show();
+    m_quickWindow->raise();
+}
+
+void CompositorPlatform::restoreFloatingPlayer()
+{
+    hideFloatingPlayer();
+    m_rootWindow->setWindowStates(m_mainStateBeforeFloating);
+    m_rootWindow->show();
+    m_rootWindow->raise();
+    m_rootWindow->requestActivate();
+}
+
+void CompositorPlatform::dismissFloatingPlayer()
+{
+    m_mainCtx->dismissFloatingPlayerUntilRestore();
+    hideFloatingPlayer();
+}
+
+void CompositorPlatform::constrainFloatingPlayer()
+{
+    if (!m_floatingView || !m_floatingView->rootObject() || m_constrainingFloating) return;
+    m_constrainingFloating = true;
+    const auto area = m_floatingRoot->screen()->availableGeometry().adjusted(8, 8, -8, -8);
+    auto item = m_floatingView->rootObject();
+    item->setProperty("availableHeight", area.height());
+    const int maximum = std::max(1, std::min({640, area.width(), int((area.height() - 100) * 16 / 9)}));
+    const int width = std::clamp(m_floatingRoot->width(), std::min(260, maximum), maximum);
+    m_floatingView->setWidth(width);
+    const int height = std::min(area.height(), int(std::ceil(item->implicitHeight())));
+    m_floatingRoot->resize(width, height);
+    m_floatingRoot->setPosition(std::clamp(m_floatingRoot->x(), area.left(), area.right() + 1 - width),
+                                std::clamp(m_floatingRoot->y(), area.top(), area.bottom() + 1 - height));
+    m_constrainingFloating = false;
 }
 
 bool CompositorPlatform::eventFilter(QObject *watched, QEvent *event)
 {
+    if (watched == m_floatingRoot.get() && event->type() == QEvent::Close) {
+        event->ignore();
+        dismissFloatingPlayer();
+        return true;
+    }
     // Forward drag events to the child quick window,
     // as it is not done automatically by Qt with
     // nested windows:

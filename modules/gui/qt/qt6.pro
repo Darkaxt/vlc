@@ -1,6 +1,7 @@
 TEMPLATE = app
 
 QT = core gui qml svg quick widgets quickcontrols2 network
+!win32: QT += opengl
 QTPLUGIN = qsvgicon qsvg qjpeg qico
 CONFIG += link_pkgconfig
 PKGCONFIG += libarchive
