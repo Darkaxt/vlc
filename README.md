@@ -236,3 +236,5 @@ share/             - Common resource files.
 src/               - libvlccore source code.
 test/              - Testing system.
 ```
+
+The volume wedge follows the saved accent for the active engine. Closing the floating miniplayer keeps playback running with the main window minimized.

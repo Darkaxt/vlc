@@ -1,0 +1,27 @@
+{
+  "status": "COMPLETE",
+  "requirements": [
+    "R107",
+    "R108"
+  ],
+  "source_commit": "0b44bc6067c5d6c09c8b0b17322b6636eefff6ae",
+  "qt_plugin_sha256": "4f77b474f618734ad8fc0de984e2d3d52c79150c96f1177996098e9d44a275b1",
+  "native_evidence": {
+    "path": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\volume-dismiss-native\\result.json",
+    "sha256": "6297513b47bc63ecfc0561817da84ed4e5ca565b199fb6890c1cae791d94eac4"
+  },
+  "acceptance": [
+    "Original volume silhouette with default/custom engine-accent gradient and live handover at100/150/200 percent.",
+    "Volume keyboard interaction, muted opacity and unmute retain existing behavior.",
+    "Close dismisses only the floating window; media stays playing and main stays minimized, including next input.",
+    "Explicit main restore clears dismissal; subsequent minimize opens a new miniplayer and its Restore works."
+  ],
+  "inspection": "Actual default orange volume capture inspected; native sampled pixels verify default/custom/handover hues at each DPI.",
+  "profiles_unchanged": true,
+  "all_owned_players_exited_zero": true,
+  "original_test_failure": "D:\\Temp\\vlc-s8-icons-1.1.9-20261106\\volume-dismiss-native\\result-before-unoffered-color-selector.json",
+  "test_correction": "Use offered #1b4e9d swatch instead of CLI-only #2f87b5. Same production binary.",
+  "closure_assessment": "Existing SVG provider and volume binding own appearance; one MainCtx flag follows explicit visibility transitions and existing compositor hide/reparent owns dismissal. No duplicate playback state or required consolidation.",
+  "blockers": [],
+  "tracked_deferrals": []
+}

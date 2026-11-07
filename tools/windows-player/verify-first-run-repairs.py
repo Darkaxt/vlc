@@ -74,6 +74,8 @@ parser.add_argument('--resume-inline-observation',action='store_true',
     help='Retain completed VLC cases and the closed exact-float MPV observation; resume the same binary with numeric tolerance')
 parser.add_argument('--resume-inline-tracks-observation',action='store_true',
     help='Preserve the closed missing snapshot-field failure; verify target clipping through actual click dispatch')
+parser.add_argument('--resume-volume-observation',action='store_true',
+    help='Preserve the closed unavailable-color-selector failure; resume the same binary using an offered palette color')
 args = parser.parse_args()
 assert not args.visualizer_options_only or args.case=='m7-regressions'
 root, source, fixtures = args.root.resolve(), args.runtime.resolve(), args.fixtures.resolve()
@@ -97,6 +99,7 @@ resume_panels=args.resume_player_panels_observation
 resume_hover=args.resume_floating_hover_observation
 resume_inline=args.resume_inline_observation
 resume_inline_tracks=args.resume_inline_tracks_observation
+resume_volume=args.resume_volume_observation
 assert not resume_inline or args.case=='inline-subtitles'
 assert not resume_hover or args.case=='floating-queue'
 assert not resume_panels or args.case=='player-panels'
@@ -112,14 +115,24 @@ assert not resume_menu_quit or args.case=='menus'
 assert not (resume_settings or resume_history or resume_behaviour or collect_layouts) or args.case=='settings'
 assert not args.settings_input_repair or (args.case=='settings' and not any((resume_settings,resume_history,resume_behaviour,collect_layouts)))
 assert not resume_input or (args.case=='settings' and args.settings_input_repair)
-assert not root.exists() or resume_inline_tracks or resume_inline or resume_hover or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
+assert not root.exists() or resume_volume or resume_inline_tracks or resume_inline or resume_hover or resume_panels or resume_floating or resume_empty_survey or resume_settings or resume_history or resume_behaviour or collect_layouts or resume_input or resume_menu_quit or resume_idle or resume_onboarding or resume_media or resume_m7 or resume_m7_lifecycle or resume_visualizer_options
 assert fixtures.is_dir() and (source / 'portable').is_dir() and not any((source / 'portable').iterdir())
 plugin = source / 'plugins/gui/libqt_plugin.dll'
 assert b'VLC_PLAYER_DIAGNOSTICS_DIR' in plugin.read_bytes()
 runtime = root / 'runtime'
 m7_observer_repair=False
 m7_final_path=False
-if resume_inline_tracks:
+if resume_volume:
+    previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
+    assert args.case=='volume-dismiss' and previous['scope']==args.case
+    assert not previous['passed'] and previous['protected_profiles_unchanged']
+    assert 'Expected one named native widget; matched 0' in previous['failures']['volume-dismiss']
+    assert len(previous['cases'])==1 and previous['cases'][0]['exit_code']==0
+    assert previous['qt_plugin_sha256']==hashlib.sha256(plugin.read_bytes()).hexdigest()
+    assert not any((runtime/'portable').iterdir())
+    historical=root/'result-before-unoffered-color-selector.json';assert not historical.exists()
+    historical.write_bytes((root/'result.json').read_bytes())
+elif resume_inline_tracks:
     previous=json.loads((root/'result.json').read_text(encoding='utf-8'))
     assert args.case=='inline-subtitle-tracks' and previous['scope']==args.case
     assert not previous['passed'] and previous['protected_profiles_unchanged']
@@ -473,6 +486,9 @@ records = {'schema': 'vlc_redesign.m2_native_acceptance.v1', 'scope': args.case,
     'qt_plugin_sha256': hashlib.sha256(plugin.read_bytes()).hexdigest(), 'cases': [],
     'no_os_input_or_desktop_switching': True, 'passed': False}
 records['verification_helper_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+if resume_volume:
+    records['previous_volume_observation']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
+        'reason':'The requested test-only #2f87b5 value is not an offered settings swatch. Observe actual offered blue #1b4e9d; production unchanged.'}
 if resume_inline_tracks:
     records['previous_inline_track_observation']={'path':str(historical),'sha256':hashlib.sha256(historical.read_bytes()).hexdigest(),
         'reason':'QML snapshots do not have the native-widget center_visible field. Actual click dispatch enforces clipping instead.'}
@@ -2048,7 +2064,7 @@ def volume_accent_and_dismissal():
     """Engine-themed original wedge plus background-only miniplayer dismissal."""
     for engine in ('vlc','mpv'):
         for scale in ('1','1.5','2'):
-            case=Case('volume-dismiss-'+engine+'-'+scale,engine=engine,media=fixtures/'miniplayer-long.mkv',scale=scale)
+            case=Case('volume-dismiss-'+engine+'-'+scale+('-palette-resumed' if resume_volume else ''),engine=engine,media=fixtures/'miniplayer-long.mkv',scale=scale)
             try:
                 case.inspect('paused','snapshot','--await-core','state','--await-value','3')
                 case.inspect('viewport','resize','--width','1280','--height','720')
@@ -2072,9 +2088,9 @@ def volume_accent_and_dismissal():
                 default='#9859ad' if engine=='mpv' else '#d37918'
                 rendered('default-gradient',default)
                 case.inspect('open-settings','key','--key','0x50','--modifiers','0x4000000')
-                case.inspect('custom-color','widget_click','--widget-name',engine.upper()+' accent color #2f87b5')
+                case.inspect('custom-color','widget_click','--widget-name',engine.upper()+' accent color #1b4e9d')
                 case.native('save-color','preferencesSave')
-                rendered('custom-gradient','#2f87b5')
+                rendered('custom-gradient','#1b4e9d')
                 case.click('mute','muteButton')
                 muted=case.inspect('muted-wedge','snapshot')
                 assert abs(nodes(muted,'volumeWedge')[0]['opacity']-.45)<.001

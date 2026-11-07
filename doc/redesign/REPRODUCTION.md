@@ -10,41 +10,24 @@ protected-profile evidence are retained in that version's `verification` folder.
 Frozen control snapshots document original paths; they are not installed
 relocatable launchers.
 
-Unreleased1.1.9 R103 miniplayer repair currently binds production source
-`7c8396f400189acfefd40892c9d65b05494c9641`, optimized diagnostic assembly76.
-Coordinator264 `82d3a7e494c6440d95047e35204f50c2` closed0/group empty with
-private mounts released and no max/OOM events; the Qt-only delta took70.2s.
-`D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-restore-native/result.json`
-passes both engines at100/150/200%, including playing/paused hover, surrounding
-drag regions, seek exclusion, queue actions and repeated compact/expanded restore.
-Actual published size/position is checked against the main surface after each
-restore, with unchanged protected profiles and clean player exits. The read-only
-normal-desktop picture check remains required. Review launchers are under
-`D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review`, bind `runtime-restore`
-and use their own profiles plus the retained600-second synthetic video. These
-are diagnostic review copies with hooks dormant, not final release packages.
-Reuse the D:-backed native-ext4 binding, dependency objects and409-plugin guard;
-do not reinitialize/reconfigure or substitute the historical NTFS build path.
+Unreleased1.1.9 implementation acceptance is complete. Current producer is
+`0b44bc6067c5d6c09c8b0b17322b6636eefff6ae`, optimized diagnostic79, Coordinator267
+`4f81c8a2cbd3455ea7fd00cb6e30580c`. It closed0/group empty, private mounts released,
+without memory-limit/OOM events. The MainCtx header change required a Qt-module
+recompile (411.8s); native-ext4 dependencies and409 plugins were reused.
+M8/M9/M11/M12 ledgers bind actual floating/main pictures, reference panels,
+inline subtitle timing/navigation/custom layouts and accent volume acceptance.
+Dismissal preserves playback/main minimization across next input; explicit
+restore and a new minimize cycle pass both engines100/150/200 percent. Profiles
+are unchanged and every owned player exits0.
 
-Unreleased1.1.9 R105 panel acceptance is complete at production source
-`9c1059b8b2fc7666ff994a0d52291e50a0850b44`. Optimized diagnostic assembly72
-used the existing Qt-only409-plugin reuse path, not a full dependency rebuild.
-Coordinator260 `862ce7fced564880b7f90fc8cac4b0e7` closed0 with an empty Linux
-group and released private mounts; Qt took22.9 seconds. Native four-tab checks
-and inspected captures pass in both engines at100/150/200 percent, preserving
-profiles. [R105 evidence](resources/m9-1.1.9-verification.json) retains the
-original unexpected-minimize observation and same-binary scoped completion.
-The retired test-runtime copy is not a usable review path.
-
-The current user-owned review launchers are
-`D:/Temp/vlc-s8-icons-1.1.9-20261106/floating-m8-review/review-mpv.cmd` and
-`review-vlc.cmd` in that directory. Their hash-verified `runtime-m9` copy uses
-the current source, dormant diagnostics, its own profile and synthetic video.
-Do not add `--no-media-library`; the redesigned no-library mode has its own
-verified path. M8 still requires actual composed floating-video picture evidence;
-inactive native workflows do not prove that picture. Normal1.1.9 release remains
-M10, after M8 acceptance. The next managed pipeline identity is73, with closed72
-as predecessor; retain the native ext4 objects/toolchain and current build binding.
+Existing floating-m8-review launchers are historical diagnostic copies using
+isolated profiles, not final packages or current dismissal behavior. Preserve
+their active user consumer; retire runtime after exit. Do not add
+`--no-media-library` to select a different interface. The redesigned no-library
+path has separate accepted evidence. M10 owns final normal1.1.9. Normal80 must
+use the closed79 predecessor and exact source bundle; retain native-ext4 inputs,
+limits and409-plugin reuse without SDK setup/configure/dependency rebuild.
 
 The continuing build consumer is now `VLC-Build-20261106` with its D:-backed ext4
 root `/toolchain`. Source is `/toolchain/work/src`, build is

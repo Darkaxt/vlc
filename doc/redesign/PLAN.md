@@ -1,15 +1,14 @@
 # VLC redesign stages and reconciliation
 
-**7 November current work: M12 — ACTIVE for engine-accent volume and dismissal.**
-M8 is COMPLETE: current actual floating/main video pictures in both engines are
-captured and inspected; MPV Restore fills the main window, and native repeated
-restore geometry/hover/drag/queue/profile evidence passes at100/150/200 percent.
-M11 is COMPLETE: inline subtitle bands and timing/navigation controls pass both
-engines at100/150/200 percent, plus customized top/narrow layouts, selected and
-external tracks and no-track/toggle-off states. Original numeric-observer and
-missing-snapshot-field failures remain preserved alongside same-binary completion.
-See the M8/M11 verification ledgers. M12 now owns R107; M10 final normal release
-remains NOT STARTED until M12 and final integrated reconciliation pass.
+**7 November current work: M10 — ACTIVE for final normal1.1.9 delivery.**
+M8, M9, M11 and M12 are COMPLETE. Actual floating/main pictures in both engines,
+reference panel presentation, inline subtitle synchronization and accent-based
+volume have inspected evidence. Close dismisses only the miniplayer, preserving
+background playback/main minimization across the next item; explicit restore and
+a subsequent minimize restart the floating cycle. Both-engine100/150/200 percent
+checks pass, owned players exit0 and protected profiles are unchanged. Original
+observer/selector failures remain alongside same-binary completion. M10 owns one
+normal optimized package, four assets and independent delivery verification.
 
 Historical M8 contrast implementation checkpoint:
 The user reports the current remaining issue is muted controls blending into the
@@ -832,8 +831,8 @@ presentation and final delivery remain required.
 | M8 Figma floating miniplayer | COMPLETE | Both-engine100/150/200% lifecycle, hover/drag/seek/queue and full published geometry after repeated restore pass; user confirms surrounding-area dragging/hover. Original16-unit muted toolbar inspected. | None. Actual floating/main pictures inspected in both engines; normal final delivery belongs to M10. | None. |
 | M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
 | M11 Inline subtitle synchronization | COMPLETE | R106 inline cue/navigation/timing layout, unchanged bar height, both-engine100/150/200 pointer/keyboard workflows, custom top/narrow layouts and track states pass. | None within R106; final normal delivery belongs to M10. | None. |
-| M10 Final1.1.9 delivery | NOT STARTED | Existing normal release procedure retained. | Complete M8, M9, M11 and M12, integrated reconciliation, normal optimized package, four assets and independent published delivery verification. | None. |
-| M12 Engine-accent volume and miniplayer dismissal | ACTIVE | Existing functional volume wedge retained; M8 picture/restore acceptance preserved. | R107 original silhouette with effective-accent gradient, default/custom engine colors, handover and native DPI/volume/mute verification. R108 Close dismisses only the mini, keeps playback/main minimized, and explicit restore/minimize starts a new cycle. Runs before M10. | None. |
+| M10 Final1.1.9 delivery | ACTIVE | M8/M9/M11/M12 reconciled; existing release procedure retained. | Normal optimized package, four assets, independent published delivery and retained build binding verification. | None. |
+| M12 Engine-accent volume and miniplayer dismissal | COMPLETE | R107 default/custom gradient, handover, volume/mute and R108 background-only dismissal/next input/restore/new minimize pass both engines100/150/200 percent. | None within R107/R108; final delivery belongs to M10. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core
