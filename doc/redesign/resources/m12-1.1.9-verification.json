@@ -23,5 +23,7 @@
   "test_correction": "Use offered #1b4e9d swatch instead of CLI-only #2f87b5. Same production binary.",
   "closure_assessment": "Existing SVG provider and volume binding own appearance; one MainCtx flag follows explicit visibility transitions and existing compositor hide/reparent owns dismissal. No duplicate playback state or required consolidation.",
   "blockers": [],
-  "tracked_deferrals": []
+  "tracked_deferrals": [],
+  "delivered_in": "redesign-v1.1.9",
+  "retained_raw_evidence_index": "D:\\VLC-Redesign\\releases\\1.1.9\\verification\\RAW-EVIDENCE.json"
 }

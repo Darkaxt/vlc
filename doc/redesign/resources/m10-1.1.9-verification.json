@@ -1,0 +1,87 @@
+{
+  "status": "COMPLETE",
+  "requirements": [
+    "R97",
+    "R98",
+    "R99",
+    "R100",
+    "R101 revised",
+    "R102",
+    "R103",
+    "R104",
+    "R105",
+    "R106",
+    "R107",
+    "R108"
+  ],
+  "version": "1.1.9",
+  "source_commit": "dbb446b6ccb8619d46ba2244ac12bd4f3eb88e32",
+  "url": "https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.9",
+  "normal_published_release": true,
+  "latest_verified": true,
+  "local_executable": "D:\\VLC-Redesign\\releases\\1.1.9\\Modern-VLC-Fork-1.1.9-win64-portable\\vlc.exe",
+  "delivery_receipt": "D:\\VLC-Redesign\\releases\\1.1.9\\verification\\qualification\\vlc-s8-release-1.1.9-20261107\\published-delivery-verification.json",
+  "asset_sha256": {
+    "Modern-VLC-Fork-1.1.9-win64-portable.zip": "b058d83cc1659bb60694cf21628e101ad316a94541ed74f2705cb246566e0110",
+    "Modern-VLC-Fork-1.1.9-corresponding-source.tar.gz": "b6eaf6e843a78035c4e788c2ba4a02ee4009c121a6676b8f4e3b45366dd673dc",
+    "Modern-VLC-Fork-1.1.9-win64-symbols.zip": "0ffb17577bfa688d405d076ee11f7a8d4f4ed0b9886a8c303be63ce2f9c12b56"
+  },
+  "portable_zip_bytes": 145409876,
+  "stripped_pe_count": 417,
+  "normal_build": {
+    "run": 80,
+    "request": "1b76b18d07a34962a10ebc2c4a893c38",
+    "exit_code": 0,
+    "linux_group_empty": true,
+    "private_mounts_released": true
+  },
+  "retained_read_only_check": {
+    "request": "48bc995446624c699daf53f0ccce6825",
+    "passed": true,
+    "no_rebuild": true
+  },
+  "retained_check_original_failure": {
+    "request": "ddbcd31e9c0e4c7fbe450318c7e0ef0d",
+    "reason": "Delivery JSON was not explicitly staged into native scratch. Added exact JSON argument; same build passed. Original group exited empty and mounts released."
+  },
+  "acceptance": "M8/M9/M11/M12 source-bound native workflows and inspected UI/pictures pass; normal package/source/symbols, actual SDR/P5 presentation, four published assets and independent downloaded behavior/hashes pass. Protected profiles unchanged.",
+  "picture_limit": "Downloaded MPV gets its own inactive lifecycle; actual presentation reused only by identical complete portable ZIP hash, Qt identity, geometry and monitors.",
+  "taskbar_size": "Further enlargement explicitly withdrawn; failed historical numeric result retained, not reported as achieved.",
+  "cleanup": [
+    {
+      "transaction": "4a31fd0d0bfd9e05342c9d7cd53aed4a",
+      "bytes": 372592640,
+      "state": "APPLIED"
+    },
+    {
+      "transaction": "90082282529fb3b7f1a9e3aea1a453f1",
+      "bytes": 367637276,
+      "state": "APPLIED"
+    },
+    {
+      "transaction": "2b0681fda5ee90b2e9aed74b62a0aed0",
+      "bytes": 1593651200,
+      "state": "APPLIED"
+    },
+    {
+      "transaction": "68f4e00ee7d7e0418c032be4a3d0d837",
+      "bytes": 367675999,
+      "state": "APPLIED"
+    },
+    {
+      "transaction": "1279ee9c4f1b75383b11ec733c359458",
+      "bytes": 14034696865,
+      "state": "APPLIED"
+    },
+    {
+      "transaction": "bc4ce03bd52287b8a604454419653dc4",
+      "bytes": 5411258715,
+      "state": "APPLIED"
+    }
+  ],
+  "raw_evidence_index": "D:\\VLC-Redesign\\releases\\1.1.9\\verification\\RAW-EVIDENCE.json",
+  "historical_parked_M6": "Native Linux cleanup backend unavailable for exact inventoried spent artifacts; no raw rm/UNC bypass. This is not a delivery failure or a waived cleanup criterion.",
+  "closure_assessment": "Existing playback/compositor/config/color owners retained; no new required consolidation. No implementation blockers or tracked deferrals remain in R97-R108.",
+  "blockers": [],
+  "tracked_deferrals": []
+}

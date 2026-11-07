@@ -1,40 +1,38 @@
 # Windows x64 reproduction and recovery
 
 Current delivery is normal
-[1.1.8](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.8), source
-`4c8c98e6a269b852afc8f40e362580172f303ff9`. The local usable executable is
-`D:/VLC-Redesign/releases/1.1.8/Modern-VLC-Fork-1.1.8-win64-portable/vlc.exe`.
-All four published assets were independently retrieved and checked. Normal
-qualification, downloaded native behavior, actual SDR/P5 presentation and
-protected-profile evidence are retained in that version's `verification` folder.
-Frozen control snapshots document original paths; they are not installed
-relocatable launchers.
+[1.1.9](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.9), source
+`dbb446b6ccb8619d46ba2244ac12bd4f3eb88e32`. Run the local usable executable at
+`D:/VLC-Redesign/releases/1.1.9/Modern-VLC-Fork-1.1.9-win64-portable/vlc.exe`.
+All four published assets were independently downloaded/hash-checked. Normal VLC
+and MPV lifecycle, actual SDR/P5 presentation, stripped417-PE mappings, complete
+corresponding source and protected profiles pass. M8/M9/M11/M12 ledgers record
+the accepted native workflows and original test-observer failures separately.
 
-Unreleased1.1.9 implementation acceptance is complete. Current producer is
-`0b44bc6067c5d6c09c8b0b17322b6636eefff6ae`, optimized diagnostic79, Coordinator267
-`4f81c8a2cbd3455ea7fd00cb6e30580c`. It closed0/group empty, private mounts released,
-without memory-limit/OOM events. The MainCtx header change required a Qt-module
-recompile (411.8s); native-ext4 dependencies and409 plugins were reused.
-M8/M9/M11/M12 ledgers bind actual floating/main pictures, reference panels,
-inline subtitle timing/navigation/custom layouts and accent volume acceptance.
-Dismissal preserves playback/main minimization across next input; explicit
-restore and a new minimize cycle pass both engines100/150/200 percent. Profiles
-are unchanged and every owned player exits0.
+Normal80, Coordinator268 `1b76b18d07a34962a10ebc2c4a893c38`, closed0/group empty
+with private mounts released and no memory-limit/OOM events. Qt took156.1s;
+retained native-ext4 SDK/MPV/codec objects and409 plugins were reused. Read-only
+Coordinator270 `48bc995446624c699daf53f0ccce6825` verifies the continuing source,
+configuration, stripped runtime and codec link-map binding without rebuilding.
+Its original269 failure was an unstaged delivery JSON; the corrected explicit
+input passed on the unchanged build. Current next pipeline directory is0081.
 
-Existing floating-m8-review launchers are historical diagnostic copies using
-isolated profiles, not final packages or current dismissal behavior. Preserve
-their active user consumer; retire runtime after exit. Do not add
-`--no-media-library` to select a different interface. The redesigned no-library
-path has separate accepted evidence. M10 owns final normal1.1.9. Normal80 must
-use the closed79 predecessor and exact source bundle; retain native-ext4 inputs,
-limits and409-plugin reuse without SDK setup/configure/dependency rebuild.
+Current qualification and compact frozen controls are in the delivered version's
+`verification` directory. `RAW-EVIDENCE.json` binds the exhaustively read-back
+G: archive of raw snapshots/captures; these are retained regression evidence,
+not runtime inputs. Original absolute paths in frozen records are provenance,
+not installed launchers. Superseded ordinary review runtimes are retired.
+`build-retention.json` binds the actual1.1.9 native source/runtime/pipeline/symbols.
+Use `verify-retained-build-1.1.9.py /scratch/retention-delivery-1.1.9.json` through
+the installed WSL gate/private chroot so both control and receipt are staged.
+Do not restore old NTFS compiler paths or reinitialize/reconfigure unchanged inputs.
 
 The continuing build consumer is now `VLC-Build-20261106` with its D:-backed ext4
 root `/toolchain`. Source is `/toolchain/work/src`, build is
 `/toolchain/work/build/win64`, runtime is
 `/toolchain/scratch/preview-1.1.8/runtime` and pipeline is
 `/toolchain/scratch/preview-1.1.8/compilation`. Windows finished-artifact mirrors
-remain under `D:/VLC-Redesign/build/windows-x64/scratch-share/preview-1.1.8`.
+remain under `D:/VLC-Redesign/build/windows-x64/scratch-share/icons-1.1.9`.
 Use the installed WSL Coordinator launcher and `with-isolated-toolchain.py
 --native --scratch /mnt/d/VLC-Redesign/build/windows-x64`, without `--initialize`.
 Preserve4GiB shared VM,3.5GiB workload,512MiB swap, one CPU and one compiler job.

@@ -27,6 +27,8 @@ running window and taskbar icon while preserving the original icon shading.
 MPV display frames are derived from its original high-resolution artwork;
 the Windows taskbar controls the displayed button size.
 
+The volume wedge follows the saved accent for the active engine. Closing the floating miniplayer keeps playback running with the main window minimized.
+
 - Redesigned player, media library, first-run guide and settings.
 - VLC and MPV playback engines, with in-session switching that preserves position
   and play/pause state.
@@ -236,5 +238,3 @@ share/             - Common resource files.
 src/               - libvlccore source code.
 test/              - Testing system.
 ```
-
-The volume wedge follows the saved accent for the active engine. Closing the floating miniplayer keeps playback running with the main window minimized.

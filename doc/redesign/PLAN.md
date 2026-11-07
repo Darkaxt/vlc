@@ -1,14 +1,20 @@
 # VLC redesign stages and reconciliation
 
-**7 November current work: M10 — ACTIVE for final normal1.1.9 delivery.**
-M8, M9, M11 and M12 are COMPLETE. Actual floating/main pictures in both engines,
-reference panel presentation, inline subtitle synchronization and accent-based
-volume have inspected evidence. Close dismisses only the miniplayer, preserving
-background playback/main minimization across the next item; explicit restore and
-a subsequent minimize restart the floating cycle. Both-engine100/150/200 percent
-checks pass, owned players exit0 and protected profiles are unchanged. Original
-observer/selector failures remain alongside same-binary completion. M10 owns one
-normal optimized package, four assets and independent delivery verification.
+**7 November delivery: M10 — COMPLETE; normal1.1.9 is published and verified.**
+Tag `redesign-v1.1.9` binds `dbb446b6ccb8619d46ba2244ac12bd4f3eb88e32`.
+M7/M8/M9/M11/M12 and their integrated R97–R108 outcomes are COMPLETE under the
+explicit taskbar-size scope revision. The normal optimized package, complete
+source, matching symbols and checksums were independently downloaded and checked;
+native VLC and MPV lifecycle pass, with actual normal SDR/P5 picture evidence.
+Protected profiles remain unchanged. Local usable player:
+`D:/VLC-Redesign/releases/1.1.9/Modern-VLC-Fork-1.1.9-win64-portable/vlc.exe`.
+Normal268 and read-only270 closed0/group empty/private mounts released. The weekly
+automation now binds1.1.9/native ext4 inputs. Superseded1.1.8 release/assets/local
+packages and exited Windows intermediates are retired; Git tags/history remain.
+Raw acceptance evidence is archived/read-back on G: with a compact local index;
+release folders contain deliverables and compact verification, not test runtimes.
+M6's historical native-cleanup backend limitation remains BLOCKED as recorded;
+no Linux deletion bypass or Rust stage was started. See the M10 delivery ledger.
 
 Historical M8 contrast implementation checkpoint:
 The user reports the current remaining issue is muted controls blending into the
@@ -831,7 +837,7 @@ presentation and final delivery remain required.
 | M8 Figma floating miniplayer | COMPLETE | Both-engine100/150/200% lifecycle, hover/drag/seek/queue and full published geometry after repeated restore pass; user confirms surrounding-area dragging/hover. Original16-unit muted toolbar inspected. | None. Actual floating/main pictures inspected in both engines; normal final delivery belongs to M10. | None. |
 | M9 Player-panel Figma parity | COMPLETE | Original selected two-tone icons/effective palettes; reference four-tab groups/controls/sliders/footer; both-engine delays, equalizer enable/None/expand and inspected native100/150/200% pictures; README comparison. | None within R105. Final publication remains M10. | None. |
 | M11 Inline subtitle synchronization | COMPLETE | R106 inline cue/navigation/timing layout, unchanged bar height, both-engine100/150/200 pointer/keyboard workflows, custom top/narrow layouts and track states pass. | None within R106; final normal delivery belongs to M10. | None. |
-| M10 Final1.1.9 delivery | ACTIVE | M8/M9/M11/M12 reconciled; existing release procedure retained. | Normal optimized package, four assets, independent published delivery and retained build binding verification. | None. |
+| M10 Final1.1.9 delivery | COMPLETE | Normal four-asset release/tag/source/hashes, downloaded native behavior, actual SDR/P5 presentation, protected profiles, retained/weekly binding and Windows retirement verified. | None within R97–R108. Historical M6 native cleanup remains explicitly parked. | None. |
 | M12 Engine-accent volume and miniplayer dismissal | COMPLETE | R107 default/custom gradient, handover, volume/mute and R108 background-only dismissal/next input/restore/new minimize pass both engines100/150/200 percent. | None within R107/R108; final delivery belongs to M10. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.

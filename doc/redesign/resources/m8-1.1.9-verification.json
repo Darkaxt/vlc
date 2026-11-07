@@ -271,5 +271,7 @@
       "image_sha256": "eeb24ae2812df13152529afbdfb02ceed4dd288da543dcc2c50f8773653e7146",
       "engine": "vlc"
     }
-  ]
+  ],
+  "delivered_in": "redesign-v1.1.9",
+  "retained_raw_evidence_index": "D:\\VLC-Redesign\\releases\\1.1.9\\verification\\RAW-EVIDENCE.json"
 }

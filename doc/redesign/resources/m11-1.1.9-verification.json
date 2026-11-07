@@ -35,5 +35,7 @@
   "reused_unaffected": "Existing extraction, still-image exclusion, waveform/visualizer painter and saved settings owners retained; ordinary slider behavior remains its original owner.",
   "closure_assessment": "Reuse existing analysis, slider and control layout owners; no new state service or duplicate timing model. No further required consolidation.",
   "blockers": [],
-  "tracked_deferrals": []
+  "tracked_deferrals": [],
+  "delivered_in": "redesign-v1.1.9",
+  "retained_raw_evidence_index": "D:\\VLC-Redesign\\releases\\1.1.9\\verification\\RAW-EVIDENCE.json"
 }

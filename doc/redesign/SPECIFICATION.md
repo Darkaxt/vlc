@@ -159,9 +159,10 @@ The expanded request also requires R102/R104 repairs and R103 floating-miniplaye
 acceptance, R105 player-panel parity and R106 inline subtitle synchronization
 before that single final release; no
 intermediate repair release. M8 retains the floating miniplayer; M9 owns R105;
-M11 owns R106 and M12 owns R107/R108; both run before final delivery M10. M8's current native repair
-acceptance and remaining actual composed-picture condition are recorded in PLAN;
-M9 is COMPLETE. Preserve original drag/restore/readability reports separately
+M11 owns R106 and M12 owns R107/R108; both precede final delivery M10.
+M7/M8/M9/M11/M12 and M10 are COMPLETE in normal1.1.9; source-bound native
+acceptance, actual composed pictures and independently retrieved delivery are
+recorded in their verification ledgers. Preserve original drag/restore/readability reports separately
 from current verification; desktop controls remain prohibited.
 M6's separately recorded native-cleanup capability blocker remains parked;
 it is neither waived nor relabeled as M7 completion.
