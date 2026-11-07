@@ -4,6 +4,44 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**7 November startup optimization, R109 (M13), already authorized:**
+
+The user reports that launching VLC is very slow and requests an optimization
+round. After deployment to their stable folder, the first launch reportedly took
+10+ seconds and the next less than4; this is a user observation, not instrumented
+timing. Separate plugin loading, first-run QML work and Windows filesystem cache
+warming. Measure the delivered player before changing behavior: fresh unprimed
+portable extraction and subsequent launches, VLC/MPV, core initialization versus
+first usable interface. Keep conditions comparable and report filesystem-cache
+and concurrent-work limitations; do not flush OS caches or alter the real profile.
+Trace measured delays to their owners and implement only evidenced startup
+bottlenecks. Preserve the Figma interface, complete configured plugin graph,
+VLC/MPV/DV capabilities, font onboarding, palettes, settings/data and provenance.
+
+The existing packager omits plugins.dat while the runtime verifier generates it
+before launching. Investigate this mismatch explicitly; it is a lead, not yet a
+measured explanation for the complete delay. If a shipped index is justified,
+bind it to the exact normal stripped plugin cohort, preserve native cache
+validation, relative/relocatable paths and extraction timestamp semantics. Do not
+drop plugins, force no-scan or weaken stale-plugin checks to manufacture speed.
+Acceptance must exercise fresh downloaded-package startup without priming the
+plugin cache first. The selected packaging correction generates the index from
+the final stripped DLLs with one fixed UTC mtime, writes matching DOS-local plus
+UTC/NTFS ZIP timestamps, and records each DLL/cache hash. Standard7-Zip and
+PowerShell extraction plus relocation must preserve valid native metadata;
+timestamp-resetting extractors retain correct native rescanning rather than
+silently bypassing validation. Demonstrate improvement on comparable normal launches and
+verify affected playback, first-run and engine/profile workflows.
+
+M13 is one cohesive startup optimization and final1.1.10 delivery stage. Reuse
+unchanged1.1.9 acceptance; batch the complete fix before one normal optimized
+release build. Keep the native-ext4 toolchain, flags, resource limits and verified
+cohort reuse contract. Deliver one normal four-asset1.1.10 release, independently
+download/start it, update the retained/weekly binding and retire superseded
+packages only after verified delivery. Preserve the current verified1.1.9 until
+then. No additional tiny-UI manual review or speculative modernization is needed.
+
+
 **6 November runtime icon repair, R97–R99 (M7), already authorized:**
 
 - R97: extract the Windows icon group from the user's locally installed MPV

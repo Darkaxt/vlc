@@ -10,6 +10,7 @@ parser.add_argument('--scratch',type=Path,required=True)
 parser.add_argument('--evidence',type=Path,required=True)
 parser.add_argument('--with-media-library',action='store_true',help='Exercise normal native media-library startup as well as playback')
 parser.add_argument('--engine',choices=['vlc','mpv'],default='vlc')
+parser.add_argument('--generate-plugin-cache',action='store_true',help='Explicit build-tree diagnostic only; package acceptance must use the shipped index without priming')
 options=parser.parse_args()
 s=options.scratch.resolve();r=options.runtime.resolve();e=options.evidence.resolve()
 repo=Path(__file__).resolve().parents[2]
@@ -43,13 +44,17 @@ env.update(TEMP=str(s/'tmp'),TMP=str(s/'tmp'),VLC_DATA_PATH=str(r),VLC_USERDATA_
 env.pop('VLC_PLUGIN_PATH',None)
 env.pop('QML_DISABLE_DISK_CACHE',None)
 records={}
-with (e/'plugin-cache.stdout').open('wb') as out,(e/'plugin-cache.stderr').open('wb') as err:
- p=subprocess.run([str(r/'vlc-cache-gen.exe'),str(r/'plugins')],cwd=r,env=env,stdout=out,stderr=err,creationflags=subprocess.CREATE_NO_WINDOW)
- assert p.returncode==0,p.returncode
-records['plugin_cache_exit']=p.returncode
-cache_log=(e/'plugin-cache.stderr').read_text(encoding='utf8',errors='replace')
-assert 'cannot load plug-in' not in cache_log,cache_log
-print('Packaged plugin inventory exits normally',flush=True)
+cache=r/'plugins/plugins.dat'
+records['plugin_cache_primed']=options.generate_plugin_cache
+records['plugin_cache_shipped_sha256']=hashlib.sha256(cache.read_bytes()).hexdigest() if cache.exists() else None
+if options.generate_plugin_cache:
+ with (e/'plugin-cache.stdout').open('wb') as out,(e/'plugin-cache.stderr').open('wb') as err:
+  generated=subprocess.run([str(r/'vlc-cache-gen.exe'),str(r/'plugins')],cwd=r,env=env,stdout=out,stderr=err,creationflags=subprocess.CREATE_NO_WINDOW)
+  assert generated.returncode==0,generated.returncode
+ records['plugin_cache_exit']=generated.returncode
+ cache_log=(e/'plugin-cache.stderr').read_text(encoding='utf8',errors='replace')
+ assert 'cannot load plug-in' not in cache_log,cache_log
+print('Native startup uses the package as delivered; cache generation is explicit',flush=True)
 args=[str(r/'vlc.exe'),'--intf=qt','--no-one-instance',*([] if options.with_media_library else ['--no-media-library']),'--restore-playback-pos=0','--no-save-recentplay','--no-qt-privacy-ask','--no-qt-updates-notif','--no-metadata-network-access','--no-qt-video-autoresize','--no-video-title-show','--no-volume-save','--mmdevice-volume=0.0','--play-and-exit','--file-logging','--log-verbose=2','--logfile='+str(e/'native-ui.log'),str(options.fixture.resolve())]
 args.insert(1,'--qt-playback-engine='+options.engine)
 (e/'launch-argv.json').write_text(json.dumps(args,indent=2)+'\n',encoding='utf8')

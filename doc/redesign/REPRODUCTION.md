@@ -1,5 +1,11 @@
 # Windows x64 reproduction and recovery
 
+R109/M13 startup optimization is ACTIVE. Use the current1.1.9 below as the normal
+baseline; fresh-package startup must not run vlc-cache-gen before measurement.
+The previous verifier did prime the index, so its lifecycle result alone is not
+a cold-start performance result. Profile after cleanup I/O is idle, preserve real
+profiles and use isolated owned native windows without desktop controls.
+
 Current delivery is normal
 [1.1.9](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.9), source
 `dbb446b6ccb8619d46ba2244ac12bd4f3eb88e32`. Run the local usable executable at

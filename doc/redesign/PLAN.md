@@ -1,5 +1,20 @@
 # VLC redesign stages and reconciliation
 
+**7 November current work: M13 — ACTIVE, startup optimization and1.1.10 delivery.**
+R109 requires measured fresh/unprimed and subsequent normal startup, evidence-led
+correction, affected regression checks and one normal independently verified
+release. Investigate the missing shipped plugin index versus verifier priming
+first. Preserve the full plugin graph, native cache validation, Figma interface,
+engine/DV behavior and profiles.1.1.9 remains the verified delivery. No production
+startup release is claimed yet. The exact stripped410-plugin index now survives
+7-Zip/PowerShell extraction and relocation with603 native modules; a changed DLL
+mtime is rejected and rescanned. Core initialization/teardown fell from1.0–1.6s
+to about0.52s in the baseline comparison. Cold-profile native window-show times
+were2.812→2.281s (VLC) and3.500→3.172s (MPV); these do not establish first paint or
+explain the user's whole10+s observation. QML caches contain nine files in both
+conditions. Windows caches were not flushed. M13 still requires the normal1.1.10
+package, fresh unprimed download acceptance, publication/binding and cleanup.
+
 **7 November delivery: M10 — COMPLETE; normal1.1.9 is published and verified.**
 Tag `redesign-v1.1.9` binds `dbb446b6ccb8619d46ba2244ac12bd4f3eb88e32`.
 M7/M8/M9/M11/M12 and their integrated R97–R108 outcomes are COMPLETE under the
@@ -839,6 +854,7 @@ presentation and final delivery remain required.
 | M11 Inline subtitle synchronization | COMPLETE | R106 inline cue/navigation/timing layout, unchanged bar height, both-engine100/150/200 pointer/keyboard workflows, custom top/narrow layouts and track states pass. | None within R106; final normal delivery belongs to M10. | None. |
 | M10 Final1.1.9 delivery | COMPLETE | Normal four-asset release/tag/source/hashes, downloaded native behavior, actual SDR/P5 presentation, protected profiles, retained/weekly binding and Windows retirement verified. | None within R97–R108. Historical M6 native cleanup remains explicitly parked. | None. |
 | M12 Engine-accent volume and miniplayer dismissal | COMPLETE | R107 default/custom gradient, handover, volume/mute and R108 background-only dismissal/next input/restore/new minimize pass both engines100/150/200 percent. | None within R107/R108; final delivery belongs to M10. | None. |
+| M13 Startup optimization and1.1.10 delivery | ACTIVE | R109 authorized; current1.1.9 and retained native build provide the baseline. | Measure normal fresh/repeat VLC/MPV startup, identify/fix evidenced delay, verify affected workflows, normal optimized four-asset1.1.10 publication/download and retained binding. | None. |
 
 Use the existing Qt/native configuration controls and player/library owners.
 Reuse retained SDK/MPV/codecs/objects. Earlier M4 integration affected core

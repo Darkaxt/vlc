@@ -10,6 +10,9 @@ Get the Windows x64 portable package from the
 [latest release](https://github.com/Darkaxt/vlc/releases/latest).
 Extract the portable ZIP and run `vlc.exe`. Corresponding source, optional debug
 symbols and SHA-256 checksums are provided separately with each release.
+The portable package includes a native module index for its exact plugins, so
+startup does not have to load every plugin DLL just to discover its metadata.
+VLC still validates changed plugins normally.
 
 ## The player
 
