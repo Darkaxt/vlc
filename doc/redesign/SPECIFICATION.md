@@ -4,6 +4,33 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+**7 November stabilization logging, R110 (M14), already authorized:**
+
+The user requests file logging enabled by default until a stable release, with
+no more than about three days retained, after an intermittent reported30+s
+startup. The current portable profile has no explicit file-logging override;
+the upstream default is off. Windows events contain no matching hang/crash or
+storage warning. AppControl distinguishes the prior1.1.9 and current1.1.10
+executables, so do not treat those launches as a controlled same-build comparison
+or claim that the30s cause is established.
+
+Enable the Windows fork's native file logger by default at diagnostic verbosity,
+preserving explicit saved/command-line disable and explicit user log destinations.
+For the automatic destination, use the actual portable/installed profile's logs
+directory, timestamped process/session files, retention of at most72hours when
+the app is running, and bounded per-file/aggregate storage. Prune only precisely
+owned diagnostic files; preserve live writers, unrelated files and user-selected
+destinations. Rotate during long-running sessions, not only at the next launch.
+Include UTC and elapsed timing plus core startup milestones so buffered early
+messages cannot be mistaken for the time at which they were originally emitted.
+No uploads, elevated tracing, OS configuration changes or real-profile changes
+are authorized by this logging implementation. Preserve ordinary playback and
+VLC/MPV/Figma behavior. Acceptance covers default creation, config/CLI opt-out,
+early startup timing,72hour expiry, size rotation, concurrent processes and
+unwritable storage without blocking the player. Deliver one verified normal
+1.1.11 four-asset release after the complete outcome passes; preserve1.1.10
+until that delivery and the reusable build/weekly binding are verified.
+
 **7 November startup optimization, R109 (M13), already authorized:**
 
 Delivered and independently verified in normal1.1.10; [reconciliation](resources/m13-1.1.10-verification.json) records native startup observations, exact cache/extraction checks, playback, source/symbols, profiles and cleanup. The complete user-reported10+s delay is not attributed solely to the measured plugin cost.

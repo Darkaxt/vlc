@@ -35,6 +35,10 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <errno.h>
+#ifdef _WIN32
+#include <vlc_charset.h>
+#include "fork_file.h"
+#endif
 
 static const char msg_type[4][9] = { "", " error", " warning", " debug" };
 
@@ -43,7 +47,35 @@ typedef struct
     FILE *stream;
     const char *footer;
     int verbosity;
+#ifdef _WIN32
+    bool managed;
+    fork_log_t automatic;
+#endif
 } vlc_logger_sys_t;
+
+#ifdef _WIN32
+static void LogManaged(vlc_logger_sys_t *sys, int type, const vlc_log_t *meta,
+                       const char *format, va_list ap)
+{
+    char message[14336], line[16384];
+    int length = vsnprintf(message, sizeof(message), format, ap);
+    if (length < 0) return;
+    if ((size_t)length >= sizeof(message))
+        memcpy(message + sizeof(message) - 15, " [truncated]\0", 13);
+    uint64_t now = fork_log_now();
+    FILETIME filetime = { (DWORD)now, (DWORD)(now >> 32) };
+    SYSTEMTIME utc;
+    FileTimeToSystemTime(&filetime, &utc);
+    length = snprintf(line, sizeof(line),
+        "%04u-%02u-%02uT%02u:%02u:%02u.%03uZ logger_ms=%llu pid=%lu %s%s: %s\n",
+        utc.wYear, utc.wMonth, utc.wDay, utc.wHour, utc.wMinute, utc.wSecond,
+        utc.wMilliseconds, (unsigned long long)(GetTickCount64() - sys->automatic.origin),
+        GetCurrentProcessId(), meta->psz_module, msg_type[type], message);
+    if (length > 0)
+        fork_log_write(&sys->automatic, line,
+                       (size_t)length < sizeof(line) ? (size_t)length : sizeof(line)-1, now);
+}
+#endif
 
 #define TEXT_FILENAME "vlc-log.txt"
 #define TEXT_HEADER "\xEF\xBB\xBF" /* UTF-8 BOM */ \
@@ -59,6 +91,13 @@ static void LogText(void *opaque, int type, const vlc_log_t *meta,
     if (sys->verbosity < type)
         return;
 
+#ifdef _WIN32
+    if (sys->managed) {
+        LogManaged(sys, type, meta, format, ap);
+        return;
+    }
+#endif
+
     flockfile(stream);
     fprintf(stream, "%s%s: ", meta->psz_module, msg_type[type]);
     vfprintf(stream, format, ap);
@@ -69,6 +108,16 @@ static void LogText(void *opaque, int type, const vlc_log_t *meta,
 static void Close(void *opaque)
 {
     vlc_logger_sys_t *sys = opaque;
+
+#ifdef _WIN32
+    if (sys->managed) {
+        const char footer[] = TEXT_FOOTER;
+        fork_log_write(&sys->automatic, footer, sizeof(footer)-1, fork_log_now());
+        fork_log_close(&sys->automatic);
+        free(sys);
+        return;
+    }
+#endif
 
     fputs(sys->footer, sys->stream);
     fclose(sys->stream);
@@ -141,7 +190,7 @@ static const struct vlc_logger_operations *Open(vlc_object_t *obj,
 
     verbosity += VLC_MSG_ERR;
 
-    vlc_logger_sys_t *sys = malloc(sizeof (*sys));
+    vlc_logger_sys_t *sys = calloc(1, sizeof (*sys));
     if (unlikely(sys == NULL))
         return NULL;
 
@@ -168,6 +217,44 @@ static const struct vlc_logger_operations *Open(vlc_object_t *obj,
     }
 
     char *path = var_InheritString(obj, "logfile");
+#ifdef _WIN32
+    if (path == NULL) {
+        char *profile = config_GetUserDir(VLC_CONFIG_DIR);
+        char *directory = NULL;
+        if (profile) {
+            /* The portable/profile resolver is authoritative; never write in
+             * the current working directory or another application's folder. */
+            vlc_mkdir(profile, 0700);
+            if (asprintf(&directory, "%s\\logs", profile) < 0) directory = NULL;
+            free(profile);
+        }
+        wchar_t *wide = directory ? ToWide(directory) : NULL;
+        free(directory);
+        bool opened = wide && fork_log_open(&sys->automatic, wide);
+        free(wide);
+        if (!opened) {
+            free(sys);
+            return NULL; /* Logging failure must not prevent ordinary startup. */
+        }
+        sys->managed = true;
+        const char start[] = TEXT_HEADER
+            "Automatic stabilization diagnostics: 72h retention; 8 x 4MiB files.\n"
+            "UTC/logger_ms describe sink writes; buffered startup phases carry core_elapsed_ms.\n";
+        fork_log_write(&sys->automatic, start, sizeof(start)-1, fork_log_now());
+        FILETIME creation, exit, kernel, user;
+        if (GetProcessTimes(GetCurrentProcess(), &creation, &exit, &kernel, &user)) {
+            uint64_t created = ((uint64_t)creation.dwHighDateTime << 32) | creation.dwLowDateTime;
+            uint64_t now = fork_log_now();
+            char timing[160];
+            int count = snprintf(timing, sizeof(timing), "startup logger-open process_age_ms=%llu pid=%lu\n",
+                                 (unsigned long long)((now >= created ? now-created : 0)/10000),
+                                 GetCurrentProcessId());
+            fork_log_write(&sys->automatic, timing, (size_t)count, now);
+        }
+        *sysp = sys;
+        return &text_ops;
+    }
+#endif
 #ifdef __APPLE__
     if (path == NULL)
     {
@@ -217,10 +304,14 @@ static const int verbosity_values[] = {
 static const char *const verbosity_text[] = { N_("Default"), N_("Info"), N_("Error"), N_("Warning"), N_("Debug") };
 
 #define FILE_LOG_TEXT N_("Log to file")
-#define FILE_LOG_LONGTEXT N_("Log all VLC messages to a text file.")
+#define FILE_LOG_LONGTEXT N_("Log VLC messages to a file. On Windows this is enabled " \
+"during stabilization. Automatic profile-local logs retain up to 72 hours, with " \
+"eight 4MiB files. Turn this off to disable file diagnostics.")
 
 #define LOGFILE_NAME_TEXT N_("Log filename")
-#define LOGFILE_NAME_LONGTEXT N_("Specify the log filename.")
+#define LOGFILE_NAME_LONGTEXT N_("Specify the log filename. Leave empty on Windows " \
+"to use automatic timestamped text logs in the profile's logs folder, with " \
+"72hour/32MiB retention. An explicit filename remains user-managed.")
 
 #define LOGMODE_TEXT N_("Log format")
 #define LOGMODE_LONGTEXT N_("Specify the logging format.")
@@ -236,10 +327,19 @@ vlc_module_begin()
     set_capability("logger", 15)
     set_callback(Open)
 
+#ifdef _WIN32
+    /* Stabilization default. Explicit saved/CLI false remains authoritative. */
+    add_bool("file-logging", true, FILE_LOG_TEXT, FILE_LOG_LONGTEXT)
+#else
     add_bool("file-logging", false, FILE_LOG_TEXT, FILE_LOG_LONGTEXT)
+#endif
     add_savefile("logfile", NULL, LOGFILE_NAME_TEXT, LOGFILE_NAME_LONGTEXT)
     add_string("logmode", "text", LOGMODE_TEXT, LOGMODE_LONGTEXT)
         change_string_list(mode_list, mode_list_text)
+#ifdef _WIN32
+    add_integer("log-verbose", VLC_MSG_DBG, LOGVERBOSE_TEXT, LOGVERBOSE_LONGTEXT)
+#else
     add_integer("log-verbose", -1, LOGVERBOSE_TEXT, LOGVERBOSE_LONGTEXT)
+#endif
         change_integer_list(verbosity_values, verbosity_text)
 vlc_module_end ()

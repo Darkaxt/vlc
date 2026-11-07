@@ -242,6 +242,7 @@ QQuickItem* MainUI::createRootItem()
         msg_Err(m_intf, "unexpected type of qml root item");
         goto end;
     }
+    msg_Dbg(m_intf, "startup phase=qml-root-ready");
 #ifdef VLC_PLAYER_DIAGNOSTICS
     PlayerDiagnostics::attach(m_rootItem, m_engineBound, m_intf->p_mainPlayerController);
 #endif

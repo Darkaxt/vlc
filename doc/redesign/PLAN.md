@@ -1,5 +1,17 @@
 # VLC redesign stages and reconciliation
 
+**7 November stabilization logging: M14 — ACTIVE (R110).**
+Implement default Windows file diagnostics with explicit opt-out, profile-local
+automatic logs, UTC/elapsed startup evidence,72hour expiry and bounded storage.
+Verify the integrated logger, retention/rotation, concurrent writers, storage
+failure and normal VLC/MPV startup/playback in one coordinated acceptance pass.
+Then build/package/publish/independently verify normal1.1.11, update the continuing
+build/weekly binding and retire superseded packages. No other stage is ACTIVE.
+Current advancement blockers: R110 implementation and all corresponding native
+acceptance/delivery criteria remain outstanding; these are internal work, not
+an external impediment. No tracked deferrals. Preserve M13's completed evidence
+and the unproven attribution of the full reported30s delay.
+
 **7 November delivery: M13 — COMPLETE; normal1.1.10 is published and independently verified.**
 R109 ships a native index for the exact410 stripped plugins, with matching ZIP
 timestamps, native603-module parity, relocation and changed-plugin validation.
