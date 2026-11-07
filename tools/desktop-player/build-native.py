@@ -213,6 +213,20 @@ def main():
             run('sh', ROOT / 'contrib/src/change_prefix.sh', cwd=contrib, env=env)
         sources.append({'name': 'vlc-native-contrib', 'upstream_input_commit': contrib_sha,
                         'url': url, 'archive': archive.name, 'sha256': sha(archive)})
+        # Prebuilt target libraries omit the native generators. Use upstream's
+        # matching recipes (including Lua's 64-bit bytecode patch), rather than
+        # a system luac/protoc that can generate incompatible serialized data.
+        native_tools = work / 'native-contrib-tools'
+        native_tools.mkdir(exist_ok=True)
+        if not (native_tools / 'Makefile').exists():
+            run('sh', ROOT / 'contrib/bootstrap', '--build=' + triplet,
+                '--host=' + triplet, '--prefix=' + str(contrib), '--disable-all',
+                '--enable-luac', '--enable-protoc', cwd=native_tools, env=env)
+        run('make', '-j1', '.luac', '.protoc', 'TARBALLS=' + str(work / 'sources'),
+            'BUILDCFLAGS=-O3 -g0 -DNDEBUG', cwd=native_tools, env=env)
+        env['LUAC'] = str(contrib.parent / 'bin' / (triplet + '-luac'))
+        env['PROTOC'] = str(contrib.parent / 'bin/protoc')
+        env['PATH'] = str(contrib.parent / 'bin') + ':' + env['PATH']
         env['PKG_CONFIG_PATH'] = str(contrib / 'lib/pkgconfig') + ':' + env['PKG_CONFIG_PATH']
         flags += ['--with-contrib=' + str(contrib)]
         flags += ['--disable-macosx', '--disable-xcb', '--without-x', '--with-macosx-version-min=13.0']
@@ -220,7 +234,7 @@ def main():
         flags += ['--enable-xcb', '--disable-wayland']
     # Preserve configure and generated objects when relevant inputs are equal.
     config = json.dumps({'flags': flags, 'environment': {k: env.get(k) for k in
-        ('CFLAGS', 'CXXFLAGS', 'PKG_CONFIG_PATH', 'MACOSX_DEPLOYMENT_TARGET')},
+        ('CFLAGS', 'CXXFLAGS', 'PKG_CONFIG_PATH', 'MACOSX_DEPLOYMENT_TARGET', 'LUAC', 'PROTOC')},
         'configure_inputs': {str(p.relative_to(ROOT)): sha(p) for p in
             [ROOT / 'configure.ac', ROOT / 'modules/gui/qt/qt6.pro']}}, sort_keys=True)
     binding = build / 'native-config.json'

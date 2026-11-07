@@ -184,6 +184,21 @@ def write_executable(path, text):
     path.chmod(0o755)
 
 
+def mac_minimum_system(load_commands):
+    """Read deployment targets, without confusing SDK versions with minOS."""
+    versions = []
+    for block in re.split(r'(?m)^Load command \d+\s*$', load_commands):
+        if re.search(r'\bcmd LC_BUILD_VERSION\b', block):
+            match = re.search(r'(?m)^\s*minos ([\d.]+)\s*$', block)
+        elif re.search(r'\bcmd LC_VERSION_MIN_MACOSX\b', block):
+            match = re.search(r'(?m)^\s*version ([\d.]+)\s*$', block)
+        else:
+            continue
+        if match:
+            versions.append(tuple(map(int, match.group(1).split('.'))))
+    return max(versions, default=(0,))
+
+
 def package_mac(work, installed, out, version, arch):
     app = out / 'Modern VLC.app'
     if app.exists():
@@ -233,6 +248,13 @@ def package_mac(work, installed, out, version, arch):
     qt = Path(output('brew', '--prefix', 'qt'))
     run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'), '-always-overwrite',
         '-executable=' + str(frameworks / 'plugins/gui/libqt_plugin.dylib'))
+    minimums = {str(path.relative_to(app)): mac_minimum_system(output('otool', '-l', path))
+                for path in app.rglob('*') if native(path)}
+    minimum = max((13, 0), *minimums.values())
+    info['LSMinimumSystemVersion'] = '.'.join(map(str, minimum))
+    (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
+    (resources / 'MINIMUM-SYSTEM.json').write_text(json.dumps({
+        'minimum_macos': info['LSMinimumSystemVersion'], 'native_members': minimums}, indent=2) + '\n')
     # Sign inner objects before the outer bundle. MPV payloads were signed
     # before their identities were compiled and must remain byte-identical.
     for path in sorted(app.rglob('*'), key=lambda p: len(p.parts), reverse=True):

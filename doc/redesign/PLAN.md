@@ -18,6 +18,13 @@ the partial staging directory. The focused regression reproduces that failure;
 staging now restores owned destination write permissions before replacement.
 Its retained cache and uploaded failure evidence remain recovery inputs; actual
 closure and player compilation still require the repaired native run.
+Run42426072377/job128564552335 from66a64c1bd3b25343bd7d8f710a12c94a53e4d075
+completed the native MPV closure and fetched/relocated the pinned VLC codec
+archive. VLC configuration then identified its missing matching Lua bytecode
+compiler. The driver now uses the existing contrib `.luac`/`.protoc` recipes and
+retains those generators. The Mac package also derives its minimum OS from the
+actual Mach-O deployment targets (the native MPV Swift objects require15.0).
+Full native player compilation and playback acceptance remain unresolved.
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
 MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
 submodule in the source archive; Linux ARM job128558356675 confirmed the same

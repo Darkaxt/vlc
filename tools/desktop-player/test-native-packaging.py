@@ -43,6 +43,21 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'Unresolved LC_RPATH'):
                 package.resolve_mac_dependency('@rpath/libbrotlicommon.1.dylib', origin, ['/unrelated'])
 
+    def test_macos_minimum_uses_deployment_target_not_sdk(self):
+        self.assertEqual(package.mac_minimum_system('''Load command 4
+      cmd LC_BUILD_VERSION
+  cmdsize 32
+ platform 1
+    minos 15.0
+      sdk 26.0
+'''), (15, 0))
+        self.assertEqual(package.mac_minimum_system('''Load command 6
+      cmd LC_VERSION_MIN_MACOSX
+  cmdsize 16
+  version 13.3
+      sdk 15.0
+'''), (13, 3))
+
     def test_ci_selection_does_not_add_unrequested_architectures(self):
         scratch = Path(sys.argv_scratch)
         for target, count in [('macos-arm64', 1), ('all', 4)]:
