@@ -47,6 +47,9 @@
 #include <string.h>
 #include <stdlib.h>                                                /* free() */
 #include <errno.h>
+#ifdef _WIN32
+# include <windows.h>
+#endif
 
 #include "config/vlc_getopt.h"
 
@@ -75,6 +78,17 @@
  * Local prototypes
  *****************************************************************************/
 static void GetFilenames  ( libvlc_int_t *, unsigned, const char *const [] );
+
+static vlc_tick_t StartupClockNow(void)
+{
+#ifdef _WIN32
+    /* vlc_threads_setup selects a different epoch for vlc_tick_now. Keep this
+     * startup measurement in one monotonic Windows clock across that switch. */
+    return VLC_TICK_FROM_MS(GetTickCount64());
+#else
+    return vlc_tick_now();
+#endif
+}
 
 /**
  * Allocate a blank libvlc instance, also setting the exit handler.
@@ -133,7 +147,7 @@ int libvlc_InternalInit( libvlc_int_t *p_libvlc, int i_argc,
     libvlc_priv_t *priv = libvlc_priv (p_libvlc);
     char        *psz_val;
     int          i_ret = VLC_EGENERIC;
-    const vlc_tick_t startup_started = vlc_tick_now();
+    const vlc_tick_t startup_started = StartupClockNow();
 
     if (unlikely(vlc_LogPreinit(p_libvlc)))
         return VLC_ENOMEM;
@@ -154,7 +168,7 @@ int libvlc_InternalInit( libvlc_int_t *p_libvlc, int i_argc,
 
     vlc_threads_setup (p_libvlc);
     msg_Dbg(p_libvlc, "startup phase=plugins-begin core_elapsed_ms=%"PRId64,
-            MS_FROM_VLC_TICK(vlc_tick_now() - startup_started));
+            MS_FROM_VLC_TICK(StartupClockNow() - startup_started));
 
     /*
      * Load plugin data into the module bank.
@@ -164,7 +178,7 @@ int libvlc_InternalInit( libvlc_int_t *p_libvlc, int i_argc,
      */
     module_LoadPlugins (p_libvlc);
     msg_Dbg(p_libvlc, "startup phase=plugins-ready core_elapsed_ms=%"PRId64,
-            MS_FROM_VLC_TICK(vlc_tick_now() - startup_started));
+            MS_FROM_VLC_TICK(StartupClockNow() - startup_started));
 
     /*
      * Fully process command line settings.
@@ -187,10 +201,10 @@ int libvlc_InternalInit( libvlc_int_t *p_libvlc, int i_argc,
 
     config_ApplySavedOptions(p_libvlc);
     msg_Dbg(p_libvlc, "startup phase=config-ready core_elapsed_ms=%"PRId64,
-            MS_FROM_VLC_TICK(vlc_tick_now() - startup_started));
+            MS_FROM_VLC_TICK(StartupClockNow() - startup_started));
     vlc_LogInit(p_libvlc);
     msg_Dbg(p_libvlc, "startup phase=logger-ready core_elapsed_ms=%"PRId64,
-            MS_FROM_VLC_TICK(vlc_tick_now() - startup_started));
+            MS_FROM_VLC_TICK(StartupClockNow() - startup_started));
 
     char *tracer_name = var_InheritString(p_libvlc, "tracer");
     priv->tracer = vlc_tracer_Create(VLC_OBJECT(p_libvlc), tracer_name);

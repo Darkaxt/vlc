@@ -526,6 +526,9 @@ int main(int argc, char **argv)
     const char *libvlc_args[] = {
         "--verbose", args.verbosity, "--vout=vdummy", "--aout=adummy",
         "--text-renderer=tdummy",
+        /* The parent player owns file diagnostics and its opt-out. This helper
+         * keeps its existing explicit stderr verbosity, without seeding logs. */
+        "--no-file-logging",
     };
 
     libvlc_instance_t *vlc = libvlc_new(ARRAY_SIZE(libvlc_args), libvlc_args);
