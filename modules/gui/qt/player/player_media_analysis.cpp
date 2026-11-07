@@ -219,7 +219,13 @@ PlayerMediaAnalysis::PlayerMediaAnalysis(qt_intf_t *intf, PlayerController *play
 }
 QString PlayerMediaAnalysis::previewStatus() const
 {
-    if (m_player->usesMpv()) return tr("Seek previews require VLC playback. The MPV video keeps its Dolby Vision color processing.");
+    if (m_player->usesMpv()) {
+#ifdef _WIN32
+        return tr("Seek previews require VLC playback. The MPV video keeps its Dolby Vision color processing.");
+#else
+        return tr("Seek previews require VLC playback.");
+#endif
+    }
     if (!previewSupported()) return tr("Seek previews are unavailable for nonseekable inputs or inputs without a known video timeline.");
     return m_previewStatus;
 }

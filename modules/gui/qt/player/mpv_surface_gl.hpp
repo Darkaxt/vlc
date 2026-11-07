@@ -7,10 +7,12 @@
 // render context is created, used and destroyed on that view's Qt GUI thread;
 // native VLC window operations remain on Surface's worker because they call
 // back into the GUI synchronously. All core commands use MPV's async API.
-class GlView final : public QOpenGLWindow {
+class GlView final : public QWindow {
     std::shared_ptr<Api> api;
     mpv_handle *player;
     mpv_render_context *render = nullptr;
+    QOpenGLContext context;
+    QOffscreenSurface cleanupSurface;
     std::function<void(QString)> report;
     std::atomic_bool updatePending{false};
 
@@ -22,53 +24,76 @@ class GlView final : public QOpenGLWindow {
         if (!self->updatePending.exchange(true))
             QMetaObject::invokeMethod(self, [self] {
                 self->updatePending = false;
-                self->update();
+                self->draw();
             }, Qt::QueuedConnection);
     }
+    void draw() {
+        if (!render || !isExposed() || !width() || !height()) return;
+        if (!context.makeCurrent(this)) { report(tr("The native MPV OpenGL view could not be made current.")); return; }
+        api->render_context_update(render);
+        const qreal dpr = devicePixelRatio();
+        mpv_opengl_fbo fbo{int(context.defaultFramebufferObject()),
+            qRound(width() * dpr), qRound(height() * dpr), 0};
+        int flip = 1;
+        int blockForTargetTime = 0; // The GUI owns this context; never wait for a presentation deadline here.
+        mpv_render_param params[] = {{MPV_RENDER_PARAM_OPENGL_FBO, &fbo},
+            {MPV_RENDER_PARAM_FLIP_Y, &flip}, {MPV_RENDER_PARAM_BLOCK_FOR_TARGET_TIME, &blockForTargetTime},
+            {MPV_RENDER_PARAM_INVALID, nullptr}};
+        const int code = api->render_context_render(render, params);
+        if (code < 0) report(QString::fromUtf8(api->error_string(code)));
+        context.swapBuffers(this);
+        api->render_context_report_swap(render);
+        context.doneCurrent();
+    }
 protected:
-    void initializeGL() override {
+    void exposeEvent(QExposeEvent *) override { draw(); }
+    void resizeEvent(QResizeEvent *) override { draw(); }
+public:
+    GlView(std::shared_ptr<Api> api, mpv_handle *player,
+           std::function<void(QString)> report)
+        : api(std::move(api)), player(player), report(std::move(report)) {
+        setSurfaceType(QSurface::OpenGLSurface);
+        QSurfaceFormat format;
+        format.setRenderableType(QSurfaceFormat::OpenGL);
+        format.setVersion(3, 2);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        setFormat(format);
+    }
+    void initializeRenderContext() {
+        create();
+        context.setFormat(format());
+        context.setScreen(screen());
+        if (!context.create()) { report(tr("Qt could not create the native MPV OpenGL context.")); return; }
+        // Initialize before a loaded file exposes its video surface. Waiting
+        // for expose/paint here would deadlock first-file loading at Ready.
+        // The same offscreen surface owns teardown even after a native reparent.
+        cleanupSurface.setFormat(context.format());
+        cleanupSurface.setScreen(screen());
+        cleanupSurface.create();
+        if (!context.makeCurrent(&cleanupSurface)) {
+            report(tr("Qt could not initialize the native MPV OpenGL surface.")); return;
+        }
         mpv_opengl_init_params init{getProcAddress, nullptr};
         mpv_render_param params[] = {
             {MPV_RENDER_PARAM_API_TYPE, const_cast<char *>(MPV_RENDER_API_TYPE_OPENGL)},
             {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &init},
             {MPV_RENDER_PARAM_INVALID, nullptr}};
         const int code = api->render_context_create(&render, player, params);
-        if (code < 0) { report(QString::fromUtf8(api->error_string(code))); return; }
+        if (code < 0) { context.doneCurrent(); report(QString::fromUtf8(api->error_string(code))); return; }
         api->render_context_set_update_callback(render, updated, this);
+        context.doneCurrent();
         report({});
     }
-    void paintGL() override {
-        if (!render) return;
-        api->render_context_update(render);
-        const qreal dpr = devicePixelRatio();
-        mpv_opengl_fbo fbo{int(defaultFramebufferObject()),
-            qRound(width() * dpr), qRound(height() * dpr), 0};
-        int flip = 1;
-        mpv_render_param params[] = {{MPV_RENDER_PARAM_OPENGL_FBO, &fbo},
-            {MPV_RENDER_PARAM_FLIP_Y, &flip}, {MPV_RENDER_PARAM_INVALID, nullptr}};
-        const int code = api->render_context_render(render, params);
-        if (code < 0) report(QString::fromUtf8(api->error_string(code)));
-    }
-public:
-    GlView(std::shared_ptr<Api> api, mpv_handle *player,
-           std::function<void(QString)> report)
-        : QOpenGLWindow(NoPartialUpdate), api(std::move(api)), player(player), report(std::move(report)) {
-        QSurfaceFormat format;
-        format.setRenderableType(QSurfaceFormat::OpenGL);
-        format.setVersion(3, 2);
-        format.setProfile(QSurfaceFormat::CoreProfile);
-        setFormat(format);
-        connect(this, &QOpenGLWindow::frameSwapped, this, [this] {
-            if (render) this->api->render_context_report_swap(render);
-        });
-    }
+    void update() { draw(); }
     void releaseRenderContext() {
         if (!render) return;
-        makeCurrent();
+        const bool current = context.makeCurrent(&cleanupSurface);
+        Q_ASSERT(current);
+        if (!current) { report(tr("The native MPV render context could not be released.")); return; }
         api->render_context_set_update_callback(render, nullptr, nullptr);
         api->render_context_free(render);
         render = nullptr;
-        doneCurrent();
+        context.doneCurrent();
     }
     ~GlView() override { Q_ASSERT(!render); }
 };
@@ -149,6 +174,7 @@ public:
             view = new GlView(api, player, [this](const QString &error) { report(error); });
             view->setParent(foreign);
             view->resize(640, 360);
+            view->initializeRenderContext();
             view->show();
         }, Qt::BlockingQueuedConnection);
     }

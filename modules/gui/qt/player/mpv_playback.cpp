@@ -42,9 +42,11 @@
 #else
 #include "mpv/render_gl.h"
 #include <QLibrary>
-#include <QOpenGLWindow>
+#include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+#include <QExposeEvent>
+#include <QResizeEvent>
 #include <QPointer>
 #include <QWindow>
 #endif

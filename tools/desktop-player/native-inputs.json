@@ -1,0 +1,30 @@
+{
+  "upstream_baseline": "8a47770f6333df6b60181329db5fdaad318bdb44",
+  "macos_contrib_commit": "e0baa29690f97c5d746643d59358fd6055eda8f6",
+  "macos_contrib_triplet_kernel": "19",
+  "stock_libplacebo": {
+    "version": "7.387.0",
+    "repository": "haasn/libplacebo",
+    "commit": "275f7dea27924cdd34ab2e6c20e448b6bc4fab65",
+    "submodules": [
+      {"path": "glad", "repository": "Dav1dde/glad", "commit": "73db193f853e2ee079bf3ca8a64aa2eaf6459043"},
+      {"path": "fast_float", "repository": "fastfloat/fast_float", "commit": "97b54ca9e75f5303507699d27c6b4f4efe4641a1"},
+      {"path": "jinja", "repository": "pallets/jinja", "commit": "15206881c006c79667fe5154fe80c01c65410679"},
+      {"path": "markupsafe", "repository": "pallets/markupsafe", "commit": "297fc8e356e6836a62087949245d09a28e9f1b13"}
+    ]
+  },
+  "windows_only_contrib_delta": [
+    "contrib/src/qt/0001-Mingw-own-animation-timers-in-QThreadStorage.patch",
+    "contrib/src/qt/0002-Mingw-own-regex-JIT-in-QThreadStorage.patch",
+    "contrib/src/qt/0003-Expose-the-existing-backing-store-swapchain.patch",
+    "contrib/src/qt/rules.mak",
+    "contrib/src/upnp/mingw-posix-aliases.patch",
+    "contrib/src/upnp/rules.mak"
+  ],
+  "appimage_runtime": {
+    "repository": "https://github.com/AppImage/type2-runtime",
+    "commit": "fedfad51acc2860b2916a1eef32ba4a500ff31ef",
+    "x86_64_sha256": "617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46",
+    "aarch64_sha256": "9a72a744d221576c9347ec074243acc5c3c7568896b12714e0e82e9f0bf47900"
+  }
+}

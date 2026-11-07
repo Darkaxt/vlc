@@ -2,9 +2,11 @@
 import ast
 import importlib.util
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
-import tempfile
+import uuid
 import unittest
 from unittest.mock import patch
 
@@ -31,23 +33,44 @@ class NativePackagingTest(unittest.TestCase):
             self.assertTrue(package.external('/System/Library/Frameworks/Cocoa.framework/Cocoa'))
             self.assertFalse(package.external('/opt/homebrew/lib/libavcodec.62.dylib'))
 
+    def test_macos_loader_uses_declared_runpaths(self):
+        origin = Path('/opt/homebrew/Cellar/brotli/1.2.1/lib/libbrotlidec.dylib')
+        expected = origin.parent / 'libbrotlicommon.1.dylib'
+        with patch.object(Path, 'is_file', lambda path: path == expected):
+            self.assertEqual(package.resolve_mac_dependency('@rpath/libbrotlicommon.1.dylib',
+                origin, [str(origin.parent)]), expected)
+            with self.assertRaisesRegex(RuntimeError, 'Unresolved LC_RPATH'):
+                package.resolve_mac_dependency('@rpath/libbrotlicommon.1.dylib', origin, ['/unrelated'])
+
+    def test_ci_selection_does_not_add_unrequested_architectures(self):
+        scratch = Path(sys.argv_scratch)
+        for target, count in [('macos-arm64', 1), ('all', 4)]:
+            result = scratch / ('ci-matrix-' + uuid.uuid4().hex + '.txt')
+            env = dict(os.environ, TARGET=target, GITHUB_OUTPUT=str(result))
+            subprocess.run([sys.executable, HERE / 'select-ci-targets.py'], env=env, check=True)
+            rows = json.loads(result.read_text().split('=', 1)[1])
+            self.assertEqual(len(rows), count)
+            if target != 'all':
+                self.assertEqual(rows, [{'target': 'macos-arm64', 'runner': 'macos-15'}])
+
     def test_modified_runtime_is_rejected_before_header_write(self):
         # No native executable is run. Model a retained runtime whose bytes no
         # longer match its receipt; this must fail instead of accepting a
         # mutable manifest as trust or silently generating new trusted hashes.
         scratch = Path(sys.argv_scratch)
-        with tempfile.TemporaryDirectory(prefix='native-package-test-', dir=scratch) as temporary:
-            work = Path(temporary)
-            prefix = work / 'deps/lib'; prefix.mkdir(parents=True)
-            runtime = work / 'mpv-runtime'; runtime.mkdir()
-            library = prefix / 'libmpv.so.2'; library.write_bytes(b'original native output')
-            (runtime / library.name).write_bytes(b'altered')
-            (runtime / 'runtime.json').write_text(json.dumps([{
-                'name': library.name, 'source_sha256': package.sha(library), 'sha256': '0' * 64}]))
-            with patch.object(package, 'MAC', False):
-                with self.assertRaisesRegex(RuntimeError, 'payload was changed'):
-                    package.stage_mpv(work, work / 'deps')
-            self.assertFalse((work / 'vlc-build/modules/gui/qt/mpv_runtime_identity.hpp').exists())
+        work = scratch / ('runtime-rejection-' + uuid.uuid4().hex)
+        prefix = work / 'deps/lib'; prefix.mkdir(parents=True)
+        runtime = work / 'mpv-runtime'; runtime.mkdir()
+        library = prefix / 'libmpv.so.2'; library.write_bytes(b'original native output')
+        (runtime / library.name).write_bytes(b'altered')
+        (runtime / 'runtime.json').write_text(json.dumps([{
+            'name': library.name, 'source_sha256': package.sha(library), 'sha256': '0' * 64}]))
+        with patch.object(package, 'MAC', False):
+            with self.assertRaisesRegex(RuntimeError, 'payload was changed'):
+                package.stage_mpv(work, work / 'deps')
+        self.assertFalse((work / 'vlc-build/modules/gui/qt/mpv_runtime_identity.hpp').exists())
+        # The owning task retires this attributed fixture through transactional
+        # cleanup after the test process exits; no recursive ad-hoc deletion.
 
 
 if __name__ == '__main__':

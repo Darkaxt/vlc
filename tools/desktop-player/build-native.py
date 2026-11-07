@@ -103,6 +103,28 @@ def main():
     if arch not in ('arm64', 'aarch64', 'x86_64'):
         raise RuntimeError('Unqualified native architecture: ' + arch)
     bind_source_mtimes(work)
+    toolchain_file = ROOT / '.desktop-toolchain/binding.json'
+    if toolchain_file.exists():
+        toolchain = toolchain_file.read_bytes()
+        retained = work / 'toolchain-binding.json'
+        if retained.exists() and retained.read_bytes() != toolchain:
+            raise RuntimeError('The retained native build belongs to another installed toolchain')
+        if not retained.exists() and (work / 'build-mpv').exists():
+            # One-time migration of the first diagnostic run, whose objects
+            # were saved before the separate normalized toolchain binding.
+            actual = json.loads(toolchain)
+            if native_mac:
+                old = json.loads((work / 'brew-packages.json').read_text())
+                packages = sorted([formula['full_name'], installed['version'], installed.get('built_as_bottle')]
+                    for formula in old['formulae'] for installed in formula['installed'])
+            else:
+                packages = sorted((work / 'dpkg-packages.tsv').read_text().splitlines())
+            if packages != actual['packages']:
+                raise RuntimeError('Legacy native cache package identities differ from this runner')
+            compilers = json.loads((work / 'build-mpv/meson-info/intro-compilers.json').read_text())
+            if compilers['host']['c']['full_version'].splitlines()[0] != actual['compiler']:
+                raise RuntimeError('Legacy native cache compiler differs from this runner')
+        retained.write_bytes(toolchain)
     env = os.environ.copy()
     env.update(CFLAGS='-O3 -g0 -DNDEBUG', CXXFLAGS='-O3 -g0 -DNDEBUG',
                MAKEFLAGS='-j1', CMAKE_BUILD_PARALLEL_LEVEL='1', PYTHONDONTWRITEBYTECODE='1')
@@ -119,13 +141,29 @@ def main():
     else:
         env['PATH'] = '/usr/lib/qt6/bin:' + env['PATH']
         env['PKG_CONFIG_PATH'] = str(prefix / 'lib/pkgconfig')
-        # Stock MPV 0.42 requires libplacebo >= 7.387; Ubuntu 24.04 ships 6.
-        placebo_pin = json.loads((ROOT / 'modules/gui/qt/player/mpv/source.json').read_text())
-        placebo_pin = next(p for p in placebo_pin['sources'] if p['repository'] == 'haasn/libplacebo')
+    # Stock MPV 0.42 requires >=7.387. Ubuntu and the Intel hosted image
+    # currently provide older versions; preserve a matching native installation
+    # when it already satisfies the exact source pin, otherwise build the pin.
+    placebo_pin = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['stock_libplacebo']
+    placebo_version = subprocess.run(['pkg-config', '--modversion', 'libplacebo'], env=env,
+        text=True, capture_output=True)
+    if placebo_version.returncode or placebo_version.stdout.strip() != placebo_pin['version']:
         placebo, record = source(work, 'libplacebo-' + placebo_pin['commit'],
-            'https://codeload.github.com/haasn/libplacebo/tar.gz/' + placebo_pin['commit'], placebo_pin['sha256'])
+            'https://codeload.github.com/haasn/libplacebo/tar.gz/' + placebo_pin['commit'])
         sources.append(record)
-        meson(work, 'placebo', placebo, prefix, ['-Ddemos=false', '-Dtests=false',
+        for pin in placebo_pin['submodules']:
+            submodule, subrecord = source(work, pin['path'] + '-' + pin['commit'],
+                'https://codeload.github.com/' + pin['repository'] + '/tar.gz/' + pin['commit'])
+            sources.append(subrecord)
+            destination = placebo / '3rdparty' / pin['path']
+            for path in submodule.rglob('*'):
+                target = destination / path.relative_to(submodule)
+                if path.is_dir():
+                    target.mkdir(parents=True, exist_ok=True)
+                elif path.is_file() and (not target.exists() or sha(target) != sha(path)):
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(path, target)
+        meson(work, 'placebo-' + placebo_pin['version'], placebo, prefix, ['-Ddemos=false', '-Dtests=false',
             '-Dopengl=enabled', '-Dvulkan=disabled', '-Dshaderc=disabled', '-Dglslang=disabled'], env)
 
     pin = json.loads((ROOT / 'modules/gui/qt/player/mpv/source-portable.json').read_text())
@@ -136,11 +174,12 @@ def main():
         '-Dplain-gl=enabled', '-Dmanpage-build=disabled', '-Dhtml-build=disabled', '-Dtests=false'], env)
 
     # VLC's required medialibrary ABI is newer than Ubuntu's packaged ABI.
-    medialibrary_url = ('https://code.videolan.org/videolan/medialibrary/-/archive/0.14.1/'
-                        'medialibrary-0.14.1.tar.bz2')
-    medialibrary, record = source(work, 'medialibrary-0.14.1', medialibrary_url)
-    sources.append(record)
-    meson(work, 'medialibrary', medialibrary, prefix, ['-Dlibvlc=disabled', '-Dlibtool_workaround=true'], env)
+    if not native_mac:  # macOS's full upstream contrib already contains this ABI.
+        medialibrary_url = ('https://code.videolan.org/videolan/medialibrary/-/archive/0.14.1/'
+                            'medialibrary-0.14.1.tar.bz2')
+        medialibrary, record = source(work, 'medialibrary-0.14.1', medialibrary_url)
+        sources.append(record)
+        meson(work, 'medialibrary', medialibrary, prefix, ['-Dlibvlc=disabled', '-Dlibtool_workaround=true'], env)
 
     build = work / 'vlc-build'
     build.mkdir(exist_ok=True)
@@ -156,7 +195,12 @@ def main():
         # toolchain; the stock MPV graph above remains separate from these VLC
         # contribs (whose libplacebo ABI is older).
         triplet = ('aarch64' if arch == 'arm64' else arch) + '-apple-darwin19'
-        contrib_sha = output('bash', ROOT / 'extras/ci/get-contrib-sha.sh', 'macos-' + arch, cwd=ROOT)
+        inputs = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())
+        contrib_sha = inputs['macos_contrib_commit']
+        changed = set(output('git', 'diff', '--name-only', contrib_sha, 'HEAD', '--',
+            'extras/tools', 'contrib', 'extras/ci', 'extras/package/macosx', cwd=ROOT).splitlines())
+        if not changed <= set(inputs['windows_only_contrib_delta']):
+            raise RuntimeError('Native contrib inputs changed; bind the new native dependency build before reusing its archive')
         archive = work / 'sources' / ('vlc-contrib-' + triplet + '-' + contrib_sha + '.tar.zst')
         url = 'https://artifacts.videolan.org/vlc/macos-' + ('arm64' if arch == 'arm64' else 'x86_64') + '/' + archive.name
         contrib_root = work / 'native-contrib'

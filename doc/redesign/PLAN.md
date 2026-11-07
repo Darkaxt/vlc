@@ -3,17 +3,32 @@
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112).**
 Implement native macOS/Linux plain MPV integration and the desktop build/package
 matrix while preserving the verified Windows backend and Figma interface.
-Native hosted GitHub Actions is enabled; no workflows or self-hosted runners
-currently exist. Upstream supplies macOS Qt/platform compositor support, but Qt
-is disabled in its normal macOS configuration. The fork's MPV loader, D3D11
-surface and WASAPI options currently reject or assume Windows. These are
-internal implementation gaps, not external blockers. Native package dependencies,
-actual rendering/handover and each format's installation acceptance remain to be
-verified. No M15 tracked deferrals. One ACTIVE implementation stage only.
+Native workflow `.github/workflows/desktop-packages.yml` is on the isolated
+`codex/native-desktop` branch; master and normal1.1.11 remain unchanged.
+Initial diagnostic run42424025878 from41d03952a9381115b067382209d57ab417c364b2
+compiled stock MPV0.42.0 on Apple Silicon using native libplacebo7.387.0.
+Its macOS ARM job128558356622 failed in packaging at Brotli's declared
+`@rpath/libbrotlicommon.1.dylib`; cached outputs were retained. The resolver now
+uses LC_RPATH and inherited runpaths; native rerun remains required. The original
+run closed with failure after all four native jobs completed; its retained caches
+remain recovery inputs, and it produced no qualified package.
+The Intel job128558356606 found libplacebo7.360.1 on its native image, below
+MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
+submodule in the source archive; Linux ARM job128558356675 confirmed the same
+GLAD failure. Native input pins now include upstream
+libplacebo7.387.0 plus its exact GLAD/fast_float/Jinja/MarkupSafe submodules;
+these fixes remain pending native execution. The initial matrix inadvertently
+included every target; its selector is corrected to run only the requested rows.
+The port includes native library identity checking, OpenGL view/context ownership,
+native audio gain/mute, engine selection and the shared floating-player QML.
+These paths are implemented, not yet native playback-verified. Package dependency
+closure, source/licenses, actual rendering/handover and each format's installation
+acceptance remain internal completion blockers. No tracked deferrals; one ACTIVE
+implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 is preserved; native CI availability and upstream package routes identified. | R111 native package generation/relocation/provenance and R112 integrated native MPV plus real platform workflows. | Internal implementation/acceptance gaps above; no tracked deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; stock MPV compiled on macOS ARM. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | macOS dependency resolver repair requires native rerun; remaining implementation/acceptance above; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Preserve historical M6's exact native-cleanup limitation. S9 Rust has not started.

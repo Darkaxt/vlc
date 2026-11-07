@@ -1,4 +1,37 @@
-# Windows x64 reproduction and recovery
+# Desktop reproduction and recovery
+
+## Native desktop port in progress (M15, 8 November)
+
+Normal1.1.11 below is still the verified downloadable release. Native packaging
+work lives on `codex/native-desktop`; it has not replaced master or published a
+release. The workflow is `.github/workflows/desktop-packages.yml`, using native
+`macos-15`, `macos-15-intel`, `ubuntu-24.04` and `ubuntu-24.04-arm` runners,
+one compiler job and no local WSL workload. Its explicit target selector avoids
+adding unrequested matrix rows. Native sources/actions are pinned; installed
+toolchain package/compiler identities bind the reusable objects. Preserve the
+original run/job and cache identities during repair; do not clean/reconfigure
+unchanged inputs or infer native playback from an uploaded artifact.
+
+The new backend uses stock upstream MPV0.42.0, commit
+`b0841e8c4d156b8403dc1876c4cbd9011eb583f3`, on Cocoa and X11/XWayland, with a
+Qt-owned OpenGL render context. It does not require the Windows DV patch. The
+Windows D3D11/WASAPI implementation and `player/mpv/source.json` retain their
+separate source/runtime binding. `source-portable.json` and
+`tools/desktop-player/native-inputs.json` identify the native inputs. The latter
+binds upstream macOS contrib `e0baa29690f97c5d746643d59358fd6055eda8f6` after
+checking that the intervening contrib delta is confined to the recorded Windows
+Qt/UPnP files. Do not construct a VideoLAN artifact URL from a fork-only commit.
+
+Initial run42424025878 from41d03952a9381115b067382209d57ab417c364b2 compiled
+stock MPV on Apple Silicon, then failed to resolve Brotli's LC_RPATH during
+staging. Intel found libplacebo7.360.1, below MPV's required7.387.0; Linux x86
+found an absent GLAD2 source submodule. The prepared corrections resolve declared
+native runpaths and fetch the exact libplacebo/submodule pins. Their native
+execution and actual Qt player acceptance remain pending. Linux ARM
+job128558356675 confirmed the same GLAD failure; the original run and its local
+watch session have exited with failure, preserving their caches. No package from this run is a
+qualified release. M15's remaining package/source/license and real playback
+criteria are recorded in PLAN/SPECIFICATION.
 
 ## Current1.1.11 stabilization diagnostics
 

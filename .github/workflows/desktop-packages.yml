@@ -20,47 +20,41 @@ jobs:
     outputs:
       targets: ${{ steps.select.outputs.targets }}
     steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - id: select
         env:
           TARGET: ${{ inputs.target || 'macos-arm64' }}
-        run: |
-          case "$TARGET" in
-            all) echo 'targets=["macos-arm64","macos-intel","linux-x86_64","linux-aarch64"]' >> "$GITHUB_OUTPUT" ;;
-            *) printf 'targets=["%s"]\n' "$TARGET" >> "$GITHUB_OUTPUT" ;;
-          esac
+        run: python3 tools/desktop-player/select-ci-targets.py
   build:
     needs: matrix
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
-        target: ${{ fromJSON(needs.matrix.outputs.targets) }}
-        include:
-          - target: macos-arm64
-            runner: macos-15
-          - target: macos-intel
-            runner: macos-15-intel
-          - target: linux-x86_64
-            runner: ubuntu-24.04
-          - target: linux-aarch64
-            runner: ubuntu-24.04-arm
+        include: ${{ fromJSON(needs.matrix.outputs.targets) }}
     runs-on: ${{ matrix.runner }}
     env:
       PYTHONDONTWRITEBYTECODE: '1'
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
       - name: Create native work directory
-        run: mkdir -p "$GITHUB_WORKSPACE/.desktop-build"
+        run: mkdir -p "$GITHUB_WORKSPACE/.desktop-build" "$GITHUB_WORKSPACE/.desktop-toolchain"
       - name: Install native dependencies
-        run: bash tools/desktop-player/install-ci-dependencies.sh "$GITHUB_WORKSPACE/.desktop-build"
+        run: bash tools/desktop-player/install-ci-dependencies.sh "$GITHUB_WORKSPACE/.desktop-toolchain"
+      - name: Bind the actual installed native toolchain
+        id: toolchain
+        run: python3 tools/desktop-player/bind-ci-toolchain.py
       - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         id: cache
         with:
           path: .desktop-build
-          key: native-${{ matrix.target }}-${{ runner.os }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'contrib/src/medialibrary/**') }}-${{ github.run_id }}
+          key: native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'tools/desktop-player/native-inputs.json', 'contrib/src/medialibrary/**') }}-${{ github.run_id }}
           restore-keys: |
+            native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'tools/desktop-player/native-inputs.json', 'contrib/src/medialibrary/**') }}-
             native-${{ matrix.target }}-${{ runner.os }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'contrib/src/medialibrary/**') }}-
       - name: Build native redesign and packages
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
@@ -77,10 +71,11 @@ jobs:
           name: desktop-${{ matrix.target }}-${{ github.sha }}
           retention-days: 14
           if-no-files-found: error
+          include-hidden-files: true
           path: |
             .desktop-build/packages/*
             .desktop-build/native-build.json
-            .desktop-build/*packages.*
+            .desktop-toolchain/*
             .desktop-build/sources/*
             .desktop-build/vlc-build/config.log
             .desktop-build/build-*/meson-logs/meson-log.txt

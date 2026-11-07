@@ -47,11 +47,41 @@ def native(path):
 def dependencies(path):
     if MAC:
         lines = output('otool', '-L', path).splitlines()[1:]
-        return [line.strip().split(' (')[0] for line in lines]
+        identity = output('otool', '-D', path).splitlines()[1:]
+        return [dep for line in lines if (dep := line.strip().split(' (')[0]) not in identity]
     lines = output('ldd', path).splitlines()
     if any('not found' in line for line in lines):
         raise RuntimeError(f'Unresolved native dependency: {path}\n' + '\n'.join(lines))
     return [match.group(1) for line in lines if (match := re.search(r'=> (/[^ ]+)', line))]
+
+
+def mac_runpaths(origin):
+    lines = output('otool', '-l', origin).splitlines()
+    result = []
+    for index, line in enumerate(lines):
+        if line.strip() == 'cmd LC_RPATH':
+            value = lines[index + 2].strip().removeprefix('path ').split(' (offset ')[0]
+            if value.startswith('@loader_path/'):
+                value = str(origin.parent / value.removeprefix('@loader_path/'))
+            if value == '@loader_path':
+                value = str(origin.parent)
+            result.append(value)
+    return result
+
+
+def resolve_mac_dependency(dep, origin, runpaths):
+    if dep.startswith('@loader_path/'):
+        return origin.parent / dep.removeprefix('@loader_path/')
+    if dep.startswith('@rpath/'):
+        suffix = dep.removeprefix('@rpath/')
+        for directory in runpaths:
+            candidate = Path(directory) / suffix
+            if candidate.is_file():
+                return candidate
+        raise RuntimeError(f'Unresolved LC_RPATH dependency {dep} in {origin}; searched {runpaths}')
+    if dep.startswith('@'):
+        raise RuntimeError(f'Unsupported native dependency binding {dep} in {origin}')
+    return Path(dep)
 
 
 def external(dep):
@@ -65,10 +95,10 @@ def external(dep):
 
 def copy_closure(initial, destination):
     destination.mkdir(parents=True, exist_ok=True)
-    queue = list(map(Path, initial))
+    queue = [(Path(path), []) for path in initial]
     origins = {}
     while queue:
-        origin = queue.pop(0)
+        origin, inherited_runpaths = queue.pop(0)
         real = origin.resolve(strict=True)
         name = origin.name
         if name in origins:
@@ -77,16 +107,14 @@ def copy_closure(initial, destination):
             continue
         origins[name] = real
         shutil.copy2(real, destination / name)
+        runpaths = mac_runpaths(real) + inherited_runpaths if MAC else []
         for dep in dependencies(real):
             if external(dep):
                 continue
-            if dep.startswith('@rpath/'):
-                # Homebrew libraries use absolute dependencies; Qt frameworks
-                # are deployed separately by Qt's own macdeployqt.
-                raise RuntimeError(f'Unresolved source rpath {dep} in {real}')
-            if dep.startswith('@loader_path/'):
-                dep = str(real.parent / dep.removeprefix('@loader_path/'))
-            queue.append(Path(dep))
+            if MAC and '.framework/' in dep:
+                continue  # Qt's macdeployqt owns framework/plugin deployment.
+            resolved = resolve_mac_dependency(dep, real, runpaths) if MAC else Path(dep)
+            queue.append((resolved, runpaths))
     for name, origin in origins.items():
         target = destination / name
         target.chmod(target.stat().st_mode | stat.S_IWUSR)
@@ -102,6 +130,17 @@ def copy_closure(initial, destination):
             run('patchelf', '--set-rpath', '$ORIGIN', target)
     return [{'name': name, 'source_path': str(path), 'source_sha256': sha(path),
              'sha256': sha(destination / name)} for name, path in origins.items()]
+
+
+def split_symbols(path, relative, work):
+    saved = work / 'symbols' / relative
+    saved.parent.mkdir(parents=True, exist_ok=True)
+    if MAC:
+        # Keep the matching unstripped Mach-O when the release toolchain emits
+        # no DWARF (-g0). Do not advertise a nonexistent dSYM.
+        shutil.copy2(path, saved)
+    else:
+        run('objcopy', '--only-keep-debug', path, saved)
 
 
 def stage_mpv(work, prefix):
@@ -157,6 +196,26 @@ def package_mac(work, installed, out, version, arch):
     shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv')
     for path in (installed / 'lib').glob('libvlc*.dylib'):
         shutil.copy2(path.resolve(), frameworks / path.name)
+    originals = [p for p in app.rglob('*') if native(p) and 'mpv' not in p.relative_to(app).parts]
+    required = []
+    for path in originals:
+        required.extend(Path(dep) for dep in dependencies(path)
+                        if not external(dep) and not dep.startswith('@') and '.framework/' not in dep)
+    closure = copy_closure(required, frameworks / 'native')
+    (resources / 'NATIVE-DEPENDENCIES.json').write_text(json.dumps(closure, indent=2) + '\n')
+    for path in originals:
+        split_symbols(path, path.relative_to(app), work)
+        for dep in dependencies(path):
+            if external(dep) or '.framework/' in dep:
+                continue
+            name = Path(dep).name
+            own = frameworks / name
+            replacement = own if own.exists() else frameworks / 'native' / name
+            if not replacement.exists():
+                raise RuntimeError(f'Unresolved package dependency {dep}: {path}')
+            run('install_name_tool', '-change', dep,
+                '@loader_path/' + os.path.relpath(replacement, path.parent), path)
+        run('strip', '-S', path)
     # Qt deploys its plugin/QML/framework graph using the actual app executable
     # and Qt interface module, rather than swapping in the upstream Cocoa UI.
     info = {'CFBundleIdentifier': 'io.github.darkaxt.modern-vlc', 'CFBundleName': 'Modern VLC',
@@ -168,6 +227,11 @@ def package_mac(work, installed, out, version, arch):
     qt = Path(output('brew', '--prefix', 'qt'))
     run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'), '-always-overwrite',
         '-executable=' + str(frameworks / 'plugins/gui/libqt_plugin.dylib'))
+    # Sign inner objects before the outer bundle. MPV payloads were signed
+    # before their identities were compiled and must remain byte-identical.
+    for path in sorted(app.rglob('*'), key=lambda p: len(p.parts), reverse=True):
+        if native(path) and 'mpv' not in path.relative_to(app).parts:
+            run('codesign', '--force', '--sign', '-', path)
     run('codesign', '--force', '--sign', '-', app)
     run('codesign', '--verify', '--deep', '--strict', app)
     zip_path = out / f'Modern-VLC-Fork-{version}-macos-{arch}.zip'
@@ -182,6 +246,12 @@ def package_linux(work, installed, out, version, arch):
         raise RuntimeError('Package directory already exists; finish consumers and retire old staging explicitly')
     shutil.copytree(installed, app, symlinks=True)
     shutil.copytree(work / 'mpv-runtime', app / 'lib/mpv')
+    qt_plugins = Path(output('qmake6', '-query', 'QT_INSTALL_PLUGINS'))
+    qt_qml = Path(output('qmake6', '-query', 'QT_INSTALL_QML'))
+    for name in ('platforms', 'imageformats', 'iconengines', 'platformthemes', 'styles', 'tls', 'xcbglintegrations'):
+        if (qt_plugins / name).exists():
+            shutil.copytree(qt_plugins / name, app / 'lib/qt/plugins' / name, symlinks=True)
+    shutil.copytree(qt_qml, app / 'lib/qt/qml', symlinks=True)
     deps = app / 'lib/native'; deps.mkdir()
     binaries = [p for p in app.rglob('*') if native(p) and 'mpv' not in p.relative_to(app).parts]
     required = []
@@ -191,6 +261,7 @@ def package_linux(work, installed, out, version, arch):
     closure = copy_closure(required, deps)
     (app / 'NATIVE-DEPENDENCIES.json').write_text(json.dumps(closure, indent=2) + '\n')
     for path in binaries:
+        split_symbols(path, path.relative_to(app), work)
         run('strip', '--strip-debug', path)
         relative = os.path.relpath(app / 'lib', path.parent)
         run('patchelf', '--set-rpath', '$ORIGIN/' + relative + ':$ORIGIN/' + relative + '/native', path)
@@ -199,6 +270,8 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export VLC_LIB_PATH="$root/lib/vlc" VLC_DATA_PATH="$root/share/vlc" VLC_LIBEXEC_PATH="$root/libexec/vlc"
 export QT_QPA_PLATFORM=xcb
+export QT_PLUGIN_PATH="$root/lib/qt/plugins"
+export QML_IMPORT_PATH="$root/lib/qt/qml" QML2_IMPORT_PATH="$root/lib/qt/qml"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}/modern-vlc"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/modern-vlc"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}/modern-vlc"
@@ -219,14 +292,57 @@ exec "$root/bin/vlc" --intf=qt "$@"
         'Maintainer: Darkaxt\nDepends: libc6 (>= 2.38), libgl1, libegl1, libx11-6\n'
         'Description: Modern VLC Fork with the Qt redesign and VLC/MPV engines\n')
     run('dpkg-deb', '--build', '--root-owner-group', deb, out / f'{app.name}.deb')
+    rpm_root = work / 'rpm'
+    for name in ('BUILD', 'BUILDROOT', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
+        (rpm_root / name).mkdir(parents=True, exist_ok=True)
+    with tarfile.open(rpm_root / 'SOURCES/payload.tar.gz', 'w:gz') as archive:
+        archive.add(app, arcname='modern-vlc')
+    spec = rpm_root / 'SPECS/modern-vlc.spec'
+    spec.write_text(f'''Name: modern-vlc-fork
+Version: {version}
+Release: 1
+Summary: Modern VLC Fork Qt redesign with VLC and MPV
+License: GPL-3.0-or-later
+Source0: payload.tar.gz
+AutoReqProv: no
+Requires: glibc >= 2.38, libGL.so.1()(64bit), libEGL.so.1()(64bit)
+%description
+Modern VLC Fork with the Qt redesign and VLC/MPV engines.
+%prep
+%build
+%install
+mkdir -p %{{buildroot}}/opt
+tar -xzf %{{SOURCE0}} -C %{{buildroot}}/opt
+%files
+/opt/modern-vlc
+''')
+    run('rpmbuild', '-bb', '--define', '_topdir ' + str(rpm_root), '--define', '__os_install_post %{nil}', spec)
+    for artifact in (rpm_root / 'RPMS').rglob('*.rpm'):
+        shutil.copy2(artifact, out / (app.name + '.rpm'))
+    snap = work / 'snap'; snap.mkdir(exist_ok=True)
+    shutil.copytree(app, snap / 'player')
+    meta = snap / 'meta'; meta.mkdir()
+    (meta / 'snap.yaml').write_text(f'''name: modern-vlc-fork
+version: '{version}'
+summary: Modern VLC Fork with the Qt redesign
+description: VLC and stock MPV playback using the redesigned Qt interface.
+base: core24
+grade: stable
+confinement: strict
+architectures: [{deb_arch}]
+apps:
+  modern-vlc:
+    command: player/modern-vlc
+    plugs: [desktop, desktop-legacy, x11, audio-playback, opengl, home, network, removable-media]
+''')
+    run('mksquashfs', snap, out / (app.name + '.snap'), '-noappend', '-comp', 'xz', '-processors', '1', '-root-owned')
     # Additional formats are generated from this same payload, never rebuilt
     # with a smaller plugin graph. Their installation is a later native check.
-    runtime_pins = {'x86_64': '617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46',
-                    'aarch64': '9a72a744d221576c9347ec074243acc5c3c7568896b12714e0e82e9f0bf47900'}
+    runtime_pins = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
     runtime = work / ('appimage-runtime-' + arch)
     if not runtime.exists():
         urllib.request.urlretrieve('https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-' + arch, runtime)
-    if sha(runtime) != runtime_pins[arch]:
+    if sha(runtime) != runtime_pins[arch + '_sha256']:
         raise RuntimeError('AppImage runtime no longer matches the pinned digest')
     squash = work / 'appimage.squashfs'
     run('mksquashfs', app, squash, '-noappend', '-comp', 'zstd', '-processors', '1', '-root-owned')
@@ -255,6 +371,11 @@ def main():
         package_mac(args.work, args.work / 'installed', out, version, architecture)
     else:
         package_linux(args.work, args.work / 'installed', out, version, architecture)
+    symbols = out / f'Modern-VLC-Fork-{version}-{platform.system().lower()}-{architecture}-symbols.zip'
+    with zipfile.ZipFile(symbols, 'w', zipfile.ZIP_DEFLATED) as archive:
+        for path in (args.work / 'symbols').rglob('*'):
+            if path.is_file():
+                archive.write(path, path.relative_to(args.work / 'symbols'))
     (out / 'PACKAGE-STATUS.json').write_text(json.dumps({
         'version': version, 'source_commit': output('git', '-C', ROOT, 'rev-parse', 'HEAD'),
         'state': 'GENERATED; native release qualification not yet performed',

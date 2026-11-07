@@ -549,7 +549,7 @@ T.Popup {
                         }
                     }
                     ChoiceRow { text: qsTr("Zoom"); choices: Player.zoom }
-                    ReadoutRow { text: qsTr("HDR"); value: MediaTools.videoInfo.hdr; hint: Player.playbackEngine==="mpv" ? qsTr("Source transfer and current SDR output. MPV retains Dolby Vision color processing.") : qsTr("Source transfer. Output follows VLC's renderer and display.") }
+                    ReadoutRow { text: qsTr("HDR"); value: MediaTools.videoInfo.hdr; hint: Player.playbackEngine==="mpv" ? (Qt.platform.os==="windows" ? qsTr("Source transfer and current SDR output. MPV retains Dolby Vision color processing.") : qsTr("Source transfer. Output follows MPV's renderer and display.")) : qsTr("Source transfer. Output follows VLC's renderer and display.") }
                     ReadoutRow { text: qsTr("Resolution"); value: MediaTools.videoInfo.resolution; hint: qsTr("Source video dimensions.") }
                     ChoiceRow { text: qsTr("Aspect Ratio"); choices: Player.aspectRatio }
                     ChoiceRow { text: qsTr("Crop"); choices: Player.crop }
