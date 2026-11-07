@@ -6,6 +6,8 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 **7 November startup optimization, R109 (M13), already authorized:**
 
+Delivered and independently verified in normal1.1.10; [reconciliation](resources/m13-1.1.10-verification.json) records native startup observations, exact cache/extraction checks, playback, source/symbols, profiles and cleanup. The complete user-reported10+s delay is not attributed solely to the measured plugin cost.
+
 The user reports that launching VLC is very slow and requests an optimization
 round. After deployment to their stable folder, the first launch reportedly took
 10+ seconds and the next less than4; this is a user observation, not instrumented
@@ -18,7 +20,7 @@ Trace measured delays to their owners and implement only evidenced startup
 bottlenecks. Preserve the Figma interface, complete configured plugin graph,
 VLC/MPV/DV capabilities, font onboarding, palettes, settings/data and provenance.
 
-The existing packager omits plugins.dat while the runtime verifier generates it
+Before R109, the packager omitted plugins.dat while the runtime verifier generated it
 before launching. Investigate this mismatch explicitly; it is a lead, not yet a
 measured explanation for the complete delay. If a shipped index is justified,
 bind it to the exact normal stripped plugin cohort, preserve native cache

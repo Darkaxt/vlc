@@ -1,5 +1,39 @@
 # Windows x64 reproduction and recovery
 
+## Current1.1.10 startup delivery
+
+Normal [1.1.10](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.10)
+binds source `ed36b5fabdbbc89171061f1f08a5515480fce2b0`. The usable local player is
+`D:/VLC-Redesign/releases/1.1.10/Modern-VLC-Fork-1.1.10-win64-portable/vlc.exe`.
+All four assets are independently retrieved/hash-checked. The exact410-plugin
+index is generated from stripped DLLs at a fixed UTC mtime; ZIP DOS-local, UTC
+and NTFS timestamps preserve native validation after standard Windows extraction.
+Do not run cache-gen before downloaded-package acceptance. The verifier leaves
+the shipped cache untouched by default; `--generate-plugin-cache` is an explicit
+build-tree diagnostic. A timestamp-resetting extractor still gets correct native
+rescanning. Full module count603,7-Zip/PowerShell relocation and changed-plugin
+invalidation are verified. The native-window-show benchmark is not first-paint
+evidence and does not flush Windows caches or explain the complete10+s report.
+
+Normal run81, Coordinator271 `a29cc1ed6bb94bbcb49a2fcdcef4e144`, built the affected
+step in45.6s and closed0/group empty with private mounts released. Read-only272
+`999132bbf75b4a8289cb755181bf3c89` verifies the continuing417-PE native cohort,
+configuration and codec link maps. No SDK/MPV dependency rebuild/reconfiguration.
+The native runtime/pipeline remain `/scratch/preview-1.1.8/runtime` and
+`/scratch/preview-1.1.8/compilation/state.json`; the Windows mirrors are now
+`D:/VLC-Redesign/build/windows-x64/scratch-share/startup-1.1.10/runtime` and
+`compilation`. Next pipeline directory0082. Use the current installed WSL gate
+and `verify-retained-build-1.1.10.py /scratch/retention-delivery-1.1.10.json` with
+both explicit arguments through the native private chroot. Keep the same limits,
+native SDK, dependency prefixes and unchanged-source mtimes.
+
+Current compact receipts are in1.1.10/verification. The prior1.1.9 evidence index
+points to a read-back G: archive; old paths in those records are provenance,
+not current launchers. Superseded release packages and test runtimes are retired.
+Historical material below retains its original identities and is not current
+launch clearance.
+
+
 R109/M13 startup optimization is ACTIVE. Use the current1.1.9 below as the normal
 baseline; fresh-package startup must not run vlc-cache-gen before measurement.
 The previous verifier did prime the index, so its lifecycle result alone is not
