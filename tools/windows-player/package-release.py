@@ -147,6 +147,7 @@ def main():
         shutil.copytree(runtime / folder, package / folder, ignore=shutil.ignore_patterns('plugins.dat'))
     (package / 'portable').mkdir()
     plugin_cache = generate_plugin_cache(package)
+    assert not any((package / 'portable').iterdir()), 'Cache generation must not seed user profile/log data'
     assert (package / 'locale/el/LC_MESSAGES/vlc.mo').is_file(), 'Preserve the upstream language catalogs'
     notices = package / 'licenses'
     notices.mkdir()

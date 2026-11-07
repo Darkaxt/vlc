@@ -79,10 +79,12 @@ int main (int argc, char *argv[])
         if (setenv ("VLC_PLUGIN_PATH", path, 1))
             abort ();
 
-        const char *vlc_argv[4];
+        const char *vlc_argv[5];
         int vlc_argc = 0;
 
         vlc_argv[vlc_argc++] = "--quiet";
+        /* This packaging/maintenance helper must not seed user diagnostics. */
+        vlc_argv[vlc_argc++] = "--no-file-logging";
         vlc_argv[vlc_argc++] = "--reset-plugins-cache";
         vlc_argv[vlc_argc++] = "--"; /* end of options */
         vlc_argv[vlc_argc] = NULL;
