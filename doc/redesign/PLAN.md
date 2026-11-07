@@ -12,6 +12,12 @@ Its macOS ARM job128558356622 failed in packaging at Brotli's declared
 uses LC_RPATH and inherited runpaths; native rerun remains required. The original
 run closed with failure after all four native jobs completed; its retained caches
 remain recovery inputs, and it produced no qualified package.
+Resume run42425638801/job128563241022 fromb23b86fcf35fd0ae7c7474084af81db1580f01c5
+reused the Apple Silicon objects and exposed read-only Homebrew library modes in
+the partial staging directory. The focused regression reproduces that failure;
+staging now restores owned destination write permissions before replacement.
+Its retained cache and uploaded failure evidence remain recovery inputs; actual
+closure and player compilation still require the repaired native run.
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
 MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
 submodule in the source archive; Linux ARM job128558356675 confirmed the same

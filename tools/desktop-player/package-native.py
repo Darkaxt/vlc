@@ -106,7 +106,13 @@ def copy_closure(initial, destination):
                 raise RuntimeError('Conflicting native library basename: ' + name)
             continue
         origins[name] = real
-        shutil.copy2(real, destination / name)
+        target = destination / name
+        # Homebrew bottles carry read-only library modes. A partial closure
+        # from an interrupted staging pass is still owned generated output;
+        # restore its write permission before replacing its bytes.
+        if target.exists():
+            target.chmod(target.stat().st_mode | stat.S_IWUSR)
+        shutil.copy2(real, target)
         runpaths = mac_runpaths(real) + inherited_runpaths if MAC else []
         for dep in dependencies(real):
             if external(dep):

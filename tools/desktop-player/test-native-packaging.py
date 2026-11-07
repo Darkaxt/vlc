@@ -3,6 +3,7 @@ import ast
 import importlib.util
 import json
 import os
+import stat
 from pathlib import Path
 import subprocess
 import sys
@@ -52,6 +53,21 @@ class NativePackagingTest(unittest.TestCase):
             self.assertEqual(len(rows), count)
             if target != 'all':
                 self.assertEqual(rows, [{'target': 'macos-arm64', 'runner': 'macos-15'}])
+
+    def test_resume_partial_closure_with_read_only_homebrew_library(self):
+        work = Path(sys.argv_scratch) / ('readonly-closure-' + uuid.uuid4().hex)
+        source = work / 'source/libass.9.dylib'
+        target = work / 'runtime/libass.9.dylib'
+        source.parent.mkdir(parents=True)
+        target.parent.mkdir(parents=True)
+        source.write_bytes(b'current library')
+        target.write_bytes(b'partial earlier staging')
+        target.chmod(stat.S_IREAD)
+        with patch.object(package, 'MAC', True), patch.object(package, 'dependencies', return_value=[]), \
+                patch.object(package, 'mac_runpaths', return_value=[]), patch.object(package, 'run'):
+            rows = package.copy_closure([source], target.parent)
+        self.assertEqual(target.read_bytes(), source.read_bytes())
+        self.assertEqual(rows[0]['sha256'], package.sha(source))
 
     def test_modified_runtime_is_rejected_before_header_write(self):
         # No native executable is run. Model a retained runtime whose bytes no
