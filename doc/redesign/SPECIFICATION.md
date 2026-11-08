@@ -27,6 +27,18 @@ No paid runner, signing account or new credential is assumed. Use ad-hoc signing
 where required to run macOS binaries; distinguish it from Developer ID signing
 and notarization. Preserve the existing unsigned Windows distribution policy.
 
+Windows installer implementation uses the retained NSIS3.11 compiler, a dedicated
+per-user `$LOCALAPPDATA/Programs/Modern VLC Fork` destination and only the fork's
+HKCU uninstall entry/Start-menu shortcut. It must reject another VLC installation
+as its destination, preserve the existing `portable` settings/data on update and
+uninstall, and remove only its exact shipped names with nonrecursive directory
+removal. An older install's uninstaller must not remove a newer install's current
+registration/shortcut. No file associations, upstream VLC registry keys or real
+host-player installation are changed by qualification. Verify actual silent
+install, complete payload identity, playback, upgrade/profile preservation and
+uninstall in the owned Windows Sandbox. Its generated unsigned PE must have no
+debug sections or COFF symbols; never re-strip a compressed NSIS overlay.
+
 R112: use the same Qt/QML/Figma interface and queue/settings owner on each
 platform. Implement native MPV loading, render-surface ownership, native audio,
 and deterministic shutdown/replacement without Windows DLL/D3D11/WASAPI

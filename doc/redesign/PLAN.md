@@ -109,6 +109,25 @@ final packaging. PATH and the successful Everything inventory find no makensis,
 wix or candle executable on this host. Record the pinned native toolchain's
 installer prerequisite inventory before closing the Windows installer attempt;
 do not substitute an unrelated installer or change installed-player integration.
+The retained native toolchain does have makensis3.11-1. Its new per-user fork
+template/payload verifier and exact nonrecursive uninstall list are implemented;
+source-integrity, unexpected-file/profile rejection and NSIS token escaping
+diagnostics pass. Actual compiler/guest installation and lifecycle qualification
+remain acceptance blockers. The Sandbox gate reports no live owned guest; use
+its supported headless route, not the user's desktop.
+Normal Windows run92/gate304 closed1 after104.8s player/100.5s CPU, zero OOM and
+group-empty. Qt linked successfully; the continuation's symbol seed incorrectly
+omitted retained hotkeys. Preserve the failed pending/debug outputs. Run93/
+gate306 resumes the same assembly with the verified411 immutable mappings and
+rebuilds only its six replaced PEs: player20.3s elapsed/18.1s CPU, gate141.8s
+including TAR export, zero OOM/group-empty/released mounts. All417 extracted
+runtime/symbol mappings pass at0d1f9cd8; export1565163520 bytes SHA256
+420c130afb8560caf5180f7a51e2146f6afc8674e4238513b6eb46f304b0fd44.
+Native runtime I/O remains at D:/Temp/vlc-desktop-1.1.12-20261108/normal-0d1f9cd8;
+no normal package or release has been published. Transaction7e109126e60a80a8d139706b35973c62
+is APPLIED:4803101654 logical bytes of spent acceptance copies retired, profiles
+and evidence preserved, no residuals. New syntax bytecode was independently
+ticketed/removed before completing the original directory ticket.
 
 **Earlier M15 investigation checkpoints (historical; current status above).**
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)
