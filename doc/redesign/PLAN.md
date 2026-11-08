@@ -12,11 +12,22 @@ trees. Four focused source/link/release-policy checks pass; actual Mac resumptio
 and complete native package/player acceptance remain required. Its original
 artifact13630974760 is231842690B,
 SHA2565323d5fb8cb0fe6a77a4a2e2c50ac705f9a47a8cb49dfddb07a6bcad51522520.
-Linux retained-package review42515871526 at verifier9327e616 is active; its
-normal player is still9b, with no full normal rebuild for the Qt test repair.
+Linux retained-package review42515871526 at verifier9327e616 compiled its Qt
+diagnostics without a normal rebuild, then exposed a real Qt6.4 QML load error:
+RedesignTopBar's inline MenuRow was not wrapped as a QQmlComponent. Its Loader
+is terminal Error, not pending. The exact run was cancelled for evidence;
+cache retention/upload completed, artifact13631634763 SHA256
+3198e0b2f410f8efa2bf4123b272a0b9c87047b5c175151582f906cac4fed497.
+Explicit Component wrappers now preserve menu/track/library delegate semantics;
+the verifier rejects terminal Loader errors. Focused observation/slider checks
+pass; actual Qt6.4 player verification remains required. Mac ARM42516523219
+is running at41895bc2 with the image-overlay repair and retained dependencies.
 Current Windows NSIS324/5498c57e3e9e430995c210e50effb690 closed0/436.78s,
 empty group/no OOM; installer d78045efb954e947c3ac4566ebd34d9100f0df99d636e507b59a33220fb50519
-is in owned guest lifecycle verification. The original guest b14112e3-ac10-4283-
+passed owned guest install/upgrade/uninstall and profile/payload preservation.
+Fresh installed VLC/MPV first-picture/EOF/release pass; the actual MPV picture
+is captured and inspected. VLC composed capture and final guest cleanup remain.
+The original guest b14112e3-ac10-4283-
 91f1-2e72c8e6bc29 was reconnected after client stdin loss; no guest was duplicated.
 Windows run101/gate323576d4fa418fe47a097fd8bc122d4e538 closed0/116.56s,
 configuration unchanged,417 stripped PE/symbol mappings verified, no OOM,

@@ -16,6 +16,17 @@ import uuid
 
 class NativePlayerClient:
     @staticmethod
+    def inspect_observation(result):
+        if result.get('qml_errors'):
+            raise RuntimeError('Native QML errors: ' + json.dumps(result['qml_errors']))
+        failed = [node for node in result.get('tree', [])
+                  if node.get('type') == 'QQuickLoader' and node.get('status') == 'Error']
+        if failed:
+            raise RuntimeError('Native QML Loader failed: ' + json.dumps([
+                {key: node.get(key) for key in ('id', 'source', 'status')} for node in failed]))
+        return result
+
+    @staticmethod
     def slider_fraction(node, position):
         """Invert Qt's handle-center mapping using this rendered slider's geometry."""
         geometry = node['slider_geometry']
@@ -111,6 +122,7 @@ class NativePlayerClient:
             # supports a read-only snapshot while a predicate is pending.
             if observer and (self.directory / (observer + '.ready')).exists():
                 observation = json.loads((self.directory / (observer + '.json')).read_text())
+                self.inspect_observation(observation)
                 print('NATIVE WAIT', request_id, json.dumps({
                     key: observation.get(key) for key in ('status', 'error', 'core', 'main_window')
                 }), flush=True)
@@ -126,6 +138,8 @@ class NativePlayerClient:
         result = json.loads((self.directory / (request_id + '.json')).read_text())
         if result.get('id') != request_id or result.get('status') == 'failed':
             raise RuntimeError('Player diagnostic failed: ' + json.dumps(result))
+        if operation != 'quit':
+            self.inspect_observation(result)
         return result
 
     def snapshot(self, **fields):

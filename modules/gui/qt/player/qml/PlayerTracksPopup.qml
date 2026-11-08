@@ -225,13 +225,13 @@ T.Popup {
                         Repeater {
                             id: trackRows
                             model: popup.tracks
-                            delegate: Choice {
+                            delegate: Component { Choice {
                                 required property var model
                                 exclusive: popup.currentPage !== 0 && !popup.tracks.multiSelect
                                 text: model.display
                                 selected: model.checked
                                 onClicked: model.checked = exclusive ? true : !model.checked
-                            }
+                            } }
                         }
                         Text {
                             visible: popup.tracks.count === 0
@@ -263,12 +263,12 @@ T.Popup {
                     Repeater {
                         id: devices
                         model: popup.currentPage === 1 && Player.playbackEngine === "vlc" ? Player.audioDevices : null
-                        delegate: Choice {
+                        delegate: Component { Choice {
                             required property var model
                             text: model.display
                             selected: model.checked
                             onClicked: model.checked = true
-                        }
+                        } }
                     }
                     Choice {
                         visible: popup.currentPage === 2

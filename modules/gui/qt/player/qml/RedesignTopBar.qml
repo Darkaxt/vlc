@@ -146,7 +146,8 @@ T.Pane {
         padding: PlayerStyle.px(4)
         margins: PlayerStyle.px(8)
         overlap: PlayerStyle.px(4)
-        delegate: MenuRow {}
+        // Qt 6.4 does not implicitly wrap an inline component as a Component.
+        delegate: Component { MenuRow {} }
         background: LibraryGlass {
             backgroundSource: header.parent
             active: menu.opened
@@ -178,14 +179,14 @@ T.Pane {
             id: recentMenu
             title: qsTr("Open Recent")
             enabled: MainCtx.historyEnabled && MainCtx.mediaLibraryAvailable
-            delegate: MenuRow { glyph: "recent" }
+            delegate: Component { MenuRow { glyph: "recent" } }
             Instantiator {
                 model: recentSource.item
-                delegate: MenuRow {
+                delegate: Component { MenuRow {
                     required property var model
                     text: model.title || model.name || qsTr("Untitled")
                     onTriggered: if(model.id)MediaLib.addAndPlay(model.id)
-                }
+                } }
                 onObjectAdded: (index,object)=>recentMenu.insertItem(index,object)
                 onObjectRemoved: (index,object)=>recentMenu.removeItem(object)
             }
@@ -200,12 +201,12 @@ T.Pane {
             title: PlayerCustomization.selected ? qsTr("Profile (%1)").arg(PlayerCustomization.selected) : qsTr("Profile")
             Instantiator {
                 model: PlayerCustomization.profiles
-                delegate: MenuRow {
+                delegate: Component { MenuRow {
                     required property var modelData
                     text: (modelData.name===PlayerCustomization.selected ? "✓  " : "")+modelData.name
                     enabled: PlayerCustomization.writable && !PlayerCustomization.editing
                     onTriggered: PlayerCustomization.chooseProfile(modelData.name)
-                }
+                } }
                 onObjectAdded: (index,object)=>profilesMenu.insertItem(index,object)
                 onObjectRemoved: (index,object)=>profilesMenu.removeItem(object)
             }

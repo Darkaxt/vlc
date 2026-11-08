@@ -1061,6 +1061,22 @@ class NativePackagingTest(unittest.TestCase):
         self.assertNotEqual(reuse.mac_dependency_setup(setup),
                             reuse.mac_dependency_setup(setup + 'touch changed-sdk\n'))
 
+    def test_native_observation_reports_terminal_loader_failure(self):
+        spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
+        client = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(client)
+        inspect = client.NativePlayerClient.inspect_observation
+        healthy = {'qml_errors': [], 'tree': [
+            {'type': 'QQuickLoader', 'id': 'viewLoader', 'status': 'Loading'}]}
+        self.assertEqual(inspect(healthy), healthy)
+        failed = {'qml_errors': [], 'tree': [
+            {'type': 'QQuickLoader', 'id': 'viewLoader', 'status': 'Error',
+             'source': 'qrc:/VLC/Player/PlayerView.qml'}]}
+        with self.assertRaisesRegex(RuntimeError, 'viewLoader.*PlayerView.qml'):
+            inspect(failed)
+        with self.assertRaisesRegex(RuntimeError, 'Cannot assign object'):
+            inspect({'qml_errors': ['Cannot assign object to QQmlComponent'], 'tree': []})
+
     def test_native_slider_click_uses_handle_center_at_all_window_sizes(self):
         spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
         client = importlib.util.module_from_spec(spec)

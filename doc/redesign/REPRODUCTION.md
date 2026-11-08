@@ -14,6 +14,14 @@ The Linux review condition accepts that verified normal generation and records
 its original source separately from the diagnostic/verifier commit. Only the
 diagnostic Qt objects are rebuilt and their normal bytes/mtimes restored.
 
+Run42515871526 then exposes Qt6.4's real terminal Loader Error: RedesignTopBar
+cannot assign inline MenuRow to QQmlComponent. Explicit Component wrappers are
+required for inline menu, track and library delegates. The native client now
+rejects terminal Loader errors both in initial snapshots and read-only health
+observations; a still-loading component remains pending, without a deadline.
+The source QML correction requires a normal incremental build, unlike the prior
+test-only Qt focus repair. Preserve the cache and original failure evidence.
+
 Image overlay patches run with Git discovery bounded at their extracted source
 parent and without inherited Git worktree/index bindings. Otherwise git apply
 inside the application checkout can return success while ignoring that patch.

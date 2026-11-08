@@ -321,12 +321,12 @@ FocusScope {
                 }
                 Repeater {
                     model: root.compact || !root.libraryAvailable ? [] : LibraryState.pins
-                    delegate: Action {
+                    delegate: Component { Action {
                         required property var modelData
                         text: modelData.title; width: parent.width
                         onClicked: root.visitPin(modelData)
                         onPressAndHold: LibraryState.togglePin(modelData.id, modelData.title, modelData.section)
-                    }
+                    } }
                 }
             }
         }
@@ -369,13 +369,13 @@ FocusScope {
                     Action { padding: 0; implicitHeight: PlayerStyle.px(root.compact ? 24 : 34); font.pixelSize: PlayerStyle.px(16); text: ({home:qsTr("Home"),videos:qsTr("Videos"),folders:qsTr("Folders"),allVideos:qsTr("Videos"),music:qsTr("Music"),network:qsTr("Network"),playlists:qsTr("Playlists"),recent:qsTr("Recent")})[root.section] || root.heading; onClicked: { root.addressGeneration++; root.addressPending = false; root.path = [] } }
                     Repeater {
                         model: root.path
-                        delegate: Action {
+                        delegate: Component { Action {
                             required property int index; required property var modelData
                             padding: 0; implicitHeight: PlayerStyle.px(root.compact ? 24 : 34); font.pixelSize: PlayerStyle.px(16)
                             text: "›  " + modelData.title
                             width: Math.max(0,Math.min(implicitWidth,PlayerStyle.px(root.compact ? 130 : 200),breadcrumbViewport.width))
                             onClicked: { root.addressGeneration++; root.addressPending = false; root.path = root.path.slice(0,index+1) }
-                        }
+                        } }
                     }
                 }
             }
@@ -669,11 +669,11 @@ FocusScope {
         MenuAction { text: qsTr("Go to folder address…"); onClicked: { openMenu.close(); root.editingAddress = true; address.forceActiveFocus(); address.selectAll() } }
         Repeater {
             model: root.compact && root.libraryAvailable ? LibraryState.pins : []
-            delegate: MenuAction {
+            delegate: Component { MenuAction {
                 required property var modelData
                 text: modelData.title
                 onClicked: { openMenu.close(); root.visitPin(modelData) }
-            }
+            } }
         }
         MenuAction { text: qsTr("Reset library layout"); enabled: LibraryState.writable; onClicked: { openMenu.close(); LibraryState.reset() } }
         MenuAction { text: qsTr("All videos"); onClicked: { openMenu.close(); root.navigate("allVideos") } }
@@ -699,7 +699,7 @@ FocusScope {
                 if (root.activeModel instanceof MLMediaModel || root.category === "playlistMedia") choices.push({text:qsTr("Watched"),criteria:"playcount"})
                 return choices
             }
-            delegate: MenuAction { required property var modelData; text: modelData.text; onClicked: { root.activeModel.sortCriteria = modelData.criteria; sortMenu.close() } }
+            delegate: Component { MenuAction { required property var modelData; text: modelData.text; onClicked: { root.activeModel.sortCriteria = modelData.criteria; sortMenu.close() } } }
         }
         MenuAction { text: qsTr("Ascending"); onClicked: { root.activeModel.sortOrder = Qt.AscendingOrder; sortMenu.close() } }
         MenuAction { text: qsTr("Descending"); onClicked: { root.activeModel.sortOrder = Qt.DescendingOrder; sortMenu.close() } }
@@ -755,7 +755,7 @@ FocusScope {
             Label { text: qsTr("Add selection to playlist"); Layout.fillWidth: true }
             ListView {
                 Layout.fillWidth: true; Layout.fillHeight: true; clip: true; model: allPlaylists
-                delegate: Action { required property string name; required property var model; width: ListView.view.width; text: name; onClicked: { const target = model.id; root.selectedIds().then(ids => { if (ids.length) allPlaylists.append(target,ids) }); playlistPicker.close(); root.status = qsTr("Adding to playlist…") } }
+                delegate: Component { Action { required property string name; required property var model; width: ListView.view.width; text: name; onClicked: { const target = model.id; root.selectedIds().then(ids => { if (ids.length) allPlaylists.append(target,ids) }); playlistPicker.close(); root.status = qsTr("Adding to playlist…") } } }
             }
             Action { text: qsTr("Cancel"); onClicked: playlistPicker.close() }
         }

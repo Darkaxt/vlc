@@ -65,6 +65,12 @@ one normal versioned release through Darkaxt/vlc's established GitHub channel,
 independently retrieve/check its assets and update the existing weekly pipeline.
 Preserve verified1.1.11 until the new delivery and continuing build binding pass.
 
+Linux Qt6.4 acceptance exposes a PlayerView load failure: the inline MenuRow
+instances assigned to QQmlComponent delegates are not implicitly wrapped on
+that Qt version. Use explicit Component delegates without changing the Figma
+menu or actions. A terminal QML Loader Error must fail native verification with
+its source instead of leaving a readiness predicate pending indefinitely.
+
 Native acceptance exposed unsolicited LAN discovery during local-file playback:
 MediaLibrary::Init unconditionally enables every LAN discovery provider. Correct
 that startup path within M15: local-only/empty libraries must not start LAN
