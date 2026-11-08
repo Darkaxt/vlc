@@ -48,6 +48,22 @@ Linux review now has a prepared owned Xvfb/window-manager/compositor and private
 audio session, with event-based readiness and exit verification; actual native
 execution remains required. Its explicit test prerequisites start a new bound
 Linux toolchain cohort, preserving the earlier incomplete caches separately.
+Continuation run42429910111/job128576343268 from53ca7849e21d4e7c15ec7dddb68b5a11b2c4e973
+passed the remaining Vulkan C++ linkage, full VLC build and install using the
+retained configured cohort. It is assembling the macOS app in macdeployqt;
+packaging completion and native player acceptance remain pending on this same
+managed run/watch. That original run/watch has now closed with failure after
+retaining cache ending42429910111 and artifact13597747894
+(SHA25617d89485ad93955639baec50a0d0ad78878982670e5788397816b8eebbf1e666).
+macdeployqt recursively copied unrelated QML sibling modules (StateMachine,
+Qt3D, virtual keyboard), then codesign rejected installed libtool `.la` metadata
+under Frameworks. The corrected packager stages only Qt's scanned import graph,
+resolves source-relative QML runpaths before copying, excludes build-only plugin
+archives, signs the outer app last and copies the immutable MPV closure after
+Qt deployment. Focused graph/resource/runpath/SDK-preservation regressions pass;
+actual repaired native packaging remains required. New package generations bind
+to source commits without overwriting the failed app or resetting compiler
+objects. No local WSL or second concurrent build was launched.
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
 MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
 submodule in the source archive; Linux ARM job128558356675 confirmed the same
@@ -64,7 +80,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; stock MPV and redesigned Qt player compiled/linked on macOS ARM; native object/configuration reuse and ncurses SDK repair executed. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | Resume Vulkan C++ runtime linkage, complete package/runtime acceptance and Linux display-session execution; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; full macOS ARM VLC/MPV/Qt build and install passed; retained object/configuration reuse, ncurses SDK and Vulkan C++ runtime corrections executed. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | Complete the running Mac package/runtime acceptance, remaining architectures and Linux display-session execution; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Preserve historical M6's exact native-cleanup limitation. S9 Rust has not started.

@@ -81,6 +81,8 @@ jobs:
           path: |
             .desktop-build/packages/*
             .desktop-build/native-build.json
+            .desktop-build/package-output.json
+            .desktop-build/qml-deployment/*json
             .desktop-build/native-link-bindings.json
             .desktop-build/bootstrap-cache-migration.json
             .desktop-toolchain/*

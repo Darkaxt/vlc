@@ -62,6 +62,19 @@ set. Cache ending42429162484 is the next Mac continuation; no cold configure is
 required. The normal package verifies MPV members against their compiled identity
 after relocation/signing, before archiving. No runtime qualification is implied.
 
+Run42429910111/job128576343268 completed all native compilation/install, then
+failed codesign on a build-only `.la` file copied into Frameworks. Its original
+watch closed1, preserving cache ending42429910111 and artifact13597747894.
+Qt's deployment also copied unrelated sibling QML modules from Homebrew's merged
+tree and could not resolve their original framework paths. The packager now
+stages the import scanner's resolved module graph and assets, excluding unselected
+child modules; it resolves source-relative runpaths on owned copies. Libtool
+metadata/static plugin archives stay in the retained build rather than the app.
+MPV's immutable closure is installed after Qt rewriting, with outer signing last.
+`package-output.json` identifies the exact source-bound generation below packages;
+review uses that path, never a historical partial bundle. The previous partial
+bundle/cache remains an intentional recovery consumer until this repair passes.
+
 ## Current1.1.11 stabilization diagnostics
 
 Normal [1.1.11](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11)
@@ -76,6 +89,16 @@ remain user-managed. No background cleanup runs while closed. Cachegen and
 preparser opt out. UTC receipt timestamps differ from buffered core-phase elapsed
 timings; the latter use a stable clock across Windows thread initialization.
 The full intermittent30s report is not yet attributed to app or system.
+
+The 8 November [video lead](resources/startup-video-20261108.json) discusses
+Defender/plugin-cache interference. Read-only inspection of the user's stable
+installation found the shipped cache intact and hash-identical. Its available
+7 November launch loaded603 modules in16ms and reached QML readiness at
+logger_ms2390; it is a fast-launch sample, not evidence for the reported30s case.
+Defender is active; its enabled Operational log has no1116/1117 events in the
+preceding seven days. This does not exclude ordinary scan latency. Preserve the
+cache/profile/security settings; a same-attempt slow-launch log and Defender
+performance trace are the discriminating evidence, not repeated reinstalls.
 
 Normal276/run85 `0b66389faa21411d954b862ad626ed03` closes0/group empty, private
 mounts released, no OOM,30.6s affected player build. Current read-only receipt is

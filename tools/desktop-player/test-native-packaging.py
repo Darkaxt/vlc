@@ -19,10 +19,52 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_qml_deployment_uses_requested_module_graph_not_neighbor_modules(self):
+        root = Path(sys.argv_scratch) / ('qml-graph-' + uuid.uuid4().hex)
+        installed = root / 'installed/QtQuick'
+        (installed / 'Controls/Basic').mkdir(parents=True)
+        (installed / 'Scene3D').mkdir()
+        (installed / 'assets').mkdir()
+        for relative in ('qmldir', 'Controls/qmldir', 'Controls/Basic/qmldir',
+                         'Scene3D/qmldir', 'assets/required.png'):
+            (installed / relative).write_text(relative)
+        graph = [{'type': 'module', 'name': name, 'path': str(path)} for name, path in
+                 [('QtQuick', installed), ('QtQuick.Controls', installed / 'Controls'),
+                  ('QtQuick.Controls.Basic', installed / 'Controls/Basic')]]
+        destination = root / 'staged'
+        rows = package.stage_qml_modules(graph, destination)
+        self.assertTrue((destination / 'QtQuick/assets/required.png').is_file())
+        self.assertTrue((destination / 'QtQuick/Controls/Basic/qmldir').is_file())
+        self.assertFalse((destination / 'QtQuick/Scene3D').exists())
+        self.assertEqual({row['name'] for row in rows}, {row['name'] for row in graph})
+        self.assertTrue((installed / 'Scene3D/qmldir').is_file())
+
     def test_python_sources_parse(self):
         for path in HERE.glob('*.py'):
             with self.subTest(path=path.name):
                 ast.parse(path.read_text(), filename=str(path))
+
+    def test_staged_qml_rebases_source_runpath_without_mutating_sdk(self):
+        root = Path(sys.argv_scratch) / ('qml-runpath-' + uuid.uuid4().hex)
+        installed = root / 'sdk/qml/QtQuick'; installed.mkdir(parents=True)
+        plugin = installed / 'libquickplugin.dylib'
+        plugin.write_bytes(b'\xcf\xfa\xed\xfe' + b'source plugin')
+        plugin.chmod(stat.S_IREAD)
+        destination = root / 'staged'
+        commands = []
+
+        def record(*args):
+            commands.append(args)
+            self.assertTrue(args[-1].stat().st_mode & stat.S_IWUSR)
+
+        with patch.object(package, 'MAC', True), patch.object(package, 'output',
+                return_value='Load command 1\n cmd LC_RPATH\n cmdsize 64\n path @loader_path/../../lib (offset 12)'), \
+                patch.object(package, 'run', side_effect=record):
+            package.stage_qml_modules([{'type': 'module', 'name': 'QtQuick', 'path': str(installed)}], destination)
+        self.assertEqual(commands, [('install_name_tool', '-rpath', '@loader_path/../../lib',
+            str(installed / '../../lib'), destination / 'QtQuick/libquickplugin.dylib')])
+        self.assertEqual(plugin.read_bytes(), b'\xcf\xfa\xed\xfe' + b'source plugin')
+        self.assertFalse(plugin.stat().st_mode & stat.S_IWUSR)
 
     def test_native_ncurses_link_uses_consumer_sdk_and_preserves_libraries(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')

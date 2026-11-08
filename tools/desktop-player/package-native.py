@@ -55,18 +55,92 @@ def dependencies(path):
     return [match.group(1) for line in lines if (match := re.search(r'=> (/[^ ]+)', line))]
 
 
-def mac_runpaths(origin):
+def mac_runpath_bindings(origin):
     lines = output('otool', '-l', origin).splitlines()
     result = []
     for index, line in enumerate(lines):
         if line.strip() == 'cmd LC_RPATH':
-            value = lines[index + 2].strip().removeprefix('path ').split(' (offset ')[0]
+            original = lines[index + 2].strip().removeprefix('path ').split(' (offset ')[0]
+            value = original
             if value.startswith('@loader_path/'):
                 value = str(origin.parent / value.removeprefix('@loader_path/'))
             if value == '@loader_path':
                 value = str(origin.parent)
-            result.append(value)
+            result.append((original, value))
     return result
+
+
+def mac_runpaths(origin):
+    return [resolved for original, resolved in mac_runpath_bindings(origin)]
+
+
+def stage_qml_modules(imports, destination):
+    """Preserve the scanner's module graph without copying sibling modules.
+
+    macdeployqt recursively copies a module's entire directory. In Homebrew's
+    merged QML tree, QtQuick also contains unrelated Qt3D modules; QtQml contains
+    StateMachine. Those are independent modules, not resources of their parent.
+    Copy each scanned module and its assets, letting the scanner select child
+    modules explicitly. The installed SDK is read-only input throughout.
+    """
+    destination.mkdir(parents=True, exist_ok=False)
+    modules = {}
+    for item in imports:
+        name, origin = item.get('name', ''), item.get('path', '')
+        if item.get('type') != 'module' or not origin or not name.startswith('Qt'):
+            continue
+        if not re.fullmatch(r'[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*', name):
+            raise RuntimeError('Invalid Qt QML module URI: ' + name)
+        origin = Path(origin).resolve(strict=True)
+        if name in modules and modules[name] != origin:
+            raise RuntimeError('Conflicting QML module sources: ' + name)
+        modules[name] = origin
+    if not modules:
+        raise RuntimeError('Qt import scanner found no resolved Qt modules')
+    records = []
+
+    def copy_contents(origin, target, native_bindings):
+        target.mkdir(parents=True, exist_ok=True)
+        for child in sorted(origin.iterdir()):
+            copied = target / child.name
+            if child.is_dir():
+                if not (child / 'qmldir').is_file():
+                    copy_contents(child, copied, native_bindings)
+            elif child.is_file():
+                shutil.copy2(child, copied)
+                if MAC and native(copied):
+                    # Resolve LC_RPATH in the source location before Qt moves
+                    # the plugin. Relative source paths otherwise point into
+                    # the app after deployment and lose modular framework roots.
+                    bindings = mac_runpath_bindings(child.resolve(strict=True))
+                    copied.chmod(copied.stat().st_mode | stat.S_IWUSR)
+                    for original, resolved in bindings:
+                        if original != resolved:
+                            run('install_name_tool', '-rpath', original, resolved, copied)
+                    native_bindings.append({'file': str(copied.relative_to(destination)),
+                        'source_sha256': sha(child), 'runpaths': bindings})
+
+    for name, origin in sorted(modules.items(), key=lambda item: (item[0].count('.'), item[0])):
+        bindings = []
+        copy_contents(origin, destination.joinpath(*name.split('.')), bindings)
+        records.append({'name': name, 'source': str(origin), 'native_bindings': bindings})
+    return records
+
+
+def prepare_mac_qml(work, qt, generation):
+    qmake = qt / 'bin/qmake'
+    qml = Path(output(qmake, '-query', 'QT_INSTALL_QML'))
+    candidates = [Path(output(qmake, '-query', 'QT_HOST_LIBEXECS')) / 'qmlimportscanner',
+                  qt / 'libexec/qmlimportscanner', qt / 'bin/qmlimportscanner']
+    scanner = next((path for path in candidates if path.is_file()), None)
+    if scanner is None:
+        raise RuntimeError('Installed native Qt import scanner is missing: ' + str(candidates))
+    imports = json.loads(output(scanner, '-rootPath', ROOT / 'modules/gui/qt', '-importPath', qml))
+    directory = work / 'qml-deployment' / generation
+    records = stage_qml_modules(imports, directory)
+    (directory.parent / (generation + '.json')).write_text(json.dumps({
+        'scanner': str(scanner), 'installed_qml': str(qml), 'modules': records}, indent=2) + '\n')
+    return directory
 
 
 def resolve_mac_dependency(dep, origin, runpaths):
@@ -223,11 +297,13 @@ def package_mac(work, installed, out, version, arch):
         for path in parent.rglob('*') if parent.exists() else []:
             if path.is_file() and path.name in ('vlc-qt-check', 'vlc-preparser', 'vlc-cache-gen'):
                 shutil.copy2(path, binaries / path.name)
-    shutil.copytree(installed / 'lib/vlc/plugins', frameworks / 'plugins')
+    # Libtool metadata/static archives are build inputs, not loadable plugins.
+    # Apple treats them as unsigned code when placed below Frameworks.
+    shutil.copytree(installed / 'lib/vlc/plugins', frameworks / 'plugins',
+                    ignore=shutil.ignore_patterns('*.la', '*.a'))
     shutil.copytree(installed / 'share/vlc', resources / 'share')
     shutil.copytree(installed / 'libexec/vlc/lua', frameworks / 'lua')
     shutil.copytree(ROOT / 'share/hrtfs', resources / 'share/hrtfs')
-    shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv')
     for path in (installed / 'lib').glob('libvlc*.dylib'):
         shutil.copy2(path.resolve(), frameworks / path.name)
     originals = [p for p in app.rglob('*') if native(p) and 'mpv' not in p.relative_to(app).parts]
@@ -260,8 +336,14 @@ def package_mac(work, installed, out, version, arch):
             'NSHighResolutionCapable': True, 'NSPrincipalClass': 'NSApplication'}
     (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
     qt = Path(output('brew', '--prefix', 'qt'))
-    run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'), '-always-overwrite',
+    qml = prepare_mac_qml(work, qt, out.name)
+    run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'),
+        '-qmlimport=' + str(qml), '-always-overwrite', '-verbose=2', '-no-codesign',
         '-executable=' + str(frameworks / 'plugins/gui/libqt_plugin.dylib'))
+    # libmpv is loaded dynamically and has no Qt dependency. Install its already
+    # signed immutable closure after Qt's deployment rewrites, not as input to
+    # a second linker/signing pass over every library in the bundle.
+    shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv')
     minimums = {str(path.relative_to(app)): mac_minimum_system(output('otool', '-l', path))
                 for path in app.rglob('*') if native(path)}
     minimum = max((13, 0), *minimums.values())
@@ -272,7 +354,7 @@ def package_mac(work, installed, out, version, arch):
     # Sign inner objects before the outer bundle. MPV payloads were signed
     # before their identities were compiled and must remain byte-identical.
     for path in sorted(app.rglob('*'), key=lambda p: len(p.parts), reverse=True):
-        if native(path) and 'mpv' not in path.relative_to(app).parts:
+        if native(path) and path != binaries / 'vlc' and 'mpv' not in path.relative_to(app).parts:
             run('codesign', '--force', '--sign', '-', path)
     run('codesign', '--force', '--sign', '-', app)
     run('codesign', '--verify', '--deep', '--strict', app)
@@ -409,7 +491,15 @@ def main():
         return
     version = re.search(r'"(\d+\.\d+\.\d+)"',
         (ROOT / 'modules/gui/qt/dialogs/help/fork_release.hpp').read_text()).group(1)
-    out = args.work / 'packages'; out.mkdir(exist_ok=True)
+    # A repaired packager gets a distinct owned output generation. Preserve
+    # the failed generation and its diagnostic evidence, without discarding
+    # compiler/dependency objects or overwriting a package still being read.
+    commit = output('git', '-C', ROOT, 'rev-parse', 'HEAD')
+    out = args.work / 'packages' / commit
+    out.mkdir(parents=True, exist_ok=True)
+    (args.work / 'package-output.json').write_text(json.dumps({
+        'source_commit': commit, 'directory': str(out.resolve()),
+        'qualification': 'PENDING'}, indent=2) + '\n')
     architecture = platform.machine()
     if MAC:
         package_mac(args.work, args.work / 'installed', out, version, architecture)

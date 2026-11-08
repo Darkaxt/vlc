@@ -55,13 +55,17 @@ def main():
                      'mtime_ns': path.stat().st_mtime_ns})
     (review / 'normal-recovery.json').write_text(json.dumps(rows, indent=2) + '\n')
     mac = platform.system() == 'Darwin'
+    output_record = json.loads((work / 'package-output.json').read_text())
+    packages = Path(output_record['directory']).resolve()
+    if not packages.is_relative_to(work / 'packages'):
+        raise RuntimeError('Native package generation escaped its owned work directory')
     if mac:
-        normal = work / 'packages/Modern VLC.app'
+        normal = packages / 'Modern VLC.app'
         payload = review / 'Modern VLC.app'
         plugin_relative = Path('Contents/Frameworks/plugins/gui/libqt_plugin.dylib')
         executable_relative = Path('Contents/MacOS/vlc')
     else:
-        candidates = sorted((work / 'packages').glob('Modern-VLC-Fork-*-linux-*'))
+        candidates = sorted(packages.glob('Modern-VLC-Fork-*-linux-*'))
         candidates = [path for path in candidates if path.is_dir()]
         if len(candidates) != 1:
             raise RuntimeError('Expected exactly one normal Linux payload')

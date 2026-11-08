@@ -1,0 +1,38 @@
+{
+  "schema": "vlc_redesign.startup_investigation.v1",
+  "date": "2026-11-08",
+  "state": "LEAD INVESTIGATED; intermittent slow launch remains unattributed",
+  "video": {
+    "url": "https://www.youtube.com/watch?v=Awf9D7vIgvE",
+    "title": "VLC Took 33 Seconds To Load, So Developers Investigated Windows.",
+    "channel": "The Infographics Show",
+    "duration_seconds": 882,
+    "evidence": "Public English captions and full cleaned transcript inspected; no video or audio downloaded. Caption completeness remains unverified.",
+    "claim": "Defender interference with the VLC plugin cache can trigger costly plugin rescanning and intermittent slow launches.",
+    "attribution_limit": "The video is evidence of this explanation, not proof of this machine's cause. Its intentional-sabotage interpretation is not established. The linked original VideoLAN X post could not be retrieved (403)."
+  },
+  "read_only_host_observations": {
+    "defender_service": "Running",
+    "defender_mode": "Normal",
+    "defender_antivirus_enabled": true,
+    "defender_real_time_protection_enabled": true,
+    "defender_operational_log_enabled": true,
+    "detection_or_remediation_events_1116_1117_previous_seven_days": 0,
+    "event_limit": "No threat events does not exclude ordinary scanning delays.",
+    "installed_cache_bytes": 344738,
+    "installed_cache_sha256": "de3cefe953b55051baaca990da7bf837f7720fd8a6c0092fbf9b8c96ea9d0535",
+    "cache_matches_shipped_manifest": true,
+    "shipped_plugins": 410,
+    "available_launch_log": {
+      "start_utc": "2026-11-07T14:06:51.199Z",
+      "logger_open_process_age_ms": 90,
+      "plugins_ready_core_elapsed_ms": 16,
+      "modules_loaded": 603,
+      "qml_root_ready_logger_ms": 2390,
+      "limit": "This is a fast launch. QML readiness is not measured first presentation, and this log cannot explain a different 30-second launch."
+    }
+  },
+  "next_discriminating_evidence": "Correlate a genuinely slow launch's bounded application startup phases with a same-attempt Defender performance recording if attribution is still needed. Recording requires the supported administrator gate; no recording or security-policy change was performed for this investigation.",
+  "primary_diagnostic_reference": "https://learn.microsoft.com/en-us/defender-endpoint/performance-analyzer-reference",
+  "preserved": "Installed player/profile/cache and all Defender settings remained unchanged. Native desktop delivery continues under M15."
+}
