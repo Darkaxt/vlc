@@ -16,6 +16,17 @@ import sys
 import time
 
 
+def select_compiler_cache_steps(steps):
+    if os.environ.get('VLC_PLAYER_COMPILE_CACHE', '1') != '0':
+        return steps
+    if not os.environ.get('VLC_PLAYER_COMPILE_CACHE_REASON', '').strip():
+        raise RuntimeError('Disabling the compiler copy cache requires its existing explicit reason')
+    # The verified native-ext4 cohort has no NTFS header-copy mounts. Its full
+    # upstream route must not unmount an old receipt or recreate that copy cache.
+    cache_steps = {'release-compiler-cache', 'upstream-codec-cache', 'upstream-codec-cache-release'}
+    return [(name, command) for name, command in steps if name not in cache_steps]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, default=Path('/work/src'))
@@ -86,6 +97,7 @@ def main():
             ('configure-player', sh('configure-upstream-player.sh', args.source, args.build)),
             ('player', sh('build-player.sh', args.mode, args.source, args.build, args.runtime)),
         ]
+    steps = select_compiler_cache_steps(steps)
     names = [name for name, _ in steps]
     state = json.loads(args.state.read_text()) if args.state.exists() else {
         'schema': 'vlc_redesign.compilation_pipeline.v1', 'attempts': [], 'steps': {}}
@@ -131,6 +143,9 @@ def main():
     identity = {str(path.relative_to(args.source)): hashlib.sha256(path.read_bytes()).hexdigest()
                 for path in [*(tools / name for name in recipes),
                              args.source / 'modules/gui/qt/player/mpv/source.json']}
+    if full or current:
+        policy = args.source / 'tools/desktop-player/build-native.py'
+        identity[str(policy.relative_to(args.source))] = hashlib.sha256(policy.read_bytes()).hexdigest()
     log_root.mkdir()
     attempt = {'run': run, 'from_step': names[start], 'mode': args.mode, 'inputs': identity,
         'player_compile_cache': os.environ.get('VLC_PLAYER_COMPILE_CACHE', '1'),

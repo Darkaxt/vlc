@@ -1,5 +1,6 @@
 """Build selected upstream codec updates without modifying the retained SDK."""
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,10 @@ def sha(path, algorithm='sha256'):
 def main():
     assert Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip().startswith('/llm-coordinator/')
     repo = Path(__file__).resolve().parents[2]
+    policy_spec = importlib.util.spec_from_file_location(
+        'native_release_policy', repo / 'tools/desktop-player/build-native.py')
+    policy = importlib.util.module_from_spec(policy_spec)
+    policy_spec.loader.exec_module(policy)
     base = Path('/work/upstream-codecs-1.1.1')
     prefix = base / 'prefix'
     sdk = Path('/work/build/contrib/x86_64-w64-mingw32')
@@ -100,7 +105,7 @@ def main():
             zvbi_env = dict(env, CC='x86_64-w64-mingw32-gcc -B' + str(crt) + '/',
                 CXX='x86_64-w64-mingw32-g++ -B' + str(crt) + '/',
                 AR='x86_64-w64-mingw32-gcc-ar', RANLIB='x86_64-w64-mingw32-gcc-ranlib',
-                CFLAGS='-O2 -g -I' + str(sdk / 'include'),
+                CFLAGS='-O3 -g0 -DNDEBUG -I' + str(sdk / 'include'),
                 CPPFLAGS='-I' + str(sdk / 'include'),
                 LDFLAGS='-L' + str(crt) + ' -L' + str(sdk / 'lib') + ' -static-libgcc')
             if not (build / 'Makefile').exists():
@@ -121,7 +126,11 @@ def main():
                 subprocess.run(['cmake', '-S', str(source / 'ports/cmake' if component == 'mpg123' else source),
                     '-B', str(build), '-G', 'Ninja', '-DCMAKE_TOOLCHAIN_FILE=' + str(cross_path),
                     '-DCMAKE_INSTALL_PREFIX=' + str(prefix), '-DCMAKE_INSTALL_LIBDIR=lib',
-                    '-DCMAKE_BUILD_TYPE=RelWithDebInfo', '-DBUILD_SHARED_LIBS=OFF', *options], env=env, check=True)
+                    '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_C_FLAGS_RELEASE=-O3 -g0 -DNDEBUG',
+                    '-DCMAKE_CXX_FLAGS_RELEASE=-O3 -g0 -DNDEBUG',
+                    '-DBUILD_SHARED_LIBS=OFF', *options], env=env, check=True)
+            if component == 'aom':
+                policy.verify_aom_release_flags((build / 'CMakeCache.txt').read_text())
             subprocess.run(['cmake', '--build', str(build), '--parallel', '1'], env=env, check=True)
             subprocess.run(['cmake', '--install', str(build)], env=env, check=True)
         pc_path = prefix / 'lib/pkgconfig' / (pc + '.pc')
@@ -130,6 +139,9 @@ def main():
         record = dict(identity, library=component, version=version, prefix=str(prefix),
             archive_sha256=sha(archive), static_library=library,
             library_sha256=sha(prefix / 'lib' / library), pkg_config=pc)
+        if component == 'aom':
+            record['release_flags'] = policy.verify_aom_release_flags((build / 'CMakeCache.txt').read_text())
+            record['cmake_cache_sha256'] = sha(build / 'CMakeCache.txt')
         (home / 'build-receipt.json').write_text(json.dumps(record, indent=2) + '\n')
         records.append(record)
         print('UPSTREAM CODEC DONE ' + json.dumps(record), flush=True)

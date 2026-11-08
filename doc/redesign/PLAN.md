@@ -34,6 +34,24 @@ owned X/audio session. The DEB path also installs through dpkg, executes its rea
 system launcher and purges only that owned package. RPM/Snap extraction is
 explicitly not matching-distribution/strict-confinement installation acceptance;
 those criteria remain unverified. This new verification is not yet run natively.
+Verification-only905f7de5b1cf4ec7762c94115bb3fe6f6b727ad3 is pushed without
+starting another unchanged Mac run. Explicit Linux continuation42468285891
+(original watch78636) is queued behind42467880197 at that exact source.
+
+Read-only Windows gate294/ff242dcdfd54430b97629c17b55dfafb closes0 with34MiB
+peak, no OOM, empty Linux group and released private mounts. It verifies the
+retained ext4 codec configuration: old AOM3.15.2 used RelWithDebInfo. Preserve
+those old recovery objects; the upstream-required new3.15.3 build now selects
+Release/O3/g0/NDEBUG and uses the existing native release-policy checker before
+compilation, recording actual CMake flags/cache hash. Other unchanged configured
+dependencies stay reusable. The new AOM build and full Windows regression remain
+unverified; no local compilation has started.
+The full pipeline also ignored that cohort's explicit copy-cache disable: it
+would call the old release helper against absent mounts, then recreate the NTFS
+header-copy cache. Its dependency route now omits those three cache operations
+only under the existing explicit disable/reason contract, retaining the enabled
+legacy route. Focused command-selection regression passes; real full upstream
+Windows qualification remains required.
 
 Run42463140593/job128676618203 from0b39f77834f56a112cb84c71f3db86441c548846
 completed successfully (original watch8561 closed0). Both handovers preserve

@@ -111,6 +111,13 @@ that prefix to raw closure discovery without changing the global environment or
 allowing the final package audit to borrow build dependencies. Retain the native
 objects; verify real staging, relocated dependency closure and player behavior.
 
+The retained Windows ext4 cohort explicitly disables the former NTFS compiler
+copy cache. Its full upstream pipeline must honor that setting for the dependency
+steps too, without attempting to unmount a stale receipt or recreating header
+copies. Preserve the legacy enabled-cache route. The new upstream AOM3.15.3 build
+must use and verify Release/O3/g0/NDEBUG before compilation; retain unchanged old
+dependency objects and the independently verified1.1.11 recovery binding.
+
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master
 by normal merge history within M15 before the final architecture/package matrix

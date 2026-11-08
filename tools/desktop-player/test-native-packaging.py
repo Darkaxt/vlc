@@ -23,6 +23,27 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_native_windows_upstream_pipeline_does_not_touch_absent_copy_mounts(self):
+        spec = importlib.util.spec_from_file_location('windows_pipeline',
+            HERE.parent / 'windows-player/compilation-pipeline.py')
+        pipeline = importlib.util.module_from_spec(spec)
+        # Only the command-selection contract runs here; resource accounting
+        # belongs to the real Linux supervisor and has no Windows module.
+        with patch.dict(sys.modules, {'resource': SimpleNamespace()}):
+            spec.loader.exec_module(pipeline)
+        steps = [(name, ['command', name]) for name in ('upstream-medialibrary',
+            'runtime', 'release-compiler-cache', 'upstream-codec-cache',
+            'upstream-codecs', 'upstream-codec-cache-release', 'configure-player', 'player')]
+        with patch.dict(os.environ, {'VLC_PLAYER_COMPILE_CACHE': '1'}):
+            self.assertEqual(pipeline.select_compiler_cache_steps(steps), steps)
+        with patch.dict(os.environ, {'VLC_PLAYER_COMPILE_CACHE': '0',
+                'VLC_PLAYER_COMPILE_CACHE_REASON': 'Verified native ext4 cohort'}):
+            self.assertEqual([name for name, _ in pipeline.select_compiler_cache_steps(steps)],
+                ['upstream-medialibrary', 'runtime', 'upstream-codecs', 'configure-player', 'player'])
+            os.environ['VLC_PLAYER_COMPILE_CACHE_REASON'] = ''
+            with self.assertRaisesRegex(RuntimeError, 'explicit reason'):
+                pipeline.select_compiler_cache_steps(steps)
+
     def test_linux_raw_dependency_discovery_uses_only_its_owned_prefix(self):
         prefix = Path('owned-prefix/lib').resolve()
         placebo = '/owned-prefix/lib/libplacebo.so.387'
