@@ -33,6 +33,24 @@ watch session have exited with failure, preserving their caches. No package from
 qualified release. M15's remaining package/source/license and real playback
 criteria are recorded in PLAN/SPECIFICATION.
 
+Run42426649287/job128566297996 (91c16ad3c5a80dbf7310a900c893a43af4cbe48b)
+compiled/linked the Qt redesign including native MPV, then stopped linking
+ncurses against its prebuilt producer SDK path. Preserve cache ending42426649287;
+the next driver overrides only ncurses's SDK flag with the selected `xcrun` SDK
+and records original/resolved flags in `native-link-bindings.json`. Generated
+bootstrap files now retain exact nanosecond mtimes, avoiding a cold configure
+on a new runner checkout. The initial cache needs its explicitly recorded,
+input-verified bootstrap reconstruction once.
+
+`prepare-native-review.py` copies the normal Mac app into `$RUNNER_TEMP`, builds
+only the existing test-only `mainui` diagnostics, relocates that plugin against
+the normal app's dependency map and restores normal objects/library hashes and
+mtimes in `finally`. `verify-native-player.py` uses owned filesystem/process
+events, isolated profiles and synthetic media; it requests both Qt-only and
+owned native-window captures. Neither its prepared source nor Quick-only
+pictures qualify native playback. Inspect composed pixels and actual results.
+Linux's equivalent display/audio session remains required implementation.
+
 ## Current1.1.11 stabilization diagnostics
 
 Normal [1.1.11](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11)

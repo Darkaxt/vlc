@@ -9,7 +9,7 @@ import subprocess
 import sys
 import uuid
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 sys.dont_write_bytecode = True
 HERE = Path(__file__).resolve().parent
@@ -23,6 +23,49 @@ class NativePackagingTest(unittest.TestCase):
         for path in HERE.glob('*.py'):
             with self.subTest(path=path.name):
                 ast.parse(path.read_text(), filename=str(path))
+
+    def test_native_ncurses_link_uses_consumer_sdk_and_preserves_libraries(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        build_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build_module)
+        work = MagicMock()
+        original = '-L/pinned/lib -lncursesw -isysroot /producer/MacOSX26.2.sdk -lm'
+        with patch.object(build_module.platform, 'system', return_value='Darwin'), \
+                patch.object(build_module.subprocess, 'check_output', return_value=original), \
+                patch.object(build_module, 'output', return_value='/selected SDK/MacOSX.sdk'):
+            flags = build_module.native_make_flags(work, {})
+        self.assertEqual(flags[0], 'PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY')
+        self.assertEqual(build_module.shlex.split(flags[1].removeprefix('NCURSES_LIBS=')),
+            ['-L/pinned/lib', '-lncursesw', '-isysroot', '/selected SDK/MacOSX.sdk', '-lm'])
+        record = json.loads((work / 'native-link-bindings.json').write_text.call_args.args[0])
+        self.assertEqual(record['ncurses_pkgconfig_libs'], original)
+
+    def test_bootstrap_cache_restores_generated_bytes_and_exact_mtime(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        build_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build_module)
+        work = Path(sys.argv_scratch) / ('bootstrap-cache-' + uuid.uuid4().hex)
+        original = work / 'original'; restored = work / 'restored'
+        original.mkdir(parents=True); restored.mkdir()
+        for root in (original, restored):
+            for directory in ('autotools', 'm4', 'po'):
+                (root / directory).mkdir()
+        generated = original / 'configure'
+        generated.write_bytes(b'generated configure')
+        os.utime(generated, ns=(1670000000123456700, 1670000000123456700))
+        expected_time = generated.stat().st_mtime_ns
+        protected = restored / 'Makefile.am'; protected.write_bytes(b'current tracked source')
+        tracked = {'Makefile.am'}
+        with patch.object(build_module, 'ROOT', original):
+            build_module.retain_bootstrap_sources(work, tracked)
+        with patch.object(build_module, 'ROOT', restored), \
+                patch.object(build_module, 'output', return_value='Makefile.am'), \
+                patch.object(build_module, 'run') as invoked:
+            build_module.prepare_bootstrap_sources(work, work / 'build', {}, {})
+            invoked.assert_not_called()
+        self.assertEqual((restored / 'configure').read_bytes(), generated.read_bytes())
+        self.assertEqual((restored / 'configure').stat().st_mtime_ns, expected_time)
+        self.assertEqual(protected.read_bytes(), b'current tracked source')
 
     def test_os_driver_and_c_runtime_stay_external(self):
         with patch.object(package, 'MAC', False):

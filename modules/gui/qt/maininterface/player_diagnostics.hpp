@@ -326,8 +326,13 @@ private:
                 {QStringLiteral("native_vlc"), core},
                 {QStringLiteral("audio_session_volume"), core.value(QStringLiteral("audio_session_volume"))},
                 {QStringLiteral("audio_session_muted"), core.value(QStringLiteral("audio_session_muted"))},
+#ifdef _WIN32
                 {QStringLiteral("mpv_audio_volume"), QJsonValue::fromVariant(mpv->value(QStringLiteral("ao-volume")))},
                 {QStringLiteral("mpv_audio_muted"), QJsonValue::fromVariant(mpv->value(QStringLiteral("ao-mute")))},
+#else
+                {QStringLiteral("mpv_audio_volume"), QJsonValue::fromVariant(mpv->value(QStringLiteral("volume")))},
+                {QStringLiteral("mpv_audio_muted"), QJsonValue::fromVariant(mpv->value(QStringLiteral("mute")))},
+#endif
                 {QStringLiteral("mpv_audio_output"), QJsonValue::fromVariant(mpv->value(QStringLiteral("current-ao")))},
                 {QStringLiteral("mpv_audio_query_error"), QJsonValue::fromVariant(mpv->value(QStringLiteral("audio-session-query-error")))},
                 {QStringLiteral("engine_switching"), m_player->engineSwitching()},
@@ -394,9 +399,18 @@ private:
     QQuickWindow *observationWindow() const
     {
         for (auto candidate : QGuiApplication::allWindows())
-            if (candidate->isVisible() && candidate->objectName()==QStringLiteral("floatingPlayerWindow"))
-                return qobject_cast<QQuickWindow *>(candidate);
+            if (candidate->isVisible() && candidate->objectName()==QStringLiteral("floatingPlayerWindow")) {
+                if (auto quick = qobject_cast<QQuickWindow *>(candidate)) return quick;
+                // Cocoa/X11 have a native parent plus a Quick overlay child.
+                if (auto quick = candidate->findChild<QQuickWindow *>(QString(), Qt::FindDirectChildrenOnly)) return quick;
+            }
         return m_root->window();
+    }
+
+    static QWindow *nativeTopLevel(QWindow *window)
+    {
+        while (window && window->parent()) window = window->parent();
+        return window;
     }
 
     QJsonObject snapshot()
@@ -524,11 +538,12 @@ private:
                 {QStringLiteral("visibility"), int(window->visibility())}});
         }
         auto mainWindow=m_root->window();
+        const auto mainNativeWindow = nativeTopLevel(mainWindow);
         result.insert(QStringLiteral("main_window"), QJsonObject{
-            {QStringLiteral("visibility"), int(mainWindow->visibility())},
-            {QStringLiteral("native_id_hex"), QString::number(qulonglong(mainWindow->winId()),16)},
-            {QStringLiteral("x"),mainWindow->x()}, {QStringLiteral("y"),mainWindow->y()},
-            {QStringLiteral("width"),mainWindow->width()}, {QStringLiteral("height"),mainWindow->height()}});
+            {QStringLiteral("visibility"), int(mainNativeWindow->visibility())},
+            {QStringLiteral("native_id_hex"), QString::number(qulonglong(mainNativeWindow->winId()),16)},
+            {QStringLiteral("x"),mainNativeWindow->x()}, {QStringLiteral("y"),mainNativeWindow->y()},
+            {QStringLiteral("width"),mainNativeWindow->width()}, {QStringLiteral("height"),mainNativeWindow->height()}});
         const auto reportedSize = mainWindow->property("reportedVideoSize").toSizeF();
         const auto reportedPosition = mainWindow->property("reportedVideoPosition").toPointF();
         result.insert(QStringLiteral("reported_video_surface"), QJsonObject{
@@ -773,7 +788,7 @@ private:
             respond(id, {{QStringLiteral("id"), id}, {QStringLiteral("status"), QStringLiteral("accepted")}});
             // Use the normal window-close path. Quitting QApplication directly
             // can tear down Qt before VLC has finished stopping its inputs.
-            if (op == QStringLiteral("quit") && m_root->window()) m_root->window()->close();
+            if (op == QStringLiteral("quit") && m_root->window()) nativeTopLevel(m_root->window())->close();
             return;
         }
         m_pendingId = id;
@@ -861,10 +876,13 @@ private:
                 else actions->doAction(QAccessibleActionInterface::setFocusAction());
             }
         }
-        else if (op == QStringLiteral("restore")) {
+        else if (op == QStringLiteral("restore") || op == QStringLiteral("minimize")) {
             // Owned inactive-window lifecycle observation, without activation
             // or native desktop input. Exercise QWindow's real restore event.
-            m_root->window()->setWindowStates(m_root->window()->windowStates() & ~Qt::WindowMinimized);
+            auto mainWindow = nativeTopLevel(m_root->window());
+            mainWindow->setWindowStates(op == QStringLiteral("minimize")
+                ? mainWindow->windowStates() | Qt::WindowMinimized
+                : mainWindow->windowStates() & ~Qt::WindowMinimized);
         }
         else if (op == QStringLiteral("resize")) {
             const int width = command.value(QStringLiteral("width")).toInt();
@@ -1066,6 +1084,25 @@ private:
                     result.insert(QStringLiteral("status"), error.isEmpty() ? QStringLiteral("completed") : QStringLiteral("failed"));
                     if (!error.isEmpty()) result.insert(QStringLiteral("error"), error);
                     for (auto it = extra.begin(); it != extra.end(); ++it) result.insert(it.key(), it.value());
+#if !defined(_WIN32)
+                    // Native hosted-runner acceptance needs the composed video,
+                    // which QQuickItem::grabToImage intentionally excludes.
+                    // Capture only this process's top-level player window;
+                    // never use WId(0), which would capture the whole screen.
+                    if (command.value(QStringLiteral("capture_native")).toBool()
+                        && qEnvironmentVariableIntValue("VLC_NATIVE_CI_CAPTURE") == 1) {
+                        QWindow *nativeWindow = nativeTopLevel(observationWindow());
+                        const auto nativeId = nativeWindow ? nativeWindow->winId() : WId(0);
+                        QPixmap pixels;
+                        if (nativeId && nativeWindow->isVisible() && nativeWindow->screen())
+                            pixels = nativeWindow->screen()->grabWindow(nativeId);
+                        result.insert(QStringLiteral("native_capture_saved"), !pixels.isNull()
+                            && pixels.save(QDir(m_directory).filePath(id + QStringLiteral("-native.png"))));
+                        result.insert(QStringLiteral("native_capture_width"), pixels.width());
+                        result.insert(QStringLiteral("native_capture_height"), pixels.height());
+                        result.insert(QStringLiteral("native_capture_boundary"), QStringLiteral("QScreen owned top-level window; includes compositor and possible occlusion"));
+                    }
+#endif
                     if (extra.value(QStringLiteral("capture_saved")).toBool()) {
                         QJsonArray captures;
                         for (int i = 0; i < m_widgets.size(); ++i) {
@@ -1150,7 +1187,9 @@ private:
             auto *mpv = m_player->mpvPlayback();
             connect(mpv, &MpvPlayback::changed, expression, check);
             connect(m_player, &PlayerController::playbackEngineChanged, expression, check);
+#ifdef _WIN32
             if (awaitCore != QStringLiteral("mpv_audio_output")) mpv->requestAudioSessionState();
+#endif
         }
         if (awaitCore == QStringLiteral("mpv_video_ready") && m_player->usesMpv())
             connect(m_player->mpvPlayback(), &MpvPlayback::changed, expression, check);

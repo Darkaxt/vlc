@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import shlex
 import shutil
 import subprocess
 import tarfile
@@ -90,6 +91,96 @@ def bind_source_mtimes(work):
             os.utime(path, ns=(path.stat().st_atime_ns, old['mtime_ns']))
         current[relative] = {'sha256': digest, 'mtime_ns': path.stat().st_mtime_ns}
     manifest.write_text(json.dumps(current, sort_keys=True))
+    return previous
+
+
+def retain_bootstrap_sources(work, tracked):
+    generated = {'configure', 'aclocal.m4', 'config.h.in', 'po/Makefile.in.in'}
+    generated.update(str(Path(path).with_name('Makefile.in')) for path in tracked if path.endswith('Makefile.am'))
+    for directory in ('autotools', 'm4', 'po'):
+        generated.update(str(path.relative_to(ROOT)) for path in (ROOT / directory).iterdir() if path.is_file())
+    with tarfile.open(work / 'bootstrap-generated.tar', 'w') as archive:
+        for relative in sorted(generated - tracked):
+            path = ROOT / relative
+            if path.is_file() and not path.is_symlink():
+                info = archive.gettarinfo(path, arcname=relative)
+                info.pax_headers['modern-vlc.mtime_ns'] = str(path.stat().st_mtime_ns)
+                with path.open('rb') as stream:
+                    archive.addfile(info, stream)
+
+
+def prepare_bootstrap_sources(work, build, env, previous):
+    tracked = set(output('git', 'ls-files', '-z', cwd=ROOT).split('\0'))
+    archive_path = work / 'bootstrap-generated.tar'
+    if archive_path.exists():
+        with tarfile.open(archive_path) as archive:
+            for member in archive:
+                if member.name in tracked or not member.isfile() or Path(member.name).is_absolute() or '..' in Path(member.name).parts:
+                    raise RuntimeError('Invalid generated bootstrap cache member: ' + member.name)
+                # The source checkout belongs to this CI job. Restore generated
+                # files and their exact recorded mtimes, never tracked source.
+                archive.extract(member, ROOT, filter='data')
+                path = ROOT / member.name
+                os.utime(path, ns=(path.stat().st_atime_ns, int(member.pax_headers['modern-vlc.mtime_ns'])))
+        return tracked
+    configured = (build / 'config.status').exists()
+    if configured:
+        # One-time adoption of the initial native cohort, which retained all
+        # objects but omitted generated source. Reconstruct only after proving
+        # that every bootstrap input is identical to that cohort's source.
+        inputs = [path for path in tracked if path.endswith('Makefile.am') or path.startswith('m4/')
+                  or path in ('bootstrap', 'configure.ac') or path.startswith('autotools/')]
+        if any(path not in previous or sha(ROOT / path) != previous[path]['sha256'] for path in inputs):
+            raise RuntimeError('Cannot reconstruct bootstrap files for changed native configuration inputs')
+    run('sh', ROOT / 'bootstrap', cwd=ROOT, env=env)
+    retain_bootstrap_sources(work, tracked)
+    if configured:
+        # No configure rerun: these files were regenerated with the same inputs
+        # and bound toolchain. Their original times were not retained in the
+        # first cohort; use its configuration boundary once and record that
+        # migration explicitly. Future runs restore the exact saved mtimes.
+        reference = (build / 'config.status').stat().st_mtime_ns
+        with tarfile.open(archive_path) as archive:
+            members = archive.getnames()
+        for relative in members:
+            path = ROOT / relative
+            os.utime(path, ns=(path.stat().st_atime_ns, reference))
+        retain_bootstrap_sources(work, tracked)
+        (work / 'bootstrap-cache-migration.json').write_text(json.dumps({
+            'reason': 'initial cohort omitted generated source files',
+            'inputs_unchanged': True, 'configuration_boundary_mtime_ns': reference,
+            'configure_rerun': False}, indent=2) + '\n')
+    return tracked
+
+
+def native_make_flags(work, env):
+    flags = ['PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY']
+    if platform.system() == 'Darwin':
+        # Upstream's prebuilt ncurses .pc embeds its producer's -isysroot.
+        # Keep its exact libraries, but bind the consumer link to this runner's
+        # selected SDK. This is a make-time variable, not a configure rerun.
+        original = subprocess.check_output(['pkg-config', '--libs', 'ncursesw'],
+                                           text=True, env=env).strip()
+        arguments = shlex.split(original)
+        sdk = output('xcrun', '--show-sdk-path')
+        rewritten = []
+        index = 0
+        while index < len(arguments):
+            value = arguments[index]
+            if value == '-isysroot':
+                if index + 1 == len(arguments):
+                    raise RuntimeError('Incomplete ncurses SDK binding')
+                rewritten.extend([value, sdk]); index += 2
+            elif value.startswith('-isysroot'):
+                rewritten.append('-isysroot' + sdk); index += 1
+            else:
+                rewritten.append(value); index += 1
+        resolved = shlex.join(rewritten)
+        (work / 'native-link-bindings.json').write_text(json.dumps({
+            'ncurses_pkgconfig_libs': original, 'ncurses_consumer_libs': resolved,
+            'selected_sdk': sdk, 'reason': 'prebuilt producer SDK path is not a consumer toolchain'}, indent=2) + '\n')
+        flags.append('NCURSES_LIBS=' + resolved)
+    return flags
 
 
 def main():
@@ -102,7 +193,7 @@ def main():
     arch = platform.machine()
     if arch not in ('arm64', 'aarch64', 'x86_64'):
         raise RuntimeError('Unqualified native architecture: ' + arch)
-    bind_source_mtimes(work)
+    previous_source = bind_source_mtimes(work)
     toolchain_file = ROOT / '.desktop-toolchain/binding.json'
     if toolchain_file.exists():
         toolchain = toolchain_file.read_bytes()
@@ -238,15 +329,19 @@ def main():
         'configure_inputs': {str(p.relative_to(ROOT)): sha(p) for p in
             [ROOT / 'configure.ac', ROOT / 'modules/gui/qt/qt6.pro']}}, sort_keys=True)
     binding = build / 'native-config.json'
+    tracked_sources = prepare_bootstrap_sources(work, build, env, previous_source)
     if (build / 'config.status').exists():
         if not binding.exists() or binding.read_text() != config:
             raise RuntimeError('Retained VLC configuration changed; select a new content-keyed work directory')
     else:
-        run('sh', ROOT / 'bootstrap', cwd=ROOT, env=env)
         run(ROOT / 'configure', *flags, cwd=build, env=env)
         binding.write_text(config)
-    run('make', '-j1', 'PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY', cwd=build, env=env)
-    run('make', '-j1', 'install', 'PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY', cwd=build, env=env)
+    try:
+        make_flags = native_make_flags(work, env)
+        run('make', '-j1', *make_flags, cwd=build, env=env)
+        run('make', '-j1', 'install', *make_flags, cwd=build, env=env)
+    finally:
+        retain_bootstrap_sources(work, tracked_sources)
     (work / 'native-build.json').write_text(json.dumps({
         'schema': 'modern-vlc.native-build.v1', 'source_commit': output('git', 'rev-parse', 'HEAD', cwd=ROOT),
         'platform': platform.platform(), 'architecture': arch, 'mpv': pin,

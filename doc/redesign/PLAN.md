@@ -24,7 +24,19 @@ archive. VLC configuration then identified its missing matching Lua bytecode
 compiler. The driver now uses the existing contrib `.luac`/`.protoc` recipes and
 retains those generators. The Mac package also derives its minimum OS from the
 actual Mach-O deployment targets (the native MPV Swift objects require15.0).
-Full native player compilation and playback acceptance remain unresolved.
+Run42426649287/job128566297996 from91c16ad3c5a80dbf7310a900c893a43af4cbe48b
+compiled and linked the redesigned Qt player, native compositor and MPV backend.
+The remaining VLC plugin build stopped at ncurses: its prebuilt pkg-config link
+flags referred to the producer's absent MacOSX26.2 SDK. The build now binds only
+that SDK argument to `xcrun --show-sdk-path`, preserving its libraries and the
+configured plugin graph. Run/cache42426649287 and artifact13596194838
+(SHA256 a5bd28af9450399f93996a4a7ccf23118e605602b9b4de3e1645e6f83e37d20f)
+are retained; its watch exited1 after the job completed. This is not native
+playback acceptance. The next run restores generated bootstrap files/mtimes,
+resumes the same configured objects, and prepares a separate instrumented
+Mac review app while restoring normal release objects byte-for-byte. Native
+client checks and composed pictures remain pending actual execution. Linux
+display-session acceptance is still unwired and remains an internal blocker.
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
 MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
 submodule in the source archive; Linux ARM job128558356675 confirmed the same
@@ -41,7 +53,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; stock MPV compiled on macOS ARM. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | macOS dependency resolver repair requires native rerun; remaining implementation/acceptance above; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; stock MPV and redesigned Qt player compiled/linked on macOS ARM. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | Resume ncurses SDK binding, complete package/runtime acceptance and Linux display-session checks; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Preserve historical M6's exact native-cleanup limitation. S9 Rust has not started.

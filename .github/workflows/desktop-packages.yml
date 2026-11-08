@@ -58,6 +58,9 @@ jobs:
             native-${{ matrix.target }}-${{ runner.os }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'contrib/src/medialibrary/**') }}-
       - name: Build native redesign and packages
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
+      - name: Exercise the actual native player
+        if: runner.os == 'macOS'
+        run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Retain original native build for repair and resumption
         if: always()
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
@@ -79,3 +82,5 @@ jobs:
             .desktop-build/sources/*
             .desktop-build/vlc-build/config.log
             .desktop-build/build-*/meson-logs/meson-log.txt
+            ${{ runner.temp }}/native-player-review/acceptance/**
+            ${{ runner.temp }}/native-player-review/*json

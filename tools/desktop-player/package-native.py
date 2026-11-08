@@ -207,13 +207,19 @@ def package_mac(work, installed, out, version, arch):
     binaries = contents / 'MacOS'; binaries.mkdir(parents=True)
     frameworks = contents / 'Frameworks'; frameworks.mkdir()
     resources = contents / 'Resources'; resources.mkdir()
-    shutil.copy2(installed / 'bin/vlc-osx', binaries / 'vlc')
+    iconset = work / 'Modern-VLC.iconset'; iconset.mkdir(exist_ok=True)
+    shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', iconset / 'icon_256x256.png')
+    run('iconutil', '-c', 'icns', iconset, '-o', resources / 'Modern-VLC.icns')
+    # bin/Makefile.am's install-data-local renames vlc-osx to vlc.
+    shutil.copy2(installed / 'bin/vlc', binaries / 'vlc')
     for parent in (installed / 'libexec', installed / 'bin'):
         for path in parent.rglob('*') if parent.exists() else []:
             if path.is_file() and path.name in ('vlc-qt-check', 'vlc-preparser', 'vlc-cache-gen'):
                 shutil.copy2(path, binaries / path.name)
     shutil.copytree(installed / 'lib/vlc/plugins', frameworks / 'plugins')
     shutil.copytree(installed / 'share/vlc', resources / 'share')
+    shutil.copytree(installed / 'libexec/vlc/lua', frameworks / 'lua')
+    shutil.copytree(ROOT / 'share/hrtfs', resources / 'share/hrtfs')
     shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv')
     for path in (installed / 'lib').glob('libvlc*.dylib'):
         shutil.copy2(path.resolve(), frameworks / path.name)
@@ -241,6 +247,7 @@ def package_mac(work, installed, out, version, arch):
     # and Qt interface module, rather than swapping in the upstream Cocoa UI.
     info = {'CFBundleIdentifier': 'io.github.darkaxt.modern-vlc', 'CFBundleName': 'Modern VLC',
             'CFBundleDisplayName': 'Modern VLC Fork', 'CFBundleExecutable': 'vlc',
+            'CFBundleIconFile': 'Modern-VLC.icns',
             'CFBundlePackageType': 'APPL', 'CFBundleShortVersionString': version,
             'CFBundleVersion': version, 'LSMinimumSystemVersion': '13.0',
             'NSHighResolutionCapable': True, 'NSPrincipalClass': 'NSApplication'}
@@ -308,7 +315,7 @@ exec "$root/bin/vlc" --intf=qt "$@"
     write_executable(app / 'AppRun', '#!/bin/sh\nexec "$(dirname "$0")/modern-vlc" "$@"\n')
     desktop = '[Desktop Entry]\nType=Application\nName=Modern VLC Fork\nExec=modern-vlc %U\nIcon=modern-vlc\nCategories=AudioVideo;Player;\n'
     (app / 'modern-vlc.desktop').write_text(desktop)
-    shutil.copy2(ROOT / 'share/icons/256x256/vlc.png', app / 'modern-vlc.png')
+    shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', app / 'modern-vlc.png')
     with tarfile.open(out / (app.name + '.tar.xz'), 'w:xz') as archive:
         archive.add(app, arcname=app.name)
     deb = work / 'deb'
