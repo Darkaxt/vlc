@@ -136,11 +136,18 @@ def main():
         (review / 'normal-restored.json').write_text(json.dumps({'state': 'verified', 'members': rows}, indent=2) + '\n')
     (review / 'review-player.json').write_text(json.dumps({
         'source_commit': package.output('git', '-C', ROOT, 'rev-parse', 'HEAD'),
+        'normal_source_commit': output_record['source_commit'],
         'executable': str(payload / executable_relative), 'diagnostic_plugin_sha256': digest(packaged_plugin),
         'normal_plugin_sha256': digest(normal / plugin_relative),
         'normal_payload_unmodified': True}, indent=2) + '\n')
-    subprocess.run(['python3', ROOT / 'tools/desktop-player/verify-native-player.py',
-                    '--executable', payload / executable_relative, '--scratch', review / 'acceptance'], check=True)
+    command = ['python3', ROOT / 'tools/desktop-player/verify-native-player.py',
+               '--executable', payload / executable_relative, '--scratch', review / 'acceptance']
+    if mac:
+        # The hosted Apple VM reports no AppleM2ScalerParavirtDriver and its
+        # VideoToolbox playback stalls. Diagnose with software decoding while
+        # retaining the normal package's unchanged hardware-decoding defaults.
+        command.append('--vlc-software-decoding')
+    subprocess.run(command, check=True)
 
 
 if __name__ == '__main__':

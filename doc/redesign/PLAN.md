@@ -1,7 +1,25 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
-Current recovery: run42441032772/job128610153859 from141857949d23ae925ad0a267ec90e03a944d3dfd
+Current recovery: run42442546091/job128614678008 from68c865cc536e309e33ba39971db5bdbfa0a1f050
+has closed after cache/artifact/post-job process cleanup. Artifact13602498591
+(SHA256d872e2d61bd7853a305f66111575c004ab5d16bc9e850023c08ff7b26bc69db6)
+preserves the normal packages and failing native evidence. Rendered slider value
+0.01 and demux log `seek request to 1.00%` prove the coordinate correction;
+core time nevertheless jumps to598.018001 while paused. Read-only health
+snapshots successfully reported that unchanged state without cancelling it.
+The native picture remains blank and the hosted VM reports an unavailable
+AppleM2ScalerParavirtDriver with VideoToolbox. The next native diagnostic uses
+explicit software decoding, keeping normal package defaults unchanged. This
+isolates decoder capability; it does not establish hardware playback acceptance.
+Test-only repairs may now reuse the normal package only after exact installed
+toolchain, production-source/workflow contract, archive hashes and strict app
+signature checks. The normal source revision remains explicit and distinct
+from the diagnostic revision; production/header/QML changes require rebuilding.
+Focused reuse/slider/package regressions pass. Actual native recovery remains
+required. No upstream merge, local WSL or release occurred.
+
+Previous run42441032772/job128610153859 from141857949d23ae925ad0a267ec90e03a944d3dfd
 passed normal Mac packaging and restored the normal objects after preparing its
 review app. Its embedded subtitle selection passed. The 600px player has an85px
 seekbar: a raw1%-of-widget click falls before its handle center and requests zero,

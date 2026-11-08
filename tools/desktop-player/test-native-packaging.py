@@ -19,6 +19,25 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_review_reuse_rejects_all_production_and_configuration_changes(self):
+        spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reuse)
+        self.assertTrue(reuse.test_only(['tools/desktop-player/verify-native-player.py',
+                                        'doc/redesign/PLAN.md']))
+        for path in ['modules/gui/qt/maininterface/player_diagnostics.hpp',
+                     'modules/gui/qt/player/qml/Player.qml', 'configure.ac',
+                     'tools/desktop-player/build-native.py', 'tools/desktop-player/package-native.py',
+                     'tools/desktop-player/install-ci-dependencies.sh']:
+            self.assertFalse(reuse.test_only([path]), path)
+        workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
+        old = subprocess.check_output(['git', 'show',
+            '68c865cc536e309e33ba39971db5bdbfa0a1f050:.github/workflows/desktop-packages.yml'],
+            cwd=HERE.parents[1], text=True)
+        self.assertEqual(reuse.workflow_build_contract(workflow), reuse.workflow_build_contract(old))
+        self.assertNotEqual(reuse.workflow_build_contract(workflow.replace("PYTHONDONTWRITEBYTECODE: '1'",
+            "PYTHONDONTWRITEBYTECODE: '0'")), reuse.workflow_build_contract(old))
+
     def test_native_slider_click_uses_handle_center_at_all_window_sizes(self):
         spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
         client = importlib.util.module_from_spec(spec)

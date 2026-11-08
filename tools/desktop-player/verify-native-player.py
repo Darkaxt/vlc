@@ -66,7 +66,7 @@ def profile_hashes(home, roots):
             for root in roots for path in root.rglob('*') if path.is_file()}
 
 
-def check_engine(executable, root, fixture, engine):
+def check_engine(executable, root, fixture, engine, software_decoding=False):
     case = root / engine
     case.mkdir()
     evidence = case / 'evidence'; evidence.mkdir()
@@ -94,6 +94,8 @@ def check_engine(executable, root, fixture, engine):
         '--no-qt-privacy-ask', '--no-metadata-network-access',
         '--restore-playback-pos=0', '--no-video-title-show', '--start-paused',
         '--qt-playback-engine=' + engine, '--verbose=2', str(fixture)]
+    if software_decoding:
+        argv[1:1] = ['--codec=avcodec', '--avcodec-hw=none']
     (evidence / 'launch.json').write_text(json.dumps({'argv': argv, 'platform': platform.platform(),
         'executable_sha256': hashlib.sha256(executable.read_bytes()).hexdigest()}, indent=2) + '\n')
     records = []
@@ -224,12 +226,14 @@ def main():
     parser.add_argument('--executable', required=True, type=Path)
     parser.add_argument('--scratch', required=True, type=Path)
     parser.add_argument('--engine', choices=('vlc', 'mpv', 'both'), default='both')
+    parser.add_argument('--vlc-software-decoding', action='store_true',
+                        help='Hosted VM diagnosis only; does not change packaged defaults')
     args = parser.parse_args()
     root = args.scratch.resolve()
     root.mkdir(parents=True, exist_ok=False)
     fixture = prepare_fixture(root)
     for engine in ('vlc', 'mpv') if args.engine == 'both' else (args.engine,):
-        check_engine(args.executable.resolve(), root, fixture, engine)
+        check_engine(args.executable.resolve(), root, fixture, engine, args.vlc_software_decoding)
 
 
 if __name__ == '__main__':
