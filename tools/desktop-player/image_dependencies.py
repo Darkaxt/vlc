@@ -83,8 +83,10 @@ def verify_mac_links(work, build):
         plugin = build / 'modules/.libs' / ('lib' + filename.stem + '_plugin.dylib')
         if not plugin.is_file():
             raise RuntimeError('Image link map lacks its actual VLC plugin: ' + str(plugin))
-        text = filename.read_text()
-        selected = [name for name, path in libraries.items() if str(path) + '(' in text]
+        # Darwin ld can include non-UTF-8 symbol bytes. Match the exact archive
+        # paths without decoding or discarding any of the original map bytes.
+        content = filename.read_bytes()
+        selected = [name for name, path in libraries.items() if os.fsencode(path) + b'(' in content]
         if not selected:
             raise RuntimeError('No updated archive member selected: ' + str(filename))
         links.append({'plugin': str(plugin), 'unstripped_plugin_sha256': digest(plugin),

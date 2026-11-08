@@ -113,6 +113,9 @@ jobs:
             .desktop-build/bootstrap-cache-migration.json
             .desktop-build/bootstrap-inputs.json
             .desktop-build/native-contrib-overlays/*/aom/vlc_build/CMakeCache.txt
+            .desktop-build/native-contrib-overlays/images/build-receipt.json
+            .desktop-build/native-contrib-overlays/images/link-receipt.json
+            .desktop-build/native-contrib-overlays/images/link-maps/*.map
             .desktop-toolchain/**
             .desktop-build/sources/*
             .desktop-sources/**/manifest.json

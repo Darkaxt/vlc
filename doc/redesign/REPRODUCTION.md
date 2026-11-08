@@ -2,6 +2,18 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+Current qualification source is21f1d8ed; matrix42519018892 runs all four native
+targets. Mac recovery42516523219 retained its successful compilation and failed
+only when the image archive verifier decoded a raw ld symbol as UTF-8. Read maps
+as bytes and match os.fsencode of the exact archive path plus the member opener;
+keep the original byte hash. Do not ignore decoding errors or reset dependencies.
+The UTF-8-mode link-map regression includes invalid symbol bytes and must also
+continue rejecting missing archive links and modified static libraries.
+Windows installer326 is bound to21f1d8ed and uses fresh final-inputs-21f1d8ed
+inside the original owned guest mapping; preserve old9b evidence separately.
+
+Earlier checkpoints:
+
 The current normal application candidate is9b0439e8a274083af4fe1d291ad897e24fdd35b3;
 do not call it the final common release revision before native recipe acceptance.
 A later test-only Qt focus repair uses handleWindowActivated before Qt6.7 and

@@ -164,7 +164,10 @@ class NativePackagingTest(unittest.TestCase):
         link_map.write_text(str(prefix / 'lib/libz.a') + '(inflate.o)\n')
         with self.assertRaisesRegex(RuntimeError, 'both updated'):
             images.verify_mac_links(work, build)
-        link_map.write_text(link_map.read_text() + str(prefix / 'lib/libpng16.a') + '(png.o)\n')
+        # Darwin ld emits raw symbol bytes; archive provenance is byte-oriented.
+        link_map.write_bytes(link_map.read_bytes() +
+                             (str(prefix / 'lib/libpng16.a') + '(png.o)\n').encode() +
+                             b'0x1000 0x10 [1] raw-symbol-\xfb\xff\n')
         receipt = images.verify_mac_links(work, build)
         self.assertEqual(receipt['links'][0]['unstripped_plugin_sha256'], images.digest(plugin))
         (prefix / 'lib/libz.a').write_bytes(b'changed')

@@ -1,6 +1,26 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Current qualification is21f1d8edb1d77313fe79b647929ebf6670f1d330;
+four-platform run42519018892 is active on four independent hosted runners.
+Windows run102/0a9c5196148441189188fe72a2b1b22d closed0,174.46s total,
+56.1s player step, unchanged configuration/409 plugins and417 verified stripped
+PE/symbol mappings. Current ZIP/7z/source6466 members/symbols417 mappings pass;
+fresh P5/P8.1/P8.4 normal placement/presentation/EOF/release pass. NSIS326/
+9d0ac24260c542129b0784056a998cda closed0,418.55s, empty Linux group/no OOM.
+Current installer SHA2561f9d11f2e99ebf286af481bbee4ca5b9f1d5985e204dde7fce53ab9ac212e94b,
+84851492B, is under install/upgrade/profile/uninstall acceptance in the same
+owned logged-in guest; original9b installed VLC/MPV pictures/EOF and scoped
+uninstall passed. Do not repeat or relabel that old installed-payload evidence.
+Mac recovery42516523219 compiled successfully, then failed in map verification:
+Darwin ld emitted a non-UTF-8 symbol byte and read_text raised UnicodeDecodeError.
+A UTF-8-mode regression reproduces it. Match exact archive paths in raw map
+bytes, retain their SHA256 and preserve the map as failure/qualification evidence.
+No SDK reset or player behavior change is involved. Actual current native matrix,
+corrected Mac link verification and final Windows installer pictures remain
+acceptance blockers; M16 is NOT STARTED and1.1.12 remains unpublished.
+
+Previous qualification checkpoints (historical):
 Current normal application candidate is9b0439e8a274083af4fe1d291ad897e24fdd35b3;
 the final common delivery revision awaits the native recipe corrections below.
 Mac ARM42515010621 fails before player compilation at the new image overlay:
