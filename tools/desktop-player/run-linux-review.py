@@ -79,6 +79,8 @@ def main():
         pulse_fd = os.pidfd_open(pulse_pid)
         with (session / 'audio-ready.txt').open('w') as stream:
             subprocess.run(['pactl', 'info'], env=env, stdout=stream, check=True)
+        subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
+                        '--scratch', args.review_root.with_name('native-package-checks')], env=env, check=True)
         subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
                         '--review-root', args.review_root], env=env, check=True)
     finally:

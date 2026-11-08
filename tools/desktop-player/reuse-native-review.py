@@ -19,6 +19,8 @@ TEST_ONLY = {
     'tools/desktop-player/prepare-native-review.py',
     'tools/desktop-player/verify-native-player.py',
     'tools/desktop-player/verify-macos-packages.py',
+    'tools/desktop-player/verify-linux-packages.py',
+    'tools/desktop-player/run-linux-review.py',
     'tools/desktop-player/native-player-client.py',
     'tools/desktop-player/test-native-packaging.py',
 }
@@ -39,6 +41,8 @@ def workflow_build_contract(text):
     text = text.replace('            .desktop-build/review-reuse.json\n', '')
     text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n', '')
     text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n', '')
+    for evidence in ('installer-exit.json', '*/*-stdout.log', '*/*-stderr.log'):
+        text = text.replace('            ${{ runner.temp }}/native-package-checks/' + evidence + '\n', '')
     return text.replace('${{ steps.review_reuse.outputs.normal_generation || github.sha }}', '${{ github.sha }}')
 
 

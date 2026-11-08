@@ -15,6 +15,9 @@ Cache ending42465080818 retained4883188718 bytes. Artifact13612425510 is24983872
 bytes, GitHub SHA2563ea6ec7f7cca7c32158cb8b9fff96db79023d41010024eb131d8f58997016aa6.
 Selected evidence CRC/SHA checks pass; whole-artifact digest remains unchecked.
 Hosted cleanup completed; no local WSL workload or final release has started.
+The coherent paused/SPU/staging correction is pushed as38831022dd32dccf3951323adea2a002ab8a758f.
+Its original Mac ARM run42467880197/job128691542687 (watch80448) is active;
+retain that operation through actual acceptance, cache/artifact and cleanup.
 
 Linux x86_64 run42465448889/job128688224307 at the identical02a1e1b0067 source
 closed1 (original watch57923), after retaining cache ending42465448889 and hosted
@@ -25,6 +28,12 @@ audits and unchanged global environment. A focused missing-dependency regression
 passes; real Linux staging/package/player acceptance remains required. Preserve
 the compiled prefix and resume from it. Artifact13612207045 is10409925 bytes,
 GitHub SHA2560f6328810776aa2ad6448dedcad96222401933b8dc789628d78709cb58e09d4a.
+Linux format recovery now compares each TAR/AppImage/DEB/RPM/Snap payload to the
+normal staged application and exercises both engines through natural EOF on the
+owned X/audio session. The DEB path also installs through dpkg, executes its real
+system launcher and purges only that owned package. RPM/Snap extraction is
+explicitly not matching-distribution/strict-confinement installation acceptance;
+those criteria remain unverified. This new verification is not yet run natively.
 
 Run42463140593/job128676618203 from0b39f77834f56a112cb84c71f3db86441c548846
 completed successfully (original watch8561 closed0). Both handovers preserve

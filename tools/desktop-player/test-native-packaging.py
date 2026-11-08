@@ -367,6 +367,8 @@ class NativePackagingTest(unittest.TestCase):
         reuse = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(reuse)
         self.assertTrue(reuse.test_only(['tools/desktop-player/verify-native-player.py',
+                                        'tools/desktop-player/verify-linux-packages.py',
+                                        'tools/desktop-player/run-linux-review.py',
                                         'doc/redesign/PLAN.md']))
         for path in ['modules/gui/qt/maininterface/player_diagnostics.hpp',
                      'modules/gui/qt/player/qml/PlayerView.qml', 'configure.ac',
@@ -375,7 +377,10 @@ class NativePackagingTest(unittest.TestCase):
             self.assertFalse(reuse.test_only([path]), path)
         workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
         evidence_lines = ('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n',
-                          '            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n')
+                          '            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n',
+                          '            ${{ runner.temp }}/native-package-checks/installer-exit.json\n',
+                          '            ${{ runner.temp }}/native-package-checks/*/*-stdout.log\n',
+                          '            ${{ runner.temp }}/native-package-checks/*/*-stderr.log\n')
         previous = workflow
         for line in evidence_lines:
             previous = previous.replace(line, '')
