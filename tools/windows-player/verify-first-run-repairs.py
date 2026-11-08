@@ -1329,7 +1329,7 @@ def drop_fixture(case, label, file):
         '--await-core','url','--await-value',json.dumps((fixtures/file).as_uri()))
     case.inspect(label+'-seekable','snapshot','--await-core','seekable','--await-value','true')
     case.inspect(label+'-main-source','snapshot','--await-target','viewLoader','--await-property','source',
-        '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+        '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerView.qml'))
     ready=case.inspect(label+'-main-ready','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
     # --start-paused applies only to the first input. Pause replacement items
     # through the real control rather than waiting for an impossible state.
@@ -1569,7 +1569,7 @@ def idle():
             case.inspect(label+'-menu','click','--name','Main menu')
             case.inspect(label+'-editor','click','--name','Customize Player')
             case.inspect(label+'-player','snapshot','--await-target','viewLoader','--await-property','source',
-                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerView.qml'))
             case.inspect(label+'-mounted','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
             opened=case.inspect(label+'-ready','snapshot','--await-target','playerLayoutEditor',
                 '--await-property','ready','--await-value','true')
@@ -2574,7 +2574,7 @@ def no_library():
             result=video.inspect('browse-during-video-ready','snapshot','--await-target',library_target,'--await-property','ready','--await-value','true','--capture')
             assert nodes(result,'libraryMiniSeek') and nodes(result,'libraryDisabledMessage')
             video.click('return-to-video','libraryReturnToPlayer',
-                '--await-target','viewLoader','--await-property','source','--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+                '--await-target','viewLoader','--await-property','source','--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerView.qml'))
             result=video.inspect('return-to-video-ready','snapshot','--await-target','viewLoader','--await-property','status','--await-value','1')
             assert nodes(result,'playerView')[0]['visible']
             assert result['core']['engine']==engine
@@ -2591,7 +2591,7 @@ def engine_icon_pixels():
             case.inspect('idle-menu','click','--name','Main menu')
             case.inspect('idle-customize','click','--name','Customize Player')
             case.inspect('idle-player-mounted','snapshot','--await-target','viewLoader','--await-property','source',
-                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerView.qml'))
             case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
             case.click('idle-editor-cancel','layoutCancel')
             case.inspect('idle-logo-ready','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1')
@@ -2682,7 +2682,7 @@ def engine_icons():
             case.inspect('idle-menu','click','--name','Main menu','--capture')
             case.inspect('idle-customize','click','--name','Customize Player')
             case.inspect('idle-player-mounted','snapshot','--await-target','viewLoader','--await-property','source',
-                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/Player.qml'))
+                '--await-value',json.dumps('qrc:///qt/qml/VLC/Player/PlayerView.qml'))
             case.inspect('idle-editor-ready','snapshot','--await-target','playerLayoutEditor','--await-property','ready','--await-value','true')
             case.click('idle-editor-cancel','layoutCancel')
             idle=case.inspect('idle-logo','snapshot','--await-target','playerIdleCone','--await-property','status','--await-value','1','--capture')

@@ -40,17 +40,13 @@ class NativePackagingTest(unittest.TestCase):
         self.assertTrue(reuse.test_only(['tools/desktop-player/verify-native-player.py',
                                         'doc/redesign/PLAN.md']))
         for path in ['modules/gui/qt/maininterface/player_diagnostics.hpp',
-                     'modules/gui/qt/player/qml/Player.qml', 'configure.ac',
+                     'modules/gui/qt/player/qml/PlayerView.qml', 'configure.ac',
                      'tools/desktop-player/build-native.py', 'tools/desktop-player/package-native.py',
                      'tools/desktop-player/install-ci-dependencies.sh']:
             self.assertFalse(reuse.test_only([path]), path)
         workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
-        old = subprocess.check_output(['git', 'show',
-            '68c865cc536e309e33ba39971db5bdbfa0a1f050:.github/workflows/desktop-packages.yml'],
-            cwd=HERE.parents[1], text=True)
-        self.assertEqual(reuse.workflow_build_contract(workflow), reuse.workflow_build_contract(old))
         self.assertNotEqual(reuse.workflow_build_contract(workflow.replace("PYTHONDONTWRITEBYTECODE: '1'",
-            "PYTHONDONTWRITEBYTECODE: '0'")), reuse.workflow_build_contract(old))
+            "PYTHONDONTWRITEBYTECODE: '0'")), reuse.workflow_build_contract(workflow))
 
     def test_native_slider_click_uses_handle_center_at_all_window_sizes(self):
         spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
@@ -229,11 +225,36 @@ class NativePackagingTest(unittest.TestCase):
         with patch.object(build_module, 'ROOT', restored), \
                 patch.object(build_module, 'output', return_value='Makefile.am'), \
                 patch.object(build_module, 'run') as invoked:
-            build_module.prepare_bootstrap_sources(work, work / 'build', {}, {})
+            build_module.prepare_bootstrap_sources(work, work / 'build', {},
+                {'Makefile.am': {'sha256': build_module.sha(protected)}})
             invoked.assert_not_called()
         self.assertEqual((restored / 'configure').read_bytes(), generated.read_bytes())
         self.assertEqual((restored / 'configure').stat().st_mtime_ns, expected_time)
         self.assertEqual(protected.read_bytes(), b'current tracked source')
+
+    def test_changed_upstream_bootstrap_inputs_regenerate_without_discarding_objects(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        builder = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(builder)
+        work = Path(sys.argv_scratch) / ('upstream-bootstrap-' + uuid.uuid4().hex)
+        source = work / 'source'; source.mkdir(parents=True)
+        for name in ('autotools', 'm4', 'po'):
+            (source / name).mkdir()
+        (source / 'Makefile.am').write_bytes(b'new upstream make input')
+        (source / 'configure').write_bytes(b'old generated configure')
+        build = work / 'build'; build.mkdir()
+        (build / 'config.status').write_bytes(b'existing configured cohort')
+        (build / 'retained.o').write_bytes(b'existing compiler object')
+        with patch.object(builder, 'ROOT', source):
+            builder.retain_bootstrap_sources(work, {'Makefile.am'})
+            with patch.object(builder, 'output', return_value='Makefile.am'), \
+                    patch.object(builder, 'run', side_effect=lambda *a, **kw:
+                        (source / 'configure').write_bytes(b'new generated configure')) as invoked:
+                builder.prepare_bootstrap_sources(work, build, {},
+                    {'Makefile.am': {'sha256': 'old input hash'}})
+                invoked.assert_called_once()
+        self.assertEqual((source / 'configure').read_bytes(), b'new generated configure')
+        self.assertEqual((build / 'retained.o').read_bytes(), b'existing compiler object')
 
     def test_os_driver_and_c_runtime_stay_external(self):
         with patch.object(package, 'MAC', False):

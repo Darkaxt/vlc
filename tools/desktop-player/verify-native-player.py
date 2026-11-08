@@ -232,7 +232,7 @@ def main():
     root = args.scratch.resolve()
     root.mkdir(parents=True, exist_ok=False)
     fixture = prepare_fixture(root)
-    for engine in ('vlc', 'mpv') if args.engine == 'both' else (args.engine,):
+    for engine in ('mpv', 'vlc') if args.engine == 'both' else (args.engine,):
         check_engine(args.executable.resolve(), root, fixture, engine, args.vlc_software_decoding)
 
 

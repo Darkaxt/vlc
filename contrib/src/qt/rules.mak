@@ -61,6 +61,7 @@ qt: qtbase-everywhere-src-$(QTBASE_VERSION_FULL).tar.xz .sum-qt
 	$(APPLY) $(SRC)/qt/0001-Mingw-own-animation-timers-in-QThreadStorage.patch
 	$(APPLY) $(SRC)/qt/0002-Mingw-own-regex-JIT-in-QThreadStorage.patch
 	$(APPLY) $(SRC)/qt/0003-Expose-the-existing-backing-store-swapchain.patch
+	$(APPLY) $(SRC)/qt/0001-qsimd.cpp-add-missing-stdlib.h-for-getenv.patch
 	$(MOVE)
 
 ifdef HAVE_WIN32
@@ -112,7 +113,7 @@ QTBASE_CONFIG += $(QTBASE_COMMON_CONFIG) \
 	-DFEATURE_movie=OFF -DFEATURE_whatsthis=OFF -DFEATURE_lcdnumber=OFF -DFEATURE_testlib=ON \
 	-DFEATURE_syntaxhighlighter=OFF -DFEATURE_undoview=OFF -DFEATURE_splashscreen=OFF \
 	-DFEATURE_dockwidget=OFF -DFEATURE_statusbar=OFF -DFEATURE_statustip=OFF \
-	-DFEATURE_keysequenceedit=OFF -DFEATURE_mdiarea=OFF \
+	-DFEATURE_keysequenceedit=OFF -DFEATURE_mdiarea=OFF -DFEATURE_tabletevent=OFF \
 	-DCMAKE_TOOLCHAIN_FILE=$(abspath toolchain.cmake) $(QT_HOST_PATH)
 
 QTBASE_NATIVE_CONFIG := $(QTBASE_COMMON_CONFIG) -DQT_BUILD_TESTS=FALSE \

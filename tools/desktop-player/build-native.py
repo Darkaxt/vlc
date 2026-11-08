@@ -111,8 +111,11 @@ def retain_bootstrap_sources(work, tracked):
 
 def prepare_bootstrap_sources(work, build, env, previous):
     tracked = set(output('git', 'ls-files', '-z', cwd=ROOT).split('\0'))
+    inputs = [path for path in tracked if path.endswith('Makefile.am') or path.startswith('m4/')
+              or path in ('bootstrap', 'configure.ac') or path.startswith('autotools/')]
+    unchanged = all(path in previous and sha(ROOT / path) == previous[path]['sha256'] for path in inputs)
     archive_path = work / 'bootstrap-generated.tar'
-    if archive_path.exists():
+    if archive_path.exists() and unchanged:
         with tarfile.open(archive_path) as archive:
             for member in archive:
                 if member.name in tracked or not member.isfile() or Path(member.name).is_absolute() or '..' in Path(member.name).parts:
@@ -124,17 +127,15 @@ def prepare_bootstrap_sources(work, build, env, previous):
                 os.utime(path, ns=(path.stat().st_atime_ns, int(member.pax_headers['modern-vlc.mtime_ns'])))
         return tracked
     configured = (build / 'config.status').exists()
-    if configured:
+    if configured and not archive_path.exists():
         # One-time adoption of the initial native cohort, which retained all
         # objects but omitted generated source. Reconstruct only after proving
         # that every bootstrap input is identical to that cohort's source.
-        inputs = [path for path in tracked if path.endswith('Makefile.am') or path.startswith('m4/')
-                  or path in ('bootstrap', 'configure.ac') or path.startswith('autotools/')]
-        if any(path not in previous or sha(ROOT / path) != previous[path]['sha256'] for path in inputs):
+        if not unchanged:
             raise RuntimeError('Cannot reconstruct bootstrap files for changed native configuration inputs')
     run('sh', ROOT / 'bootstrap', cwd=ROOT, env=env)
     retain_bootstrap_sources(work, tracked)
-    if configured:
+    if configured and unchanged:
         # No configure rerun: these files were regenerated with the same inputs
         # and bound toolchain. Their original times were not retained in the
         # first cohort; use its configuration boundary once and record that
@@ -302,7 +303,9 @@ def main():
         contrib_sha = inputs['macos_contrib_commit']
         changed = set(output('git', 'diff', '--name-only', contrib_sha, 'HEAD', '--',
             'extras/tools', 'contrib', 'extras/ci', 'extras/package/macosx', cwd=ROOT).splitlines())
-        if not changed <= set(inputs['windows_only_contrib_delta']):
+        reviewed = inputs.get('reviewed_prebuilt_recipe_delta', {})
+        accepted = set(inputs['windows_only_contrib_delta']) | set(reviewed)
+        if not changed <= accepted or any(sha(ROOT / path) != digest for path, digest in reviewed.items()):
             raise RuntimeError('Native contrib inputs changed; bind the new native dependency build before reusing its archive')
         archive = work / 'sources' / ('vlc-contrib-' + triplet + '-' + contrib_sha + '.tar.zst')
         url = 'https://artifacts.videolan.org/vlc/macos-' + ('arm64' if arch == 'arm64' else 'x86_64') + '/' + archive.name
@@ -316,6 +319,22 @@ def main():
             run('sh', ROOT / 'contrib/src/change_prefix.sh', cwd=contrib, env=env)
         sources.append({'name': 'vlc-native-contrib', 'upstream_input_commit': contrib_sha,
                         'url': url, 'archive': archive.name, 'sha256': sha(archive)})
+        # Update only the dependency changed by this upstream integration.
+        # Preserve the full pinned SDK, compiler objects and unrelated codecs.
+        overlay = inputs.get('native_contrib_aom_overlay')
+        if overlay:
+            overlay_work = work / 'native-contrib-overlays' / ('aom-' + overlay['version'])
+            overlay_work.mkdir(parents=True, exist_ok=True)
+            if not (overlay_work / 'Makefile').exists():
+                run('sh', ROOT / 'contrib/bootstrap', '--build=' + triplet,
+                    '--host=' + triplet, '--prefix=' + str(contrib), '--disable-all',
+                    '--enable-aom', cwd=overlay_work, env=env)
+            run('make', '-j1', '.aom', 'TARBALLS=' + str(work / 'sources'), cwd=overlay_work, env=env)
+            source_archive = work / 'sources' / ('libaom-' + overlay['version'] + '.tar.gz')
+            sources.append({'name': 'native-contrib-aom-overlay', 'version': overlay['version'],
+                            'upstream_input_commit': overlay['upstream_commit'],
+                            'url': overlay['url'], 'archive': source_archive.name,
+                            'sha256': sha(source_archive)})
         # Prebuilt target libraries omit the native generators. Use upstream's
         # matching recipes (including Lua's 64-bit bytecode patch), rather than
         # a system luac/protoc that can generate incompatible serialized data.
@@ -343,8 +362,20 @@ def main():
     binding = build / 'native-config.json'
     tracked_sources = prepare_bootstrap_sources(work, build, env, previous_source)
     if (build / 'config.status').exists():
-        if not binding.exists() or binding.read_text() != config:
-            raise RuntimeError('Retained VLC configuration changed; select a new content-keyed work directory')
+        if not binding.exists():
+            raise RuntimeError('Retained VLC configuration has no source binding')
+        if binding.read_text() != config:
+            old = json.loads(binding.read_text())
+            current = json.loads(config)
+            if any(old[key] != current[key] for key in ('flags', 'environment')):
+                raise RuntimeError('Retained native compiler configuration changed; use a distinct cohort')
+            # Upstream configure inputs changed, while toolchain/flags/paths
+            # remain identical. Reconfigure in place and let make rebuild the
+            # affected dependency graph, retaining all reusable SDK objects.
+            run(ROOT / 'configure', *flags, cwd=build, env=env)
+            (work / 'native-reconfiguration.json').write_text(json.dumps({
+                'old': old, 'new': current, 'preserved_dependency_objects': True}, indent=2) + '\n')
+            binding.write_text(config)
     else:
         run(ROOT / 'configure', *flags, cwd=build, env=env)
         binding.write_text(config)

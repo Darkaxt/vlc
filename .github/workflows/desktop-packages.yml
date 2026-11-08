@@ -55,6 +55,7 @@ jobs:
           key: native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'tools/desktop-player/native-inputs.json', 'contrib/src/medialibrary/**') }}-${{ github.run_id }}
           restore-keys: |
             native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'tools/desktop-player/native-inputs.json', 'contrib/src/medialibrary/**') }}-
+            native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-
             ${{ runner.os == 'macOS' && format('native-{0}-{1}-{2}-', matrix.target, runner.os, hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'contrib/src/medialibrary/**')) || '' }}
       - name: Check unchanged normal package for test-only repair
         id: review_reuse
@@ -62,12 +63,12 @@ jobs:
       - name: Build native redesign and packages
         if: steps.review_reuse.outputs.reuse != 'true'
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
-      - name: Exercise the actual native player
-        if: runner.os == 'macOS'
-        run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Verify recovered normal macOS ZIP and DMG applications
         if: runner.os == 'macOS'
         run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks"
+      - name: Exercise the actual native player
+        if: runner.os == 'macOS'
+        run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Exercise the actual Linux player on its owned display
         if: runner.os == 'Linux'
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
@@ -92,6 +93,7 @@ jobs:
             .desktop-build/review-reuse.json
             .desktop-build/qml-deployment/${{ steps.review_reuse.outputs.normal_generation || github.sha }}.json
             .desktop-build/native-link-bindings.json
+            .desktop-build/native-reconfiguration.json
             .desktop-build/bootstrap-cache-migration.json
             .desktop-toolchain/**
             .desktop-build/sources/*

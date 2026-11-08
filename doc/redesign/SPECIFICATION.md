@@ -53,7 +53,9 @@ Native acceptance exposed unsolicited LAN discovery during local-file playback:
 MediaLibrary::Init unconditionally enables every LAN discovery provider. Correct
 that startup path within M15: local-only/empty libraries must not start LAN
 providers; configured network roots (including unavailable shares) and explicit
-network-folder discovery/reload must retain their behavior. Do not accept a
+network-folder discovery/reload must retain their behavior when network discovery
+is enabled. Preserve upstream's explicit `ml-network-discovery=false` opt-out in
+both startup and explicit folder operations. Do not accept a
 system permission prompt as a way to pass local playback verification. Correct
 the Cocoa OpenGL probe to request its supported 3.2 Core profile rather than
 falling back to Qt's shader-less software renderer after a 3.0 Core request.

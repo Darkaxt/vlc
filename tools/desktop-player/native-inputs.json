@@ -1,7 +1,23 @@
 {
-  "upstream_baseline": "8a47770f6333df6b60181329db5fdaad318bdb44",
+  "upstream_baseline": "2cb78ca89c016df5b15b4f421d8b11e3253cb1a7",
   "macos_contrib_commit": "e0baa29690f97c5d746643d59358fd6055eda8f6",
   "macos_contrib_triplet_kernel": "19",
+  "native_contrib_aom_overlay": {
+    "version": "3.15.3",
+    "upstream_commit": "2cb78ca89c016df5b15b4f421d8b11e3253cb1a7",
+    "url": "https://storage.googleapis.com/aom-releases/libaom-3.15.3.tar.gz"
+  },
+  "reviewed_prebuilt_recipe_delta": {
+    "contrib/src/aom/SHA512SUMS": "0dd1d89e066b7c1e95fdf6fa891cdc0215e2f7ca9c9dd7e7e2d22551a9b20116",
+    "contrib/src/aom/rules.mak": "8fe7c3492bca205d8d925f1cb3cf008b7f61e9387c916e1fdc3ecc709581f016",
+    "contrib/src/main.mak": "d0194c2f66ce33036778e2e4a979a629c1893574f1585e9a46ab32d29d8fdb43",
+    "contrib/src/qt/0001-qsimd.cpp-add-missing-stdlib.h-for-getenv.patch": "af1a61f6e23203c04f3b08d471c172414040e2d8bb94627edcecbb76c4fa5e7a",
+    "contrib/src/qt/rules.mak": "4add8494cae8b5fcc58b3f4ef244ee6dcb03cc7558e041217b4880167f9d1728",
+    "contrib/src/qtshadertools/rules.mak": "23ccaac1dc03c3ec83827bb16e4b48963fe321c616d66051ba4293c24af5ca3c",
+    "contrib/src/qtwayland/rules.mak": "347b2fed921affa2b25350ceb93ed9e127a1cbd9a4ac973ab6f071c074679422",
+    "extras/package/macosx/VLC.xcodeproj/project.pbxproj": "799077155dbcb08e649da747589342a827d461581375bf6503baaeada7b918e6"
+  },
+  "reviewed_prebuilt_recipe_delta_reason": "AOM is rebuilt from 3.15.3 sources as an explicit overlay. Qt recipes/mirrors are not used by the Homebrew Qt build; Xcode Cocoa GUI is disabled. Preserve all other libraries in the original pinned native archive.",
   "stock_libplacebo": {
     "version": "7.387.0",
     "repository": "haasn/libplacebo",

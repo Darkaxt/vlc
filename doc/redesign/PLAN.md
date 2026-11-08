@@ -1,6 +1,39 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Upstream source integration now includes97 commits through
+2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, following verified normal-package
+recovery/reuse in run42444922876/job128621768065. That run restored the original
+signed68c865 normal app from its hash-verified ZIP and skipped normal build and
+packaging. The deployment repair therefore permits upstream integration without
+discarding the SDK. Four conflicts preserve both the fork and upstream behavior:
+Qt patches, renamed PlayerView resource/build lists, both Qt test registrations,
+and lazy ML network roots gated by upstream's explicit discovery opt-out.
+Source integration is not runtime acceptance. Native/Windows regression and
+final package qualification remain required in this same ACTIVE stage.
+
+The integration retains the exact installed toolchain/compiler and dependency
+cohort. Changed configure inputs regenerate bootstrap/configuration in place;
+unchanged dependency objects survive. AOM3.15.3 builds as a source-bound overlay
+on the original native contrib archive. Reviewed Qt mirror/recipe and unused
+Cocoa Xcode-project changes are hash-bound; Homebrew supplies this port's Qt.
+Actual integrated native compilation is pending. No cold SDK or local WSL was
+started. The test-only software-decoder experiment reproduced the same598s
+paused seek defect, so its automatic override was removed; it is not a fix.
+The next integrated workflow exercises MPV before VLC, retaining both engines'
+complete criteria. Normal-format recovery, source/licenses and remaining
+architectures remain acceptance blockers.
+
+Run42444922876/watch63391 closed1 after its targeted diagnostic cancellation,
+cache ending42444922876, artifact13603208157 (SHA256
+2fd4a0a0ef495aa7fdb69f63a8e2e0362cfd44322478e6b9a401ab4ec921aead)
+and post-job process cleanup. Run42444304639/watch70876 previously exposed
+actions/cache dropping data-file signature attributes; ZIP recovery corrects
+that without re-signing cached bytes. Its artifact13603206533 has SHA256
+862fde244413d59afc625dd4d2fb42ba26d0d7f3b4f883f7e75d83bf26491580.
+Local fixture transactions59e5c2c67146a9d0bc78693304e43ebc and
+e14d7d87855862590b7c7bfd9b1972fb closed with90 members each and no residuals.
+
 Current recovery: run42442546091/job128614678008 from68c865cc536e309e33ba39971db5bdbfa0a1f050
 has closed after cache/artifact/post-job process cleanup. Artifact13602498591
 (SHA256d872e2d61bd7853a305f66111575c004ab5d16bc9e850023c08ff7b26bc69db6)
@@ -207,17 +240,18 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; macOS ARM VLC/MPV/Qt build/install and app ZIP/DMG generation, dependency/architecture, strict signing and immutable MPV checks pass. Review plugin links/signs/restores normal objects. Actual Qt UI, embedded subtitle selection and paused/seekable VLC state observed; supported Core context and no unsolicited LAN discovery verified. | R111 remaining architectures, recovered-format installation and complete source/licenses; R112 actual video/audio/subtitle/seek/handover/miniplayer/profile workflows; R113 upstream merge after base pipeline works, before final matrix qualification. | Native video picture remains blank in the inspected capture. Compact-slider test coordinate defect corrected; native seek/picture verification required. Internal blockers, no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; pre-integration macOS ARM VLC/MPV/Qt build/install and app ZIP/DMG generation, dependency/architecture, strict signing and immutable MPV checks pass. Signed normal ZIP recovery/reuse passes; review plugin links/signs/restores normal objects. Actual Qt UI, embedded subtitle selection and paused/seekable VLC state observed; supported Core context and no unsolicited LAN discovery verified. Upstream97-commit source merge resolved. | R111 integrated compilation, remaining architectures, recovered-format installation and complete source/licenses; R112 actual video/audio/subtitle/seek/handover/miniplayer/profile workflows; R113 integrated native/Windows regression and final matrix qualification. | Native video picture remains blank in the inspected pre-integration capture and paused seek jumps to598s with both hardware/software decoding. Integrated native verification required. Internal blockers, no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
-Upstream sync requested8 November after deployment-pipeline repair. Read-only
-fetch verifies origin Darkaxt/vlc, upstream videolan/vlc and upstream default
-master. Pinned comparison: fork a23f477c866fb2fd45a207fd6fb07b1a1bf142c9,
-upstream2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, 97 commits absent from both
-the working branch and master. No upstream integration or second stage started.
-M15 must refresh this comparison once its base deployment workflow works, before
-the normal merge and final architecture/package qualification. This keeps one
-ACTIVE stage and avoids qualifying every platform immediately before the merge.
+Upstream sync requested8 November after deployment-pipeline repair. Fetch
+verifies origin Darkaxt/vlc, upstream videolan/vlc and upstream default master.
+The normal-package recovery/reuse gate passed in run42444922876. The working
+branch now integrates all97 missing commits through
+upstream2cb78ca89c016df5b15b4f421d8b11e3253cb1a7 by normal merge history;
+master remains at the independently verified Windows1.1.11 delivery. M15 remains
+the sole ACTIVE stage. Integrated native/Windows qualification is still required
+before final publication. The application version is reserved as1.1.12 before
+that qualification, avoiding a later version-only rebuild.
 The pinned delta includes AOM3.15.3 and Qt rendering/model changes: preserve
 unchanged caches, update only affected dependency bindings and repeat affected
 acceptance against the final integrated revision.

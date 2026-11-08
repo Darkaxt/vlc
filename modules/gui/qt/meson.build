@@ -768,13 +768,14 @@ qml_modules += {
        'player/qml/LyricsFlickable.qml',
        'player/qml/MiniPlayer.qml',
        'player/qml/PIPPlayer.qml',
+       'player/qml/FloatingPlayer.qml',
        'player/qml/PlayerLibraryNetworkDialog.qml',
        'player/qml/LibraryGlass.qml',
        'player/qml/PlayerLibraryHome.qml',
        'player/qml/PlayerLibrary.qml',
        'player/qml/PlayerLibraryDisplay.qml',
        'player/qml/PlayerLibraryTextDialog.qml',
-       'player/qml/Player.qml',
+       'player/qml/PlayerView.qml',
        'player/qml/PlayerChromeState.qml',
        'player/qml/PlayerIconButton.qml',
        'player/qml/PlayerQueueHeader.qml',
@@ -1339,23 +1340,6 @@ if qt6_dep.found()
         'plugin_dir' : 'gui',
     }
 
-    vlc_tests += {
-        'name': 'base_model_test',
-        'sources': files(
-            'tests/test_base_model.cpp',
-            'util/base_model.cpp',
-            'util/base_model.hpp',
-            'util/base_model_p.hpp'),
-        'moc_headers': files(
-            'util/base_model.hpp',
-            'util/listcache.hpp',
-            'util/locallistcacheloader.hpp'),
-        'suite': ['qt'],
-        'link_with': [libvlccore],
-        'link_args': qt_link_args,
-        'dependencies': [qt6_dep, qt_extra_deps],
-    }
-
     qtest_qt6_dep = dependency('qt6', version: '=' + qt6_dep.version(), modules: ['Test'], required: false)
     if qtest_qt6_dep.found()
         vlc_tests += {
@@ -1364,6 +1348,26 @@ if qt6_dep.found()
             'moc_sources': files('tests/test_player_chrome.cpp'),
             'suite': ['qt'],
             'include_directories': qt_include_dir,
+            'link_args': qt_link_args,
+            'dependencies': [qt6_dep, qt_extra_deps, qtest_qt6_dep],
+        }
+
+        vlc_tests += {
+            'name': 'base_model_test',
+            'sources': files(
+                'tests/test_base_model.cpp',
+                'util/base_model.cpp',
+                'util/base_model.hpp',
+                'util/base_model_p.hpp'),
+            'moc_sources': files(
+                'tests/test_base_model.cpp'
+            ),
+            'moc_headers': files(
+                'util/base_model.hpp',
+                'util/listcache.hpp',
+                'util/locallistcacheloader.hpp'),
+            'suite': ['qt'],
+            'link_with': [libvlccore],
             'link_args': qt_link_args,
             'dependencies': [qt6_dep, qt_extra_deps, qtest_qt6_dep],
         }

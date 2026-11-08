@@ -37,10 +37,19 @@ observations report the original request's current core state only; they neither
 cancel that request nor retry its action or classify slow execution as failure.
 
 The user requests upstream synchronization after this pipeline works. M15 owns
-the normal merge after its base workflow passes, before final matrix qualification;
-M16 owns publication. Current read-only fetch:
-upstream master2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, 97 absent commits;
-refresh the exact revision at that boundary, preserving the single ACTIVE stage.
+the normal merge after its base workflow works, before final matrix qualification;
+M16 owns publication. Normal signed ZIP recovery and test-only package reuse
+passed in run42444922876 without normal compilation/packaging. The refreshed
+upstream pin remains master2cb78ca89c016df5b15b4f421d8b11e3253cb1a7 (97 commits).
+The source merge preserves both Qt patch sets, PlayerView's rename, fork library
+resources and upstream's explicit ML network-discovery opt-out. Native/Windows
+regression and final release remain pending; no stage closes at this merge.
+The installed-toolchain-bound fallback restores existing objects across changed
+configure inputs, regenerates their bootstrap/configuration and builds only the
+AOM3.15.3 contrib overlay. It does not adopt another toolchain or reuse an older
+normal executable for changed production code. Native runtime diagnosis still
+needs actual pixels/seek/handover in both engines; software decoding reproduced
+the same paused598s failure and is not an automatic CI or packaged workaround.
 
 The new backend uses stock upstream MPV0.42.0, commit
 `b0841e8c4d156b8403dc1876c4cbd9011eb583f3`, on Cocoa and X11/XWayland, with a

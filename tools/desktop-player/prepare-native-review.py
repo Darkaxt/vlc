@@ -146,11 +146,6 @@ def main():
         'normal_payload_unmodified': True}, indent=2) + '\n')
     command = ['python3', ROOT / 'tools/desktop-player/verify-native-player.py',
                '--executable', payload / executable_relative, '--scratch', review / 'acceptance']
-    if mac:
-        # The hosted Apple VM reports no AppleM2ScalerParavirtDriver and its
-        # VideoToolbox playback stalls. Diagnose with software decoding while
-        # retaining the normal package's unchanged hardware-decoding defaults.
-        command.append('--vlc-software-decoding')
     subprocess.run(command, check=True)
 
 
