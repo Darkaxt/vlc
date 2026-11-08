@@ -37,7 +37,21 @@ def workflow_build_contract(text):
         '        run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build"\n', '')
     text = text.replace("        if: steps.review_reuse.outputs.reuse != 'true'\n", '')
     text = text.replace('            .desktop-build/review-reuse.json\n', '')
-    return text.replace('${{ steps.review_reuse.outputs.normal_generation }}', '${{ github.sha }}')
+    return text.replace('${{ steps.review_reuse.outputs.normal_generation || github.sha }}', '${{ github.sha }}')
+
+
+def recover_signed_app(directory, scratch):
+    # actions/cache's tar does not preserve extended code signatures on data
+    # (Lua, JAR and plugins.dat). The normal ditto ZIP explicitly does. Recover
+    # from the already hash-verified archive, never re-sign changed cache bytes.
+    archives = [path for path in directory.glob('*.zip') if '-symbols' not in path.name]
+    if len(archives) != 1:
+        raise RuntimeError('Expected one normal Mac ZIP for signature-preserving recovery')
+    scratch.mkdir(parents=True, exist_ok=False)
+    subprocess.run(['ditto', '-x', '-k', archives[0], scratch], check=True)
+    app = scratch / 'Modern VLC.app'
+    subprocess.run(['codesign', '--verify', '--deep', '--strict', app], check=True)
+    return app
 
 
 def reusable(work):
@@ -79,12 +93,13 @@ def reusable(work):
         path = directory / row['name']
         if path.parent != directory or builder.sha(path) != row['sha256']:
             raise RuntimeError('Retained package member changed: ' + row['name'])
-    subprocess.run(['codesign', '--verify', '--deep', '--strict', directory / 'Modern VLC.app'], check=True)
+    app = recover_signed_app(directory, Path(os.environ['RUNNER_TEMP']) / 'native-normal-recovered')
     previous = builder.bind_source_mtimes(work)
     builder.prepare_bootstrap_sources(work, work / 'vlc-build', os.environ.copy(), previous)
     return {'normal_source_commit': base,
             'diagnostic_source_commit': builder.output('git', 'rev-parse', 'HEAD', cwd=ROOT),
             'changed_test_only_paths': changed, 'normal_package_directory': str(directory),
+            'normal_application': str(app),
             'normal_archive_hashes_and_signature_verified': True}
 
 

@@ -86,11 +86,11 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
           path: |
-            .desktop-build/packages/${{ steps.review_reuse.outputs.normal_generation }}/**
+            .desktop-build/packages/${{ steps.review_reuse.outputs.normal_generation || github.sha }}/**
             .desktop-build/native-build.json
             .desktop-build/package-output.json
             .desktop-build/review-reuse.json
-            .desktop-build/qml-deployment/${{ steps.review_reuse.outputs.normal_generation }}.json
+            .desktop-build/qml-deployment/${{ steps.review_reuse.outputs.normal_generation || github.sha }}.json
             .desktop-build/native-link-bindings.json
             .desktop-build/bootstrap-cache-migration.json
             .desktop-toolchain/**

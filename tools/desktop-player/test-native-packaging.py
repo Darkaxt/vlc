@@ -19,6 +19,20 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_review_recovery_preserves_archived_signatures_instead_of_signing_cache(self):
+        spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reuse)
+        directory = Path('D:/owned-native-generation')
+        scratch = Path('E:/Temp/owned-native-recovery')
+        archive = directory / 'normal.zip'
+        with patch.object(Path, 'glob', return_value=[archive, directory / 'normal-symbols.zip']), \
+                patch.object(Path, 'mkdir'), patch.object(reuse.subprocess, 'run') as run:
+            self.assertEqual(reuse.recover_signed_app(directory, scratch), scratch / 'Modern VLC.app')
+        self.assertEqual(run.call_args_list[0].args[0], ['ditto', '-x', '-k', archive, scratch])
+        self.assertEqual(run.call_args_list[1].args[0],
+                         ['codesign', '--verify', '--deep', '--strict', scratch / 'Modern VLC.app'])
+
     def test_review_reuse_rejects_all_production_and_configuration_changes(self):
         spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
         reuse = importlib.util.module_from_spec(spec)

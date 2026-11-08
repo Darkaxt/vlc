@@ -52,7 +52,12 @@ def main():
     packages = Path(record['directory']).resolve()
     if not packages.is_relative_to((args.work / 'packages').resolve()):
         raise RuntimeError('Package pointer escaped its owned generation')
-    expected = app_identity(packages / 'Modern VLC.app')
+    reuse_path = args.work / 'review-reuse.json'
+    reuse = json.loads(reuse_path.read_text()) if reuse_path.exists() else None
+    if reuse and reuse['normal_source_commit'] != record['source_commit']:
+        raise RuntimeError('Recovered normal app belongs to another source generation')
+    normal = Path(reuse['normal_application']) if reuse else packages / 'Modern VLC.app'
+    expected = app_identity(normal)
     args.scratch.mkdir(parents=True, exist_ok=False)
     fixture = args.scratch / 'natural-eof.mkv'
     run('ffmpeg', '-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i',

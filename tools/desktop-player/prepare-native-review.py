@@ -72,7 +72,11 @@ def main():
     if not packages.is_relative_to(work / 'packages'):
         raise RuntimeError('Native package generation escaped its owned work directory')
     if mac:
-        normal = packages / 'Modern VLC.app'
+        reuse_path = work / 'review-reuse.json'
+        reuse = json.loads(reuse_path.read_text()) if reuse_path.exists() else None
+        if reuse and reuse['normal_source_commit'] != output_record['source_commit']:
+            raise RuntimeError('Recovered normal app belongs to another source generation')
+        normal = Path(reuse['normal_application']) if reuse else packages / 'Modern VLC.app'
         payload = review / 'Modern VLC.app'
         plugin_relative = Path('Contents/Frameworks/plugins/gui/libqt_plugin.dylib')
         executable_relative = Path('Contents/MacOS/vlc')
