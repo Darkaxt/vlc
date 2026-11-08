@@ -172,6 +172,15 @@ by normal merge history within M15 before the final architecture/package matrix
 qualification and M16 publication. Preserve the
 fork's interface, Windows MPV/DV runtime, native port and existing data. Refresh
 and record exact revisions at integration; a reported backlog count is not a pin.
+The pinned978212a4 delta updates libpng1.6.59 and zlib1.4. Existing Windows
+source inventory and the native Mac SDK bind the preceding versions1.6.58/1.3.2.
+Build these two updated VLC dependencies as scoped, source/checksum-bound
+overrides rather than merely accepting changed recipes against the old runtime.
+Preserve unrelated dependency/compiler objects and the separate Windows MPV/DV
+runtime. Preserve the existing Windows64-bit zlib offset ABI, verify actual new
+archive linkage and matching sources/notices, and requalify affected image and
+compressed-media paths in the integrated delivery. Linux continues using its
+actual distribution-owned dependency graph and exact corresponding sources.
 The integrated Windows observer must subscribe to the native MPV events whose
 properties it reads, including idle-active after Stop. Controller STOPPED alone
 can precede that native event; preserve the failed observation and prove the
@@ -191,6 +200,12 @@ archives from a checksum-pinned Canonical snapshot. Verify descriptor identity,
 member names, sizes and SHA256 closure; preserve reconstructible DSC-relative
 filenames. Do not replace the compiled library or substitute newer sources to
 make collection pass. PCRE2 10.42-4ubuntu2.1 is the evidenced case.
+Debian source-version directory names must reversibly encode epochs such as
+`7:6.1.1-3ubuntu5`; preserve the exact version in manifests and original archive
+filenames while keeping packaged notice paths valid on Windows/GitHub artifacts.
+Linux display readiness must observe the actual manager selections and consume
+python-xlib's buffered events before waiting on the socket. Preserve owned
+manager exit supervision; do not substitute a delay, deadline or silent skip.
 
 **7 November stabilization logging, R110 (M14), already authorized:**
 

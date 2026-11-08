@@ -1,5 +1,5 @@
 {
-  "upstream_baseline": "2cb78ca89c016df5b15b4f421d8b11e3253cb1a7",
+  "upstream_baseline": "978212a42d569a8d13fd83eae205e1bff4c7096d",
   "linux_archived_sources": [
     {
       "source_package": "pcre2",
@@ -34,6 +34,10 @@
     "url": "https://storage.googleapis.com/aom-releases/libaom-3.15.3.tar.gz"
   },
   "reviewed_prebuilt_recipe_delta": {
+    "contrib/src/png/SHA512SUMS": "34084c22f60b5d9e35f57f19e418231ac00b971087e6692e1db9603a6834b952",
+    "contrib/src/png/rules.mak": "b163b0107405279b7fd9b1f5778bebe1328efee9eca2b93767fb8ecdbde1b6b2",
+    "contrib/src/zlib/SHA512SUMS": "ffc6dabed7e2e979fb04c884bb73615ec80b360df57a951a2e497eb2ce8580ca",
+    "contrib/src/zlib/rules.mak": "93a6f66c2551fe98ccd64d6eba393b009d032d62c1007a98e3d0ab4a4602e93e",
     "contrib/src/aom/SHA512SUMS": "0dd1d89e066b7c1e95fdf6fa891cdc0215e2f7ca9c9dd7e7e2d22551a9b20116",
     "contrib/src/aom/rules.mak": "8fe7c3492bca205d8d925f1cb3cf008b7f61e9387c916e1fdc3ecc709581f016",
     "contrib/src/main.mak": "d0194c2f66ce33036778e2e4a979a629c1893574f1585e9a46ab32d29d8fdb43",
@@ -43,7 +47,7 @@
     "contrib/src/qtwayland/rules.mak": "347b2fed921affa2b25350ceb93ed9e127a1cbd9a4ac973ab6f071c074679422",
     "extras/package/macosx/VLC.xcodeproj/project.pbxproj": "799077155dbcb08e649da747589342a827d461581375bf6503baaeada7b918e6"
   },
-  "reviewed_prebuilt_recipe_delta_reason": "AOM is rebuilt from 3.15.3 sources as an explicit overlay. Qt recipes/mirrors are not used by the Homebrew Qt build; Xcode Cocoa GUI is disabled. Preserve all other libraries in the original pinned native archive.",
+  "reviewed_prebuilt_recipe_delta_reason": "AOM3.15.3, libpng1.6.59 and zlib1.4 are rebuilt from exact source archives as explicit overlays. Qt recipes/mirrors are not used by the Homebrew Qt build; Xcode Cocoa GUI is disabled. Preserve all other libraries in the original pinned native archive.",
   "stock_libplacebo": {
     "version": "7.387.0",
     "repository": "haasn/libplacebo",

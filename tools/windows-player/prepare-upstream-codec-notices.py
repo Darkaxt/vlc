@@ -16,7 +16,8 @@ def main():
     receipt = json.loads(args.build_receipt.read_text())
     manifest_path = args.notices / 'manifest.json'
     manifest = json.loads(manifest_path.read_text())
-    for record in receipt['libraries']:
+    images = [dict(item, library=item['name']) for item in receipt['image_dependencies']['libraries']]
+    for record in [*receipt['libraries'], *images]:
         archive = args.sources / record['archive']
         with archive.open('rb') as stream:
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()

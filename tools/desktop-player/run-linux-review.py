@@ -19,6 +19,27 @@ from Xlib import X, display
 HERE = Path(__file__).resolve().parent
 
 
+def wait_for_managers(connection, atoms, events, observe):
+    previous = None
+    while True:
+        while connection.pending_events():
+            connection.next_event()
+        owners = [connection.get_selection_owner(atom) for atom in atoms]
+        identities = [owner.id if owner else 0 for owner in owners]
+        if identities != previous:
+            observe(identities)
+            previous = identities
+        if all(owners):
+            return identities
+        # Reply requests above may read X events into python-xlib's own queue.
+        # The socket can then be empty; consume that queue before selecting it.
+        if connection.pending_events():
+            continue
+        for key, _ in events.select():
+            if key.data != 'x11':
+                raise RuntimeError('Owned Linux manager exited before readiness: ' + key.data)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
@@ -41,6 +62,18 @@ def main():
     atoms = [connection.intern_atom(name) for name in ('WM_S0', '_NET_WM_CM_S0')]
     if any(connection.get_selection_owner(atom) for atom in atoms):
         raise RuntimeError('The disposable X server already has a manager owner')
+    # Observe the selections themselves, including compositors that do not
+    # announce ownership through a root-window MANAGER ClientMessage.
+    from Xlib.ext import xfixes
+    if not connection.has_extension('XFIXES'):
+        raise RuntimeError('Owned Linux display requires XFIXES selection notifications')
+    connection.xfixes_query_version()
+    for atom in atoms:
+        connection.xfixes_select_selection_input(root, atom,
+            xfixes.XFixesSetSelectionOwnerNotifyMask |
+            xfixes.XFixesSelectionWindowDestroyNotifyMask |
+            xfixes.XFixesSelectionClientCloseNotifyMask)
+    connection.sync()
     children = []
     descriptors = []
     logs = []
@@ -55,17 +88,15 @@ def main():
                 children.append(child)
                 descriptor = os.pidfd_open(child.pid); descriptors.append(descriptor)
                 events.register(descriptor, selectors.EVENT_READ, name)
-            while not all(connection.get_selection_owner(atom) for atom in atoms):
-                while connection.pending_events():
-                    connection.next_event()
-                if all(connection.get_selection_owner(atom) for atom in atoms):
-                    break
-                for key, _ in events.select():
-                    if key.data != 'x11':
-                        raise RuntimeError('Owned Linux manager exited before readiness: ' + key.data)
+            def observe(owners):
+                record = {'manager_selections': dict(zip(('WM_S0', '_NET_WM_CM_S0'), owners)),
+                          'owned_pids': [child.pid for child in children]}
+                (session / 'display-readiness.json').write_text(json.dumps(record, indent=2) + '\n')
+                print('LINUX DISPLAY ' + json.dumps(record), flush=True)
+            owners = wait_for_managers(connection, atoms, events, observe)
             (session / 'display-ready.json').write_text(json.dumps({
                 'display': os.environ['DISPLAY'], 'manager_selections': dict(zip(
-                    ('WM_S0', '_NET_WM_CM_S0'), [connection.get_selection_owner(atom).id for atom in atoms])),
+                    ('WM_S0', '_NET_WM_CM_S0'), owners)),
                 'owned_pids': [child.pid for child in children]}, indent=2) + '\n')
         # PulseAudio's daemon startup handshake returns only after its server
         # initialization. Its pid/runtime files belong to this fresh directory.

@@ -409,6 +409,12 @@ def collect_archived_debian_source(pin, directory, cache):
     (directory / 'archival-source.json').write_text(json.dumps(pin, indent=2) + '\n')
 
 
+def debian_source_path(name, version):
+    # Preserve the original epoch in manifests, but use a reversible portable
+    # directory name. GitHub artifacts and Windows reject literal colons.
+    return Path(name) / urllib.parse.quote(version, safe='.+~-')
+
+
 def collect_linux(work, app, destination):
     paths = []
     for filename in (app / 'NATIVE-DEPENDENCIES.json', app / 'lib/mpv/runtime.json'):
@@ -432,14 +438,15 @@ def collect_linux(work, app, destination):
     archived = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text()).get(
         'linux_archived_sources', [])
     for (name, version), binaries in sorted(sources.items()):
-        directory = destination / 'debian' / name / version
+        relative = debian_source_path(name, version)
+        directory = destination / 'debian' / relative
         directory.mkdir(parents=True, exist_ok=True)
         pins = [pin for pin in archived if (pin['source_package'], pin['version']) == (name, version)]
         if len(pins) > 1:
             raise RuntimeError('Ambiguous archived Debian source pin')
         if pins:
             collect_archived_debian_source(pins[0], directory,
-                work / 'corresponding-source-inputs/debian' / name / version)
+                work / 'corresponding-source-inputs/debian' / relative)
         else:
             run('apt-get', 'source', '--download-only', '--only-source', name + '=' + version, cwd=directory)
         for package in binaries:

@@ -149,6 +149,8 @@ def main():
     if full or current:
         policy = args.source / 'tools/desktop-player/build-native.py'
         identity[str(policy.relative_to(args.source))] = hashlib.sha256(policy.read_bytes()).hexdigest()
+        images = args.source / 'tools/desktop-player/image_dependencies.py'
+        identity[str(images.relative_to(args.source))] = hashlib.sha256(images.read_bytes()).hexdigest()
     log_root.mkdir()
     attempt = {'run': run, 'from_step': names[start], 'mode': args.mode, 'inputs': identity,
         'player_compile_cache': os.environ.get('VLC_PLAYER_COMPILE_CACHE', '1'),

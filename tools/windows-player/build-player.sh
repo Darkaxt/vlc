@@ -27,6 +27,14 @@ test -f "$build_root/config.status"
 test -f "$source_root/modules/gui/qt/maininterface/player_video_backdrop.hpp"
 python3 "$source_root/tools/windows-player/configure-player.py" \
     --source "$source_root" --build "$build_root" --verify-only
+image_links="$build_root/player-image-links.mk"
+if test "$plugin_scope" = full; then
+    mkdir -p /work/upstream-codecs-1.1.1/link-maps
+    python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" \
+        --prepare --source "$source_root" --build "$build_root"
+elif test ! -f "$image_links"; then
+    printf '%s\n' '# No image dependency override in this retained cohort.' > "$image_links"
+fi
 if test "$plugin_scope" = mpv || test "$plugin_scope" = full || test "$plugin_scope" = current; then
     # S8 changes the Qt frontend and hotkey dispatcher. Reuse the verified 1.0
     # package's other plugins only with the exact additive public-ABI contract.
@@ -127,6 +135,7 @@ if test "$compile_cache" = 0; then
     printf 'Player compile caches omitted: %s\n' "$VLC_PLAYER_COMPILE_CACHE_REASON"
 fi
 make -C "$build_root/modules/gui/qt" -j1 -f Makefile \
+    -f "$image_links" \
     -f "$source_root/tools/windows-player/qt-objects.mk" \
     -f "$source_root/tools/windows-player/release-profile-objects.mk" \
     PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" qt-player-objects all-am
@@ -136,12 +145,11 @@ if test "$plugin_scope" = full; then
         python3 "$source_root/tools/windows-player/cache-toolchain.py" create
     fi
     module_result=0
-    mkdir -p /work/upstream-codecs-1.1.1/link-maps
     # The separate dependency prefix changes both headers and archive inputs.
     # Invalidate these four header consumers once for each exact library cohort.
-    python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" --prepare --source "$source_root" --build "$build_root"
     make -C "$build_root/modules" -j1 -f Makefile \
         -f "$source_root/tools/windows-player/upstream-codec-links.mk" \
+        -f "$image_links" \
         -f "$source_root/tools/windows-player/release-profile-objects.mk" \
         PLAYER_DIAGNOSTICS_CPPFLAGS="$flags" PLAYER_MPV_CPPFLAGS="$mpv_flags" all-am || module_result=$?
     if test "$compile_cache" = 1; then

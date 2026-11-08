@@ -37,6 +37,12 @@ def main():
     env = dict(os.environ, CMAKE_BUILD_PARALLEL_LEVEL='1',
         PKG_CONFIG_LIBDIR=str(sdk / 'lib/pkgconfig'),
         PKG_CONFIG_PATH=str(sdk / 'lib/pkgconfig'), PKG_CONFIG_SYSROOT_DIR='/')
+    image_work = base / 'image-dependencies'
+    subprocess.run(['python3', '-B', str(repo / 'tools/desktop-player/image_dependencies.py'),
+        '--repo', str(repo), '--work', str(image_work), '--prefix', str(prefix),
+        '--archives', '/scratch/mpv-source-inputs', '--toolchain', str(cross_path)],
+        env=env, check=True)
+    images = json.loads((image_work / 'build-receipt.json').read_text())
     patches = {
         'aom': ['0001-Do-not-force-_WIN32_WINNT.patch'],
         'mad': ['0001-CMake-case-of-AND-test.patch'],
@@ -146,7 +152,7 @@ def main():
         records.append(record)
         print('UPSTREAM CODEC DONE ' + json.dumps(record), flush=True)
     receipt = {'schema': 'vlc_redesign.upstream_codec_build.v1', 'libraries': records,
-        'cross_sha256': sha(cross_path), 'sdk_unchanged': True}
+        'cross_sha256': sha(cross_path), 'sdk_unchanged': True, 'image_dependencies': images}
     (base / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
 
 

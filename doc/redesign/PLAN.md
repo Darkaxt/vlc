@@ -1,6 +1,33 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Merge15e96c95229 integrates978212a42d569a8d13fd83eae205e1bff4c7096d locally;
+final native/dependency qualification remains outstanding. The new VLC libpng
+1.6.59/zlib1.4 sources verify against upstream SHA512; archives are intentional
+continuing weekly inputs under D:/VLC-Redesign/build/windows-x64/mpv-source-inputs,
+with receipt E:/Temp/vlc-native-desktop-20261108/installed-source-review/
+upstream-image-source-inputs.json. Scoped Mac/Windows builds, release flags,
+Windows64-bit offset ABI probe and transitive plugin/Qt link-map binding are
+wired, including macOS recursive make/link-map rules and packaged archive-link
+provenance; their actual native compilation/probe execution and archive-link
+evidence remain acceptance blockers. A read-only gate312 ticket
+17a7f9e427b34f8484d64055b10f2730 closed0/group-empty/zeroOOM confirms the
+retained Windows config already defines _FILE_OFFSET_BITS64; no global ABI flag
+change is required. Gate311's missing outer /usr/bin/grep remains an observed
+diagnostic failure, not a compiler failure or policy rejection.
+Linux42495369060 generated TAR/AppImage/DEB/RPM/Snap and complete source assets.
+Its readiness wait then stalled before player startup. The owner cancelled that
+exact run; original watch5792 closed1. Build cache save succeeded under key
+native-linux-x86_64-e544e33d674986dba16432dc9aa6f65f3740ae4afeb02ae475394588f1c13bfa-50c9385e96f58bfbd137f8ad22153550d18ce1a128cc15f4166d611ca7a241ae-42495369060.
+Artifact upload failed on the literal Debian epoch colon in ffmpeg's source
+notice directory; no artifact was published for that run. The full job log is
+retained as linux-44b811-complete.log in the E: review root. GitHub reports
+termination of owned Xvfb/Python/openbox/xcompmgr orphans during runner cleanup.
+The buffered-event/socket-wait race is deterministically reproduced and repaired;
+XFIXES selection subscriptions/readiness transition evidence and reversible
+epoch path encoding are implemented. Focused regressions pass; real Linux
+continuation is still required. Intel42495424689/job128782619471 remains active
+at44b811, original watch88464; retain it through actual completion.
 The four-commit978212a4 delta is now integrated by normal merge history after
 Linux44b811 source closure passed and DEB assembly began. Resolve Record's two
 overlaps by retaining the fork's existing colorized action and uppercase SVG

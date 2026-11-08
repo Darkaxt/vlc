@@ -23,6 +23,131 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_mac_image_archive_linkage_is_required_and_content_bound(self):
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        images = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(images)
+        root = Path(sys.argv_scratch) / ('mac-images-' + uuid.uuid4().hex)
+        work, prefix, build = root / 'images', root / 'prefix', root / 'build'
+        (prefix / 'lib').mkdir(parents=True)
+        (build / 'modules/.libs').mkdir(parents=True)
+        libraries = []
+        for name, archive in (('zlib', 'libz.a'), ('png', 'libpng16.a')):
+            path = prefix / 'lib' / archive
+            path.write_bytes(name.encode())
+            libraries.append({'name': name, 'prefix': str(prefix), 'static_library': archive,
+                              'library_sha256': images.digest(path)})
+        rules = images.mac_link_rules(work, prefix)
+        self.assertIn('override LIBZ = ' + str(prefix / 'lib/libz.a'), rules.read_text())
+        self.assertIn('-Wl,-map,', rules.read_text())
+        self.assertNotIn('-Wl,-Map,', rules.read_text())
+        stamp = rules.stat().st_mtime_ns
+        images.mac_link_rules(work, prefix)
+        self.assertEqual(rules.stat().st_mtime_ns, stamp)
+        (work / 'build-receipt.json').write_text(json.dumps({'libraries': libraries}))
+        plugin = build / 'modules/.libs/libpng_plugin.dylib'
+        plugin.write_bytes(b'actual test plugin')
+        link_map = work / 'link-maps/png.map'
+        link_map.write_text(str(prefix / 'lib/libz.a') + '(inflate.o)\n')
+        with self.assertRaisesRegex(RuntimeError, 'both updated'):
+            images.verify_mac_links(work, build)
+        link_map.write_text(link_map.read_text() + str(prefix / 'lib/libpng16.a') + '(png.o)\n')
+        receipt = images.verify_mac_links(work, build)
+        self.assertEqual(receipt['links'][0]['unstripped_plugin_sha256'], images.digest(plugin))
+        (prefix / 'lib/libz.a').write_bytes(b'changed')
+        with self.assertRaisesRegex(RuntimeError, 'changed after compilation'):
+            images.verify_mac_links(work, build)
+
+    def test_image_dependency_policy_rejects_debug_and_preserves_both_source_pins(self):
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        images = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(images)
+        self.assertEqual([(row['name'], row['version']) for row in images.definitions(HERE.parents[1])],
+                         [('zlib', '1.4'), ('png', '1.6.59')])
+        cache = ('CMAKE_BUILD_TYPE:STRING=Release\nCMAKE_C_FLAGS:STRING=\n'
+                 'CMAKE_C_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG -D_FILE_OFFSET_BITS=64\n')
+        images.verify_release(cache)
+        for bad in (cache.replace('-O3', '-O0'), cache.replace('-g0', '-g'),
+                    cache.replace('-DNDEBUG', '-UNDEBUG')):
+            with self.assertRaises(RuntimeError):
+                images.verify_release(bad)
+
+    def test_image_link_plan_covers_transitive_plugins_and_native_qt(self):
+        spec = importlib.util.spec_from_file_location('image_links', HERE.parent / 'windows-player/verify-upstream-codec-links.py')
+        links = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(links)
+        root = Path(sys.argv_scratch) / ('image-links-' + uuid.uuid4().hex)
+        source, build, base = root / 'src', root / 'build', root / 'codec-build'
+        for name in ('codec/png.c', 'demux/mkv/mkv.hpp', 'demux/mp4/libmp4.c',
+                     'services_discovery/sap.c', 'stream_filter/inflate.c'):
+            path = source / 'modules' / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('/* retained source consumer */\n')
+        metadata = "dlname='{name}.dll'\ndependency_libs='-L/old-sdk/lib -lz -lm'\n"
+        for name in ('libpng_plugin', 'libavcodec_plugin', 'libqt_plugin'):
+            parent = build / ('modules/gui/qt' if name == 'libqt_plugin' else 'modules')
+            parent.mkdir(parents=True, exist_ok=True)
+            (parent / (name + '.la')).write_text(metadata.format(name=name))
+        (build / 'modules/convenience.la').write_text("dlname=''\ndependency_libs='-lz'\n")
+        (build / 'config.h').write_text('#define _FILE_OFFSET_BITS 64\n')
+        prefix = base / 'prefix'
+        (prefix / 'lib').mkdir(parents=True)
+        libraries = []
+        for name, filename in (('zlib', 'libz.a'), ('png', 'libpng16.a')):
+            path = prefix / 'lib' / filename
+            path.write_bytes(name.encode())
+            libraries.append({'name': name, 'prefix': str(prefix), 'static_library': filename,
+                              'library_sha256': links.sha(path)})
+        receipt = {'image_dependencies': {'libraries': libraries}}
+        links.prepare_images(source, build, base, receipt)
+        plan = json.loads((build / 'player-image-inputs.json').read_text())
+        self.assertEqual([row['target'] for row in plan['targets']],
+                         ['libavcodec_plugin.la', 'libpng_plugin.la', 'libqt_plugin.la'])
+        rules = (build / 'player-image-links.mk').read_text()
+        self.assertIn('LIBZ = ' + str(prefix / 'lib/libz.a'), rules)
+        self.assertIn('libavcodec_plugin.la: LDFLAGS += -Wl,-Map,', rules)
+        stamp = (build / 'player-image-links.mk').stat().st_mtime_ns
+        links.prepare_images(source, build, base, receipt)
+        self.assertEqual((build / 'player-image-links.mk').stat().st_mtime_ns, stamp)
+        (prefix / 'lib/libz.a').write_bytes(b'changed')
+        with self.assertRaises(AssertionError):
+            links.prepare_images(source, build, base, receipt)
+
+    def test_debian_source_epochs_have_reversible_portable_paths(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        path = sources.debian_source_path('ffmpeg', '7:6.1.1-3ubuntu5')
+        self.assertEqual(path.as_posix(), 'ffmpeg/7%3A6.1.1-3ubuntu5')
+        self.assertEqual(sources.urllib.parse.unquote(path.name), '7:6.1.1-3ubuntu5')
+        self.assertNotIn(':', path.as_posix())
+
+    def test_linux_readiness_consumes_events_buffered_by_owner_queries(self):
+        module_spec = importlib.util.spec_from_file_location('linux_review', HERE / 'run-linux-review.py')
+        review = importlib.util.module_from_spec(module_spec)
+        with patch.dict(sys.modules, {'Xlib': SimpleNamespace(X=SimpleNamespace(), display=None)}):
+            module_spec.loader.exec_module(review)
+        class Connection:
+            ready = False
+            buffered = False
+            armed = False
+            def get_selection_owner(self, atom):
+                if atom == 2 and self.armed and not self.ready:
+                    self.buffered = True
+                return SimpleNamespace(id=atom) if self.ready else None
+            def pending_events(self):
+                self.armed = True
+                return int(self.buffered)
+            def next_event(self):
+                self.buffered = False
+                self.ready = True
+        connection = Connection()
+        events = SimpleNamespace(select=MagicMock(side_effect=AssertionError('Buffered event was stranded')))
+        observations = []
+        review.wait_for_managers(connection, [1, 2], events, observations.append)
+        self.assertTrue(connection.ready)
+        self.assertEqual(observations[-1], [1, 2])
+
     def test_native_timing_observation_keeps_all_render_events(self):
         spec = importlib.util.spec_from_file_location('native_verifier', HERE / 'verify-native-player.py')
         verifier = importlib.util.module_from_spec(spec)

@@ -586,6 +586,16 @@ def main():
                             'upstream_input_commit': overlay['upstream_commit'],
                             'url': overlay['url'], 'archive': source_archive.name,
                             'sha256': sha(source_archive)})
+        import image_dependencies
+        image_work = work / 'native-contrib-overlays/images'
+        run('python3', ROOT / 'tools/desktop-player/image_dependencies.py',
+            '--repo', ROOT, '--work', image_work, '--prefix', contrib,
+            '--archives', work / 'sources', env=env)
+        images = json.loads((image_work / 'build-receipt.json').read_text())
+        for item in images['libraries']:
+            sources.append({'name': 'native-contrib-' + item['name'] + '-overlay',
+                'version': item['version'], 'url': item['url'], 'archive': item['archive'],
+                'sha256': item['archive_sha256']})
         # Prebuilt target libraries omit the native generators. Use upstream's
         # matching recipes (including Lua's 64-bit bytecode patch), rather than
         # a system luac/protoc that can generate incompatible serialized data.
@@ -632,7 +642,11 @@ def main():
         binding.write_text(config)
     try:
         make_flags = native_make_flags(work, env)
+        if native_mac:
+            image_rules = image_dependencies.mac_link_rules(image_work, contrib)
+            env['MAKEFILES'] = str(image_rules)
         run('make', '-j1', *make_flags, cwd=build, env=env)
+        image_links = image_dependencies.verify_mac_links(image_work, build) if native_mac else None
         run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
         run(build / 'src/test_input_clock', cwd=build, env=env)
         run('make', '-j1', 'install', *make_flags, cwd=build, env=env)
@@ -642,6 +656,7 @@ def main():
         'schema': 'modern-vlc.native-build.v1', 'source_commit': output('git', 'rev-parse', 'HEAD', cwd=ROOT),
         'platform': platform.platform(), 'architecture': arch, 'mpv': pin,
         'sources': sources, 'configuration': json.loads(config),
+        'image_dependencies': image_links,
         'qualification': 'NOT RUN; build/packaging is not playback acceptance'}, indent=2) + '\n')
     run('python3', ROOT / 'tools/desktop-player/package-native.py', 'packages', '--work', work, '--prefix', prefix)
     retire_prior_package_generations(work)
