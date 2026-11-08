@@ -19,6 +19,35 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_macos_plugin_search_keeps_its_source_module_library_root(self):
+        qt = Path('D:/native-sdk/qt')
+        plugin = Path('D:/native-sdk/qtpdf/share/qt/plugins/imageformats/libqpdf.dylib')
+        base = Path('D:/native-sdk/qtbase/lib')
+        module = Path('D:/native-sdk/qtpdf/lib')
+        with patch.object(package, 'output', side_effect=[str(plugin.parent.parent), str(base)]), \
+                patch.object(Path, 'rglob', return_value=[plugin]), \
+                patch.object(package, 'native', return_value=True), \
+                patch.object(package, 'mac_runpaths', return_value=[str(module), '@executable_path/../Frameworks']), \
+                patch.object(Path, 'is_dir', lambda path: path == module):
+            self.assertEqual(package.mac_qt_library_paths(qt), sorted([base.resolve(), module.resolve()]))
+
+    def test_packaged_macos_dependency_rejects_runner_sdk_resolution(self):
+        app = Path('E:/Temp/owned-app')
+        framework = 'QtCore.framework/Versions/A/QtCore'
+        origin = app / 'Contents/PlugIns/libtest.dylib'
+        executable = app / 'Contents/MacOS/vlc'
+        bundled = app / 'Contents/Frameworks'
+        host = Path('D:/native-sdk/lib')
+        exists = {bundled / framework, host / framework}
+        with patch.object(Path, 'is_file', lambda path: path in exists), \
+                patch.object(package, 'mac_runpaths', return_value=[str(host), str(bundled)]):
+            with self.assertRaisesRegex(RuntimeError, 'outside the app'):
+                package.resolve_packaged_mac_dependency('@rpath/' + framework, origin, executable, app)
+        with patch.object(Path, 'is_file', lambda path: path in exists), \
+                patch.object(package, 'mac_runpaths', return_value=[str(bundled), str(host)]):
+            self.assertEqual(package.resolve_packaged_mac_dependency('@rpath/' + framework,
+                origin, executable, app), (bundled / framework).resolve())
+
     def test_qml_deployment_uses_requested_module_graph_not_neighbor_modules(self):
         root = Path(sys.argv_scratch) / ('qml-graph-' + uuid.uuid4().hex)
         installed = root / 'installed/QtQuick'

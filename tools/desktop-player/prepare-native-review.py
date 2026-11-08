@@ -73,7 +73,12 @@ def main():
         payload = review / normal.name
         plugin_relative = Path('lib/vlc/plugins/gui/libqt_plugin.so')
         executable_relative = Path('modern-vlc')
-    shutil.copytree(normal, payload, symlinks=True)
+    if mac:
+        # Preserve Apple's extended signatures on compiled Lua code/data,
+        # framework metadata and symlinks in the separately owned review app.
+        package.run('ditto', '--rsrc', '--extattr', normal, payload)
+    else:
+        shutil.copytree(normal, payload, symlinks=True)
     packaged_plugin = payload / plugin_relative
     previous_dependencies = package.dependencies(packaged_plugin) if mac else []
     try:
@@ -93,6 +98,7 @@ def main():
                     raise RuntimeError('Diagnostic plugin changed native dependency: ' + dependency)
                 package.run('install_name_tool', '-change', dependency, matches[0], packaged_plugin)
             package.run('codesign', '--force', '--sign', '-', packaged_plugin)
+            package.refresh_mac_plugin_cache(payload, review / 'cachegen-home')
             package.run('codesign', '--force', '--sign', '-', payload)
             package.run('codesign', '--verify', '--deep', '--strict', payload)
         else:

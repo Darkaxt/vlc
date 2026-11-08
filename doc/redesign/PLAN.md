@@ -64,6 +64,27 @@ Qt deployment. Focused graph/resource/runpath/SDK-preservation regressions pass;
 actual repaired native packaging remains required. New package generations bind
 to source commits without overwriting the failed app or resetting compiler
 objects. No local WSL or second concurrent build was launched.
+Run42432058949/job128582944544 fromf9ade7f2fe1c90f44477b68ff0338b56eeb0a69c
+restored that exact toolchain/configuration cohort and reached Qt deployment.
+Its original watch49320 closed1 after cache/artifact preservation. Signing stopped
+at unsigned plugins.dat; Qt also could not resolve PDF/virtual-keyboard plugin
+frameworks from Homebrew's separate module directories. Cache ending42432058949
+and artifact13598810910 (SHA2561add4397eba97eaf177d8dc73f3650f7cf48827f042c1512bdc6bb4fc51768e5)
+are the preserved recovery inputs. Packaging/player acceptance has not passed.
+The next cohesive package correction retains the complete VLC plugin graph in
+source-bound staging, presents only its Qt interface to macdeployqt, then merges
+the remaining relocated plugins. Qt6.12's deployment source confirms that it
+otherwise rewrites every discovered library for each Qt dependency. This removes
+unrelated deployment work without omitting plugins or rebuilding dependencies.
+The same correction signs compiled Lua and Blu-ray Java runtime code, preserves
+their signatures in the separate review copy, rebuilds the plugin index from
+final signed plugin bytes and seals the app last. Whole-package architecture and
+dependency checks reject accidental resolution against the runner SDK. Focused
+packaging regressions pass; native execution is still required before acceptance.
+Qt deployment additionally receives the installed plugins' declared, resolved
+source library paths before moving those plugins; no installed SDK is modified.
+Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
+retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
 MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
 submodule in the source archive; Linux ARM job128558356675 confirmed the same

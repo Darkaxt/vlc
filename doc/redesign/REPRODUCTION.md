@@ -75,6 +75,25 @@ MPV's immutable closure is installed after Qt rewriting, with outer signing last
 review uses that path, never a historical partial bundle. The previous partial
 bundle/cache remains an intentional recovery consumer until this repair passes.
 
+Continuation42432058949/job128582944544 uses sourcef9ade7f2 and the retained
+configured build. Its original watch49320 closed1 after preserving cache ending
+42432058949 and artifact13598810910; no native player check ran. Signing stopped
+at unsigned plugins.dat. Qt also lacked PDF/virtual-keyboard module library
+paths; the corrected pass receives resolved source LC_RPATH roots from installed
+Qt plugins before copying them. The prepared next package generation stages all
+VLC plugins outside the app during Qt's deployment, exposing only libqt_plugin
+to that repeated Qt dependency-rewrite pass, then merges the full relocated
+plugin tree. Compiled Lua/JAR files are signed as required by upstream's macOS
+packaging contract; review copies use ditto with extended attributes preserved.
+MPV's runtime manifest lives in Resources while its immutable signed libraries
+remain below Frameworks/mpv. Generate plugins.dat only after relocation, strip
+and plugin signing, using the packaged cache generator with VLC_LIB_PATH bound
+to the app's Frameworks. Sign the cache and outer app afterwards. The package
+audit checks every native architecture and resolves non-OS dependencies inside
+the bundle, rejecting a host SDK that masks an incomplete portable closure.
+These changes remain pending native execution; Python regressions alone do not
+qualify the app or prove playback.
+
 ## Current1.1.11 stabilization diagnostics
 
 Normal [1.1.11](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11)

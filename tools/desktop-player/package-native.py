@@ -143,6 +143,21 @@ def prepare_mac_qml(work, qt, generation):
     return directory
 
 
+def mac_qt_library_paths(qt):
+    # Homebrew merges Qt's plugins in share/qt, while each module's frameworks
+    # remain in its own Cellar lib directory. macdeployqt copies plugins before
+    # resolving them, so loader-relative source paths must be supplied first.
+    qmake = qt / 'bin/qmake'
+    plugins = Path(output(qmake, '-query', 'QT_INSTALL_PLUGINS'))
+    paths = {Path(output(qmake, '-query', 'QT_INSTALL_LIBS')).resolve()}
+    for plugin in sorted({path.resolve() for path in plugins.rglob('*.dylib') if native(path)}):
+        for value in mac_runpaths(plugin):
+            path = Path(value)
+            if path.is_absolute() and path.is_dir():
+                paths.add(path.resolve())
+    return sorted(paths)
+
+
 def resolve_mac_dependency(dep, origin, runpaths):
     if dep.startswith('@loader_path/'):
         return origin.parent / dep.removeprefix('@loader_path/')
@@ -165,6 +180,75 @@ def external(dep):
     # Never ship the host libc, loader, or graphics driver dispatch. Their ABI
     # and native driver belong to the destination OS, not this application.
     return bool(re.match(r'^(ld-linux|lib(c|m|dl|pthread|rt|resolv|util)\.so|lib(GL|EGL|OpenGL|GLX|GLdispatch|drm|gbm))', name))
+
+
+def resolve_packaged_mac_dependency(dep, origin, executable, app, runpaths=None):
+    def expand(value):
+        if value == '@loader_path' or value.startswith('@loader_path/'):
+            return origin.parent / value.removeprefix('@loader_path').lstrip('/')
+        if value == '@executable_path' or value.startswith('@executable_path/'):
+            return executable.parent / value.removeprefix('@executable_path').lstrip('/')
+        if value.startswith('@') or not Path(value).is_absolute():
+            raise RuntimeError('Unresolved packaged Mach-O path: ' + value)
+        return Path(value)
+
+    if dep.startswith('@rpath/'):
+        if runpaths is None:
+            runpaths = mac_runpaths(origin) + mac_runpaths(executable)
+        candidates = [expand(directory) / dep.removeprefix('@rpath/') for directory in runpaths]
+    else:
+        candidates = [expand(dep)]
+    for candidate in candidates:
+        if not candidate.is_file():
+            continue
+        resolved = candidate.resolve()
+        if not resolved.is_relative_to(app.resolve()):
+            raise RuntimeError(f'Packaged dependency resolves outside the app: {dep}: {resolved}')
+        return resolved
+    raise RuntimeError(f'Missing packaged dependency {dep} in {origin}; searched {candidates}')
+
+
+def audit_package(app, executable, arch, receipt):
+    """Check every shipped native module, including ones playback may not load.
+
+    A runner's installed Qt/codec SDK must not mask an incomplete portable app.
+    Signing follows this audit so its resource receipt is sealed in the bundle.
+    """
+    root = app.resolve()
+    files = sorted({path.resolve() for path in app.rglob('*') if native(path)})
+    records = []
+    executable_runpaths = mac_runpaths(executable) if MAC else []
+    for path in files:
+        if not path.is_relative_to(root):
+            raise RuntimeError('Packaged native symlink escaped the app: ' + str(path))
+        if MAC:
+            architectures = output('lipo', '-archs', path).split()
+            if arch not in architectures:
+                raise RuntimeError(f'Wrong packaged architecture {path}: {architectures}')
+        else:
+            machine = re.search(r'(?m)^\s*Machine:\s*(.+)$', output('readelf', '-h', path)).group(1)
+            expected = {'x86_64': 'Advanced Micro Devices X86-64', 'aarch64': 'AArch64'}[arch]
+            if machine != expected:
+                raise RuntimeError(f'Wrong packaged architecture {path}: {machine}')
+            architectures = [arch]
+        linked = []
+        deps = dependencies(path)
+        runpaths = mac_runpaths(path) + executable_runpaths if MAC and any(
+            dep.startswith('@rpath/') for dep in deps) else []
+        for dep in deps:
+            if external(dep):
+                linked.append({'os_dependency': dep})
+                continue
+            resolved = resolve_packaged_mac_dependency(dep, path, executable, root, runpaths) if MAC else Path(dep).resolve()
+            if not resolved.is_relative_to(root):
+                raise RuntimeError(f'Packaged dependency resolves outside the app: {path}: {dep}')
+            linked.append({'packaged_dependency': resolved.relative_to(root).as_posix()})
+        records.append({'file': path.relative_to(root).as_posix(),
+                        'architectures': architectures, 'dependencies': linked})
+    if not records:
+        raise RuntimeError('Native package contains no native binaries')
+    receipt.write_text(json.dumps({'state': 'architecture and dependency closure verified',
+        'architecture': arch, 'members': records}, indent=2) + '\n')
 
 
 def copy_closure(initial, destination):
@@ -280,6 +364,19 @@ def mac_minimum_system(load_commands):
     return max(versions, default=(0,))
 
 
+def refresh_mac_plugin_cache(app, home):
+    # VLC validates cached entries against plugin size and mtime. Both the
+    # normal app and a review app with a replaced Qt plugin need a fresh index.
+    contents = app / 'Contents'
+    home.mkdir(parents=True, exist_ok=True)
+    environment = os.environ.copy()
+    environment.update(HOME=str(home), VLC_LIB_PATH=str(contents / 'Frameworks'),
+        VLC_DATA_PATH=str(contents / 'Resources/share'), VLC_LIBEXEC_PATH=str(contents / 'MacOS'))
+    plugins = contents / 'Frameworks/plugins'
+    run(contents / 'MacOS/vlc-cache-gen', plugins, env=environment)
+    run('codesign', '--force', '--sign', '-', plugins / 'plugins.dat')
+
+
 def package_mac(work, installed, out, version, arch):
     app = out / 'Modern VLC.app'
     if app.exists():
@@ -297,16 +394,24 @@ def package_mac(work, installed, out, version, arch):
         for path in parent.rglob('*') if parent.exists() else []:
             if path.is_file() and path.name in ('vlc-qt-check', 'vlc-preparser', 'vlc-cache-gen'):
                 shutil.copy2(path, binaries / path.name)
-    # Libtool metadata/static archives are build inputs, not loadable plugins.
-    # Apple treats them as unsigned code when placed below Frameworks.
-    shutil.copytree(installed / 'lib/vlc/plugins', frameworks / 'plugins',
-                    ignore=shutil.ignore_patterns('*.la', '*.a'))
+    # Prepare VLC's complete runtime plugin graph separately. macdeployqt
+    # rewrites every discovered library for every Qt dependency; only the Qt
+    # interface needs that pass. Adding the other VLC plugins afterwards avoids
+    # thousands of unrelated install_name_tool operations without reducing VLC.
+    plugins = work / 'plugin-deployment' / out.name
+    shutil.copytree(installed / 'lib/vlc/plugins', plugins,
+                    ignore=shutil.ignore_patterns('*.la', '*.a', 'plugins.dat'))
+    # Match VLC's native macOS package route for the configured Blu-ray Java
+    # companion. It is runtime code, not a host JDK or build tool.
+    for jar in (work / 'native-contrib').glob('*/share/java/libbluray*.jar'):
+        shutil.copy2(jar, plugins / jar.name)
     shutil.copytree(installed / 'share/vlc', resources / 'share')
     shutil.copytree(installed / 'libexec/vlc/lua', frameworks / 'lua')
     shutil.copytree(ROOT / 'share/hrtfs', resources / 'share/hrtfs')
     for path in (installed / 'lib').glob('libvlc*.dylib'):
         shutil.copy2(path.resolve(), frameworks / path.name)
     originals = [p for p in app.rglob('*') if native(p) and 'mpv' not in p.relative_to(app).parts]
+    originals.extend(path for path in plugins.rglob('*') if native(path))
     required = []
     for path in originals:
         required.extend(Path(dep) for dep in dependencies(path)
@@ -314,7 +419,8 @@ def package_mac(work, installed, out, version, arch):
     closure = copy_closure(required, frameworks / 'native')
     (resources / 'NATIVE-DEPENDENCIES.json').write_text(json.dumps(closure, indent=2) + '\n')
     for path in originals:
-        split_symbols(path, path.relative_to(app), work)
+        deployed = frameworks / 'plugins' / path.relative_to(plugins) if path.is_relative_to(plugins) else path
+        split_symbols(path, deployed.relative_to(app), work)
         for dep in dependencies(path):
             if external(dep) or '.framework/' in dep:
                 continue
@@ -324,7 +430,7 @@ def package_mac(work, installed, out, version, arch):
             if not replacement.exists():
                 raise RuntimeError(f'Unresolved package dependency {dep}: {path}')
             run('install_name_tool', '-change', dep,
-                '@loader_path/' + os.path.relpath(replacement, path.parent), path)
+                '@loader_path/' + os.path.relpath(replacement, deployed.parent), path)
         run('strip', '-S', path)
     # Qt deploys its plugin/QML/framework graph using the actual app executable
     # and Qt interface module, rather than swapping in the upstream Cocoa UI.
@@ -335,15 +441,23 @@ def package_mac(work, installed, out, version, arch):
             'CFBundleVersion': version, 'LSMinimumSystemVersion': '13.0',
             'NSHighResolutionCapable': True, 'NSPrincipalClass': 'NSApplication'}
     (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
+    gui = frameworks / 'plugins/gui'
+    gui.mkdir(parents=True)
+    shutil.copy2(plugins / 'gui/libqt_plugin.dylib', gui / 'libqt_plugin.dylib')
     qt = Path(output('brew', '--prefix', 'qt'))
     qml = prepare_mac_qml(work, qt, out.name)
     run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'),
         '-qmlimport=' + str(qml), '-always-overwrite', '-verbose=2', '-no-codesign',
+        *('-libpath=' + str(path) for path in mac_qt_library_paths(qt)),
         '-executable=' + str(frameworks / 'plugins/gui/libqt_plugin.dylib'))
+    shutil.copytree(plugins, frameworks / 'plugins', dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns('libqt_plugin.dylib'))
     # libmpv is loaded dynamically and has no Qt dependency. Install its already
     # signed immutable closure after Qt's deployment rewrites, not as input to
     # a second linker/signing pass over every library in the bundle.
-    shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv')
+    shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv',
+                    ignore=shutil.ignore_patterns('runtime.json'))
+    shutil.copy2(work / 'mpv-runtime/runtime.json', resources / 'MPV-RUNTIME.json')
     minimums = {str(path.relative_to(app)): mac_minimum_system(output('otool', '-l', path))
                 for path in app.rglob('*') if native(path)}
     minimum = max((13, 0), *minimums.values())
@@ -351,11 +465,20 @@ def package_mac(work, installed, out, version, arch):
     (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
     (resources / 'MINIMUM-SYSTEM.json').write_text(json.dumps({
         'minimum_macos': info['LSMinimumSystemVersion'], 'native_members': minimums}, indent=2) + '\n')
+    audit_package(app, binaries / 'vlc', arch, resources / 'NATIVE-PACKAGE.json')
     # Sign inner objects before the outer bundle. MPV payloads were signed
     # before their identities were compiled and must remain byte-identical.
     for path in sorted(app.rglob('*'), key=lambda p: len(p.parts), reverse=True):
-        if native(path) and path != binaries / 'vlc' and 'mpv' not in path.relative_to(app).parts:
+        # Upstream macOS codesign.sh also signs every compiled Lua file as
+        # code/data below Frameworks. It cannot be invoked unchanged here: its
+        # fixed VLC.app/Sparkle/Cocoa layout differs from this Qt app bundle.
+        runtime_data = path.is_file() and (path.is_relative_to(frameworks / 'lua') or
+            (path.is_relative_to(frameworks / 'plugins') and path.suffix == '.jar'))
+        if (native(path) or runtime_data) and path != binaries / 'vlc' and 'mpv' not in path.relative_to(app).parts:
             run('codesign', '--force', '--sign', '-', path)
+    # Stripping, relocating and signing change plugin size/mtime. Generate the
+    # cache from these final runtime bytes, not the install prefix's old index.
+    refresh_mac_plugin_cache(app, work / 'package-cachegen' / out.name)
     run('codesign', '--force', '--sign', '-', app)
     run('codesign', '--verify', '--deep', '--strict', app)
     verify_bundled_mpv(work, frameworks / 'mpv')
@@ -369,7 +492,7 @@ def package_linux(work, installed, out, version, arch):
     app = out / f'Modern-VLC-Fork-{version}-linux-{arch}'
     if app.exists():
         raise RuntimeError('Package directory already exists; finish consumers and retire old staging explicitly')
-    shutil.copytree(installed, app, symlinks=True)
+    shutil.copytree(installed, app, symlinks=True, ignore=shutil.ignore_patterns('*.la', '*.a'))
     shutil.copytree(work / 'mpv-runtime', app / 'lib/mpv')
     qt_plugins = Path(output('qmake6', '-query', 'QT_INSTALL_PLUGINS'))
     qt_qml = Path(output('qmake6', '-query', 'QT_INSTALL_QML'))
@@ -407,6 +530,7 @@ exec "$root/bin/vlc" --intf=qt "$@"
     (app / 'modern-vlc.desktop').write_text(desktop)
     shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', app / 'modern-vlc.png')
     verify_bundled_mpv(work, app / 'lib/mpv')
+    audit_package(app, app / 'bin/vlc', arch, app / 'NATIVE-PACKAGE.json')
     with tarfile.open(out / (app.name + '.tar.xz'), 'w:xz') as archive:
         archive.add(app, arcname=app.name)
     deb = work / 'deb'
