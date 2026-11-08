@@ -104,8 +104,15 @@ compilation: installed libb2 0.98.1 predates SPDX SBOMs. Artifact13619464601 is
 Its original hash-bound recipe and receipt were retrieved and inspected. Collect
 that installed recipe's sources/patches through Homebrew's DSL, with exact version
 and archive checksum checks; preserve native objects and the original failure.
-Linux42478117547/job128751273053 is now active at934f87f420a57a85912077f827e9128684aed21a
-(watch45890). No final release has been published.
+Linux42478117547/job128751273053 (watch45890) closed1 in source collection: dpkg
+registers liblzo2 under/lib, while its physical file resolves under/usr/lib.
+The exact installed Ubuntu2.10-2build4 DEB reproduces that recorded path and its
+library SHA25667a7624b45b4af0dd0d61122cfe16cf26353533a6b9d443179f6ec72093e0d48
+matches the packaged source input. Bind only actual symlink aliases to the same
+physical file and retain unique ownership; source archive checks remain strict.
+Artifact13620411149 is247609977 bytes, SHA2563dfbbe59556b286a2c80021ea7ba9e9a1c49e7435c290b31e4e836a7ded5b46f.
+Intel continuation42487524069 is active atbec7ce258a78b0b9e2364209160a230bef26bea5;
+its pre-SBOM recipe extraction still needs native verification. No release published.
 Windows supplementary formats: the installed7z executable is available at
 C:/Users/darka/scoop/shims/7z.exe. The maintained package helper can produce7z
 from exactly the same stripped, empty-profile portable tree, with one compressor

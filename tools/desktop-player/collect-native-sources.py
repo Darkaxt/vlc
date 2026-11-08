@@ -333,6 +333,40 @@ def collect_contrib(work, destination):
                       for path in sorted(tarballs.iterdir()) if path.is_file()]}
 
 
+def dpkg_owner(path):
+    """Bind a real file through dpkg's recorded spelling on merged-/usr hosts."""
+    path = Path(path)
+    physical = path.resolve(strict=True)
+    candidates = {path, physical}
+    for alias in map(Path, ('/lib', '/lib64', '/bin', '/sbin')):
+        if alias.is_symlink():
+            root = alias.resolve(strict=True)
+            if physical.is_relative_to(root):
+                candidate = alias / physical.relative_to(root)
+                if candidate.resolve(strict=True) == physical:
+                    candidates.add(candidate)
+    owners, registered = set(), set()
+    for candidate in sorted(candidates):
+        result = subprocess.run(['dpkg-query', '-S', str(candidate)], text=True,
+            capture_output=True, env=dict(os.environ, LC_ALL='C'))
+        if result.returncode:
+            if (result.returncode == 1 and not result.stdout.strip()
+                    and result.stderr.startswith('dpkg-query: no path found matching pattern ')):
+                continue
+            raise RuntimeError('Installed dpkg ownership query failed: ' + result.stderr)
+        for line in result.stdout.splitlines():
+            package, separator, original = line.partition(': ')
+            if (not separator or original != str(candidate)
+                    or Path(original).resolve(strict=True) != physical):
+                raise RuntimeError('Ambiguous installed dpkg owner: ' + line)
+            owners.add(package)
+            registered.add(original)
+    if len(owners) != 1:
+        raise RuntimeError('No unique installed dpkg owner: ' + str(path))
+    return {'package': owners.pop(), 'source_path': str(path), 'resolved_path': str(physical),
+            'registered_paths': sorted(registered)}
+
+
 def collect_linux(work, app, destination):
     paths = []
     for filename in (app / 'NATIVE-DEPENDENCIES.json', app / 'lib/mpv/runtime.json'):
@@ -344,14 +378,8 @@ def collect_linux(work, app, destination):
                 paths.append(source)
     qt = json.loads((app / 'QT-SOURCES.json').read_text())
     paths.extend(Path(path) for path in qt)
-    packages = set()
-    for path in paths:
-        owners = output('dpkg-query', '-S', path).splitlines()
-        for owner in owners:
-            package, separator, original = owner.partition(': ')
-            if not separator or original != str(path):
-                raise RuntimeError('Ambiguous installed dpkg owner: ' + owner)
-            packages.add(package)
+    bindings = [dpkg_owner(path) for path in sorted(set(paths))]
+    packages = {row['package'] for row in bindings}
     sources = {}
     for package in sorted(packages):
         record = output('dpkg-query', '-W', '-f=${source:Package}\t${source:Version}', package).split('\t')
@@ -369,6 +397,7 @@ def collect_linux(work, app, destination):
                 raise RuntimeError('Missing installed Debian copyright: ' + package)
             shutil.copy2(copyright_file, directory / (package.replace(':', '_') + '-copyright'))
         result.append({'source_package': name, 'version': version, 'binary_packages': binaries,
+                       'runtime_inputs': [row for row in bindings if row['package'] in binaries],
                        'files': [{'file': path.relative_to(destination).as_posix(), 'sha256': sha(path)}
                                  for path in sorted(directory.iterdir()) if path.is_file()]})
     shutil.copytree('/usr/share/common-licenses', destination / 'common-licenses', dirs_exist_ok=True)

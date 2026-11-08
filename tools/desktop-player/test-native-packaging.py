@@ -483,6 +483,34 @@ class NativePackagingTest(unittest.TestCase):
                 sources.installed_brew_sources(target, 'libb2', '0.98.1')
             query.assert_not_called()  # A broken present SBOM must never be ignored.
 
+    def test_dpkg_owner_resolves_only_actual_merged_usr_aliases(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        canonical = Path('/usr/lib/x86_64-linux-gnu/liblzo2.so.2.0.0')
+        registered = Path('/lib/x86_64-linux-gnu/liblzo2.so.2.0.0')
+        def resolve(path, strict=False):
+            return Path('/usr/lib') if path == Path('/lib') else canonical if path == registered else path
+        def query(argv, **kwargs):
+            if argv[-1] == str(registered):
+                return SimpleNamespace(returncode=0, stdout='liblzo2-2:amd64: ' + str(registered) + '\n', stderr='')
+            return SimpleNamespace(returncode=1, stdout='', stderr='dpkg-query: no path found matching pattern ' + argv[-1])
+        with patch.object(Path, 'resolve', resolve), \
+                patch.object(Path, 'is_symlink', lambda path: path == Path('/lib')), \
+                patch.object(sources.subprocess, 'run', side_effect=query) as run:
+            binding = sources.dpkg_owner(canonical)
+            self.assertEqual(binding['package'], 'liblzo2-2:amd64')
+            self.assertEqual(binding['registered_paths'], [str(registered)])
+            self.assertEqual({call.args[0][-1] for call in run.call_args_list}, {str(canonical), str(registered)})
+        with patch.object(Path, 'resolve', resolve), patch.object(Path, 'is_symlink', return_value=False), \
+                patch.object(sources.subprocess, 'run', side_effect=query):
+            with self.assertRaisesRegex(RuntimeError, 'No unique installed dpkg owner'):
+                sources.dpkg_owner(canonical)
+        with patch.object(Path, 'resolve', resolve), patch.object(Path, 'is_symlink', return_value=False), \
+                patch.object(sources.subprocess, 'run', return_value=SimpleNamespace(returncode=2, stdout='', stderr='database inaccessible')):
+            with self.assertRaisesRegex(RuntimeError, 'query failed: database inaccessible'):
+                sources.dpkg_owner(canonical)
+
     def test_source_notice_extraction_is_safe_and_resumable(self):
         spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
         sources = importlib.util.module_from_spec(spec)

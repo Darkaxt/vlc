@@ -181,6 +181,10 @@ and external patches from the retained, hash-bound keg recipe using Homebrew's
 native DSL and require its exact installed package version. Preserve its receipt,
 recipe and extracted source metadata. A present invalid SBOM still fails; do not
 substitute a current formula, omit patches or accept unverified source archives.
+For Debian merged-/usr layouts, bind each shipped source file to its unique dpkg
+owner using only actual symlink aliases resolving to that identical physical file.
+Record original/resolved/registered paths; never infer ownership from a basename
+or ignore a package database failure.
 
 **7 November stabilization logging, R110 (M14), already authorized:**
 
