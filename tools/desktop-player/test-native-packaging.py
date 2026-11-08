@@ -24,6 +24,53 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_linux_gl_client_closure_preserves_the_prior_runtime(self):
+        work = Path(sys.argv_scratch) / ('linux-gl-client-' + uuid.uuid4().hex)
+        prefix = work / 'deps/lib'; prefix.mkdir(parents=True)
+        library = prefix / 'libmpv.so.2'; library.write_bytes(b'unchanged compiled MPV')
+        client = prefix / 'libOpenGL.so.0'; client.write_bytes(b'vendor-neutral client ABI')
+        legacy = work / 'mpv-runtime'; legacy.mkdir()
+        (legacy / 'retained-normal').write_bytes(b'protected old runtime')
+        with patch.object(package, 'MAC', False), patch.object(package, 'run'), \
+                patch.object(package, 'dependencies', side_effect=lambda path, **_: [str(client)] if path == library else []):
+            package.stage_mpv(work, work / 'deps')
+            runtime = package.mpv_runtime_directory(work)
+        self.assertNotEqual(runtime, legacy)
+        self.assertEqual((legacy / 'retained-normal').read_bytes(), b'protected old runtime')
+        self.assertEqual((runtime / client.name).read_bytes(), client.read_bytes())
+        self.assertEqual({row['name'] for row in json.loads((runtime / 'runtime.json').read_text())},
+                         {library.name, client.name})
+
+    def test_snap_uses_connected_external_graphics_and_preserves_player_payload(self):
+        work = Path(sys.argv_scratch) / ('snap-gpu-' + uuid.uuid4().hex)
+        app = work / 'normal'; app.mkdir(parents=True)
+        (app / 'normal-player').write_bytes(b'unchanged normal payload')
+        snap = work / 'snap'; snap.mkdir()
+        package.stage_linux_snap_payload(app, snap, '1.1.12', 'amd64')
+        self.assertEqual((snap / 'player/normal-player').read_bytes(), (app / 'normal-player').read_bytes())
+        self.assertTrue((snap / 'gpu-2404').is_dir())
+        metadata = (snap / 'meta/snap.yaml').read_text()
+        self.assertIn('default-provider: mesa-2404', metadata)
+        self.assertIn('target: $SNAP/gpu-2404', metadata)
+        self.assertIn('command-chain: [bin/gpu-runtime]', metadata)
+        self.assertIn('confinement: strict', metadata)
+        self.assertEqual((snap / 'bin/gpu-runtime').read_bytes(),
+                         (package.ROOT / 'tools/desktop-player/snap-gpu-runtime.sh').read_bytes())
+
+    def test_linux_installer_metadata_covers_audited_host_opengl(self):
+        audit = {'members': [{'dependencies': [
+            {'os_dependency': '/lib/x86_64-linux-gnu/libc.so.6'},
+            {'os_dependency': '/lib/x86_64-linux-gnu/libOpenGL.so.0'},
+            {'os_dependency': '/lib/x86_64-linux-gnu/libGLX.so.0'}]}]}
+        dependencies = package.linux_host_dependencies(audit)
+        self.assertIn('libopengl0', dependencies['deb'])
+        self.assertIn('libglx0', dependencies['deb'])
+        self.assertIn('libOpenGL.so.0()(64bit)', dependencies['rpm'])
+        self.assertIn('libGLX.so.0()(64bit)', dependencies['rpm'])
+        audit['members'][0]['dependencies'].append({'os_dependency': '/lib/libUnknownDriver.so.1'})
+        with self.assertRaisesRegex(RuntimeError, 'Unmapped Linux host dependency'):
+            package.linux_host_dependencies(audit)
+
     def test_package_only_recovery_selects_one_exact_normal_generation(self):
         spec = importlib.util.spec_from_file_location('linux_recovery', HERE / 'recover-linux-packages.py')
         recovery = importlib.util.module_from_spec(spec)
@@ -1166,6 +1213,8 @@ class NativePackagingTest(unittest.TestCase):
         with patch.object(package, 'MAC', False):
             for path in ('/lib/libc.so.6', '/lib/libm.so.6', '/lib/libGLX_mesa.so.0', '/lib/libEGL.so.1'):
                 self.assertTrue(package.external(path), path)
+            self.assertFalse(package.external('/lib/libOpenGL.so.0'))
+            self.assertTrue(package.external('/lib/libGLdispatch.so.0'))
             for path in ('/lib/libavcodec.so.60', '/lib/libass.so.9', '/lib/libcairo.so.2'):
                 self.assertFalse(package.external(path), path)
         with patch.object(package, 'MAC', True):
@@ -1229,7 +1278,7 @@ class NativePackagingTest(unittest.TestCase):
         scratch = Path(sys.argv_scratch)
         work = scratch / ('runtime-rejection-' + uuid.uuid4().hex)
         prefix = work / 'deps/lib'; prefix.mkdir(parents=True)
-        runtime = work / 'mpv-runtime'; runtime.mkdir()
+        runtime = package.mpv_runtime_directory(work); runtime.mkdir()
         library = prefix / 'libmpv.so.2'; library.write_bytes(b'original native output')
         (runtime / library.name).write_bytes(b'altered')
         (runtime / 'runtime.json').write_text(json.dumps([{

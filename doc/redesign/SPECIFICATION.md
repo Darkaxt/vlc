@@ -202,6 +202,19 @@ Bind that recovery to its published whole-artifact digest, exact source SHA and
 architecture, retain the distinct verifier revision, and preserve native file
 modes/symlinks from the original normal TAR. Prior-generation diagnostic evidence
 does not replace final integrated common-revision package/release qualification.
+Clean-host qualification confirms that Qt requires the vendor-neutral
+libOpenGL.so.0 client ABI, which is absent on a minimal host and from Snap's
+graphics base. Include that client library through the existing source/license
+closure, preserving the external OS driver/libGLdispatch boundary. Stage the
+expanded Linux MPV runtime closure under a distinct immutable directory without
+rebuilding its compiler/dependency objects or changing the older package.
+Derive DEB/RPM requirements for every remaining external ELF edge from the audited
+package; reject an unmapped dependency. Generate the Linux plugin index after
+all stripping/RPATH edits, and reject stale indexes in relocated format checks.
+Snap uses the standard gpu-2404 content interface with mesa-2404 as its external
+OS graphics provider. Preserve strict confinement, the identical normal player
+payload and actual installed provider/base revision evidence; do not bundle GPU
+drivers or use classic/devmode to pass qualification.
 The integrated Windows observer must subscribe to the native MPV events whose
 properties it reads, including idle-active after Stop. Controller STOPPED alone
 can precede that native event; preserve the failed observation and prove the

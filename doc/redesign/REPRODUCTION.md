@@ -13,6 +13,19 @@ runs in this mode. Its receipt keeps original package and verifier revisions
 separate. Empty package inputs preserve the normal build matrix. Keep the original
 failed checks and use this mode to repair them before another normal matrix.
 
+The Linux graphics client ABI `libOpenGL.so.0` is now included by normal
+dependency/source closure, while drivers and `libGLdispatch` remain OS-owned.
+The new `mpv-runtime-opengl-client` directory is a packaging/identity cohort using
+the retained compiled MPV prefix; preserve the earlier `mpv-runtime` consumer.
+DEB/RPM metadata comes from every external ELF edge in `NATIVE-PACKAGE.json`.
+Generate `plugins.dat` only after ELF strip/RPATH changes; relocated playback
+checks reject a stale index. Snap requires its strict `gpu-2404` content plug
+connected to `mesa-2404:gpu-2404`; the app's command chain calls that provider's
+runtime wrapper. Actual `snap list`/connections/confinement receipts retain the
+tested provider/base revisions. This follows Canonical's content-interface
+contract: https://github.com/canonical/gpu-snap/tree/84e56217ec137c3f8d7a0e773bb7c39c8fc40f28.
+No provider script is vendored; the fork owns its small connection/exec wrapper.
+
 Windows upstream acceptance currently binds normal run89 at5fcb86e9 and the
 diagnostic-only run91 at8063ad93. Run91 completed with group-empty/private-mount
 release and reused the normal non-Qt runtime images. Integrated handover,

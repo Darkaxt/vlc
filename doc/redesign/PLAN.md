@@ -1,6 +1,22 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Compiler-free2910611b workflow42506771420 closed1/watch87067; original artifact
+SHA256 recovery passed again without compiler/build jobs. Correct review host
+libOpenGL makes all portable formats and DEB work on the clean runner. Fedora's
+actual ldd/registry proves libOpenGL.so.0 missing; Snap installs/removes strictly
+but its namespace has the same missing Qt registration. Artifact13627648664 is
+324706B, SHA256224635b64e6efccfee22783164905bcd18c47e61e2e7267bd4eef533ce884862.
+Registry evidence also proves every Linux plugin index predates the final ELF
+edits. The cohesive packaging correction includes the libOpenGL client ABI in
+source/license closure, a separate immutable Linux MPV closure (same compiled
+prefix), complete audited DEB/RPM external dependencies, final index generation,
+and Snap's gpu-2404/mesa-2404 command chain. Real new-package verification remains
+required; no prior-generation installer result is relabeled as passed.
+The new background browser observation c2e9b2954e6c4279b850535d4a09cebf released
+after its exact disposable tab closed; no desktop controls. Spent package fixture
+transaction5903de34f43251a225c79d1f93168820 APPLIED311/173434B, including two
+explicit synthetic link leaves without traversal.
 Compiler-free workflow42506251116 at17e31084 verified the complete original
 Linux artifact SHA256 and recovered all five formats; normal matrix/build jobs
 were SKIPPED. Clean-runner TAR playback reproduces the same unknown Qt option,

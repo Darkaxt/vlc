@@ -108,15 +108,19 @@ def verify_snap_installation(archive, case, verify):
     base = subprocess.run(['snap', 'list', 'core24'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if base.returncode:
         run('sudo', '-n', 'snap', 'install', 'core24')
+    graphics = subprocess.run(['snap', 'list', 'mesa-2404'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if graphics.returncode:
+        run('sudo', '-n', 'snap', 'install', 'mesa-2404')
     installed = False
     try:
         run('sudo', '-n', 'snap', 'install', '--dangerous', archive)
         installed = True
         for plug in ('desktop', 'desktop-legacy', 'x11', 'audio-playback', 'opengl', 'home'):
             run('sudo', '-n', 'snap', 'connect', 'modern-vlc-fork:' + plug)
+        run('sudo', '-n', 'snap', 'connect', 'modern-vlc-fork:gpu-2404', 'mesa-2404:gpu-2404')
         for name, argv in [('connections.txt', ['snap', 'connections', 'modern-vlc-fork']),
                            ('confinement.txt', ['snap', 'debug', 'confinement']),
-                           ('installed.txt', ['snap', 'list', 'modern-vlc-fork', 'core24'])]:
+                           ('installed.txt', ['snap', 'list', 'modern-vlc-fork', 'core24', 'mesa-2404'])]:
             with (case / name).open('w') as stream:
                 run(*argv, stdout=stream)
         if (case / 'confinement.txt').read_text().strip() != 'strict':
@@ -175,6 +179,8 @@ def main():
                 with (case / 'module-registry.txt').open('wb') as stream:
                     subprocess.run([str(launcher or app / 'modern-vlc'), '--list', '--verbose=2'],
                         env=env, stdout=stream, stderr=subprocess.STDOUT, check=True)
+                if 'stale plugins cache' in (case / 'module-registry.txt').read_text(errors='replace'):
+                    raise RuntimeError('Shipped Linux plugin index does not match final module sizes/mtimes: ' + kind)
             stdout, stderr = case / (engine + '-stdout.log'), case / (engine + '-stderr.log')
             with stdout.open('wb') as out, stderr.open('wb') as err:
                 run(launcher or app / 'modern-vlc', '--no-qt-privacy-ask', '--no-metadata-network-access',

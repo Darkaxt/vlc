@@ -228,6 +228,11 @@ def external(dep):
     if MAC:
         return dep.startswith(('/System/', '/usr/lib/'))
     name = Path(dep).name
+    if name.startswith('libOpenGL.so.'):
+        # This vendor-neutral client ABI is required by Qt even on systems
+        # whose graphics provider supplies GL/EGL/GLX but omits this shim.
+        # Keep the actual driver and libGLdispatch external to the payload.
+        return False
     # Never ship the host libc, loader, or graphics driver dispatch. Their ABI
     # and native driver belong to the destination OS, not this application.
     return bool(re.match(r'^(ld-linux|lib(c|m|dl|pthread|rt|resolv|util)\.so|lib(GL|EGL|OpenGL|GLX|GLdispatch|drm|gbm))', name))
@@ -370,8 +375,10 @@ def split_symbols(path, relative, work):
 def mpv_runtime_directory(work):
     # The exact Mac optional-Metal guard is a new immutable runtime cohort.
     # Keep the prior runtime intact for its retained normal app;
-    # Windows and Linux retain their existing, unchanged runtime binding.
-    return work / ('mpv-runtime-cocoa-guard' if MAC else 'mpv-runtime')
+    # Linux now stages its required libOpenGL client ABI as a new immutable
+    # closure. Reuse the same compiled MPV/dependency objects and preserve the
+    # prior runtime for its retained package; never modify it in place.
+    return work / ('mpv-runtime-cocoa-guard' if MAC else 'mpv-runtime-opengl-client')
 
 
 def stage_mpv(work, prefix):
@@ -568,6 +575,25 @@ def package_mac(work, installed, out, version, arch):
         '-format', 'UDZO', out / f'Modern-VLC-Fork-{version}-macos-{arch}.dmg')
 
 
+def linux_host_dependencies(audit):
+    """Declare every unbundled ELF dependency in both native package formats."""
+    packages = {'libGL.so.1': 'libgl1', 'libGLX.so.0': 'libglx0',
+        'libEGL.so.1': 'libegl1', 'libOpenGL.so.0': 'libopengl0',
+        'libGLdispatch.so.0': 'libglvnd0', 'libdrm.so.2': 'libdrm2', 'libgbm.so.1': 'libgbm1'}
+    names = {Path(row['os_dependency']).name for member in audit['members']
+             for row in member['dependencies'] if 'os_dependency' in row}
+    deb = {'libc6 (>= 2.38)', 'libx11-6'}
+    rpm = {'glibc >= 2.38'}
+    for name in names:
+        if re.match(r'^(ld-linux[^/]*|lib(c|m|dl|pthread|rt|resolv|util)\.so(?:\.[0-9]+)*)$', name):
+            continue
+        if name not in packages:
+            raise RuntimeError('Unmapped Linux host dependency: ' + name)
+        deb.add(packages[name])
+        rpm.add(name + '()(64bit)')
+    return {'deb': sorted(deb), 'rpm': sorted(rpm)}
+
+
 def stage_linux_system_payload(app, root):
     """Give installable packages the same player plus real desktop entry points."""
     shutil.copytree(app, root / 'opt/modern-vlc', symlinks=True)
@@ -580,6 +606,35 @@ def stage_linux_system_payload(app, root):
     icon = root / 'usr/share/icons/hicolor/256x256/apps/modern-vlc.png'
     icon.parent.mkdir(parents=True)
     shutil.copy2(app / 'modern-vlc.png', icon)
+
+
+def stage_linux_snap_payload(app, snap, version, architecture):
+    shutil.copytree(app, snap / 'player', symlinks=True)
+    (snap / 'gpu-2404').mkdir()
+    scripts = snap / 'bin'; scripts.mkdir()
+    shutil.copy2(ROOT / 'tools/desktop-player/snap-gpu-runtime.sh', scripts / 'gpu-runtime')
+    (scripts / 'gpu-runtime').chmod(0o755)
+    meta = snap / 'meta'; meta.mkdir()
+    (meta / 'snap.yaml').write_text(f'''name: modern-vlc-fork
+version: '{version}'
+summary: Modern VLC Fork with the Qt redesign
+description: VLC and stock MPV playback using the redesigned Qt interface.
+base: core24
+grade: stable
+confinement: strict
+architectures: [{architecture}]
+plugs:
+  gpu-2404:
+    interface: content
+    content: gpu-2404
+    target: $SNAP/gpu-2404
+    default-provider: mesa-2404
+apps:
+  modern-vlc:
+    command-chain: [bin/gpu-runtime]
+    command: player/modern-vlc
+    plugs: [desktop, desktop-legacy, x11, audio-playback, opengl, gpu-2404, home, network, removable-media]
+''')
 
 
 def package_linux(work, installed, out, version, arch):
@@ -635,6 +690,11 @@ exec "$root/bin/vlc" --intf=qt "$@"
     desktop = '[Desktop Entry]\nType=Application\nName=Modern VLC Fork\nExec=modern-vlc %U\nIcon=modern-vlc\nCategories=AudioVideo;Player;\n'
     (app / 'modern-vlc.desktop').write_text(desktop)
     shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', app / 'modern-vlc.png')
+    # Stripping and patchelf changed the modules after make install's index.
+    # Generate this last, against the final shipped paths/sizes/mtimes.
+    run(app / 'libexec/vlc/vlc-cache-gen', app / 'lib/vlc/plugins', env=dict(os.environ,
+        VLC_LIB_PATH=str(app / 'lib/vlc'), VLC_DATA_PATH=str(app / 'share/vlc'),
+        VLC_LIBEXEC_PATH=str(app / 'libexec/vlc')))
     verify_bundled_mpv(work, app / 'lib/mpv')
     audit_package(app, app / 'bin/vlc', arch, app / 'NATIVE-PACKAGE.json')
     runtime_pins = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
@@ -655,8 +715,9 @@ exec "$root/bin/vlc" --intf=qt "$@"
     shutil.copytree(system_payload, deb, symlinks=True)
     control = deb / 'DEBIAN'; control.mkdir()
     deb_arch = 'arm64' if arch == 'aarch64' else 'amd64'
+    host_dependencies = linux_host_dependencies(json.loads((app / 'NATIVE-PACKAGE.json').read_text()))
     (control / 'control').write_text(f'Package: modern-vlc-fork\nVersion: {version}\nArchitecture: {deb_arch}\n'
-        'Maintainer: Darkaxt\nDepends: libc6 (>= 2.38), libgl1, libegl1, libx11-6\n'
+        'Maintainer: Darkaxt\nDepends: ' + ', '.join(host_dependencies['deb']) + '\n'
         'Description: Modern VLC Fork with the Qt redesign and VLC/MPV engines\n')
     run('dpkg-deb', '--build', '--root-owner-group', deb, out / f'{app.name}.deb')
     rpm_root = staging / 'rpm'
@@ -672,7 +733,7 @@ Summary: Modern VLC Fork Qt redesign with VLC and MPV
 License: GPL-3.0-or-later
 Source0: payload.tar.gz
 AutoReqProv: no
-Requires: glibc >= 2.38, libGL.so.1()(64bit), libEGL.so.1()(64bit)
+Requires: {', '.join(host_dependencies['rpm'])}
 %description
 Modern VLC Fork with the Qt redesign and VLC/MPV engines.
 %prep
@@ -691,21 +752,7 @@ tar -xzf %{{SOURCE0}} -C %{{buildroot}}
     for artifact in (rpm_root / 'RPMS').rglob('*.rpm'):
         shutil.copy2(artifact, out / (app.name + '.rpm'))
     snap = staging / 'snap'; snap.mkdir()
-    shutil.copytree(app, snap / 'player', symlinks=True)
-    meta = snap / 'meta'; meta.mkdir()
-    (meta / 'snap.yaml').write_text(f'''name: modern-vlc-fork
-version: '{version}'
-summary: Modern VLC Fork with the Qt redesign
-description: VLC and stock MPV playback using the redesigned Qt interface.
-base: core24
-grade: stable
-confinement: strict
-architectures: [{deb_arch}]
-apps:
-  modern-vlc:
-    command: player/modern-vlc
-    plugs: [desktop, desktop-legacy, x11, audio-playback, opengl, home, network, removable-media]
-''')
+    stage_linux_snap_payload(app, snap, version, deb_arch)
     run('mksquashfs', snap, out / (app.name + '.snap'), '-noappend', '-comp', 'xz', '-processors', '1', '-root-owned')
     # Additional formats are generated from this same payload, never rebuilt
     # with a smaller plugin graph. Their installation is a later native check.
