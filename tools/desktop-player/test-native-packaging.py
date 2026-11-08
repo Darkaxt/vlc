@@ -219,6 +219,7 @@ class NativePackagingTest(unittest.TestCase):
         os.utime(generated, ns=(1670000000123456700, 1670000000123456700))
         expected_time = generated.stat().st_mtime_ns
         protected = restored / 'Makefile.am'; protected.write_bytes(b'current tracked source')
+        (original / 'Makefile.am').write_bytes(protected.read_bytes())
         tracked = {'Makefile.am'}
         with patch.object(build_module, 'ROOT', original):
             build_module.retain_bootstrap_sources(work, tracked)
@@ -240,18 +241,23 @@ class NativePackagingTest(unittest.TestCase):
         source = work / 'source'; source.mkdir(parents=True)
         for name in ('autotools', 'm4', 'po'):
             (source / name).mkdir()
-        (source / 'Makefile.am').write_bytes(b'new upstream make input')
+        make_input = source / 'Makefile.am'
+        make_input.write_bytes(b'old upstream make input')
         (source / 'configure').write_bytes(b'old generated configure')
         build = work / 'build'; build.mkdir()
         (build / 'config.status').write_bytes(b'existing configured cohort')
         (build / 'retained.o').write_bytes(b'existing compiler object')
         with patch.object(builder, 'ROOT', source):
             builder.retain_bootstrap_sources(work, {'Makefile.am'})
+            make_input.write_bytes(b'new upstream make input')
             with patch.object(builder, 'output', return_value='Makefile.am'), \
                     patch.object(builder, 'run', side_effect=lambda *a, **kw:
                         (source / 'configure').write_bytes(b'new generated configure')) as invoked:
                 builder.prepare_bootstrap_sources(work, build, {},
-                    {'Makefile.am': {'sha256': 'old input hash'}})
+                    # An interrupted pre-bootstrap dependency build has already
+                    # advanced source-times.json. The archive's own input
+                    # binding must still reject its old generated configure.
+                    {'Makefile.am': {'sha256': builder.sha(make_input)}})
                 invoked.assert_called_once()
         self.assertEqual((source / 'configure').read_bytes(), b'new generated configure')
         self.assertEqual((build / 'retained.o').read_bytes(), b'existing compiler object')

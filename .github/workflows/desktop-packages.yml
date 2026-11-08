@@ -95,6 +95,7 @@ jobs:
             .desktop-build/native-link-bindings.json
             .desktop-build/native-reconfiguration.json
             .desktop-build/bootstrap-cache-migration.json
+            .desktop-build/bootstrap-inputs.json
             .desktop-toolchain/**
             .desktop-build/sources/*
             .desktop-build/vlc-build/config.log

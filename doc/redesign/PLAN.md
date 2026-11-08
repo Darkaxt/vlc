@@ -1,6 +1,24 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Normal merge a488ffd10bbd4873ac768be294bb875a97c270b9 is pushed and includes
+the full pinned upstream revision; master and Windows1.1.11 remain unchanged.
+Integrated run42446672952/job128626964842 restored the exact previous toolchain
+cache ending42444922876 and verified AOM3.15.3's upstream SHA512. Its recipe
+selected RelWithDebInfo instead of the required release flags, so that exact run
+was cancelled before VLC compilation. Resume with the same retained cohort and
+an explicit AOM-only Release override (-O3/-g0/NDEBUG), checked against CMakeCache.
+A reproduced interrupted-attempt regression also exposed that source-times.json
+can advance before bootstrap: generated bootstrap archives now bind their own
+input hashes, with the last successful source revision used for legacy recovery.
+The regression fails before the correction and passes afterwards; native build
+and player acceptance remain required.
+The original watch16097 closed1 after cancellation, cache ending42446672952 was
+saved, and artifact13603903564 (241346923 bytes,
+SHA256d57d1ffb9bde7aa561d96831a49b994ff9a1b47bd1d12f5b6e8eebad3345c764)
+was finalized. Hosted post-job cleanup terminated its remaining clang process;
+no VLC/player process had started. Spent upstream-integration diagnostics were
+removed by transaction9a599e7eae9a2e9cb3dbf0c8485faab6 (101 members,23286 bytes).
 Upstream source integration now includes97 commits through
 2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, following verified normal-package
 recovery/reuse in run42444922876/job128621768065. That run restored the original

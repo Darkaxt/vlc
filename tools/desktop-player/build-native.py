@@ -94,6 +94,12 @@ def bind_source_mtimes(work):
     return previous
 
 
+def bootstrap_inputs(tracked):
+    return {path: sha(ROOT / path) for path in sorted(tracked)
+        if path.endswith('Makefile.am') or path.startswith('m4/')
+        or path in ('bootstrap', 'configure.ac') or path.startswith('autotools/')}
+
+
 def retain_bootstrap_sources(work, tracked):
     generated = {'configure', 'aclocal.m4', 'config.h.in', 'po/Makefile.in.in'}
     generated.update(str(Path(path).with_name('Makefile.in')) for path in tracked if path.endswith('Makefile.am'))
@@ -107,13 +113,26 @@ def retain_bootstrap_sources(work, tracked):
                 info.pax_headers['modern-vlc.mtime_ns'] = str(path.stat().st_mtime_ns)
                 with path.open('rb') as stream:
                     archive.addfile(info, stream)
+    # Bind the generated archive itself. source-times.json is refreshed before
+    # dependency builds and may describe a later, interrupted source attempt.
+    (work / 'bootstrap-inputs.json').write_text(json.dumps(bootstrap_inputs(tracked), sort_keys=True) + '\n')
 
 
 def prepare_bootstrap_sources(work, build, env, previous):
     tracked = set(output('git', 'ls-files', '-z', cwd=ROOT).split('\0'))
-    inputs = [path for path in tracked if path.endswith('Makefile.am') or path.startswith('m4/')
-              or path in ('bootstrap', 'configure.ac') or path.startswith('autotools/')]
-    unchanged = all(path in previous and sha(ROOT / path) == previous[path]['sha256'] for path in inputs)
+    inputs = bootstrap_inputs(tracked)
+    input_binding = work / 'bootstrap-inputs.json'
+    if input_binding.exists():
+        unchanged = json.loads(input_binding.read_text()) == inputs
+    elif (work / 'native-build.json').exists():
+        # Legacy archives predate their separate input binding. The last
+        # successful native build is authoritative even when an interrupted
+        # attempt has already refreshed source-times.json.
+        base = json.loads((work / 'native-build.json').read_text())['source_commit']
+        unchanged = not output('git', 'diff', '--name-only', base, 'HEAD', '--',
+            '**/Makefile.am', 'Makefile.am', 'm4', 'bootstrap', 'configure.ac', 'autotools', cwd=ROOT)
+    else:
+        unchanged = all(path in previous and digest == previous[path]['sha256'] for path, digest in inputs.items())
     archive_path = work / 'bootstrap-generated.tar'
     if archive_path.exists() and unchanged:
         with tarfile.open(archive_path) as archive:
@@ -329,7 +348,25 @@ def main():
                 run('sh', ROOT / 'contrib/bootstrap', '--build=' + triplet,
                     '--host=' + triplet, '--prefix=' + str(contrib), '--disable-all',
                     '--enable-aom', cwd=overlay_work, env=env)
-            run('make', '-j1', '.aom', 'TARBALLS=' + str(work / 'sources'), cwd=overlay_work, env=env)
+            # contrib defaults to RelWithDebInfo, whose per-configuration
+            # flags override CFLAGS. Append the release policy after loading
+            # upstream's recipe, preserving all of its architecture options.
+            release_makefile = overlay_work / 'overlay-release.mk'
+            release_rules = ('include Makefile\n'
+                'AOM_CONF += -DCMAKE_BUILD_TYPE=Release '
+                '-DCMAKE_C_FLAGS_RELEASE="-O3 -g0 -DNDEBUG" '
+                '-DCMAKE_CXX_FLAGS_RELEASE="-O3 -g0 -DNDEBUG"\n'
+                '.aom: overlay-release.mk\n')
+            if not release_makefile.exists() or release_makefile.read_text() != release_rules:
+                release_makefile.write_text(release_rules)
+            run('make', '-f', release_makefile.name, '-j1', '.aom',
+                'TARBALLS=' + str(work / 'sources'), cwd=overlay_work, env=env)
+            cache = (overlay_work / 'aom/vlc_build/CMakeCache.txt').read_text()
+            required = ('CMAKE_BUILD_TYPE:STRING=Release',
+                'CMAKE_C_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG',
+                'CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG')
+            if any(line not in cache.splitlines() for line in required):
+                raise RuntimeError('AOM overlay did not retain the required release compiler flags')
             source_archive = work / 'sources' / ('libaom-' + overlay['version'] + '.tar.gz')
             sources.append({'name': 'native-contrib-aom-overlay', 'version': overlay['version'],
                             'upstream_input_commit': overlay['upstream_commit'],
