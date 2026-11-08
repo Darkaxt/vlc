@@ -185,6 +185,55 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 images.verify_release(bad)
 
+    def test_image_patch_isolated_from_parent_git_and_resumes_pristine_source(self):
+        import io
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        images = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(images)
+        root = Path(sys.argv_scratch) / ('image-patch-' + uuid.uuid4().hex)
+        home = root / 'overlay'; source = home / 'library-1'
+        source.mkdir(parents=True)
+        target = source / 'CMakeLists.txt'; target.write_bytes(b'before\n')
+        archive = root / 'source.tar.xz'
+        with tarfile.open(archive, 'w:xz') as output:
+            entry = tarfile.TarInfo('library-1/CMakeLists.txt'); entry.size = 7
+            output.addfile(entry, io.BytesIO(b'before\n'))
+        patch_file = root / 'fix.patch'
+        patch_file.write_text('diff --git a/CMakeLists.txt b/CMakeLists.txt\n'
+            '--- a/CMakeLists.txt\n+++ b/CMakeLists.txt\n@@ -1 +1 @@\n-before\n+after\n', newline='\n')
+        item = {'name': 'zlib', 'patches': {'fix.patch': images.digest(patch_file)}}
+        environment = dict(os.environ, GIT_DIR=str(HERE.parents[1] / '.git'), GIT_WORK_TREE=str(root))
+        # Reproduce Git's successful no-op when source sits below its worktree.
+        subprocess.run(['git', 'apply', '--check', str(patch_file)], cwd=source, env=environment, check=True)
+        subprocess.run(['git', 'apply', str(patch_file)], cwd=source, env=environment, check=True)
+        self.assertEqual(target.read_bytes(), b'before\n')
+        images.prepare_source(archive, home, source, item, root, environment)
+        self.assertEqual(target.read_bytes(), b'after\n')
+        self.assertTrue((home / 'prepared.json').is_file())
+        stamp = target.stat().st_mtime_ns
+        images.prepare_source(archive, home, source, item, root, environment)
+        self.assertEqual(target.stat().st_mtime_ns, stamp)
+        target.write_bytes(b'changed\n')
+        with self.assertRaisesRegex(RuntimeError, 'binding changed'):
+            images.prepare_source(archive, home, source, item, root, environment)
+
+    def test_image_preparation_preserves_modified_interrupted_source(self):
+        import io
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        images = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(images)
+        root = Path(sys.argv_scratch) / ('image-interrupted-' + uuid.uuid4().hex)
+        home = root / 'overlay'; source = home / 'library-1'
+        source.mkdir(parents=True)
+        target = source / 'CMakeLists.txt'; target.write_bytes(b'preserve changed source\n')
+        archive = root / 'source.tar.xz'
+        with tarfile.open(archive, 'w:xz') as output:
+            entry = tarfile.TarInfo('library-1/CMakeLists.txt'); entry.size = 7
+            output.addfile(entry, io.BytesIO(b'before\n'))
+        with self.assertRaisesRegex(RuntimeError, 'pristine'):
+            images.prepare_source(archive, home, source, {'name': 'zlib', 'patches': {}}, root, os.environ.copy())
+        self.assertEqual(target.read_bytes(), b'preserve changed source\n')
+
     def test_image_link_plan_covers_transitive_plugins_and_native_qt(self):
         spec = importlib.util.spec_from_file_location('image_links', HERE.parent / 'windows-player/verify-upstream-codec-links.py')
         links = importlib.util.module_from_spec(spec)

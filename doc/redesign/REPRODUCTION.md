@@ -2,7 +2,8 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
-The normal application generation is9b0439e8a274083af4fe1d291ad897e24fdd35b3.
+The current normal application candidate is9b0439e8a274083af4fe1d291ad897e24fdd35b3;
+do not call it the final common release revision before native recipe acceptance.
 A later test-only Qt focus repair uses handleWindowActivated before Qt6.7 and
 handleFocusWindowChanged afterward, confined to VLC_PLAYER_DIAGNOSTICS. Reuse
 checks compare every normal header byte outside that guard. Linux now follows
@@ -12,6 +13,14 @@ safe normal TAR recovery. SDK/configuration/production changes reject reuse.
 The Linux review condition accepts that verified normal generation and records
 its original source separately from the diagnostic/verifier commit. Only the
 diagnostic Qt objects are rebuilt and their normal bytes/mtimes restored.
+
+Image overlay patches run with Git discovery bounded at their extracted source
+parent and without inherited Git worktree/index bindings. Otherwise git apply
+inside the application checkout can return success while ignoring that patch.
+An interrupted unprepared extraction is resumed only when its complete file set
+and bytes match the already checksum-verified original archive; modified sources
+remain preserved and rejected. Existing completed source/configuration/archive
+bindings and dependency objects are retained. No SDK reset is a recovery step.
 
 For installer/verifier-only Linux repairs, dispatch `desktop-packages.yml` on the
 maintained branch with `target=linux-x86_64` (or `linux-aarch64`),

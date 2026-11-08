@@ -97,6 +97,60 @@ def verify_mac_links(work, build):
     return result
 
 
+def prepare_source(archive, home, source, item, recipe, env):
+    marker = home / 'prepared.json'
+    if marker.exists():
+        prepared = json.loads(marker.read_text())
+        if prepared['identity'] != item or any(digest(source / name) != expected
+                for name, expected in prepared['patched_sources'].items()):
+            raise RuntimeError('Image source preparation binding changed')
+        return
+    if home.exists():
+        # A successful Git no-op left this exact original extraction unprepared.
+        # Resume only a byte-for-byte pristine source, preserving any other work.
+        if set(home.iterdir()) != {source}:
+            raise RuntimeError('Interrupted image preparation is not pristine')
+        expected = {}
+        with tarfile.open(archive) as bundle:
+            for member in bundle:
+                path = Path(member.name)
+                if path.is_absolute() or '..' in path.parts or path.parts[0] != source.name:
+                    raise RuntimeError('Image archive escaped its source directory')
+                target = home / path
+                if member.isfile():
+                    with bundle.extractfile(member) as stream:
+                        expected[target] = hashlib.file_digest(stream, 'sha256').hexdigest()
+                elif not member.isdir():
+                    raise RuntimeError('Interrupted image source is not a pristine regular-file extraction')
+        actual = {path for path in source.rglob('*') if path.is_file() or path.is_symlink()}
+        if actual != set(expected) or any(path.is_symlink() or digest(path) != sha for path, sha in expected.items()):
+            raise RuntimeError('Interrupted image preparation is not pristine')
+    else:
+        home.mkdir()
+        with tarfile.open(archive) as bundle:
+            bundle.extractall(home, filter='data')
+    if not source.is_dir():
+        raise RuntimeError('Image source archive has an unexpected root')
+    # Git otherwise discovers the enclosing application checkout and silently
+    # ignores patches outside that checkout-relative subdirectory.
+    patch_env = dict(env, GIT_CEILING_DIRECTORIES=str(home.resolve()))
+    for name in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR'):
+        patch_env.pop(name, None)
+    patched = {}
+    for patch in item['patches']:
+        filename = recipe / patch
+        if digest(filename) != item['patches'][patch]:
+            raise RuntimeError('Image dependency patch changed after binding')
+        target = source / ('CMakeLists.txt' if item['name'] == 'zlib' else 'scripts/cmake/genout.cmake.in')
+        before = digest(target)
+        subprocess.run(['git', 'apply', '--check', str(filename)], cwd=source, env=patch_env, check=True)
+        subprocess.run(['git', 'apply', str(filename)], cwd=source, env=patch_env, check=True)
+        patched[target.relative_to(source).as_posix()] = digest(target)
+        if patched[target.relative_to(source).as_posix()] == before:
+            raise RuntimeError('Image dependency patch did not change its actual source')
+    marker.write_text(json.dumps({'identity': item, 'patched_sources': patched}, sort_keys=True) + '\n')
+
+
 def build(repo, work, prefix, archives, env, toolchain=None):
     """Native macOS or the existing MinGW cross toolchain; one compiler job."""
     work.mkdir(parents=True, exist_ok=True)
@@ -118,30 +172,7 @@ def build(repo, work, prefix, archives, env, toolchain=None):
             raise RuntimeError('Retained image dependency source changed')
         home = work / (item['name'] + '-' + item['version'])
         source = home / item['archive'].removesuffix('.tar.xz')
-        marker = home / 'prepared.json'
-        if not marker.exists():
-            if home.exists():
-                raise RuntimeError('Inspect interrupted image-source preparation: ' + str(home))
-            home.mkdir()
-            with tarfile.open(archive) as bundle:
-                bundle.extractall(home, filter='data')
-            if not source.is_dir():
-                raise RuntimeError('Image source archive has an unexpected root')
-            patched = {}
-            for patch in item['patches']:
-                filename = repo / 'contrib/src' / item['name'] / patch
-                target = source / ('CMakeLists.txt' if item['name'] == 'zlib' else 'scripts/cmake/genout.cmake.in')
-                before = digest(target)
-                subprocess.run(['git', 'apply', '--check', str(filename)], cwd=source, check=True)
-                subprocess.run(['git', 'apply', str(filename)], cwd=source, check=True)
-                patched[target.relative_to(source).as_posix()] = digest(target)
-                if patched[target.relative_to(source).as_posix()] == before:
-                    raise RuntimeError('Image dependency patch did not change its actual source')
-            marker.write_text(json.dumps({'identity': item, 'patched_sources': patched}, sort_keys=True) + '\n')
-        prepared = json.loads(marker.read_text())
-        if prepared['identity'] != item or any(digest(source / name) != expected
-                for name, expected in prepared['patched_sources'].items()):
-            raise RuntimeError('Image source preparation binding changed')
+        prepare_source(archive, home, source, item, repo / 'contrib/src' / item['name'], env)
         directory = home / 'build'
         flags = ['-DCMAKE_BUILD_TYPE=Release', '-DBUILD_SHARED_LIBS=OFF',
             '-DCMAKE_C_FLAGS_RELEASE=-O3 -g0 -DNDEBUG -D_FILE_OFFSET_BITS=64',

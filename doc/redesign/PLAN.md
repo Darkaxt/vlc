@@ -1,7 +1,23 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
-Current normal application source is frozen at9b0439e8a274083af4fe1d291ad897e24fdd35b3.
+Current normal application candidate is9b0439e8a274083af4fe1d291ad897e24fdd35b3;
+the final common delivery revision awaits the native recipe corrections below.
+Mac ARM42515010621 fails before player compilation at the new image overlay:
+git apply discovers the enclosing checkout, returns success and skips the
+checkout-relative patch. A real Git regression reproduces that no-op. Isolate
+patch discovery to the exact extracted source; resume the original unprepared
+tree only after every file matches the pinned source archive, preserving modified
+trees. Four focused source/link/release-policy checks pass; actual Mac resumption
+and complete native package/player acceptance remain required. Its original
+artifact13630974760 is231842690B,
+SHA2565323d5fb8cb0fe6a77a4a2e2c50ac705f9a47a8cb49dfddb07a6bcad51522520.
+Linux retained-package review42515871526 at verifier9327e616 is active; its
+normal player is still9b, with no full normal rebuild for the Qt test repair.
+Current Windows NSIS324/5498c57e3e9e430995c210e50effb690 closed0/436.78s,
+empty group/no OOM; installer d78045efb954e947c3ac4566ebd34d9100f0df99d636e507b59a33220fb50519
+is in owned guest lifecycle verification. The original guest b14112e3-ac10-4283-
+91f1-2e72c8e6bc29 was reconnected after client stdin loss; no guest was duplicated.
 Windows run101/gate323576d4fa418fe47a097fd8bc122d4e538 closed0/116.56s,
 configuration unchanged,417 stripped PE/symbol mappings verified, no OOM,
 empty Linux group and released private mounts. Actual portable ZIP extraction,
@@ -16,7 +32,7 @@ that guarded instrumentation and reuse hash-verified normal Linux TAR/source,
 restoring normal objects after review. No normal player rebuild is needed for
 this verifier-only repair. Artifact13630458436 is2088561756B,
 SHA2568bac099c8d66338e0fb0d7dc6c5b18ea6088b2688c1f4e0a3abf7d53bd1f5927.
-Mac ARM42515010621 is active at the same9b application source; Intel/Linux ARM,
+Mac ARM native recipe recovery, Intel/Linux ARM,
 Linux full UI acceptance and current installed Windows picture remain required.
 M16 remains NOT STARTED;1.1.12 is not published. No tracked deferrals.
 
