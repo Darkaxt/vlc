@@ -98,9 +98,14 @@ The successful d8 MacARM picture proof predates the optional-Metal source guard;
 final delivery must requalify its new runtime cohort at the selected final revision.
 Only one pending hosted workflow may be submitted; retain each original identity
 through cache/artifact/cleanup completion.
-Intel continuation42478095674/job128723887781 (watch91262) is active at
-934f87f420a57a85912077f827e9128684aed21a; Linux42478117547 is its single pending
-continuation at the same revision. No final release has been published.
+Intel continuation42478095674/job128723887781 (watch91262) closed1 after native
+compilation: installed libb2 0.98.1 predates SPDX SBOMs. Artifact13619464601 is
+434815502 bytes, SHA256676a2329467c53a813899c0fdbbfe429dc6792093aec3a505079090f79eef89b.
+Its original hash-bound recipe and receipt were retrieved and inspected. Collect
+that installed recipe's sources/patches through Homebrew's DSL, with exact version
+and archive checksum checks; preserve native objects and the original failure.
+Linux42478117547/job128751273053 is now active at934f87f420a57a85912077f827e9128684aed21a
+(watch45890). No final release has been published.
 Windows supplementary formats: the installed7z executable is available at
 C:/Users/darka/scoop/shims/7z.exe. The maintained package helper can produce7z
 from exactly the same stripped, empty-profile portable tree, with one compressor

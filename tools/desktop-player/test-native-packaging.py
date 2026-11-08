@@ -452,6 +452,37 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual(result[0]['git_revision'], 'd' * 40)
         self.assertNotIn('sha256', result[0])
 
+    def test_legacy_brew_sources_bind_original_recipe_version_and_patches(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        target = Path('/retained/libb2/0.98.1')
+        metadata = {'formula': 'libb2', 'version': '0.98.1', 'packages': [
+            {'SPDXID': 'SPDXRef-Archive-libb2-src', 'downloadLocation': 'https://example.org/source.tar.gz',
+             'checksums': [{'algorithm': 'SHA256', 'checksumValue': 'a' * 64}]},
+            {'SPDXID': 'SPDXRef-Patch-libb2-0', 'downloadLocation': 'https://example.org/fix.patch',
+             'checksums': [{'algorithm': 'SHA256', 'checksumValue': 'b' * 64}]}]}
+        def read(path, *args, **kwargs):
+            if path.name == 'INSTALL_RECEIPT.json':
+                return json.dumps({'source': {'spec': 'stable'}})
+            return 'Original hash-bound installed Ruby recipe'
+        with patch.object(Path, 'is_file', return_value=False), patch.object(Path, 'read_text', read), \
+                patch.object(Path, 'write_text') as write, patch.object(sources, 'output', return_value=json.dumps(metadata)) as query:
+            self.assertEqual([row['sha256'] for row in sources.installed_brew_sources(target, 'libb2', '0.98.1')],
+                             ['a' * 64, 'b' * 64])
+            self.assertEqual(query.call_args.args, ('brew', 'ruby', HERE / 'read-installed-brew-sources.rb',
+                                                   target / 'libb2.rb', '0.98.1'))
+            write.assert_called_once()
+            metadata['version'] = 'newer'
+            query.return_value = json.dumps(metadata)
+            with self.assertRaisesRegex(RuntimeError, 'identity differs'):
+                sources.installed_brew_sources(target, 'libb2', '0.98.1')
+        with patch.object(Path, 'is_file', return_value=True), \
+                patch.object(Path, 'read_text', return_value='{}'), patch.object(sources, 'output') as query:
+            with self.assertRaises(KeyError):
+                sources.installed_brew_sources(target, 'libb2', '0.98.1')
+            query.assert_not_called()  # A broken present SBOM must never be ignored.
+
     def test_source_notice_extraction_is_safe_and_resumable(self):
         spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
         sources = importlib.util.module_from_spec(spec)

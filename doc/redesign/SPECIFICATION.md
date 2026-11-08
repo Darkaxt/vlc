@@ -176,6 +176,11 @@ The integrated Windows observer must subscribe to the native MPV events whose
 properties it reads, including idle-active after Stop. Controller STOPPED alone
 can precede that native event; preserve the failed observation and prove the
 corrected full stop/idle-switch/restart workflow without polling or deadlines.
+For installed Homebrew bottles that predate SPDX SBOMs, collect original sources
+and external patches from the retained, hash-bound keg recipe using Homebrew's
+native DSL and require its exact installed package version. Preserve its receipt,
+recipe and extracted source metadata. A present invalid SBOM still fails; do not
+substitute a current formula, omit patches or accept unverified source archives.
 
 **7 November stabilization logging, R110 (M14), already authorized:**
 
