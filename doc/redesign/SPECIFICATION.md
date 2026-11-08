@@ -69,6 +69,20 @@ load every redesigned library dialog, using compatible geometry for the same
 rounded header. Actual composed video pixels remain required independently of
 decoder/context readiness. A failed first-profile media library must be diagnosed
 and recovered without weakening profile isolation or hiding the initialization error.
+The native continuation cache must preserve compiler/dependency objects and
+configuration across all four architectures. The553 Linux cache was restored at
+7.48GB and saved, but only Intel's4.85GB cache remains; the next Linux job starts
+bootstrap/configure and recompiles unrelated plugins. Avoid retaining duplicate
+release/source archives and Linux package staging in the continuation cache.
+After their verified artifact upload and all native consumers exit, move those
+generated copies to the owned runner scratch while retaining the exact normal
+ZIP/TAR and installable formats, status/source index, full SDK,
+source/configuration bindings and objects.
+Test-only runtime reuse may verify that retained runtime archive independently;
+it must distinguish that proof from source/symbol assets retained in the original
+artifact. Preserve cache-path identity and existing warm cohorts during this
+migration. Measure the resulting retained cache and actual next restoration;
+do not raise a paid storage limit or label a cache miss an incremental build.
 Verify each installable format in an isolated matching environment where its
 platform permits it. Keep source/license obligations and matching optional
 symbols separate from release binaries. A successful compile or archive alone

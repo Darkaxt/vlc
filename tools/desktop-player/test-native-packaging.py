@@ -24,6 +24,119 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_native_cache_retains_objects_and_runtime_without_package_duplicates(self):
+        spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
+        cache = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cache)
+        for archive_name in ('Modern-VLC-Fork-1.1.12-macos-arm64.zip',
+                             'Modern-VLC-Fork-1.1.12-linux-x86_64.tar.xz'):
+            root = Path(sys.argv_scratch) / ('cache-selection-' + uuid.uuid4().hex)
+            work = root / '.desktop-build'; work.mkdir(parents=True)
+            generation = 'a' * 40
+            output = work / 'packages' / generation; output.mkdir(parents=True)
+            for relative in ('vlc-build/object.o', 'vlc-build/config.status',
+                             'deps/lib/libmpv', 'deps-src/mpv/source.c', 'sources/mpv.tar.gz'):
+                path = work / relative; path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(relative.encode())
+            protected = {path.relative_to(work).as_posix(): (path.read_bytes(), path.stat().st_mtime_ns)
+                         for path in work.rglob('*') if path.is_file()}
+            formats = ([archive_name, archive_name.removesuffix('.zip') + '.dmg'] if archive_name.endswith('.zip')
+                       else [archive_name, *(archive_name.removesuffix('.tar.xz') + '.' + suffix
+                                            for suffix in ('AppImage', 'deb', 'rpm', 'snap'))])
+            names = (*formats, 'NATIVE-SOURCE-ASSETS.json', 'source-part.zip', 'symbols.zip', 'extra.dmg')
+            for name in names:
+                (output / name).write_bytes(name.encode())
+            (output / 'expanded-app').mkdir()
+            (output / 'expanded-app/player').write_bytes(b'expanded runtime duplicate')
+            status = {'source_commit': generation, 'assets': [
+                {'name': name, 'sha256': package.sha(output / name)} for name in names]}
+            (output / 'PACKAGE-STATUS.json').write_text(json.dumps(status))
+            (work / 'package-output.json').write_text(json.dumps({
+                'source_commit': generation, 'directory': str(output.resolve())}))
+            for name in ('linux-package-staging', 'corresponding-contrib'):
+                (work / name).mkdir(); (work / name / 'copy').write_bytes(b'uploaded generated copy')
+            destination = root / 'runner-temp/retired'; destination.parent.mkdir()
+            result = cache.compact(work, destination)
+            self.assertEqual({path.name for path in output.iterdir()},
+                             {*formats, 'NATIVE-SOURCE-ASSETS.json', 'PACKAGE-STATUS.json'})
+            for relative, (content, modified) in protected.items():
+                self.assertEqual((work / relative).read_bytes(), content)
+                self.assertEqual((work / relative).stat().st_mtime_ns, modified)
+            self.assertEqual((destination / 'packages' / generation / 'source-part.zip').read_bytes(), b'source-part.zip')
+            self.assertTrue((destination / 'packages' / generation / 'expanded-app/player').is_file())
+            self.assertTrue((destination / 'linux-package-staging/copy').is_file())
+            self.assertGreater(result['before_bytes'], result['after_bytes'])
+            self.assertEqual(result['retained_runtime_archive'], archive_name)
+
+    def test_native_cache_rejects_changed_package_before_moving_anything(self):
+        spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
+        cache = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cache)
+        root = Path(sys.argv_scratch) / ('cache-reject-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'; output = work / 'packages' / ('b' * 40)
+        output.mkdir(parents=True)
+        (output / 'normal.zip').write_bytes(b'changed runtime')
+        (output / 'PACKAGE-STATUS.json').write_text(json.dumps({'source_commit': 'b' * 40,
+            'assets': [{'name': 'normal.zip', 'sha256': '0' * 64}]}))
+        (work / 'package-output.json').write_text(json.dumps({
+            'source_commit': 'b' * 40, 'directory': str(output.resolve())}))
+        with self.assertRaisesRegex(RuntimeError, 'changed'):
+            cache.compact(work, root / 'runner-temp')
+        self.assertTrue((output / 'normal.zip').is_file())
+        self.assertFalse((root / 'runner-temp').exists())
+
+    def test_compacted_mac_reuse_requires_both_normal_formats_and_source_index(self):
+        spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reuse)
+        root = Path(sys.argv_scratch) / ('compacted-reuse-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'; work.mkdir(parents=True)
+        generation = 'a' * 40
+        directory = work / 'packages' / generation; directory.mkdir(parents=True)
+        for name in ('bootstrap-generated.tar', 'source-times.json', 'toolchain-binding.json'):
+            (work / name).write_text('{}')
+        (root / '.desktop-toolchain').mkdir()
+        (root / '.desktop-toolchain/binding.json').write_text('{}')
+        (work / 'native-build.json').write_text(json.dumps({'source_commit':generation, 'architecture':'arm64'}))
+        (work / 'package-output.json').write_text(json.dumps({'source_commit':generation, 'directory':str(directory.resolve())}))
+        formats = ('Modern-VLC-Fork-1.1.12-macos-arm64.zip', 'Modern-VLC-Fork-1.1.12-macos-arm64.dmg', 'NATIVE-SOURCE-ASSETS.json')
+        for name in formats:
+            (directory / name).write_bytes(name.encode())
+        archived = 'Modern-VLC-Fork-1.1.12-darwin-arm64-corresponding-source-01.zip'
+        (directory / 'PACKAGE-STATUS.json').write_text(json.dumps({'source_commit':generation,
+            'assets':[{'name':name, 'sha256':package.sha(directory / name)} for name in formats]
+                      + [{'name':archived, 'sha256':'0' * 64}]}))
+        for relative in ('tools/desktop-player/install-ci-dependencies.sh', '.github/workflows/desktop-packages.yml'):
+            target = root / relative; target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((HERE.parents[1] / relative).read_bytes())
+        def git(argv, **kwargs):
+            if argv[:2] == ['git', 'diff']:
+                return ''
+            if argv[:2] == ['git', 'show']:
+                return (root / argv[2].split(':', 1)[1]).read_text()
+            raise AssertionError(argv)
+        builder = SimpleNamespace(sha=package.sha, bind_source_mtimes=lambda _: {},
+            prepare_bootstrap_sources=lambda *args: None, output=lambda *args, **kwargs: 'b' * 40)
+        loader = SimpleNamespace(loader=SimpleNamespace(exec_module=lambda _: None))
+        with patch.object(reuse, 'ROOT', root), patch.object(reuse.platform, 'system', return_value='Darwin'), \
+                patch.object(reuse.platform, 'machine', return_value='arm64'), \
+                patch.object(reuse.subprocess, 'check_output', side_effect=git), \
+                patch.object(reuse.importlib.util, 'spec_from_file_location', return_value=loader), \
+                patch.object(reuse.importlib.util, 'module_from_spec', return_value=builder), \
+                patch.object(reuse, 'recover_signed_app', return_value=root / 'recovered.app'), \
+                patch.dict(os.environ, {'RUNNER_TEMP': str(root)}):
+            result = reuse.reusable(work)
+            self.assertEqual(set(result['verified_retained_assets']), set(formats))
+            self.assertEqual(result['other_assets_in_original_artifact_not_reverified'], [archived])
+            dmg = directory / formats[1]
+            dmg.rename(directory / 'missing-dmg')
+            with self.assertRaisesRegex(RuntimeError, 'changed'):
+                reuse.reusable(work)
+            (directory / 'missing-dmg').rename(dmg)
+            (directory / 'NATIVE-SOURCE-ASSETS.json').write_bytes(b'changed index')
+            with self.assertRaisesRegex(RuntimeError, 'changed'):
+                reuse.reusable(work)
+
     def test_linux_gl_client_closure_preserves_the_prior_runtime(self):
         work = Path(sys.argv_scratch) / ('linux-gl-client-' + uuid.uuid4().hex)
         prefix = work / 'deps/lib'; prefix.mkdir(parents=True)

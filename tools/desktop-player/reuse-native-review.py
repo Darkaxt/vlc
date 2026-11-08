@@ -166,16 +166,38 @@ def reusable(work):
     if not (directory / 'PACKAGE-STATUS.json').is_file():
         return None
     status = json.loads((directory / 'PACKAGE-STATUS.json').read_text())
-    if status['source_commit'] != base or (mac and not (directory / 'Modern VLC.app').is_dir()):
+    if status['source_commit'] != base:
         raise RuntimeError('Retained normal package generation is incomplete')
     spec = importlib.util.spec_from_file_location('native_build', Path(__file__).with_name('build-native.py'))
     builder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(builder)
-    # Verify every generated archive/receipt before using its original app.
+    # The full source/symbol/installer copies were uploaded before cache
+    # compaction. Test-only reuse needs the exact retained runtime and source
+    # index; it does not claim to reverify the other uploaded assets.
+    runtime_assets = [row['name'] for row in status['assets'] if
+        (row['name'].endswith('.zip') if mac else row['name'].endswith('.tar.xz'))
+        and '-symbols' not in row['name'] and '-corresponding-source-' not in row['name']]
+    if len(runtime_assets) != 1:
+        raise RuntimeError('Retained normal runtime archive is ambiguous')
+    required_assets = {runtime_assets[0], 'NATIVE-SOURCE-ASSETS.json'}
+    if mac:
+        required_assets.add(runtime_assets[0].removesuffix('.zip') + '.dmg')
+    else:
+        stem = runtime_assets[0].removesuffix('.tar.xz')
+        required_assets.update(stem + '.' + suffix for suffix in ('AppImage', 'deb', 'rpm', 'snap'))
+    verified_assets, archived_assets = [], []
     for row in status['assets']:
         path = directory / row['name']
-        if path.parent != directory or builder.sha(path) != row['sha256']:
+        if path.parent != directory or path.is_symlink():
+            raise RuntimeError('Retained package member was redirected: ' + row['name'])
+        if not path.exists() and row['name'] not in required_assets:
+            archived_assets.append(row['name'])
+            continue
+        if not path.is_file() or builder.sha(path) != row['sha256']:
             raise RuntimeError('Retained package member changed: ' + row['name'])
+        verified_assets.append(row['name'])
+    if not required_assets <= set(verified_assets):
+        raise RuntimeError('Retained runtime or source index is incomplete')
     recovery = Path(os.environ['RUNNER_TEMP']) / 'native-normal-recovered'
     app = recover_signed_app(directory, recovery) if mac else recover_linux_app(directory, recovery)
     previous = builder.bind_source_mtimes(work)
@@ -184,6 +206,8 @@ def reusable(work):
             'diagnostic_source_commit': builder.output('git', 'rev-parse', 'HEAD', cwd=ROOT),
             'changed_test_only_paths': changed, 'normal_package_directory': str(directory),
             'normal_application': str(app),
+            'verified_retained_assets': verified_assets,
+            'other_assets_in_original_artifact_not_reverified': archived_assets,
             'normal_archive_hashes_verified': True,
             'normal_archive_hashes_and_signature_verified': mac}
 

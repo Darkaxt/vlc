@@ -21,15 +21,19 @@ on:
         description: Collect normal Linux startup thread stacks from the recovered artifact; not acceptance
         type: boolean
         default: false
+      cache_compaction:
+        description: Optional exact existing cache/artifact/source JSON for compiler-free retention migration
+        type: string
+        default: ''
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: desktop-packages-${{ github.ref }}
+  group: ${{ inputs.cache_compaction != '' && format('desktop-cache-{0}-{1}', github.ref, inputs.target) || format('desktop-packages-{0}', github.ref) }}
   cancel-in-progress: false
 jobs:
   matrix:
-    if: ${{ inputs.package_artifact == '' }}
+    if: ${{ inputs.package_artifact == '' && inputs.cache_compaction == '' }}
     runs-on: ubuntu-24.04
     outputs:
       targets: ${{ steps.select.outputs.targets }}
@@ -91,13 +95,8 @@ jobs:
       - name: Exercise the actual Linux player on its owned display
         if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
-      - name: Retain original native build for repair and resumption
-        if: always()
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
-        with:
-          path: .desktop-build
-          key: ${{ steps.cache.outputs.cache-primary-key }}
       - name: Preserve package and failure evidence
+        id: native_artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -145,6 +144,43 @@ jobs:
             ${{ runner.temp }}/native-package-checks/*-installed/*txt
             ${{ runner.temp }}/native-package-checks/*-installed/container.log
             ${{ runner.temp }}/native-command-cancellation.json
+      - name: Separate uploaded package copies from compiler continuation
+        if: ${{ always() && steps.native_artifacts.outcome == 'success' }}
+        run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --uploaded-artifact "${{ steps.native_artifacts.outputs.artifact-id }}" --normal-source "${{ steps.review_reuse.outputs.normal_generation || github.sha }}"
+      - name: Retain original native build for repair and resumption
+        if: always()
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .desktop-build
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+  cache-compaction:
+    if: ${{ inputs.cache_compaction != '' }}
+    runs-on: ${{ inputs.target == 'macos-intel' && 'macos-15-intel' || inputs.target == 'macos-arm64' && 'macos-15' || inputs.target == 'linux-aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CACHE_COMPACTION: ${{ inputs.cache_compaction }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify the exact retained cache and original uploaded artifact
+        id: binding
+        run: python3 tools/desktop-player/compact-native-cache.py --prepare-request "$CACHE_COMPACTION" --target "${{ inputs.target }}"
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .desktop-build
+          key: ${{ steps.binding.outputs.key }}
+          fail-on-cache-miss: true
+      - name: Compact only uploaded copies; preserve original compiler continuation
+        run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --uploaded-artifact "${{ steps.binding.outputs.artifact }}" --normal-source "${{ steps.binding.outputs.source }}"
+      - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .desktop-build
+          key: ${{ steps.binding.outputs.key }}-compact-${{ github.run_id }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-cache-retention-${{ inputs.target }}-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: .desktop-build/native-cache-retention.json
   package-checks:
     if: ${{ inputs.package_artifact != '' }}
     runs-on: ${{ inputs.target == 'linux-aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}

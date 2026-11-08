@@ -1,9 +1,13 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
-Current553 qualification fixes the normal Linux startup/EOF deadlock and Mac ARM
-passes normal ZIP/DMG plus full native workflow. Original42525634221 continues
-its Intel build; preserve that identity. Both Linux architectures fail the fuller
+Current553 qualification fixes the normal Linux startup/EOF deadlock. Both Mac
+architectures pass normal VLC ZIP/DMG checks and full native workflows. Their
+actual VLC/MPV main, floating and restored pictures were separately inspected:
+full-size color patterns and selected subtitles render correctly. Original
+42525634221 is closed (Intel success; overall failure from Linux). Corrected
+Linux x86 run42529791764 at32a9544c is running under its original identity.
+Both original Linux architectures fail the fuller
 UI check because AccessibleCompat discards its assigned ID before Qt6.8; the
 visible Subtitles button cannot be addressed. Retain the compatibility property
 and change notification while preserving the newer native Accessible.id bridge.
@@ -22,6 +26,19 @@ closed0 with417 PE/symbol mappings,409 plugins, empty group and released mounts.
 No recompilation was used to repair that check. The old installer guest is absent,
 gate idle, and its stale connection launcher is retired;0x80070002 did not indicate
 a missing player. M15 stays ACTIVE, M16 NOT STARTED,1.1.12 unpublished.
+
+Native cache retention repair (same R113 acceptance): previous Linux cache
+restore was7,479,321,665 bytes; all553 caches were saved, but the current cache
+inventory contains only Intel's4,846,167,616 bytes. The32 Linux run performs
+bootstrap/configure and a full plugin rebuild. The account's paid cache-limit
+endpoint returns402; no limit/payment setting is changed. Move uploaded
+source/symbol/expanded-runtime and Linux packaging duplicates to owned runner
+scratch after the artifact upload, preserving all SDK/compiler objects, mtimes,
+configuration and normal ZIP/DMG/TAR/AppImage/DEB/RPM/Snap archives. Keep the
+existing cache path/version so migration can reuse current objects. Focused
+retention/tamper/compacted-runtime tests pass. The bounded compiler-free cache
+migration and subsequent actual restoration/size measurement remain unverified.
+Do not call this pipeline repair accepted until those native receipts pass.
 
 Earlier553 implementation checkpoint:
 Normal Mac ZIP/DMG checks at553 cover VLC only; instrumented MPV workflow and
