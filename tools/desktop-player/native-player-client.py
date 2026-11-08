@@ -80,6 +80,8 @@ class NativePlayerClient:
     def request(self, operation, **fields):
         request_id = uuid.uuid4().hex
         command = dict(id=request_id, token=self.token, op=operation, **fields)
+        print('NATIVE REQUEST', request_id, operation,
+              fields.get('await_core', fields.get('await_property', '')), flush=True)
         pending = self.directory / ('pending-' + request_id + '.json')
         pending.write_text(json.dumps(command) + '\n')
         pending.replace(self.directory / ('request-' + request_id + '.json'))

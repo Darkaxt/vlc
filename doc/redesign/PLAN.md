@@ -119,6 +119,16 @@ synthetic upstream-profile preservation. These runtime criteria remain pending.
 Watch52016 closed1 after cache ending42436046775 and artifact13599688685
 (SHA256829a992f886b46b76348459c0b0d094c1a6712cd7cb289d660030eb5c9fbc597)
 were retained. M15 remains ACTIVE; no release is qualified by the package pass.
+Run42437395669/job128599121258 (29747937d77d9cecbdc6a7196bb4ad9d40247768)
+passed normal packages and review-plugin linking/signing, then the first actual
+launch exited1 before UI initialization: stderr reports unknown --language=en.
+The test launcher now uses the native locale environment and omits Windows/DBus
+one-instance and disabled UPDATE_CHECK options instead of passing unavailable
+switches. Request progress and failure stderr are printed for direct diagnosis.
+Watch15558 closed1; cache ending42437395669 and artifact13599813927
+(SHA25649599a23c26b2bafe028cafedea8ef957d66e11ba9a2348703b931c89681ac5f)
+preserve recovery. Normal-object restoration passed. Actual native Qt/playback
+acceptance remains unsatisfied; this launcher correction is not a playback fix.
 Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
 retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below

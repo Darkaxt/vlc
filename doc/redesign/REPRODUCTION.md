@@ -126,6 +126,16 @@ preserved. The next native review includes same-profile engine restart and
 synthetic original VLC profile preservation. These prepared checks and package
 success do not establish actual native playback or complete M15 acceptance.
 
+Continuation42437395669/job128599121258 from29747937d77d9cecbdc6a7196bb4ad9d40247768
+passed normal packaging and the complete review-plugin build/signature check.
+The actual player then exited1 with `Unknown option --language=en`. Darwin's
+launcher uses locale environment/preferences; one-instance is registered only
+with Windows/DBus and qt-updates-notif only with UPDATE_CHECK. The native test
+launcher omits all three unsupported switches, sets its owned locale explicitly,
+and prints request progress/failure stderr while retaining the complete logs.
+Watch15558 closed1 after cache ending42437395669/artifact13599813927 were saved;
+normal-restored.json verifies the complete normal object set was restored.
+
 ## Current1.1.11 stabilization diagnostics
 
 Normal [1.1.11](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11)

@@ -73,10 +73,14 @@ def check_engine(executable, root, fixture, engine):
     env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
         XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
         VLC_PLAYER_DIAGNOSTICS_DIR=str(evidence), VLC_PLAYER_DIAGNOSTICS_TOKEN=token,
-        VLC_NATIVE_CI_CAPTURE='1', QT_FORCE_STDERR_LOGGING='1',
+        VLC_NATIVE_CI_CAPTURE='1', QT_FORCE_STDERR_LOGGING='1', LANG='C', LC_ALL='C',
         QML_DISK_CACHE_PATH=str(case / 'qml-cache'))
-    argv = [str(executable), '--intf=qt', '--language=en', '--no-one-instance',
-        '--no-qt-privacy-ask', '--no-qt-updates-notif', '--no-metadata-network-access',
+    # Darwin selects language through its environment/preferences, not VLC's
+    # Windows --language option. one-instance and qt-updates-notif are likewise
+    # conditional on DBus/Windows and UPDATE_CHECK; the isolated profile retains
+    # their disabled defaults without passing options absent from this build.
+    argv = [str(executable), '--intf=qt',
+        '--no-qt-privacy-ask', '--no-metadata-network-access',
         '--restore-playback-pos=0', '--no-video-title-show', '--start-paused',
         '--qt-playback-engine=' + engine, '--verbose=2', str(fixture)]
     (evidence / 'launch.json').write_text(json.dumps({'argv': argv, 'platform': platform.platform(),
@@ -87,6 +91,7 @@ def check_engine(executable, root, fixture, engine):
         inspect_result(result)
         records.append({'label': label, 'response_id': result['id']})
         (evidence / 'workflow.json').write_text(json.dumps(records, indent=2) + '\n')
+        print(f'NATIVE {engine}: {label}', flush=True)
         return result
 
     with (evidence / 'stdout.log').open('wb') as stdout, (evidence / 'stderr.log').open('wb') as stderr:
@@ -167,6 +172,7 @@ def check_engine(executable, root, fixture, engine):
             client.close()
             (evidence / 'exit.json').write_text(json.dumps({'exit_code': exit_code}) + '\n')
             if exit_code:
+                print((evidence / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)
                 raise RuntimeError('Owned native player exited with ' + str(exit_code))
     # The live handover above saved the other engine. Reopen the same profile
     # without a command-line engine override to verify actual persistence.
@@ -187,6 +193,7 @@ def check_engine(executable, root, fixture, engine):
             exit_code = player.wait()
             client.close()
             if exit_code:
+                print((reopen / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)
                 raise RuntimeError('Reopened native player exited with ' + str(exit_code))
     after_upstream = profile_hashes(home, upstream_roots)
     (evidence / 'upstream-profile-preservation.json').write_text(json.dumps({
