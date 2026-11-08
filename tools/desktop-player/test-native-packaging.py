@@ -22,6 +22,26 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_framework_source_coalesces_meta_formula_aliases_but_rejects_distinct_sources(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        framework = Path('QtVirtualKeyboardQml.framework')
+        installed = [{'keg': '/opt/homebrew/Cellar/qt/6.12.0'},
+                     {'keg': '/opt/homebrew/Cellar/qtvirtualkeyboard/6.12.0_1'}]
+        candidates = [Path(row['keg']) / 'lib' / framework / 'Versions/A' / framework.stem
+                      for row in installed]
+        aliases = dict.fromkeys(candidates, candidates[1])
+        with patch.object(Path, 'is_file', lambda path: path in aliases), \
+                patch.object(Path, 'resolve', lambda path, strict=False: aliases[path]):
+            self.assertEqual(sources.framework_source(framework, installed), candidates[1])
+            aliases[candidates[0]] = candidates[0]
+            with self.assertRaisesRegex(RuntimeError, 'no unique installed source'):
+                sources.framework_source(framework, installed)
+            aliases.clear()
+            with self.assertRaisesRegex(RuntimeError, 'no unique installed source'):
+                sources.framework_source(framework, installed)
+
     def test_installed_source_graph_uses_original_resources_and_rejects_unpinned_git(self):
         spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
         sources = importlib.util.module_from_spec(spec)

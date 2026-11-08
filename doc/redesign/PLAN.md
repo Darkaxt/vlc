@@ -1,6 +1,29 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42452935265/job128645862846 from4fd004ec32b resumed cache ending42451628822
+(4844634063 bytes). Changed normal Qt sources compiled/linked, the input-clock
+test and real cancellation probe passed. Source assembly stopped before its
+first download because the qt meta-formula's compatibility symlinks duplicated
+QtVirtualKeyboardQml.framework's physical module source. The retained installed
+qt.rb confirms those aliases. Source discovery now deduplicates resolved paths
+while rejecting missing or genuinely distinct sources. Native acceptance did not
+run. Original watch21339 closed1 after cache ending42452935265 (5036496647
+bytes), artifact13606917198 (414883536 bytes, SHA256
+5ab248b2c1d5e390782c1b45c11fef036b74e35e5a945648d6d8a89bf314e2fd)
+and hosted cleanup. Resume this cohort incrementally; do not discard its objects.
+AppImage source closure is now bound to the actual pinned runtime and original
+build39320578745 on both architectures. Independent retrieval verified the
+seven component archives, Alpine recipes/patches and notices, including their
+original SHA512 checksums. The receipt is
+[native-appimage-source-closure-20261108.json](resources/native-appimage-source-closure-20261108.json).
+The Linux packager collects that graph before generating formats; native Linux
+format/runtime and full corresponding-source asset acceptance remain required.
+The spent Git-only source-fetch clone was retired by transaction
+899cdc083741e4740ebde570efb8b5df (98 members,65235 bytes, no residuals).
+The remaining spent retrieval/test scratch was retired by transaction
+e6aeaa7bd303db7c0f106afd6eecbfe1 (371 members,13029110 bytes, no residuals).
+
 Run42451628822/job128641931387 reused the hash-verified signed2f99ff77
 normal app and skipped its build/package steps. Both recovered ZIP and DMG
 players reached natural EOF/exit0; the earlier SIGBUS did not reproduce and is
@@ -20,8 +43,9 @@ and hosted cleanup. No normal release/master update is qualified.
 Native source/notices assembly is merged from localc54c25d3be2. It follows
 actual installed Homebrew source/patch SBOMs and dpkg source versions, including
 Qt's additional dynamic-library graph and original contrib recipes. Focused
-metadata/notice checks pass; real collection, package closure and AppImage's
-static runtime source closure remain unverified. Source diagnostic transaction
+metadata/notice checks pass; real full collection/package closure remains
+unverified. The later AppImage retrieval above resolves its source identity
+gap, while Linux package assembly still requires native verification. Source diagnostic transaction
 3c95bcc4e1e2619762cc7f8a176a4a3e removed all265 members (68326 bytes),
 without residuals. M15 remains the only ACTIVE stage.
 

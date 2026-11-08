@@ -83,6 +83,19 @@ def owner_of(path, installed):
     return matches[0]
 
 
+def framework_source(framework, installed):
+    candidates = [Path(row['keg']) / 'lib' / framework.name / 'Versions/A' / framework.stem
+                  for row in installed]
+    # Homebrew's qt meta-formula links the module formula's framework. Count
+    # physical sources, not its compatibility aliases, before finding its owner.
+    found = sorted({path.resolve(strict=True) for path in candidates if path.is_file()})
+    if len(found) != 1:
+        raise RuntimeError('Packaged framework has no unique installed source: '
+                           + framework.name + '; resolved candidates: '
+                           + ', '.join(str(path) for path in found))
+    return found[0]
+
+
 def retain_archive_notices(archive, destination):
     records = []
 
@@ -138,16 +151,21 @@ def fetch_source(record, directory):
         name = PurePosixPath(urllib.parse.urlsplit(record['url']).path).name
         if not name or name in ('.', '..'):
             raise RuntimeError('Source URL has no archive name')
-        archive = directory / (record['sha256'][:16] + '-' + name)
+        algorithm = 'sha256' if 'sha256' in record else 'sha512'
+        expected = record[algorithm]
+        def digest(path):
+            with path.open('rb') as stream:
+                return hashlib.file_digest(stream, algorithm).hexdigest()
+        archive = directory / (expected[:16] + '-' + name)
         if not archive.exists():
             temporary = archive.with_name(archive.name + '.download')
             urllib.request.urlretrieve(record['url'], temporary)
-            if sha(temporary) != record['sha256']:
+            if digest(temporary) != expected:
                 raise RuntimeError('Downloaded source checksum differs: ' + record['id'])
             temporary.replace(archive)
-        if sha(archive) != record['sha256']:
+        if digest(archive) != expected:
             raise RuntimeError('Retained source checksum differs: ' + record['id'])
-        record['archive_sha256'] = record['sha256']
+        record['archive_sha256'] = sha(archive)
     record['archive'] = str(archive)
     return archive
 
@@ -179,12 +197,7 @@ def collect_brew(work, app, generation, destination):
                 raise RuntimeError('QML plugin source changed: ' + str(source))
             paths.append(source)
     for framework in (app / 'Contents/Frameworks').glob('*.framework'):
-        candidates = [Path(row['keg']) / 'lib' / framework.name / 'Versions/A' / framework.stem
-                      for row in installed]
-        found = [path for path in candidates if path.is_file()]
-        if len(found) != 1:
-            raise RuntimeError('Packaged framework has no unique installed source: ' + framework.name)
-        paths.extend(found)
+        paths.append(framework_source(framework, installed))
     # macdeployqt also introduces non-Qt dylibs (fontconfig, Cairo, etc.). Follow
     # the *original* framework/plugin graph before rewritten loader paths lose
     # their installed ownership. The MPV/VLC closure alone is insufficient.
@@ -310,6 +323,69 @@ def collect_linux(work, app, destination):
     return result
 
 
+def collect_appimage(work, destination):
+    """The static runtime is a separate source graph from the VLC ELF graph."""
+    pins = json.loads((ROOT / 'tools/desktop-player/appimage-sources.json').read_text())
+    runtime = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
+    if pins['runtime_commit'] != runtime['commit']:
+        raise RuntimeError('AppImage source and binary revisions differ')
+    arch = platform.machine()
+    binary = work / ('appimage-runtime-' + arch)
+    if sha(binary) != runtime[arch + '_sha256']:
+        raise RuntimeError('AppImage source closure is not bound to the packaged runtime')
+    root = destination / 'appimage-runtime'
+    root.mkdir(exist_ok=True)
+    shutil.copy2(ROOT / 'tools/desktop-player/appimage-sources.json', root / 'pins.json')
+    records = []
+
+    def archive_source(record, directory):
+        archive = fetch_source(record, directory)
+        legal = directory / ('notices-' + sha(archive)[:16])
+        legal.mkdir(exist_ok=True)
+        record['notices'] = retain_archive_notices(archive, legal)
+        if not record['notices']:
+            raise RuntimeError('AppImage component has no retained notices: ' + record['id'])
+        record['archive'] = archive.relative_to(destination).as_posix()
+        return record
+
+    records.append(archive_source({'id': 'type2-runtime',
+        'url': runtime['repository'] + '.git', 'git_revision': runtime['commit']}, root / 'runtime'))
+    for component in pins['source_built']:
+        record = dict(component, id=component['name'])
+        records.append(archive_source(record, root / component['name']))
+    for component in pins['alpine']:
+        directory = root / component['name']
+        directory.mkdir(exist_ok=True)
+        base = 'https://raw.githubusercontent.com/alpinelinux/aports/' + component['commit'] + '/'
+        recipe = directory / 'APKBUILD'
+        if not recipe.exists():
+            urllib.request.urlretrieve(base + component['recipe_path'], recipe)
+        raw = recipe.read_bytes()
+        blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+        if blob != component['recipe_blob']:
+            raise RuntimeError('Original AppImage Alpine recipe differs: ' + component['name'])
+        text = raw.decode()
+        version = re.search(r'^pkgver=(.+)$', text, re.M).group(1)
+        release = re.search(r'^pkgrel=(.+)$', text, re.M).group(1)
+        if version + '-r' + release != component['version']:
+            raise RuntimeError('AppImage build log and Alpine recipe versions differ')
+        record = archive_source(dict(component['source'], id=component['name']), directory)
+        files = []
+        for item in component['recipe_files']:
+            name = item['filename']
+            if PurePosixPath(name).name != name or '\\' in name:
+                raise RuntimeError('Unsafe Alpine recipe source filename')
+            url = base + str(PurePosixPath(component['recipe_path']).parent / name)
+            patch = dict(item, id=component['name'] + '/' + name, url=url)
+            path = fetch_source(patch, directory)
+            patch['archive'] = path.relative_to(destination).as_posix()
+            files.append(patch)
+        record.update(version=component['version'], recipe_commit=component['commit'],
+                      recipe_blob=blob, recipe_files=files)
+        records.append(record)
+    return {'runtime_sha256': sha(binary), 'original_build': pins['original_build'], 'sources': records}
+
+
 def runtime_notices(destination, app):
     target = app / ('Contents/Resources/licenses' if platform.system() == 'Darwin' else 'licenses')
     target.mkdir(parents=True, exist_ok=True)
@@ -357,6 +433,7 @@ def collect(work, app, out, generation):
         manifest['original_vlc_contrib'] = collect_contrib(work, destination)
     else:
         manifest['installed_dependencies'] = collect_linux(work, app, destination)
+        manifest['appimage_runtime'] = collect_appimage(work, destination)
     built = json.loads((work / 'native-build.json').read_text())
     for original, name in [(work / 'native-build.json', 'native-build.json'),
                            (work / 'toolchain-binding.json', 'toolchain-binding.json')]:

@@ -585,6 +585,12 @@ exec "$root/bin/vlc" --intf=qt "$@"
     shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', app / 'modern-vlc.png')
     verify_bundled_mpv(work, app / 'lib/mpv')
     audit_package(app, app / 'bin/vlc', arch, app / 'NATIVE-PACKAGE.json')
+    runtime_pins = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
+    runtime = work / ('appimage-runtime-' + arch)
+    if not runtime.exists():
+        urllib.request.urlretrieve('https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-' + arch, runtime)
+    if sha(runtime) != runtime_pins[arch + '_sha256']:
+        raise RuntimeError('AppImage runtime no longer matches the pinned digest')
     run('python3', ROOT / 'tools/desktop-player/collect-native-sources.py', '--work', work,
         '--app', app, '--out', out, '--generation', out.name)
     with tarfile.open(out / (app.name + '.tar.xz'), 'w:xz') as archive:
@@ -651,12 +657,6 @@ apps:
     run('mksquashfs', snap, out / (app.name + '.snap'), '-noappend', '-comp', 'xz', '-processors', '1', '-root-owned')
     # Additional formats are generated from this same payload, never rebuilt
     # with a smaller plugin graph. Their installation is a later native check.
-    runtime_pins = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
-    runtime = work / ('appimage-runtime-' + arch)
-    if not runtime.exists():
-        urllib.request.urlretrieve('https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-' + arch, runtime)
-    if sha(runtime) != runtime_pins[arch + '_sha256']:
-        raise RuntimeError('AppImage runtime no longer matches the pinned digest')
     squash = staging / 'appimage.squashfs'
     run('mksquashfs', app, squash, '-noappend', '-comp', 'zstd', '-processors', '1', '-root-owned')
     image = out / (app.name + '.AppImage')

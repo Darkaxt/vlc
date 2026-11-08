@@ -2,6 +2,15 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+`appimage-sources.json` binds the static AppImage runtime to original build
+39320578745, its exact Alpine image, the two architecture jobs and their linked
+library versions. Source collection retains the runtime Git revision,
+FUSE/SquashFUSE releases, original Alpine recipes and every recipe source/patch
+with its SHA512 checksum. It verifies the packaged runtime SHA256 before binding
+the graph. The independent retrieval receipt is
+`resources/native-appimage-source-closure-20261108.json`; this source result
+does not replace actual Linux format installation and native picture checks.
+
 Normal1.1.11 below is still the verified downloadable release. Native packaging
 work lives on `codex/native-desktop`; it has not replaced master or published a
 release. The workflow is `.github/workflows/desktop-packages.yml`, using native
