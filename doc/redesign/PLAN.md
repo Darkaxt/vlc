@@ -1,6 +1,31 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42465080818/job128682632633 from02a1e1b0067e301a6a278f16b5d1770c99c3e6db
+closed0 (original watch31298). Inspected native captures now show VLC video in
+the main, floating and restored views; the main display frame is y41 inside its
+600x420 parent. Selected-subtitle handover, image/audio/video replacement,
+signed normal ZIP/DMG recovery and natural EOF pass. Two actual-picture criteria
+remain: paused seek reports6s but displays frame0 while late-dropping replacement
+frames; the main/restored VLC subtitle is missing although the floating cue is
+visible. The current cohesive repair excludes paused replacements from running
+clock deadlines and preserves local subtitle-region coordinates. Native picture
+revalidation is required, not satisfied by the state checks.
+Cache ending42465080818 retained4883188718 bytes. Artifact13612425510 is2498387211
+bytes, GitHub SHA2563ea6ec7f7cca7c32158cb8b9fff96db79023d41010024eb131d8f58997016aa6.
+Selected evidence CRC/SHA checks pass; whole-artifact digest remains unchecked.
+Hosted cleanup completed; no local WSL workload or final release has started.
+
+Linux x86_64 run42465448889/job128688224307 at the identical02a1e1b0067 source
+closed1 (original watch57923), after retaining cache ending42465448889 and hosted
+cleanup. MPV/libplacebo compiled and installed; raw MPV closure staging failed
+because ldd could not locate libplacebo.so.387 in the same owned deps/lib prefix.
+The correction scopes that prefix to raw staging, retaining strict final portable
+audits and unchanged global environment. A focused missing-dependency regression
+passes; real Linux staging/package/player acceptance remains required. Preserve
+the compiled prefix and resume from it. Artifact13612207045 is10409925 bytes,
+GitHub SHA2560f6328810776aa2ad6448dedcad96222401933b8dc789628d78709cb58e09d4a.
+
 Run42463140593/job128676618203 from0b39f77834f56a112cb84c71f3db86441c548846
 completed successfully (original watch8561 closed0). Both handovers preserve
 selected subtitles; native image/audio/video replacement, engine persistence,
@@ -473,7 +498,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. macOS ARM integrated build, complete original-source assembly, signed ZIP/DMG generation/recovery and natural EOF pass. MPV main/floating/expanded/restored video and subtitles inspected; both engines' seek/audio/floating/persistence/profile state checks pass. Hosted retention reduces cache while retaining inputs. | R111 remaining architectures/formats, current source/license/symbol and recovered-package qualification; R112 native VLC picture, handover track preservation and image/audio/video replacement; R113 integrated Windows regression and final matrix qualification. | Native VLC default display captures blank video, handover loses selected subtitles. Corrections/diagnostics integrated; native revalidation required. Earlier failures remain historical evidence. Other native criteria remain internal acceptance blockers; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. macOS ARM integrated build, complete original-source assembly, signed ZIP/DMG recovery and natural EOF pass. Actual VLC main/floating/restored video placement and MPV video/subtitles inspected; handover selection, media replacement and profile state checks pass. Hosted retention preserves SDK/objects. | R111 remaining architectures/formats and recovered-package/source/license/symbol qualification; R112 actual paused VLC seek frame and main/restored subtitles; R113 integrated Windows regression and final matrix. | Paused replacement frames use running-clock deadlines; main SPU uses window-relative conversion for local regions. Linux raw MPV staging misses its owned libplacebo prefix. Cohesive corrections await native verification. Internal acceptance blockers; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch

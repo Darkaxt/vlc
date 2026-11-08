@@ -547,7 +547,13 @@ static void DeletePipController( pip_controller_t * pipcontroller );
     VLCSampleBufferSubpictureRegion *region;
     for (region in _pendingSubpicture.regions) {
 #if TARGET_OS_OSX
-        CGRect regionFrame = [self convertRectFromBacking:region.backingFrame];
+        // RegionBackingFrame already supplies a local bottom-left pixel origin.
+        // Do not translate it through the window backing-store origin again.
+        NSSize origin = [self convertSizeFromBacking:NSMakeSize(
+            region.backingFrame.origin.x, region.backingFrame.origin.y)];
+        NSSize size = [self convertSizeFromBacking:region.backingFrame.size];
+        CGRect regionFrame = CGRectMake(NSMinX(self.bounds) + origin.width,
+            NSMinY(self.bounds) + origin.height, size.width, size.height);
 #else
         CGRect regionFrame = region.backingFrame;
 #endif

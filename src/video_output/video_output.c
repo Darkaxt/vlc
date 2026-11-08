@@ -1060,7 +1060,9 @@ static picture_t *PreparePicture(vout_thread_sys_t *vout, bool reuse_decoded,
                                  bool frame_by_frame)
 {
     vout_thread_sys_t *sys = vout;
-    bool is_late_dropped = sys->is_late_dropped && !frame_by_frame;
+    /* A paused seek fills an empty current picture against a frozen clock.
+     * Wall-clock lateness must not discard that replacement frame. */
+    bool is_late_dropped = sys->is_late_dropped && !frame_by_frame && !sys->pause.is_on;
 
     vlc_mutex_lock(&sys->filter.lock);
 
@@ -1666,7 +1668,7 @@ static vlc_tick_t DisplayPicture(vout_thread_sys_t *vout)
         // next frame will still need some waiting before display, we don't need
         // to render now
         // display forced picture immediately
-        bool render_now = sys->displayed.current->b_force;
+        bool render_now = sys->displayed.current->b_force || sys->pause.is_on;
 
         RenderPicture(vout, render_now ? RENDER_PICTURE_FORCED
                                        : RENDER_PICTURE_NORMAL);

@@ -23,6 +23,26 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_linux_raw_dependency_discovery_uses_only_its_owned_prefix(self):
+        prefix = Path('owned-prefix/lib').resolve()
+        placebo = '/owned-prefix/lib/libplacebo.so.387'
+
+        def ldd(args, **kwargs):
+            self.assertEqual(args, ['ldd', 'libmpv.so.2'])
+            if kwargs.get('env', {}).get('LD_LIBRARY_PATH') == str(prefix):
+                return 'libplacebo.so.387 => ' + placebo + ' (0x1234)\n'
+            return 'libplacebo.so.387 => not found\n'
+
+        with patch.object(package, 'MAC', False), \
+                patch.dict(os.environ, {'LD_LIBRARY_PATH': 'unrelated-sdk'}), \
+                patch.object(package.subprocess, 'check_output', side_effect=ldd):
+            self.assertEqual(package.dependencies('libmpv.so.2', search_paths=[prefix]), [placebo])
+            # A later portable audit must not borrow the build prefix and hide
+            # a missing shipped library. Missing dependencies remain failures.
+            with self.assertRaisesRegex(RuntimeError, 'libplacebo.so.387 => not found'):
+                package.dependencies('libmpv.so.2')
+            self.assertEqual(os.environ['LD_LIBRARY_PATH'], 'unrelated-sdk')
+
     def test_native_picture_rejects_decoded_video_outside_its_cocoa_parent(self):
         spec = importlib.util.spec_from_file_location('native_verify', HERE / 'verify-native-player.py')
         verify = importlib.util.module_from_spec(spec)

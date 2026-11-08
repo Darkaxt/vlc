@@ -44,12 +44,20 @@ def native(path):
         return stream.read(4) in (b'\x7fELF', b'\xcf\xfa\xed\xfe', b'\xce\xfa\xed\xfe', b'\xca\xfe\xba\xbe')
 
 
-def dependencies(path):
+def dependencies(path, search_paths=()):
     if MAC:
         lines = output('otool', '-L', path).splitlines()[1:]
         identity = output('otool', '-D', path).splitlines()[1:]
         return [dep for line in lines if (dep := line.strip().split(' (')[0]) not in identity]
-    lines = output('ldd', path).splitlines()
+    if search_paths:
+        # Raw MPV and libplacebo share this owned install prefix before their
+        # portable copies receive $ORIGIN. Keep this resolver local to staging;
+        # final package audits must resolve only the shipped runtime.
+        env = dict(os.environ, LD_LIBRARY_PATH=os.pathsep.join(
+            str(Path(directory).resolve()) for directory in search_paths))
+        lines = subprocess.check_output(['ldd', str(path)], text=True, env=env).splitlines()
+    else:
+        lines = output('ldd', path).splitlines()
     if any('not found' in line for line in lines):
         raise RuntimeError(f'Unresolved native dependency: {path}\n' + '\n'.join(lines))
     return [match.group(1) for line in lines if (match := re.search(r'=> (/[^ ]+)', line))]
@@ -281,7 +289,7 @@ def audit_package(app, executable, arch, receipt):
         raise RuntimeError('Native package dependency audit failed:\n' + '\n'.join(errors))
 
 
-def copy_closure(initial, destination):
+def copy_closure(initial, destination, search_paths=()):
     destination.mkdir(parents=True, exist_ok=True)
     queue = [(Path(path), []) for path in initial]
     origins = {}
@@ -302,7 +310,8 @@ def copy_closure(initial, destination):
             target.chmod(target.stat().st_mode | stat.S_IWUSR)
         shutil.copy2(real, target)
         runpaths = mac_runpaths(real) + inherited_runpaths if MAC else []
-        for dep in dependencies(real):
+        linked = dependencies(real, search_paths=search_paths) if search_paths else dependencies(real)
+        for dep in linked:
             if external(dep):
                 continue
             if MAC and '.framework/' in dep:
@@ -353,7 +362,7 @@ def stage_mpv(work, prefix):
         if any(sha(directory / row['name']) != row['sha256'] for row in rows):
             raise RuntimeError('Retained MPV payload was changed')
     else:
-        rows = copy_closure([library], directory)
+        rows = copy_closure([library], directory, search_paths=() if MAC else (prefix / 'lib',))
         binding.write_text(json.dumps(rows, indent=2) + '\n')
     relative = '../Frameworks/mpv/' if MAC else '../lib/mpv/'
     header = work / 'vlc-build/modules/gui/qt/mpv_runtime_identity.hpp'

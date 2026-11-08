@@ -93,8 +93,23 @@ floating view is likewise at y196 outside its348x196 parent. Preserve local
 top-left placement when converting pixel lengths to Cocoa points, respecting
 the parent view's flipped coordinates. Verify actual main/floating/restored
 video and reject out-of-parent display frames; decoder readiness is insufficient.
+The corrected placement exposes two further native acceptance failures in the
+same workflow: the paused6s seek still displays frame0, with vout dropping
+replacement frames as7s late against the frozen clock; selected main-window VLC
+subtitles are absent although the floating cue is visible. Paused replacement
+frames must bypass running-clock lateness/deadlines. Subtitle region rectangles
+are already local bottom-left pixels and must retain that local origin when
+converted to points. Verify actual paused frame6 and the selected cue in main,
+floating and restored video; a reported seek time/selected track alone is not proof.
 Complete native image-preview and video/audio/video replacement checks as part
 of the same integrated workflow.
+
+Linux run42465448889 also establishes a raw runtime-staging defect: libmpv and
+libplacebo are installed into the same owned deps/lib prefix, but ldd cannot
+resolve libplacebo before the portable copies receive their local RPATH. Scope
+that prefix to raw closure discovery without changing the global environment or
+allowing the final package audit to borrow build dependencies. Retain the native
+objects; verify real staging, relocated dependency closure and player behavior.
 
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master
