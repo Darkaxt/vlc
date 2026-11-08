@@ -417,6 +417,26 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual((target / 'opt/modern-vlc/modern-vlc').read_bytes(),
                          (app / 'modern-vlc').read_bytes())
 
+    def test_linux_installer_preserves_internal_library_links(self):
+        root = Path(sys.argv_scratch) / ('linux-links-' + uuid.uuid4().hex)
+        app = root / 'portable'
+        (app / 'lib').mkdir(parents=True)
+        for name in ('modern-vlc', 'modern-vlc.desktop', 'modern-vlc.png'):
+            (app / name).write_bytes(b'entry point fixture')
+        (app / 'lib/libvlc.so.12').write_bytes(b'library fixture')
+        try:
+            (app / 'lib/libvlc.so').symlink_to('libvlc.so.12')
+        except OSError as error:
+            if os.name == 'nt' and error.winerror == 1314:
+                self.skipTest('Windows does not grant this process symbolic-link creation')
+            raise
+        target = root / 'system'
+        package.stage_linux_system_payload(app, target)
+        installed = target / 'opt/modern-vlc/lib/libvlc.so'
+        self.assertTrue(installed.is_symlink())
+        self.assertEqual(os.readlink(installed), 'libvlc.so.12')
+        self.assertEqual(installed.read_bytes(), b'library fixture')
+
     def test_aom_release_policy_accepts_upstream_flags_and_rejects_overrides(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
         build = importlib.util.module_from_spec(spec)
@@ -792,7 +812,8 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--scratch', required=True, type=Path)
+    parser.add_argument('--test', action='append', default=[], help='Run only these named focused diagnostics')
     args = parser.parse_args()
     args.scratch.mkdir(parents=True, exist_ok=True)
     sys.argv_scratch = str(args.scratch)
-    unittest.main(argv=[sys.argv[0]])
+    unittest.main(argv=[sys.argv[0], *args.test])

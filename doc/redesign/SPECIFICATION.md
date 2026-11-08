@@ -127,6 +127,13 @@ than infer a cause from its last log line; preserve the failed launch and normal
 package identity. Diagnostic traced launches do not replace final untraced
 playback verification. Independent implemented player checks may collect their
 own evidence after this package failure, without clearing the failed criterion.
+The ownership investigation also establishes a concrete decoder lifetime defect:
+DecodeFrame permits a callback before returning, but the caller then dereferences
+callback-owned frame metadata. Snapshot the required field/PTS values before
+submission and verify the actual submission fragment against callback retirement.
+This repair does not by itself establish the cause of the observed SIGBUS.
+Linux installable copies must preserve the portable payload's internal library
+links, bytes and modes; dereferencing links is not identical-payload delivery.
 
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master

@@ -1,6 +1,24 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Linux42469710665/job128700161527 closed1 (original watch18174) after its first
+Qt/QML compile reached the native X11 compositor. Its display-name assignment
+passed constData into VLC's mutable char pointer; use the compositor-owned
+QByteArray's data without changing that owner's lifetime or compiler flags.
+Cache ending42469710665 and hosted cleanup completed; retain the compiled objects.
+Artifact13613985521 is10464379 bytes, GitHub SHA256
+768e4c3b993fc2b0aeba996112dbd8f430a0ef39d97cfb142427f693f5892edf.
+Linux installer copies also dereferenced internal runtime symlinks. All three
+system/DEB/Snap copy boundaries now preserve them; actual filesystem diagnostics
+verify the link target and bytes and desktop launchers. Spent fixtures were
+retired through transaction61bd06f0d49e58ebdd41734dc92b8501 (51 members, no residual).
+The VT ownership probe compiles the actual decoder submission fragment and
+reproduces post-callback metadata use; capturing field/PTS values before submission
+passes both accepted/rejected callbacks. Native crash causality remains unproven.
+Mac diagnostic42470993172/job128703252504 (watch42962) retains the original
+normal388310 package and observes subtitle regions; it does not include these
+new production changes. Do not overwrite or duplicate that running operation.
+
 Diagnostic continuation42469673266/job128697315895 closed0 (watch89925).
 It reused the388310 normal ZIP/DMG, preserving the SDK; traced normal launches
 and native workflows passed their state checks. Actual inspected VLC captures

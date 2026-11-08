@@ -2216,7 +2216,11 @@ static int DecodeBlock(decoder_t *p_dec, block_t *p_block)
         goto skip;
     }
 
-    pic_pacer_WaitAllocatableSlot(p_sys->pic_pacer, p_info->b_field);
+    /* The callback owns p_info after submission and may retire it before
+     * DecodeFrame returns, even when asynchronous decoding is permitted. */
+    const bool frame_is_field = p_info->b_field;
+    const vlc_tick_t frame_pts = p_info->pts;
+    pic_pacer_WaitAllocatableSlot(p_sys->pic_pacer, frame_is_field);
 
     VTDecodeInfoFlags flagOut;
     VTDecodeFrameFlags decoderFlags = kVTDecodeFrame_EnableAsynchronousDecompression;
@@ -2228,11 +2232,11 @@ static int DecodeBlock(decoder_t *p_dec, block_t *p_block)
     enum vtsession_status vtsession_status;
     if (HandleVTStatus(p_dec, status, &vtsession_status) == VLC_SUCCESS)
     {
-        pic_pacer_AccountScheduledDecode(p_sys->pic_pacer, p_info->b_field);
+        pic_pacer_AccountScheduledDecode(p_sys->pic_pacer, frame_is_field);
 
         if(p_sys->decoder_state != STATE_DECODER_STARTED)
         {
-            msg_Dbg(p_dec, "session accepted first frame %"PRId64, p_info->pts);
+            msg_Dbg(p_dec, "session accepted first frame %"PRId64, frame_pts);
             p_sys->decoder_state = STATE_DECODER_STARTED;
         }
         if (p_block->i_flags & BLOCK_FLAG_END_OF_SEQUENCE)
@@ -2240,7 +2244,7 @@ static int DecodeBlock(decoder_t *p_dec, block_t *p_block)
     }
     else
     {
-        msg_Dbg(p_dec, "session rejected frame %"PRId64" with status %d", p_info->pts, (int)status);
+        msg_Dbg(p_dec, "session rejected frame %"PRId64" with status %d", frame_pts, (int)status);
         p_sys->sync_state = p_sys->start_sync_state;
         vlc_mutex_lock(&p_sys->lock);
         p_sys->vtsession_status = vtsession_status;

@@ -171,7 +171,7 @@ bool CompositorPlatform::setupVoutWindow(vlc_window_t *p_wnd, VoutDestroyCb dest
     p_wnd->type = VLC_WINDOW_TYPE_XID;
     p_wnd->handle.xid = m_videoWindow->winId();
     m_x11Display = qgetenv("DISPLAY");
-    p_wnd->display.x11 = m_x11Display.constData();
+    p_wnd->display.x11 = m_x11Display.data();
     return true;
 #endif
 

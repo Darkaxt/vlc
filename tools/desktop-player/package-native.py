@@ -538,7 +538,7 @@ def package_mac(work, installed, out, version, arch):
 
 def stage_linux_system_payload(app, root):
     """Give installable packages the same player plus real desktop entry points."""
-    shutil.copytree(app, root / 'opt/modern-vlc')
+    shutil.copytree(app, root / 'opt/modern-vlc', symlinks=True)
     launcher = root / 'usr/bin/modern-vlc'
     launcher.parent.mkdir(parents=True)
     write_executable(launcher, '#!/bin/sh\nexec /opt/modern-vlc/modern-vlc "$@"\n')
@@ -612,7 +612,7 @@ exec "$root/bin/vlc" --intf=qt "$@"
     system_payload = staging / 'system'
     stage_linux_system_payload(app, system_payload)
     deb = staging / 'deb'
-    shutil.copytree(system_payload, deb)
+    shutil.copytree(system_payload, deb, symlinks=True)
     control = deb / 'DEBIAN'; control.mkdir()
     deb_arch = 'arm64' if arch == 'aarch64' else 'amd64'
     (control / 'control').write_text(f'Package: modern-vlc-fork\nVersion: {version}\nArchitecture: {deb_arch}\n'
@@ -651,7 +651,7 @@ tar -xzf %{{SOURCE0}} -C %{{buildroot}}
     for artifact in (rpm_root / 'RPMS').rglob('*.rpm'):
         shutil.copy2(artifact, out / (app.name + '.rpm'))
     snap = staging / 'snap'; snap.mkdir()
-    shutil.copytree(app, snap / 'player')
+    shutil.copytree(app, snap / 'player', symlinks=True)
     meta = snap / 'meta'; meta.mkdir()
     (meta / 'snap.yaml').write_text(f'''name: modern-vlc-fork
 version: '{version}'
