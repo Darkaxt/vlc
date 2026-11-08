@@ -133,7 +133,7 @@ def main():
         home = case / 'home'; home.mkdir()
         env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
             XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
-            QML_DISK_CACHE_PATH=str(case / 'qml-cache'), QT_FORCE_STDERR_LOGGING='1')
+            QML_DISK_CACHE_PATH=str(case / 'qml-cache'), QT_FORCE_STDERR_LOGGING='1', QSG_INFO='1')
         argv = [app / 'Contents/MacOS/vlc', '--intf=qt', '--no-qt-privacy-ask',
                 '--no-metadata-network-access', '--restore-playback-pos=0',
                 '--qt-playback-engine=vlc', '--play-and-exit', '--verbose=2', fixture]

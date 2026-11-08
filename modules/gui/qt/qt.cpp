@@ -68,6 +68,9 @@ extern "C" char **environ;
 #define RHI_HEADER_AVAILABLE
 #include <QtGui/private/qrhi_p.h>
 #include <QtGui/private/qrhigles2_p.h> // for `QRhiGles2InitParams`
+#ifdef __APPLE__
+#include <QtGui/private/qrhimetal_p.h>
+#endif
 #endif
 #ifdef RHI_HEADER_AVAILABLE
 #include <QOffscreenSurface>
@@ -1360,6 +1363,17 @@ static void *Thread( void *obj )
         }
 #endif
 
+#ifdef __APPLE__
+        // Match Qt Quick's native Cocoa backend. The OpenGL-only probe used
+        // Apple's floating-point renderer even when Metal was available; an
+        // actual launch faulted in its framebuffer clear during QRhi::endFrame.
+        {
+            QRhiMetalInitParams params;
+            if (QRhi::probe(QRhi::Metal, &params))
+                return {QSGRendererInterface::Metal, false};
+        }
+#endif
+
         if (const std::optional<QSurfaceFormat> format = createCompatibleOpenGLFormat())
         {
             QRhiGles2InitParams params;
@@ -1430,8 +1444,15 @@ static void *Thread( void *obj )
 
     static const char* const asyncRhiProbeCompletedProperty = "asyncRhiProbeCompleted";
     // NOTE: `QSettings` accepts `QAnyStringView` starting from Qt 6.4, use `QLatin1String(View)`:
+#ifdef __APPLE__
+    // The legacy cache was produced by a probe that never considered Metal.
+    // Keep explicit environment selections and unrelated settings untouched.
+    static constexpr QLatin1String graphicsApiKey {"graphics-api-cocoa-v1"};
+    static constexpr QLatin1String graphicsApiRhiSoftwareKey {"graphics-api-cocoa-rhi-software-v1"};
+#else
     static constexpr QLatin1String graphicsApiKey {"graphics-api"};
     static constexpr QLatin1String graphicsApiRhiSoftwareKey {"graphics-api-rhi-software"};
+#endif
     if (qEnvironmentVariableIsEmpty("QSG_RHI_BACKEND") &&
         qEnvironmentVariableIsEmpty("QT_QUICK_BACKEND") &&
         !uint(qEnvironmentVariableIntValue("QSG_RHI_PREFER_SOFTWARE_RENDERER")))

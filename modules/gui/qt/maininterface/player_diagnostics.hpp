@@ -45,6 +45,7 @@
 #include <QPixmap>
 #include <QQuickItemGrabResult>
 #include <QQuickWindow>
+#include <QSGRendererInterface>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQmlExpression>
@@ -535,6 +536,8 @@ private:
             {QStringLiteral("video_backdrop"), QJsonValue::fromVariant(m_root->window()->property("playerVideoBackdropState"))},
             {QStringLiteral("pid"), QCoreApplication::applicationPid()},
             {QStringLiteral("qt"), QString::fromLatin1(qVersion())},
+            {QStringLiteral("graphics_api"), int(m_root->window()->rendererInterface()->graphicsApi())},
+            {QStringLiteral("graphics_api_metal"), m_root->window()->rendererInterface()->graphicsApi() == QSGRendererInterface::Metal},
             {QStringLiteral("build"), qEnvironmentVariable("VLC_PLAYER_DIAGNOSTICS_BUILD")},
             {QStringLiteral("elapsed_ms"), m_clock.elapsed()}, {QStringLiteral("units"), QStringLiteral("Qt logical pixels")},
             {QStringLiteral("tree"), tree}, {QStringLiteral("images"), images},

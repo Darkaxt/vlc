@@ -1,6 +1,21 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Mac diagnostic42470993172/job128703252504 closed1 (watch42962); its cache,
+artifact and hosted cleanup completed. Artifact13613926596 is2498691378 bytes,
+GitHub SHA25617c78ef9a556176ce54a79751d2b3f7fb0cb7a029bbd185fbc27c90219776be8.
+The original fault is on the main thread in GLRendererFloat::gldClearDrawBuffer
+through Qt QRhi::endFrame, while both decoder threads are elsewhere. Selected
+full LLDB/state members pass CRC/SHA; this is not whole-artifact verification.
+The actual pending subtitle region is opaque at y16..40 in the600x420 window,
+underneath the controls. The coherent correction adds native Metal probing and
+a distinct Cocoa probe cache, defaults native desktop subtitles to the video
+area while preserving explicit overrides/Windows/mobile behavior, and records
+the actual selected Qt graphics API. Untraced normal package qualification is
+restored; these corrections still require real native evidence.
+Linux continuation42471682713/job128706586154 (watch2279) is now running at
+e85635baf98678c17dc868bbed5da08bd76c4ea0 with the retained dependency/Qt objects.
+It does not include the subsequent native subtitle-default/Metal corrections.
 Linux42469710665/job128700161527 closed1 (original watch18174) after its first
 Qt/QML compile reached the native X11 compositor. Its display-name assignment
 passed constData into VLC's mutable char pointer; use the compositor-owned
@@ -30,8 +45,8 @@ normal reuse additionally compares every byte outside its diagnostic guard.
 The new Windows full-dispatch regression reproduced a ValueError after removal
 of copy-cache steps; its preparation boundary now honors that same disabled
 cache contract. Complete simulated dispatch passes without any cache command.
-Linux continuation42469710665/job128700161527 is the active original build;
-watch18174 remains its owner through cache/artifact and hosted cleanup.
+Linux continuation42469710665/job128700161527 is the closed first-compile
+attempt described above; its original watch18174 has closed1.
 Mac cache ending42469673266 retained4883035818 bytes; hosted cleanup completed.
 Artifact13613028580 is2498653117 bytes, GitHub SHA256
 91cc137548c038f0f80bdd2f4363dd20101b0a9742cf4c970d5fbe36e07677de.

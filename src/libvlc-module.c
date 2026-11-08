@@ -31,6 +31,9 @@
 #endif
 
 #include <limits.h>
+#ifdef __APPLE__
+# include <TargetConditionals.h>
+#endif
 
 #include <vlc_common.h>
 #include <vlc_plugin.h>
@@ -828,6 +831,14 @@ static const char* const ppsz_restore_playback_desc[] = {
 #define SPU_FULL_TEXT N_("Display sub-pictures on full window")
 #define SPU_FULL_LONGTEXT N_( \
     "It allows showing subtitles in black bars.")
+
+/* Native desktop controls overlay the bottom letterbox margin. Keep default
+ * subtitles inside the picture; an explicit spu-fill setting still wins. */
+#if (defined(__APPLE__) && TARGET_OS_OSX) || (defined(__linux__) && !defined(__ANDROID__))
+# define SPU_FULL_DEFAULT false
+#else
+# define SPU_FULL_DEFAULT true
+#endif
 
 #define SECONDARY_SUB_POSITION_TEXT N_("Position of secondary subtitles")
 #define SECONDARY_SUB_POSITION_LONGTEXT N_( \
@@ -1803,7 +1814,7 @@ vlc_module_begin ()
 
     add_bool( "spu", true, SPU_TEXT, SPU_LONGTEXT )
         change_safe ()
-    add_bool( "spu-fill", true, SPU_FULL_TEXT, SPU_FULL_LONGTEXT )
+    add_bool( "spu-fill", SPU_FULL_DEFAULT, SPU_FULL_TEXT, SPU_FULL_LONGTEXT )
         change_safe ()
     add_bool( "osd", true, OSD_TEXT, OSD_LONGTEXT )
     add_module("text-renderer", "text renderer", "any",

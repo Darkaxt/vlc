@@ -45,6 +45,7 @@
 #include <vlc_window.h>
 #include <vlc_modules.h>
 #include <QThread>
+#include <QQuickGraphicsConfiguration>
 
 
 using namespace vlc;
@@ -303,8 +304,12 @@ bool CompositorVideo::commonGUICreateImpl(QWindow* window, CompositorVideo::Flag
     assert(quickWindow->handle()); // Make sure `::create()` was called before
     assert(quickWindow->rendererInterface());
     // `ViewBlockingRectangle` only supports RHI with depth buffer (which is the default) or software mode:
-    const bool hasDepthBufferOrSoftwareMode = (quickWindow->format().depthBufferSize() > 0) ||
-                                              (quickWindow->rendererInterface()->graphicsApi() == QSGRendererInterface::Software);
+    const auto graphicsApi = quickWindow->rendererInterface()->graphicsApi();
+    // Metal's depth attachment belongs to the scene graph, not the window's
+    // OpenGL surface format. Its default format may report an unspecified size.
+    const bool hasDepthBufferOrSoftwareMode = graphicsApi == QSGRendererInterface::Metal
+        ? quickWindow->graphicsConfiguration().isDepthBufferEnabledFor2D()
+        : (quickWindow->format().depthBufferSize() > 0 || graphicsApi == QSGRendererInterface::Software);
     if (!hasDepthBufferOrSoftwareMode)
         qWarning() << this << ": interface window has no depth buffer, pip player and backdrop blur will not be functional!";
 

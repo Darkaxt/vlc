@@ -132,6 +132,17 @@ DecodeFrame permits a callback before returning, but the caller then dereference
 callback-owned frame metadata. Snapshot the required field/PTS values before
 submission and verify the actual submission fragment against callback retirement.
 This repair does not by itself establish the cause of the observed SIGBUS.
+Run42470993172 captures the original failing main thread in Apple's
+GLRendererFloat framebuffer clear, called from Qt QRhi::endFrame; the decoder
+threads are not faulting. The current platform probe never considers Metal.
+Probe Cocoa's native Metal backend before OpenGL, preserve explicit renderer
+overrides, and invalidate only the obsolete internal Cocoa probe cache. Verify
+normal untraced ZIP/DMG launches and the actual redesign/video with that backend.
+The same run observes a rendered, opaque subtitle region at bottom-left y16..40
+inside the600x420 main window, beneath its bottom controls; the floating view
+has no such overlap. Default macOS/Linux desktop subtitles to the video area
+using the existing spu-fill option, retaining explicit user overrides and the
+Windows/mobile defaults. Inspect main, floating and restored subtitle pixels.
 Linux installable copies must preserve the portable payload's internal library
 links, bytes and modes; dereferencing links is not identical-payload delivery.
 
