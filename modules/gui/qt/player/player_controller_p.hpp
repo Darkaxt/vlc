@@ -118,6 +118,7 @@ public:
     float m_engineRate = 1.f, m_engineVolume = 1.f;
     bool m_engineMuted = false;
     int m_engineAudioDelay = 0, m_engineSubtitleDelay = 0;
+    QList<int> m_engineVideoTracks, m_engineAudioTracks, m_engineSubtitleTracks;
     quint64 m_mpvMediaRevision = 0;
     std::shared_ptr<MpvPlaylistRequest> m_mpvPlaylistRequest;
     quint64 m_mpvPlaylistRevision = 0;

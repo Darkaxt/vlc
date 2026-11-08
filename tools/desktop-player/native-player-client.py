@@ -153,7 +153,7 @@ class NativePlayerClient:
         before = self.snapshot()
         fields = dict(revision=before['revision'], await_core=key, await_value=value,
                       await_comparison=comparison, await_tolerance=tolerance)
-        if key in ('position', 'time_seconds') or key.startswith('mpv_audio_'):
+        if key in ('position', 'time_seconds', 'selected_subtitle_count') or key.startswith('mpv_audio_'):
             fields['await_media_url'] = before.get('core', {}).get('url', '')
         return self.snapshot(**fields)
 

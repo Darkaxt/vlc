@@ -80,6 +80,16 @@ visible in the floating video. Keep native MPV text subtitles within the video
 area and verify actual main/floating/restored subtitle pixels. Preserve Windows
 rendering and authored ASS placement.
 
+The integrated native handover snapshots also expose a lost subtitle selection
+in both directions. Preserve the same input's selected track ordinals within
+each category, including disabled selections, without transferring VLC ES ids
+into MPV's different id namespace. Confirm the incoming selection after handover.
+The native macOS VLC captures currently show subtitles but no video through
+the default sample-buffer display; playback state alone does not satisfy picture
+acceptance. Inspect its actual Cocoa view/layer state before changing rendering.
+Complete native image-preview and video/audio/video replacement checks as part
+of the same integrated workflow.
+
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master
 by normal merge history within M15 before the final architecture/package matrix

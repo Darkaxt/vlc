@@ -459,6 +459,18 @@ void PlayerController::switchPlaybackEngine(const QString &engine)
     d->m_enginePaused = getPlayingState() == PLAYING_STATE_PAUSED;
     d->m_engineRate = getRate(); d->m_engineVolume = getVolume(); d->m_engineMuted = isMuted();
     d->m_engineAudioDelay = getAudioDelayMS(); d->m_engineSubtitleDelay = getSubtitleDelayMS();
+    // Native ES ids and MPV ids describe different namespaces. The order of
+    // tracks within each category belongs to this same input, so retain those
+    // selections rather than copying an incompatible engine-specific id.
+    const auto selectedRows = [](const TrackListModel &model) {
+        QList<int> rows;
+        for (int i = 0; i < model.rowCount(); ++i)
+            if (model.data(model.index(i), Qt::CheckStateRole).toBool()) rows.append(i);
+        return rows;
+    };
+    d->m_engineVideoTracks = selectedRows(d->m_videoTracks);
+    d->m_engineAudioTracks = selectedRows(d->m_audioTracks);
+    d->m_engineSubtitleTracks = selectedRows(d->m_subtitleTracks);
     if (!usesMpv()) {
         // Paused native hotkeys can commit without another UI timer update.
         // The outgoing core owns the handover snapshot, not its cached labels.
@@ -648,6 +660,20 @@ void PlayerController::finishEngineHandoff()
     if (!d->m_engineSwitching || d->m_shutdownRequested || d->m_engineRestorePending) return;
     acknowledgeRestoreCallback();
     d->m_engineSeekPending = false; d->m_engineMpvSeekStarted = false;
+    // Apply after the incoming input's defaults and seek have settled. This
+    // also preserves an explicitly disabled category. Model setters route to
+    // the active engine and selection events remain the source of truth.
+    const auto restoreTracks = [](TrackListModel &model, const QList<int> &selected) {
+        for (int i = 0; i < model.rowCount(); ++i)
+            if (!selected.contains(i) && model.data(model.index(i), Qt::CheckStateRole).toBool())
+                model.setData(model.index(i), false, Qt::CheckStateRole);
+        for (const int i : selected)
+            if (i < model.rowCount() && !model.data(model.index(i), Qt::CheckStateRole).toBool())
+                model.setData(model.index(i), true, Qt::CheckStateRole);
+    };
+    restoreTracks(d->m_videoTracks, d->m_engineVideoTracks);
+    restoreTracks(d->m_audioTracks, d->m_engineAudioTracks);
+    restoreTracks(d->m_subtitleTracks, d->m_engineSubtitleTracks);
     if (usesMpv()) d->m_mpvHistoryReady = true;
     if (usesMpv()) d->m_mpv->set(QStringLiteral("pause"), d->m_enginePaused);
     else {

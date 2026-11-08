@@ -1,6 +1,27 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42460372344/job128668209191 from8a36a4374536936dc9c3666e34b0fd619c9700bc
+completed successfully (original watch82428 closed0). Native cancellation,
+original-source assembly, signed normal ZIP/DMG recovery, natural EOF, both
+engine workflows, handover, persisted engine and synthetic upstream-profile
+preservation pass their state checks. Inspected MPV main/floating/restored
+captures show actual video and visible subtitles. Native VLC captures show
+subtitles over an empty video area; both directions of handover lose the selected
+subtitle. These are internal R112 acceptance blockers, not a passing visual
+qualification. Read-only Cocoa layer diagnostics and track-selection restoration
+are being integrated with image/audio/video replacement verification.
+The generation-retention receipt retired its exact38 obsolete ancestor outputs
+and two superseded contrib working trees after replacement hashes passed; retained
+SDK/compiler/original sources remain. Saved cache10186190995 is4882991484 bytes
+(key ending42460372344), down from9273370301 bytes. Reuse it without a cold SDK
+build. Artifact13610410709 is2496502527 bytes, GitHub SHA256
+f073e47544ca4b0460371ebf9ed719e3ecc5387a150063475773bd8fa3a16a04.
+Selected evidence members were independently retrieved with CRC/SHA256 checks;
+the whole artifact digest has not been independently checked. Hosted post-job
+cleanup completed. M15 remains ACTIVE; other architectures/formats and Windows
+regression remain required before M16's one final release.
+
 Run42458288499/job128661924782 is the original managed continuation from
 53a6eeb1a7b9afd35c182f739ddcf76a1cd31264 (watch85565). It carries the
 isolated original contrib fetch and verified source-input retention. Actual
@@ -436,7 +457,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; pre-integration macOS ARM VLC/MPV/Qt build/install and app ZIP/DMG generation, dependency/architecture, strict signing and immutable MPV checks pass. Signed normal ZIP recovery/reuse passes; review plugin links/signs/restores normal objects. Actual Qt UI, embedded subtitle selection and paused/seekable VLC state observed; supported Core context and no unsolicited LAN discovery verified. Upstream97-commit source merge resolved. | R111 integrated compilation, remaining architectures, recovered-format installation and complete source/licenses; R112 actual video/audio/subtitle/seek/handover/miniplayer/profile workflows; R113 integrated native/Windows regression and final matrix qualification. | Native video picture remains blank in the inspected pre-integration capture and paused seek jumps to598s with both hardware/software decoding. Integrated native verification required. Internal blockers, no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. macOS ARM integrated build, complete original-source assembly, signed ZIP/DMG generation/recovery and natural EOF pass. MPV main/floating/expanded/restored video and subtitles inspected; both engines' seek/audio/floating/persistence/profile state checks pass. Hosted retention reduces cache while retaining inputs. | R111 remaining architectures/formats, current source/license/symbol and recovered-package qualification; R112 native VLC picture, handover track preservation and image/audio/video replacement; R113 integrated Windows regression and final matrix qualification. | Native VLC default display captures blank video, handover loses selected subtitles. Corrections/diagnostics integrated; native revalidation required. Earlier failures remain historical evidence. Other native criteria remain internal acceptance blockers; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch

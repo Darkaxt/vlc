@@ -42,6 +42,16 @@ def prepare_fixture(root):
     return video
 
 
+def prepare_replacements(root):
+    image = root / 'native-image.png'
+    audio = root / 'native-audio.wav'
+    run('ffmpeg', '-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i',
+        'color=c=0x2b83b8:size=640x360', '-frames:v', '1', '-threads', '1', image)
+    run('ffmpeg', '-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i',
+        'sine=frequency=800:sample_rate=48000', '-t', '30', '-c:a', 'pcm_s16le', audio)
+    return image, audio
+
+
 def inspect_result(result):
     if result.get('qml_errors'):
         raise RuntimeError('Native QML errors: ' + json.dumps(result['qml_errors']))
@@ -85,7 +95,7 @@ def profile_hashes(home, roots):
             for root in roots for path in root.rglob('*') if path.is_file()}
 
 
-def check_engine(executable, root, fixture, engine, software_decoding=False):
+def check_engine(executable, root, fixture, replacements, engine, software_decoding=False):
     case = root / engine
     case.mkdir()
     evidence = case / 'evidence'; evidence.mkdir()
@@ -191,7 +201,37 @@ def check_engine(executable, root, fixture, engine, software_decoding=False):
             save('handover', client.action('click', name=other))
             save('handover-engine', client.await_core('engine', other.lower()))
             save('handover-settled', client.await_core('engine_switching', False))
-            save('handover-picture', client.snapshot(capture=True, capture_native=True))
+            save('handover-subtitle-selected', client.await_core('selected_subtitle_count', 1))
+            handed = save('handover-picture', client.snapshot(capture=True, capture_native=True))
+            assert handed['core']['state'] == 2, handed['core']
+            assert abs(handed['core']['rate'] - 1) < 0.01, handed['core']
+            assert abs(handed['core']['audio_session_volume'] - requested) < 0.026, handed['core']
+            assert handed['core']['time_seconds'] >= 60, handed['core']
+            save('close-settings', client.action('key', key=0x1000000))
+            image, audio = replacements
+            save('replace-with-image', client.action('drop', target='viewLoader', urls=[image.as_uri()]))
+            save('image-input', client.await_core('url', image.as_uri()))
+            preview = save('image-preview', client.await_core('still_image_preview', True))
+            assert not any(node['id'] == 'progressSlider' and node['visible'] and node['enabled']
+                           for node in preview['tree']), 'The image preview exposes a timed seek control'
+            save('image-picture', client.snapshot(capture=True, capture_native=True))
+            save('replace-with-audio', client.action('drop', target='viewLoader', urls=[audio.as_uri()]))
+            save('audio-input', client.await_core('url', audio.as_uri()))
+            save('audio-loaded', client.await_core('state', [2, 3], comparison='one_of'))
+            save('audio-layout-ready', client.await_property('playerSpecializationLoader', 'status', 1))
+            save('audio-view', client.await_property('playerAudioView', 'visible', True))
+            audio_state = save('audio-picture', client.snapshot(capture=True, capture_native=True))
+            assert audio_state['core']['audio_tracks'] and not audio_state['core']['video_tracks'], audio_state['core']
+            assert not audio_state['core']['still_image_preview'], audio_state['core']
+            save('replace-with-video', client.action('drop', target='viewLoader', urls=[fixture.as_uri()]))
+            save('video-input', client.await_core('url', fixture.as_uri()))
+            save('video-loaded', client.await_core('state', [2, 3], comparison='one_of'))
+            save('video-layout-ready', client.await_property('playerSpecializationLoader', 'status', 1))
+            save('video-view', client.await_property('playerVideoSurface', 'visible', True))
+            if other == 'MPV':
+                save('replacement-video-ready', client.await_core('mpv_video_ready', True))
+            replacement = save('replacement-picture', client.snapshot(capture=True, capture_native=True))
+            assert replacement['core']['video_tracks'] and replacement['core']['audio_tracks'], replacement['core']
             captures = [json.loads(path.read_text()) for path in evidence.glob('*.json')
                         if len(path.stem) == 32 and path.stem.isalnum()]
             native = [row for row in captures if 'native_capture_saved' in row]
@@ -253,8 +293,9 @@ def main():
     root = args.scratch.resolve()
     root.mkdir(parents=True, exist_ok=False)
     fixture = prepare_fixture(root)
+    replacements = prepare_replacements(root)
     for engine in ('mpv', 'vlc') if args.engine == 'both' else (args.engine,):
-        check_engine(args.executable.resolve(), root, fixture, engine, args.vlc_software_decoding)
+        check_engine(args.executable.resolve(), root, fixture, replacements, engine, args.vlc_software_decoding)
 
 
 if __name__ == '__main__':

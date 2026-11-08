@@ -57,6 +57,11 @@
 #include <cstdlib>
 #include <functional>
 #include <utility>
+#ifdef __APPLE__
+#include <objc/message.h>
+#include <objc/runtime.h>
+#include <dlfcn.h>
+#endif
 #include "util/accessible_compat_attached.hpp"
 #include "player/player_controller.hpp"
 #include "player/mpv_playback.hpp"
@@ -69,6 +74,65 @@
 
 class PlayerDiagnostics final : public QObject
 {
+#ifdef __APPLE__
+    // Read only our own Cocoa view/layer graph. AVSampleBufferDisplayLayer
+    // presentation is independent of Qt's Quick framebuffer and must be
+    // distinguished from a missing composed capture before changing playback.
+    static QJsonObject cocoaGraphicsObject(id object, bool view)
+    {
+        const auto get = [](id receiver, const char *selector) -> id {
+            return reinterpret_cast<id (*)(id, SEL)>(objc_msgSend)(receiver, sel_registerName(selector));
+        };
+        const auto responds = [](id receiver, const char *selector) {
+            return reinterpret_cast<BOOL (*)(id, SEL, SEL)>(objc_msgSend)(receiver,
+                sel_registerName("respondsToSelector:"), sel_registerName(selector));
+        };
+        const auto string = [&get](id value) {
+            const auto description = get(value, "description");
+            const auto bytes = reinterpret_cast<const char *(*)(id, SEL)>(objc_msgSend)(description,
+                sel_registerName("UTF8String"));
+            return QString::fromUtf8(bytes ? bytes : "");
+        };
+        QJsonObject row{{QStringLiteral("class"), QString::fromUtf8(object_getClassName(object))}};
+        for (const char *key : {"frame", "bounds", "hidden", "opaque", "status", "error",
+                               "readyForMoreMediaData", "requiresFlushToResumeDecoding", "preventsCapture"}) {
+            if (!responds(object, key)) continue;
+            id name = reinterpret_cast<id (*)(id, SEL, const char *)>(objc_msgSend)(
+                reinterpret_cast<id>(objc_getClass("NSString")), sel_registerName("stringWithUTF8String:"), key);
+            id value = reinterpret_cast<id (*)(id, SEL, id)>(objc_msgSend)(object, sel_registerName("valueForKey:"), name);
+            row.insert(QString::fromLatin1(key), string(value));
+        }
+        if (responds(object, "sampleBufferRenderer")) {
+            id renderer = get(object, "sampleBufferRenderer");
+            if (responds(renderer, "copyDisplayedPixelBuffer")) {
+                id buffer = get(renderer, "copyDisplayedPixelBuffer");
+                row.insert(QStringLiteral("displayed_pixel_buffer"), buffer != nil);
+                if (buffer) {
+                    for (const char *dimension : {"CVPixelBufferGetWidth", "CVPixelBufferGetHeight"}) {
+                        auto size = reinterpret_cast<size_t (*)(id)>(dlsym(RTLD_DEFAULT, dimension));
+                        if (size) row.insert(QString::fromLatin1(dimension), int(size(buffer)));
+                    }
+                    auto release = reinterpret_cast<void (*)(id)>(dlsym(RTLD_DEFAULT, "CFRelease"));
+                    if (release) release(buffer);
+                }
+            }
+        }
+        QJsonArray children;
+        id array = get(object, view ? "subviews" : "sublayers");
+        const auto count = reinterpret_cast<unsigned long (*)(id, SEL)>(objc_msgSend)(array, sel_registerName("count"));
+        for (unsigned long i = 0; i < count; ++i) {
+            id child = reinterpret_cast<id (*)(id, SEL, unsigned long)>(objc_msgSend)(array,
+                sel_registerName("objectAtIndex:"), i);
+            children.append(cocoaGraphicsObject(child, view));
+        }
+        row.insert(QStringLiteral("children"), children);
+        if (view && responds(object, "layer")) {
+            id layer = get(object, "layer");
+            if (layer) row.insert(QStringLiteral("layer"), cocoaGraphicsObject(layer, false));
+        }
+        return row;
+    }
+#endif
 public:
     ~PlayerDiagnostics() override {
         qApp->removeEventFilter(this);
@@ -390,6 +454,12 @@ private:
         // VLC's player lock, rather than from the UI's interpolated seek timer.
         const QVariant ui = m_waitExpression ? m_waitExpression->evaluate() : QVariant();
         const QString property = command.value(QStringLiteral("await_core")).toString();
+        if (property == QStringLiteral("selected_subtitle_count")) {
+            int selected = 0;
+            for (const auto &track : coreSnapshot().value(QStringLiteral("subtitle_tracks")).toArray())
+                selected += track.toObject().value(QStringLiteral("selected")).toBool();
+            return selected;
+        }
         return property.isEmpty() ? ui : coreSnapshot().value(property).toVariant();
     }
 
@@ -821,6 +891,7 @@ private:
                 {QStringLiteral("rate"), QStringLiteral("rate")},
                 {QStringLiteral("audio_delay_ms"), QStringLiteral("audioDelayMS")},
                 {QStringLiteral("subtitle_delay_ms"), QStringLiteral("subtitleDelayMS")},
+                {QStringLiteral("selected_subtitle_count"), QStringLiteral("subtitleTracks")},
                 {QStringLiteral("engine"), QStringLiteral("playbackEngine")},
                 {QStringLiteral("engine_switching"), QStringLiteral("engineSwitching")},
                 {QStringLiteral("audio_session_volume"), QStringLiteral("volume")},
@@ -1107,6 +1178,10 @@ private:
                         && qEnvironmentVariableIntValue("VLC_NATIVE_CI_CAPTURE") == 1) {
                         QWindow *nativeWindow = nativeTopLevel(observationWindow());
                         const auto nativeId = nativeWindow ? nativeWindow->winId() : WId(0);
+#ifdef __APPLE__
+                        if (nativeId) result.insert(QStringLiteral("cocoa_graphics"),
+                            cocoaGraphicsObject(reinterpret_cast<::id>(nativeId), true));
+#endif
                         QPixmap pixels;
                         if (nativeId && nativeWindow->isVisible() && nativeWindow->screen())
                             pixels = nativeWindow->screen()->grabWindow(nativeId);
@@ -1197,6 +1272,10 @@ private:
             render();
         };
         connect(expression, &QQmlExpression::valueChanged, this, check);
+        if (awaitCore == QStringLiteral("selected_subtitle_count")) {
+            connect(m_player->getSubtitleTracks(), &QAbstractItemModel::dataChanged, expression, check);
+            connect(m_player->getSubtitleTracks(), &QAbstractItemModel::modelReset, expression, check);
+        }
         if (awaitCore.startsWith(QStringLiteral("mpv_audio_")) && m_player->usesMpv()) {
             auto *mpv = m_player->mpvPlayback();
             connect(mpv, &MpvPlayback::changed, expression, check);
