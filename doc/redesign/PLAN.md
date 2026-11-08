@@ -101,6 +101,14 @@ through cache/artifact/cleanup completion.
 Intel continuation42478095674/job128723887781 (watch91262) is active at
 934f87f420a57a85912077f827e9128684aed21a; Linux42478117547 is its single pending
 continuation at the same revision. No final release has been published.
+Windows supplementary formats: the installed7z executable is available at
+C:/Users/darka/scoop/shims/7z.exe. The maintained package helper can produce7z
+from exactly the same stripped, empty-profile portable tree, with one compressor
+thread and a32MiB dictionary; actual archive/extraction verification remains at
+final packaging. PATH and the successful Everything inventory find no makensis,
+wix or candle executable on this host. Record the pinned native toolchain's
+installer prerequisite inventory before closing the Windows installer attempt;
+do not substitute an unrelated installer or change installed-player integration.
 
 **Earlier M15 investigation checkpoints (historical; current status above).**
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)

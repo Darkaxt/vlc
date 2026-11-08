@@ -56,6 +56,8 @@ def main():
     parser.add_argument('--source-commit', required=True)
     parser.add_argument('--version', required=True)
     parser.add_argument('--include-mpv', action='store_true')
+    parser.add_argument('--seven-zip', type=Path,
+        help='Also create a portable7z with this explicitly selected installed7z executable')
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     runtime, destination = args.runtime.resolve(), args.destination.resolve()
@@ -256,6 +258,19 @@ def main():
     result = {'package': str(package), 'archive': str(archive), 'archive_sha256': sha256(archive),
         'archive_bytes': archive.stat().st_size, 'source_commit': args.source_commit, 'normal_marker_scan_passed': True,
         'delivery_verification': 'Pending independent extraction/native verification and published readback.'}
+    if args.seven_zip:
+        seven_zip = args.seven_zip.resolve(strict=True)
+        assert seven_zip.is_file() and seven_zip.suffix.lower() == '.exe'
+        archive_7z = destination / (name + '.7z')
+        assert not archive_7z.exists()
+        # Use the exact same empty-profile portable tree. Bound compressor
+        # threads/dictionary; SDKs, evidence and separate symbols stay outside.
+        subprocess.run([str(seven_zip), 'a', '-t7z', '-mx=5', '-mmt=1', '-md=32m',
+            '-bd', '-y', str(archive_7z), name], cwd=destination, check=True)
+        subprocess.run([str(seven_zip), 't', '-mmt=1', '-bd', str(archive_7z)], check=True)
+        result.update(archive_7z=str(archive_7z), archive_7z_sha256=sha256(archive_7z),
+            archive_7z_bytes=archive_7z.stat().st_size,
+            seven_zip_command=str(seven_zip), seven_zip_command_sha256=sha256(seven_zip))
     (destination / 'package-result.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(result, indent=2), flush=True)
 
