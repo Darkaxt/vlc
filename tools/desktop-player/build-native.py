@@ -46,7 +46,8 @@ def stop_command(process):
         if int(group) == process.pid and not state.startswith('Z'):
             members.append(int(pid))
     if platform.system() == 'Darwin':
-        with select.kqueue() as queue:
+        queue = select.kqueue()
+        try:
             watched = set()
             for pid in members:
                 try:
@@ -59,6 +60,8 @@ def stop_command(process):
             while watched:
                 for event in queue.control(None, len(watched)):
                     watched.discard(event.ident)
+        finally:
+            queue.close()
     else:
         descriptors = []
         try:

@@ -522,6 +522,20 @@ def package_mac(work, installed, out, version, arch):
         '-format', 'UDZO', out / f'Modern-VLC-Fork-{version}-macos-{arch}.dmg')
 
 
+def stage_linux_system_payload(app, root):
+    """Give installable packages the same player plus real desktop entry points."""
+    shutil.copytree(app, root / 'opt/modern-vlc')
+    launcher = root / 'usr/bin/modern-vlc'
+    launcher.parent.mkdir(parents=True)
+    write_executable(launcher, '#!/bin/sh\nexec /opt/modern-vlc/modern-vlc "$@"\n')
+    desktop = root / 'usr/share/applications/modern-vlc.desktop'
+    desktop.parent.mkdir(parents=True)
+    shutil.copy2(app / 'modern-vlc.desktop', desktop)
+    icon = root / 'usr/share/icons/hicolor/256x256/apps/modern-vlc.png'
+    icon.parent.mkdir(parents=True)
+    shutil.copy2(app / 'modern-vlc.png', icon)
+
+
 def package_linux(work, installed, out, version, arch):
     app = out / f'Modern-VLC-Fork-{version}-linux-{arch}'
     if app.exists():
@@ -567,20 +581,23 @@ exec "$root/bin/vlc" --intf=qt "$@"
     audit_package(app, app / 'bin/vlc', arch, app / 'NATIVE-PACKAGE.json')
     with tarfile.open(out / (app.name + '.tar.xz'), 'w:xz') as archive:
         archive.add(app, arcname=app.name)
-    deb = work / 'deb'
-    target = deb / 'opt/modern-vlc'; target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(app, target)
+    staging = work / 'linux-package-staging' / out.name
+    staging.mkdir(parents=True, exist_ok=False)
+    system_payload = staging / 'system'
+    stage_linux_system_payload(app, system_payload)
+    deb = staging / 'deb'
+    shutil.copytree(system_payload, deb)
     control = deb / 'DEBIAN'; control.mkdir()
     deb_arch = 'arm64' if arch == 'aarch64' else 'amd64'
     (control / 'control').write_text(f'Package: modern-vlc-fork\nVersion: {version}\nArchitecture: {deb_arch}\n'
         'Maintainer: Darkaxt\nDepends: libc6 (>= 2.38), libgl1, libegl1, libx11-6\n'
         'Description: Modern VLC Fork with the Qt redesign and VLC/MPV engines\n')
     run('dpkg-deb', '--build', '--root-owner-group', deb, out / f'{app.name}.deb')
-    rpm_root = work / 'rpm'
+    rpm_root = staging / 'rpm'
     for name in ('BUILD', 'BUILDROOT', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
         (rpm_root / name).mkdir(parents=True, exist_ok=True)
     with tarfile.open(rpm_root / 'SOURCES/payload.tar.gz', 'w:gz') as archive:
-        archive.add(app, arcname='modern-vlc')
+        archive.add(system_payload, arcname='.')
     spec = rpm_root / 'SPECS/modern-vlc.spec'
     spec.write_text(f'''Name: modern-vlc-fork
 Version: {version}
@@ -595,15 +612,19 @@ Modern VLC Fork with the Qt redesign and VLC/MPV engines.
 %prep
 %build
 %install
-mkdir -p %{{buildroot}}/opt
-tar -xzf %{{SOURCE0}} -C %{{buildroot}}/opt
+mkdir -p %{{buildroot}}
+tar -xzf %{{SOURCE0}} -C %{{buildroot}}
 %files
+%defattr(-,root,root,-)
 /opt/modern-vlc
+/usr/bin/modern-vlc
+/usr/share/applications/modern-vlc.desktop
+/usr/share/icons/hicolor/256x256/apps/modern-vlc.png
 ''')
     run('rpmbuild', '-bb', '--define', '_topdir ' + str(rpm_root), '--define', '__os_install_post %{nil}', spec)
     for artifact in (rpm_root / 'RPMS').rglob('*.rpm'):
         shutil.copy2(artifact, out / (app.name + '.rpm'))
-    snap = work / 'snap'; snap.mkdir(exist_ok=True)
+    snap = staging / 'snap'; snap.mkdir()
     shutil.copytree(app, snap / 'player')
     meta = snap / 'meta'; meta.mkdir()
     (meta / 'snap.yaml').write_text(f'''name: modern-vlc-fork
@@ -628,7 +649,7 @@ apps:
         urllib.request.urlretrieve('https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-' + arch, runtime)
     if sha(runtime) != runtime_pins[arch + '_sha256']:
         raise RuntimeError('AppImage runtime no longer matches the pinned digest')
-    squash = work / 'appimage.squashfs'
+    squash = staging / 'appimage.squashfs'
     run('mksquashfs', app, squash, '-noappend', '-comp', 'zstd', '-processors', '1', '-root-owned')
     image = out / (app.name + '.AppImage')
     with image.open('wb') as stream:

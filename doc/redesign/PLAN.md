@@ -1,6 +1,19 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42449059397/job128634188279 stopped before compilation at the new native
+cancellation check: select.kqueue has no context-manager protocol. The owned
+command group was killed, but the erroneous `with` prevented the completion
+receipt. Explicit close/finally now follows the existing native client pattern;
+its focused regression uses a non-context-manager queue and verifies consumed
+exit events. Original watch4642 closed1 after cache ending42449059397, artifact
+13604218795 (241354427 bytes, SHA256
+2c05b0754662e48dd1f079adb09f87cf0d33f252707c12912aff9cd0b0068708)
+and post-job cleanup. Actual hosted cancellation acceptance remains required.
+Linux DEB/RPM staging now includes /usr/bin, desktop and icon entry points
+alongside the unchanged /opt payload. All Linux format scratch is bound to its
+source generation, avoiding collisions with retained failed generations.
+Focused layout checks pass; native package/install acceptance remains required.
 Run42448400173/job128632185163 verified that AOM's actual Release cache passes
 and .aom/.luac/.protoc are reused. It was intentionally cancelled during
 configure to include the reproduced clock correction before compiling VLC.

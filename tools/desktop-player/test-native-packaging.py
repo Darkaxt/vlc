@@ -9,6 +9,7 @@ import subprocess
 import sys
 import uuid
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 sys.dont_write_bytecode = True
@@ -19,6 +20,50 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_cancelled_command_waits_for_native_descendants_and_closes_kqueue(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        # kqueue exposes close(), not a context-manager protocol. Its exit
+        # event must be consumed before the build may return to cache retention.
+        queue = SimpleNamespace(control=MagicMock(side_effect=[[], [SimpleNamespace(ident=22)]]),
+                                close=MagicMock())
+        process = SimpleNamespace(pid=11, wait=MagicMock())
+        with patch.object(build.os, 'killpg', create=True) as kill, \
+                patch.object(build.signal, 'SIGKILL', 9, create=True), \
+                patch.object(build, 'output', return_value='22 11 R\n'), \
+                patch.object(build.platform, 'system', return_value='Darwin'), \
+                patch.object(build.select, 'kqueue', return_value=queue, create=True), \
+                patch.object(build.select, 'kevent', create=True), \
+                patch.multiple(build.select, KQ_FILTER_PROC=-5, KQ_EV_ADD=1,
+                               KQ_EV_ONESHOT=16, KQ_NOTE_EXIT=0x80000000, create=True), \
+                patch('builtins.print'):
+            build.stop_command(process)
+        kill.assert_called_once_with(11, 9)
+        process.wait.assert_called_once()
+        self.assertEqual(queue.control.call_count, 2)
+        queue.close.assert_called_once()
+
+    def test_linux_installable_payload_has_real_desktop_entry_points(self):
+        root = Path(sys.argv_scratch) / ('linux-system-' + uuid.uuid4().hex)
+        app = root / 'portable'
+        app.mkdir(parents=True)
+        (app / 'modern-vlc').write_text('#!/bin/sh\n')
+        desktop = '[Desktop Entry]\nExec=modern-vlc %U\nIcon=modern-vlc\n'
+        (app / 'modern-vlc.desktop').write_text(desktop)
+        (app / 'modern-vlc.png').write_bytes(b'icon fixture')
+        target = root / 'system'
+        package.stage_linux_system_payload(app, target)
+        self.assertEqual((target / 'usr/bin/modern-vlc').read_text(),
+                         '#!/bin/sh\nexec /opt/modern-vlc/modern-vlc "$@"\n')
+        if os.name == 'posix':
+            self.assertTrue((target / 'usr/bin/modern-vlc').stat().st_mode & stat.S_IEXEC)
+        self.assertEqual((target / 'usr/share/applications/modern-vlc.desktop').read_text(), desktop)
+        self.assertEqual((target / 'usr/share/icons/hicolor/256x256/apps/modern-vlc.png').read_bytes(),
+                         (app / 'modern-vlc.png').read_bytes())
+        self.assertEqual((target / 'opt/modern-vlc/modern-vlc').read_bytes(),
+                         (app / 'modern-vlc').read_bytes())
+
     def test_aom_release_policy_accepts_upstream_flags_and_rejects_overrides(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
         build = importlib.util.module_from_spec(spec)
