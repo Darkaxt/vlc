@@ -1,6 +1,24 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Compiler-free debd6ade run42511680836 verifies all five extracted formats plus
+real DEB and strict Snap installation, both engines and2166 identical payload
+members. Only actual Fedora playback fails: Qt resolves all dependencies
+(ldd-r exit0), but X11 reports missing authorization. The container kept Docker's
+default hostname instead of the owned Xauthority local hostname. Bind that
+hostname explicitly without changing server authentication, then repeat the
+existing immutable artifact. Small evidence artifact13629553584 is275264B,
+SHA256d8a2e39f537f118f87705bc3313b529fa9b1cff2c4d666d81e6dfa1189af3541.
+Windows99 finished compilation/linking but failed because the continuation reused
+the completed immutable symbol manifest. Original320/641d79f1d35a40579837f9f9f812b150
+closed1 with empty group/no OOM. Read-only321/4eb928f61823410386bbb05280a9c0bf
+closed0. Corrected resume100/e65a8d0a1d884cbfb0bc1245d26893cb closed0/13.68s,
+empty group and private mounts released: all3345 objects retained, zero compiled,
+configuration unchanged, all417 PE/symbol mappings verified. Separate current
+symbols are /scratch/upstream-1.1.12-664f7f65-symbols; prior completed symbols and
+the host94526362 export remain intact. No runtime export or native acceptance is
+claimed by this assembly repair. Future source-only continuations start at
+player with the retained-cohort guard, not configure-player.
 Normal664f7f65 workflow42509190883 closed with packaging success and runtime
 verification failure. Build/package step ran18:19:34–18:36:55 UTC; cache generation
 was already reached18:21:55, so the whole interval is not compilation time.

@@ -50,7 +50,12 @@ def verify_rpm_installation(archive, fixture, expected, case):
     authority = Path(os.environ['XAUTHORITY']).resolve(strict=True)
     runtime = Path(os.environ['XDG_RUNTIME_DIR']).resolve(strict=True)
     name = 'vlc-rpm-acceptance-' + uuid.uuid4().hex
-    command = ['docker', 'run', '--name', name, '--label', 'vlc.native-acceptance=' + name,
+    # Xauthority's local records are bound to the owned display hostname.
+    # Docker's default container-ID hostname cannot select that same cookie.
+    # Preserve its existing hostname binding; do not relax X server access.
+    display_hostname = os.uname().nodename
+    command = ['docker', 'run', '--name', name, '--hostname', display_hostname,
+        '--label', 'vlc.native-acceptance=' + name,
         '--cpus=1', '--memory=3584m', '--memory-swap=4096m', '--pids-limit=256',
         '--mount', 'type=bind,src=' + str(HERE) + ',dst=/probe,readonly',
         '--mount', 'type=bind,src=' + str(case) + ',dst=/case',
@@ -72,8 +77,10 @@ def verify_rpm_installation(archive, fixture, expected, case):
             raise RuntimeError('RPM container launch/inspection failed; inspect container.log')
         observed = json.loads(inspection.stdout)[0]
         state = observed['State']
+        if observed['Config']['Hostname'] != display_hostname:
+            raise RuntimeError('RPM container lost its owned display hostname binding')
         (case / 'container-exit.json').write_text(json.dumps({
-            'id': observed['Id'], 'state': state}, indent=2) + '\n')
+            'id': observed['Id'], 'state': state, 'display_hostname': display_hostname}, indent=2) + '\n')
         if state['Running'] or result.returncode or state['ExitCode']:
             raise RuntimeError('Matching RPM installer/playback failed; inspect container.log and container-exit.json')
         record = json.loads((case / 'verification.json').read_text())

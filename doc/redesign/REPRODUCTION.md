@@ -31,6 +31,10 @@ RPM extraction must preserve archive modification times with cpio's
 default current timestamps invalidate VLC's size/mtime-bound index. Keep the
 normal relocated-cache check enabled; compiler-free workflow verification is
 the real regression check for this extraction repair.
+The Fedora acceptance container must retain the owned X display's local hostname
+with Docker's explicit hostname option. Its read-only Xauthority records match
+that hostname; a default container-ID hostname cannot select them. Preserve the
+cookie and X server access control, and record the inspected container hostname.
 
 Windows upstream acceptance currently binds normal run89 at5fcb86e9 and the
 diagnostic-only run91 at8063ad93. Run91 completed with group-empty/private-mount
