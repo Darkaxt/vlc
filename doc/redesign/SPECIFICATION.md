@@ -87,6 +87,12 @@ into MPV's different id namespace. Confirm the incoming selection after handover
 The native macOS VLC captures currently show subtitles but no video through
 the default sample-buffer display; playback state alone does not satisfy picture
 acceptance. Inspect its actual Cocoa view/layer state before changing rendering.
+Run42463140593 confirms a healthy AVSampleBufferDisplayLayer with a displayed
+640x368 pixel buffer but a video view at y461 outside its600x420 parent; the
+floating view is likewise at y196 outside its348x196 parent. Preserve local
+top-left placement when converting pixel lengths to Cocoa points, respecting
+the parent view's flipped coordinates. Verify actual main/floating/restored
+video and reject out-of-parent display frames; decoder readiness is insufficient.
 Complete native image-preview and video/audio/video replacement checks as part
 of the same integrated workflow.
 

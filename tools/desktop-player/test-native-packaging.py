@@ -23,6 +23,25 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_native_picture_rejects_decoded_video_outside_its_cocoa_parent(self):
+        spec = importlib.util.spec_from_file_location('native_verify', HERE / 'verify-native-player.py')
+        verify = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verify)
+        display = {'class': 'VLCSampleBufferDisplayView',
+                   'frame': 'NSRect: {{0, 461}, {600, 337}}'}
+        result = {'core': {'engine': 'vlc'}, 'cocoa_graphics': {
+            'bounds': 'NSRect: {{0, 0}, {600, 420}}', 'children': [display]}}
+        with self.assertRaises(AssertionError):
+            verify.inspect_cocoa_video_placement(result)
+        display['frame'] = 'NSRect: {{0, 41}, {600, 337}}'
+        verify.inspect_cocoa_video_placement(result)
+        result['cocoa_graphics']['bounds'] = 'NSRect: {{0, 0}, {348, 196}}'
+        display['frame'] = 'NSRect: {{0, 196}, {348, 196}}'
+        with self.assertRaises(AssertionError):
+            verify.inspect_cocoa_video_placement(result)
+        display['frame'] = 'NSRect: {{0, 0}, {348, 196}}'
+        verify.inspect_cocoa_video_placement(result)
+
     def test_hosted_cache_retirement_requires_complete_replacement_and_preserves_inputs(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
         build = importlib.util.module_from_spec(spec)

@@ -1,6 +1,22 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42463140593/job128676618203 from0b39f77834f56a112cb84c71f3db86441c548846
+completed successfully (original watch8561 closed0). Both handovers preserve
+selected subtitles; native image/audio/video replacement, engine persistence,
+normal signed ZIP/DMG recovery and natural EOF pass state checks. Actual MPV
+handover picture contains video and selected text. VLC remains blank: read-only
+Cocoa evidence shows a healthy displayed640x368 buffer but its display view is
+at y461 outside the600x420 parent (floating y196 outside348x196). This establishes
+a local/backing coordinate conversion defect. The correction converts lengths
+and respects flipped parent coordinates; native picture/placement acceptance
+remains pending. A focused regression rejects both observed offscreen frames.
+Cache key ending42463140593 is saved with the unchanged installed toolchain;
+SDK/compiler objects remain reusable. Artifact13610739350 is2497041235 bytes,
+GitHub SHA256469302ce5d8ce6302b4e91f3464579c6aa6b5989537094b574694d9bb590911a.
+Selected evidence CRC/SHA256 checks pass; whole-artifact digest is not independently
+verified. Hosted cleanup completed. Preserve this build as the next input.
+
 Run42460372344/job128668209191 from8a36a4374536936dc9c3666e34b0fd619c9700bc
 completed successfully (original watch82428 closed0). Native cancellation,
 original-source assembly, signed normal ZIP/DMG recovery, natural EOF, both

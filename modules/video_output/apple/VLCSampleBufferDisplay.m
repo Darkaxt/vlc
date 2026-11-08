@@ -956,8 +956,16 @@ API_AVAILABLE(tvos(17.0), visionos(1.0))
     VLCView *window = self.window;
     CGRect frame = CGRectMake(place->x, place->y, place->width, place->height);
 #if TARGET_OS_OSX
-    frame = [window convertRectFromBacking:frame];
-    frame.origin.y = window.bounds.size.height - frame.origin.y - frame.size.height;
+    // Placement is local to the video view, with a top-left pixel origin.
+    // convertRectFromBacking also transforms the backing-store origin; for a
+    // flipped embedded QNSView that moves the video outside its own bounds.
+    // Convert lengths only, then express the origin in the parent's coordinates.
+    NSSize offset = [window convertSizeFromBacking:NSMakeSize(place->x, place->y)];
+    frame.size = [window convertSizeFromBacking:frame.size];
+    frame.origin.x = NSMinX(window.bounds) + offset.width;
+    frame.origin.y = window.isFlipped
+        ? NSMinY(window.bounds) + offset.height
+        : NSMaxY(window.bounds) - offset.height - frame.size.height;
 #else
     CGFloat scale = window.contentScaleFactor;
     frame.origin.x /= scale;

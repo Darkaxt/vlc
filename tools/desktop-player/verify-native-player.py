@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import subprocess
 import uuid
 
@@ -56,6 +57,35 @@ def inspect_result(result):
     if result.get('qml_errors'):
         raise RuntimeError('Native QML errors: ' + json.dumps(result['qml_errors']))
     return result
+
+
+def inspect_cocoa_video_placement(result):
+    """Reject a decoded Cocoa picture placed outside its native parent view."""
+    if result['core']['engine'] != 'vlc' or 'cocoa_graphics' not in result:
+        return
+
+    def rectangle(value):
+        numbers = re.findall(r'-?\d+(?:\.\d+)?', value)
+        if len(numbers) != 4:
+            raise RuntimeError('Unexpected Cocoa rectangle: ' + value)
+        return tuple(map(float, numbers))
+
+    found = []
+
+    def visit(parent):
+        for child in parent.get('children', []):
+            if child.get('class') == 'VLCSampleBufferDisplayView':
+                x, y, width, height = rectangle(child['frame'])
+                bx, by, bw, bh = rectangle(parent['bounds'])
+                assert width > 0 and height > 0, child
+                assert (x >= bx - 1 and y >= by - 1 and
+                        x + width <= bx + bw + 1 and
+                        y + height <= by + bh + 1), {'parent': parent['bounds'], 'video': child['frame']}
+                found.append(child)
+            visit(child)
+
+    visit(result['cocoa_graphics'])
+    assert found, 'No native VLC display view in the Cocoa picture capture'
 
 
 def reveal_setting(client, name):
@@ -131,6 +161,9 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
 
     def save(label, result):
         inspect_result(result)
+        if label in ('main-picture', 'subtitle-picture', 'floating-picture',
+                     'expanded-picture', 'restored-picture', 'handover-picture', 'replacement-picture'):
+            inspect_cocoa_video_placement(result)
         records.append({'label': label, 'response_id': result['id']})
         (evidence / 'workflow.json').write_text(json.dumps(records, indent=2) + '\n')
         print(f'NATIVE {engine}: {label}', flush=True)

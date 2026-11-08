@@ -94,7 +94,7 @@ class PlayerDiagnostics final : public QObject
             return QString::fromUtf8(bytes ? bytes : "");
         };
         QJsonObject row{{QStringLiteral("class"), QString::fromUtf8(object_getClassName(object))}};
-        for (const char *key : {"frame", "bounds", "hidden", "opaque", "status", "error",
+        for (const char *key : {"frame", "bounds", "isFlipped", "hidden", "opaque", "status", "error",
                                "readyForMoreMediaData", "requiresFlushToResumeDecoding", "preventsCapture"}) {
             if (!responds(object, key)) continue;
             id name = reinterpret_cast<id (*)(id, SEL, const char *)>(objc_msgSend)(
