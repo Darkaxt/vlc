@@ -1,6 +1,14 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)
+successfully created the fresh candidate and staged MPV, then began AOM3.15.3.
+The owner stopped only that group before configure after finding its remaining
+3.15.2 assertion and unconditional copy-cache calls. Closed137, group empty,
+peak1.05GiB and zero OOM; preserve partial Ninja objects and original run87.
+Configure now reads selected codec versions from source recipes and skips both
+copy-cache calls when the native-ext4 policy explicitly disables them. Reconcile
+the original closed299 report before continuing the same pipeline state.
 Windows attempt86/gate296 (37b7521de9b24cd290c7f5c65b39e75b) stopped
 before compilation: its fresh-runtime helper was incorrectly given the retained
 1.1.11 assembly. That runtime remains unchanged. The source binding reached

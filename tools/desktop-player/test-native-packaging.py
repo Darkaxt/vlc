@@ -23,6 +23,18 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_windows_configure_reads_current_codec_versions(self):
+        path = HERE.parent / 'windows-player/configure-player.py'
+        tree = ast.parse(path.read_text())
+        start = next(index for index, node in enumerate(tree.body)
+            if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                and target.id == 'codec_modules' for target in node.targets))
+        import re
+        scope = {'re': re, 'args': SimpleNamespace(source=HERE.parents[1])}
+        exec(compile(ast.Module(body=tree.body[start:start + 2], type_ignores=[]),
+                     str(path), 'exec'), scope)
+        self.assertEqual(scope['codec_modules']['AOM'], ('aom', '3.15.3', 'libaom.a'))
+
     def test_windows_release_codec_versions_follow_the_delivered_revision(self):
         path = HERE.parent / 'windows-player/package-release.py'
         tree = ast.parse(path.read_text())

@@ -10,8 +10,15 @@ export AUTOM4TE="$source_root/tools/windows-player/autom4te-force.sh"
 test -x "$AUTOM4TE"
 cd "$source_root"
 /bin/sh ./bootstrap
-python3 "$source_root/tools/windows-player/cache-toolchain.py" create --qt-build
+cache_enabled=${VLC_PLAYER_COMPILE_CACHE:-1}
+if test "$cache_enabled" != 0; then
+    python3 "$source_root/tools/windows-player/cache-toolchain.py" create --qt-build
+else
+    test -n "${VLC_PLAYER_COMPILE_CACHE_REASON:-}"
+fi
 configure_result=0
 python3 "$source_root/tools/windows-player/configure-player.py" --source "$source_root" --build "$build_root" || configure_result=$?
-python3 "$source_root/tools/windows-player/cache-toolchain.py" release
+if test "$cache_enabled" != 0; then
+    python3 "$source_root/tools/windows-player/cache-toolchain.py" release
+fi
 exit "$configure_result"
