@@ -1299,7 +1299,14 @@ static void *Thread( void *obj )
 
         QSurfaceFormat compatibleFormat = format;
         compatibleFormat.setMajorVersion(3);
+#ifdef __APPLE__
+        // Cocoa exposes modern OpenGL through the 3.2 Core profile. Requesting
+        // 3.0 Core fails and incorrectly sends Qt Quick to the software backend,
+        // where the redesign's shader effects cannot render.
+        compatibleFormat.setMinorVersion(2);
+#else
         compatibleFormat.setMinorVersion(0);
+#endif
 
         // OpenGL ES does not have core/compatibility profiles:
         if (compatibleFormat.renderableType() == QSurfaceFormat::OpenGL)

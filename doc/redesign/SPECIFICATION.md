@@ -49,6 +49,21 @@ one normal versioned release through Darkaxt/vlc's established GitHub channel,
 independently retrieve/check its assets and update the existing weekly pipeline.
 Preserve verified1.1.11 until the new delivery and continuing build binding pass.
 
+Native acceptance exposed unsolicited LAN discovery during local-file playback:
+MediaLibrary::Init unconditionally enables every LAN discovery provider. Correct
+that startup path within M15: local-only/empty libraries must not start LAN
+providers; configured network roots (including unavailable shares) and explicit
+network-folder discovery/reload must retain their behavior. Do not accept a
+system permission prompt as a way to pass local playback verification. Correct
+the Cocoa OpenGL probe to request its supported 3.2 Core profile rather than
+falling back to Qt's shader-less software renderer after a 3.0 Core request.
+
+**8 November upstream synchronization, already authorized:** after M15's native
+deployment pipeline is working, integrate the then-current upstream master by
+normal merge history in M16 before final qualification/publication. Preserve the
+fork's interface, Windows MPV/DV runtime, native port and existing data. Refresh
+and record exact revisions at integration; a reported backlog count is not a pin.
+
 **7 November stabilization logging, R110 (M14), already authorized:**
 
 Delivered in normal1.1.11; [reconciliation](resources/m14-1.1.11-verification.json) records bounded retention, opt-out, startup timing, actual playback and independently verified release.

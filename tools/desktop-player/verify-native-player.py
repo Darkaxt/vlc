@@ -25,7 +25,12 @@ def run(*args):
 
 
 def prepare_fixture(root):
-    subtitles = root / 'native.srt'
+    # Keep the muxing input outside the playback folder. A matching sidecar
+    # would correctly auto-load as a second subtitle track beside the embedded
+    # track, making this embedded-subtitle acceptance fixture ambiguous.
+    mux_inputs = root / 'mux-inputs'
+    mux_inputs.mkdir()
+    subtitles = mux_inputs / 'native.srt'
     subtitles.write_text('1\n00:00:01,000 --> 00:00:15,000\nNative subtitle one\n\n'
                          '2\n00:00:20,000 --> 00:09:59,000\nNative subtitle two\n')
     video = root / 'native.mkv'
@@ -68,13 +73,19 @@ def check_engine(executable, root, fixture, engine):
     home = case / 'home'; home.mkdir()
     upstream_roots = seed_upstream_profile(home)
     before_upstream = profile_hashes(home, upstream_roots)
+    if platform.system() == 'Darwin':
+        # Select the actual fork setting for the Figma dark reference. Preserve
+        # the hosted machine's system appearance and synthetic upstream profile.
+        settings = home / 'Library/Preferences/io.github.darkaxt.modern-vlc/vlc-qt-interface.ini'
+        settings.parent.mkdir(parents=True)
+        settings.write_text('[MainWindow]\ncolor-scheme-index=2\n')
     token = uuid.uuid4().hex + uuid.uuid4().hex
     env = os.environ.copy()
     env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
         XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
         VLC_PLAYER_DIAGNOSTICS_DIR=str(evidence), VLC_PLAYER_DIAGNOSTICS_TOKEN=token,
         VLC_NATIVE_CI_CAPTURE='1', QT_FORCE_STDERR_LOGGING='1', LANG='C', LC_ALL='C',
-        QML_DISK_CACHE_PATH=str(case / 'qml-cache'))
+        QML_DISK_CACHE_PATH=str(case / 'qml-cache'), QT_LOGGING_RULES='qt.qpa.gl=true')
     # Darwin selects language through its environment/preferences, not VLC's
     # Windows --language option. one-instance and qt-updates-notif are likewise
     # conditional on DBus/Windows and UPDATE_CHECK; the isolated profile retains
@@ -174,6 +185,12 @@ def check_engine(executable, root, fixture, engine):
             if exit_code:
                 print((evidence / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)
                 raise RuntimeError('Owned native player exited with ' + str(exit_code))
+    stderr_text = (evidence / 'stderr.log').read_text(errors='replace')
+    if 'OpenGL (ES) 3.0 context creation failed.' in stderr_text:
+        raise RuntimeError('Native Qt graphics probe fell back after context creation failure')
+    if any('using services_discovery module "' + name + '"' in stderr_text
+           for name in ('bonjour', 'upnp', 'sap')):
+        raise RuntimeError('Local-only native playback unexpectedly started LAN discovery')
     # The live handover above saved the other engine. Reopen the same profile
     # without a command-line engine override to verify actual persistence.
     reopen = case / 'reopen'; reopen.mkdir()

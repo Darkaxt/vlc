@@ -129,6 +129,20 @@ Watch15558 closed1; cache ending42437395669 and artifact13599813927
 (SHA25649599a23c26b2bafe028cafedea8ef957d66e11ba9a2348703b931c89681ac5f)
 preserve recovery. Normal-object restoration passed. Actual native Qt/playback
 acceptance remains unsatisfied; this launcher correction is not a playback fix.
+Run42438592554/job128602810253 (a23f477c866fb2fd45a207fd6fb07b1a1bf142c9)
+opened the actual Qt redesign, paused/seekable VLC playback and subtitle menu.
+The embedded-subtitle test incorrectly also exposed its matching mux-input
+sidecar; that input is now outside the playback directory. Watch5691 closed1
+after cache/artifact13601270401 preservation (SHA256
+26a92a34bfd04d88358e00a863a67e0ad038f8367547618ff7fc06f358639ec4).
+Inspection of native capture871c03dfd1024205be153725cdc22116 exposed a local-network
+permission dialog covering the picture; stderr traces it to unconditional ML
+Bonjour/UPnP/SAP startup. Qt also failed its 3.0 Core probe and selected software
+rendering on Cocoa. The cohesive correction enables ML network discovery only
+for configured/explicit network roots and requests Cocoa's supported 3.2 Core
+profile. Actual repaired picture/workflows remain required; the obscured capture
+is not picture acceptance. Bounded artifact-member retrieval validates selected
+members only, not the complete package digest.
 Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
 retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
@@ -147,8 +161,21 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; full macOS ARM VLC/MPV/Qt build and install passed; retained object/configuration reuse, ncurses SDK and Vulkan C++ runtime corrections executed. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | Complete the running Mac package/runtime acceptance, remaining architectures and Linux display-session execution; no deferrals. |
-| M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; macOS ARM VLC/MPV/Qt build/install and app ZIP/DMG generation, dependency/architecture, strict signing and immutable MPV checks pass. Separate review plugin links/signs/restores normal objects exactly. Actual Qt UI and paused/seekable VLC state observed. | R111 remaining architectures, format installation and complete source/licenses; R112 unobscured actual video/audio/subtitle/seek/handover/miniplayer/profile workflows. | LAN permission prompt and Cocoa 3.0 Core probe failure traced; corrections prepared, native verification pending. Remaining criteria are internal blockers; no deferrals. |
+| M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | After M15, merge current upstream master; reconcile and qualify the integrated revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
+
+Upstream sync requested8 November after deployment-pipeline repair. Read-only
+fetch verifies origin Darkaxt/vlc, upstream videolan/vlc and upstream default
+master. Pinned comparison: fork a23f477c866fb2fd45a207fd6fb07b1a1bf142c9,
+upstream2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, 97 commits absent from both
+the working branch and master. No upstream integration or second stage started.
+M16 must refresh this comparison before its normal merge and final verification.
+
+The prepared Homebrew provenance collector retains each installed keg's actual
+recipe, install receipt and SBOM with hashes, separately from the unchanged
+compiler-cache key. A focused read-only SDK preservation check passes. Native
+collection and complete corresponding-source/license assembly remain required;
+the current API formula metadata alone is not an installed recipe snapshot.
 
 Preserve historical M6's exact native-cleanup limitation. S9 Rust has not started.
 Creator contact remains pending until usable macOS delivery; the selected X

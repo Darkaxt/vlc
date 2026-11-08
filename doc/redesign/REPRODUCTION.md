@@ -12,6 +12,27 @@ toolchain package/compiler identities bind the reusable objects. Preserve the
 original run/job and cache identities during repair; do not clean/reconfigure
 unchanged inputs or infer native playback from an uploaded artifact.
 
+Latest completed Mac ARM continuation: run42438592554/job128602810253,
+sourcea23f477c866fb2fd45a207fd6fb07b1a1bf142c9, original watch5691 closed1.
+Normal packaging/signing/architecture passed. The actual Qt player opened and
+reached paused, seekable VLC state; the subtitle fixture inadvertently exposed
+its matching sidecar. Keep the mux-input SRT outside the playback directory.
+Native capture871c03dfd1024205be153725cdc22116 was obscured by a macOS LAN
+permission prompt and does not prove video. Its stderr identifies unconditional
+ML LAN discovery and a failed Cocoa OpenGL3.0 Core probe. The corrected paths
+require fresh native verification, not prompt acceptance or forced test rendering.
+Cache ending42438592554 is the retained continuation input. Artifact13601270401
+has published SHA25626a92a34bfd04d88358e00a863a67e0ad038f8367547618ff7fc06f358639ec4.
+`tools/desktop-player/read-ci-evidence.py` retrieves explicit small ZIP members
+through authenticated GitHub redirect plus credential-free signed range reads;
+it checks selected CRC/digests and reports that the whole archive is unverified.
+Whole-package retrieval/digest checks remain required at delivery.
+
+The user requests upstream synchronization after this pipeline works. M16 owns
+the normal merge and integrated release qualification. Current read-only fetch:
+upstream master2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, 97 absent commits;
+refresh the exact revision at that boundary rather than integrating during M15.
+
 The new backend uses stock upstream MPV0.42.0, commit
 `b0841e8c4d156b8403dc1876c4cbd9011eb583f3`, on Cocoa and X11/XWayland, with a
 Qt-owned OpenGL render context. It does not require the Windows DV patch. The

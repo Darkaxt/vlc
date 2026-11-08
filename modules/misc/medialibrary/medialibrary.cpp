@@ -495,7 +495,35 @@ bool MediaLibrary::Init()
         return false;
     }
 
-    m_ml->setDiscoverNetworkEnabled( true );
+    // Network discovery starts Bonjour/UPnP/SAP providers. Opening a local file
+    // in an empty library must not request local-network access on macOS.
+    // Preserve discovery for existing network roots, including offline shares:
+    // their factory is unavailable until network discovery is enabled, and
+    // IFolder::mrl() reports its scheme through UnknownScheme in that case.
+    const auto roots = m_ml->roots( nullptr );
+    if ( roots != nullptr )
+    {
+        bool needsNetwork = false;
+        for ( const auto& root : roots->all() )
+        {
+            try
+            {
+                needsNetwork = root->mrl().compare( 0, 7, "file://" ) != 0;
+            }
+            catch ( const medialibrary::fs::errors::UnknownScheme& ex )
+            {
+                needsNetwork = ex.scheme() == "smb://";
+            }
+            catch ( const medialibrary::fs::errors::DeviceRemoved& )
+            {
+                // A missing local removable drive does not require the LAN.
+            }
+            if ( needsNetwork )
+                break;
+        }
+        if ( needsNetwork )
+            m_ml->setDiscoverNetworkEnabled( true );
+    }
 
     m_initialized = true;
     return true;
@@ -554,6 +582,8 @@ int MediaLibrary::Control( int query, va_list args )
             switch( query )
             {
                 case VLC_ML_ADD_FOLDER:
+                    if ( strncasecmp( mrl, "file://", 7 ) != 0 )
+                        m_ml->setDiscoverNetworkEnabled( true );
                     m_ml->discover( mrl );
                     break;
                 case VLC_ML_REMOVE_FOLDER:
@@ -563,6 +593,8 @@ int MediaLibrary::Control( int query, va_list args )
                     m_ml->banFolder( mrl );
                     break;
                 case VLC_ML_UNBAN_FOLDER:
+                    if ( strncasecmp( mrl, "file://", 7 ) != 0 )
+                        m_ml->setDiscoverNetworkEnabled( true );
                     m_ml->unbanFolder( mrl );
                     break;
                 case VLC_ML_SET_FOLDER_PUBLIC:
@@ -591,6 +623,8 @@ int MediaLibrary::Control( int query, va_list args )
         case VLC_ML_RELOAD_FOLDER:
         {
             auto mrl = va_arg( args, const char* );
+            if ( mrl != nullptr && strncasecmp( mrl, "file://", 7 ) != 0 )
+                m_ml->setDiscoverNetworkEnabled( true );
             if ( mrl == nullptr )
                 m_ml->reload();
             else

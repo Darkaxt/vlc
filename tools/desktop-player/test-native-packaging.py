@@ -19,6 +19,34 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_installed_homebrew_metadata_preserves_the_exact_recipe_and_sdk(self):
+        spec = importlib.util.spec_from_file_location('toolchain', HERE / 'bind-ci-toolchain.py')
+        toolchain = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(toolchain)
+        root = Path(sys.argv_scratch) / ('brew-metadata-' + uuid.uuid4().hex)
+        cellar = root / 'Cellar'
+        keg = cellar / 'qtbase/6.12.0_2'
+        (keg / '.brew').mkdir(parents=True)
+        originals = {'.brew/qtbase.rb': b'Exact installed recipe\n',
+                     'INSTALL_RECEIPT.json': b'{"version":"6.12.0_2"}\n',
+                     'sbom.spdx.json': b'{"SPDXID":"SPDXRef-DOCUMENT"}\n'}
+        for relative, content in originals.items():
+            (keg / relative).write_bytes(content)
+            (keg / relative).chmod(stat.S_IREAD)
+        destination = root / 'metadata'
+        raw = {'formulae': [{'name': 'qtbase', 'installed': [{'version': '6.12.0_2'}]}]}
+        with patch.object(toolchain.subprocess, 'check_output', return_value=str(cellar)):
+            toolchain.retain_brew_metadata(raw, destination)
+        rows = json.loads((destination / 'installed-metadata.json').read_text())
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['metadata_sha256'],
+            {relative: package.sha(keg / relative) for relative in originals})
+        for relative, content in originals.items():
+            self.assertEqual((destination / 'installed-metadata/qtbase/6.12.0_2' /
+                              Path(relative).name).read_bytes(), content)
+            self.assertEqual((keg / relative).read_bytes(), content)
+            self.assertFalse((keg / relative).stat().st_mode & stat.S_IWUSR)
+
     def test_macos_gui_plugin_keeps_source_runpath_without_mutating_sdk(self):
         root = Path(sys.argv_scratch) / ('qt-plugins-' + uuid.uuid4().hex)
         installed = root / 'sdk/plugins'
