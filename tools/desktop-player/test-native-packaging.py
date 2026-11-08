@@ -23,6 +23,26 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_mpv_library_only_migration_retains_objects_and_rejects_other_changes(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        src, prefix, work = Path('/owned/mpv-source'), Path('/owned/prefix'), Path('/owned/build')
+        options = ['-Dlibmpv=true', '-Dcplayer=false']
+        old = dict(source=str(src), prefix=str(prefix), options=options, compiler='', pkgconfig='')
+        with patch.object(Path, 'exists', return_value=True), \
+                patch.object(Path, 'read_text', return_value=json.dumps(old)), \
+                patch.object(Path, 'write_text'), patch.object(build.platform, 'system', return_value='Darwin'), \
+                patch.object(build, 'run') as run:
+            build.meson(work, 'mpv', src, prefix, options + ['-Dswift-build=disabled'], {})
+            self.assertEqual(run.call_args_list[0].args,
+                ('meson', 'configure', work / 'build-mpv', '-Dswift-build=disabled'))
+            self.assertEqual([call.args[0] for call in run.call_args_list], ['meson', 'ninja', 'ninja'])
+            run.reset_mock()
+            with self.assertRaisesRegex(RuntimeError, 'configuration differs'):
+                build.meson(work, 'mpv', src, prefix, options + ['-Dswift-build=disabled'], {'CC': 'different'})
+            run.assert_not_called()
+
     def test_windows_configure_reads_current_codec_versions(self):
         path = HERE.parent / 'windows-player/configure-player.py'
         tree = ast.parse(path.read_text())

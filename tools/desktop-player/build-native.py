@@ -181,7 +181,22 @@ def meson(work, name, src, prefix, options, env):
     binding = build / 'modern-vlc-configuration.json'
     if (build / 'build.ninja').exists():
         if not binding.exists() or binding.read_text() != signature:
-            raise RuntimeError(f'{name}: configuration differs from retained build; use a distinct build directory')
+            old = json.loads(binding.read_text()) if binding.exists() else None
+            new = json.loads(signature)
+            # This exact library-only repair removes mpv's unused standalone
+            # Swift window code, which references an unavailable MetalLayer on
+            # the Intel runner. Meson can retain all unaffected C/ObjC objects.
+            permitted = (name == 'mpv' and platform.system() == 'Darwin' and old
+                and {key: value for key, value in old.items() if key != 'options'} ==
+                    {key: value for key, value in new.items() if key != 'options'}
+                and new['options'] == old['options'] + ['-Dswift-build=disabled'])
+            if not permitted:
+                raise RuntimeError(f'{name}: configuration differs from retained build; use a distinct build directory')
+            run('meson', 'configure', build, '-Dswift-build=disabled', env=env)
+            (build / 'modern-vlc-library-only-migration.json').write_text(json.dumps({
+                'previous': old, 'current': new,
+                'reason': 'Qt owns the native window; libmpv uses the embedded OpenGL render API'}, indent=2) + '\n')
+            binding.write_text(signature)
     else:
         run('meson', 'setup', build, src, '--prefix=' + str(prefix), '--libdir=lib',
             '--buildtype=release', '-Db_ndebug=true', *options, env=env)
@@ -471,8 +486,11 @@ def main():
     mpv, record = source(work, 'mpv-' + pin['commit'],
         'https://codeload.github.com/mpv-player/mpv/tar.gz/' + pin['commit'])
     sources.append(record)
-    meson(work, 'mpv', mpv, prefix, ['-Dlibmpv=true', '-Dcplayer=false', '-Dbuild-date=false',
-        '-Dplain-gl=enabled', '-Dmanpage-build=disabled', '-Dhtml-build=disabled', '-Dtests=false'], env)
+    mpv_options = ['-Dlibmpv=true', '-Dcplayer=false', '-Dbuild-date=false',
+        '-Dplain-gl=enabled', '-Dmanpage-build=disabled', '-Dhtml-build=disabled', '-Dtests=false']
+    if native_mac:
+        mpv_options.append('-Dswift-build=disabled')
+    meson(work, 'mpv', mpv, prefix, mpv_options, env)
 
     # VLC's required medialibrary ABI is newer than Ubuntu's packaged ABI.
     if not native_mac:  # macOS's full upstream contrib already contains this ABI.

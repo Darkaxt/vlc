@@ -107,6 +107,7 @@ jobs:
             .desktop-sources/**/homebrew/**/manifest.json
             .desktop-build/vlc-build/config.log
             .desktop-build/build-*/meson-logs/meson-log.txt
+            .desktop-build/build-*/modern-vlc-library-only-migration.json
             ${{ runner.temp }}/native-player-review/acceptance/**
             ${{ runner.temp }}/native-player-review/*json
             ${{ runner.temp }}/native-player-review-session/*
@@ -117,4 +118,7 @@ jobs:
             ${{ runner.temp }}/native-package-checks/installer-exit.json
             ${{ runner.temp }}/native-package-checks/*/*-stdout.log
             ${{ runner.temp }}/native-package-checks/*/*-stderr.log
+            ${{ runner.temp }}/native-package-checks/*-installed/*json
+            ${{ runner.temp }}/native-package-checks/*-installed/*txt
+            ${{ runner.temp }}/native-package-checks/*-installed/container.log
             ${{ runner.temp }}/native-command-cancellation.json

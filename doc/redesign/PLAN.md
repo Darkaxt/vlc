@@ -21,6 +21,26 @@ Windows original state now continues in run89/gate301
 resolved raw MPV prefix bytes versus prior stripped mappings. AOM3.15.3,
 candidate notices and corrected configure passed; player compilation is active.
 No Windows native acceptance or new release is claimed.
+
+Current remaining acceptance: Intel Mac and both Linux architecture packages,
+matching installer execution, Windows normal compilation/native VLC+MPV/DV
+regression, and final one-revision qualification. M16 publication remains NOT
+STARTED. Linux continuation42476051222/job128718743422 (watch28845) is active at
+abdf01564bc; the scoped pkglibdir RPATH correction requires its actual audit.
+MacIntel42475641510 closed1 before VLC compilation: pinned unpatched MPV's
+unused Swift window sources reference MetalLayer when that class is unavailable.
+The supported library-only configuration disables Swift while keeping libmpv,
+plain OpenGL, native audio and Qt-owned windows. An identity-bound Meson
+reconfiguration preserves unaffected objects and rejects unrelated cache changes;
+its focused contract diagnostic passes, but actual native verification is pending.
+The matching RPM probe now installs/runs both engines in an official Fedora
+container bound to an inspected image ID; Snap qualification attempts real
+snapd/core24 installation with strict interfaces and no devmode/classic fallback.
+These new installer paths are implemented and await the Linux workflow; extraction
+alone remains insufficient. Preserve each failure, container/process exit and
+owned installation retirement evidence.
+
+**Earlier M15 investigation checkpoints (historical; current status above).**
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)
 successfully created the fresh candidate and staged MPV, then began AOM3.15.3.
 The owner stopped only that group before configure after finding its remaining

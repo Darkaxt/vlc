@@ -11,8 +11,10 @@ import json
 import os
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 import tarfile
+import uuid
 
 HERE = Path(__file__).resolve().parent
 # The existing bundle identity helper is platform independent: files, modes,
@@ -30,6 +32,103 @@ def run(*argv, **kwargs):
 def digest(path):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def verify_rpm_installation(archive, fixture, expected, case):
+    """Use a matching disposable distribution, preserving the host package DB."""
+    if not shutil.which('docker'):
+        raise RuntimeError('Matching RPM installation requires the hosted runner Docker engine')
+    run('docker', 'info', stdout=subprocess.DEVNULL)
+    # Resolve the official reference once, then run only the inspected immutable
+    # image ID. Record its repository digest and actual OS/package database.
+    reference = 'registry.fedoraproject.org/fedora:45'
+    run('docker', 'pull', reference)
+    image = json.loads(subprocess.check_output(['docker', 'image', 'inspect', reference]))[0]
+    (case / 'image.json').write_text(json.dumps({key: image[key] for key in
+        ('Id', 'RepoDigests', 'Architecture', 'Os')}, indent=2) + '\n')
+    (case / 'expected-payload.json').write_text(json.dumps(expected, sort_keys=True) + '\n')
+    authority = Path(os.environ['XAUTHORITY']).resolve(strict=True)
+    runtime = Path(os.environ['XDG_RUNTIME_DIR']).resolve(strict=True)
+    name = 'vlc-rpm-acceptance-' + uuid.uuid4().hex
+    command = ['docker', 'run', '--name', name, '--label', 'vlc.native-acceptance=' + name,
+        '--cpus=1', '--memory=3584m', '--memory-swap=4096m', '--pids-limit=256',
+        '--mount', 'type=bind,src=' + str(HERE) + ',dst=/probe,readonly',
+        '--mount', 'type=bind,src=' + str(case) + ',dst=/case',
+        '--mount', 'type=bind,src=' + str(archive) + ',dst=/input/player.rpm,readonly',
+        '--mount', 'type=bind,src=' + str(fixture) + ',dst=/input/natural-eof.mkv,readonly',
+        '--mount', 'type=bind,src=' + str(authority) + ',dst=/input/xauthority,readonly',
+        '--mount', 'type=bind,src=/tmp/.X11-unix,dst=/tmp/.X11-unix,readonly',
+        '--mount', 'type=bind,src=' + str(runtime) + ',dst=/session-runtime',
+        '--env', 'DISPLAY=' + os.environ['DISPLAY'], '--env', 'XAUTHORITY=/input/xauthority',
+        '--env', 'PULSE_SERVER=unix:/session-runtime/pulse/native',
+        image['Id'], '/bin/sh', '/probe/probe-fedora-rpm.sh',
+        '--uid', str(os.getuid()), '--gid', str(os.getgid())]
+    try:
+        with (case / 'container.log').open('wb') as stream:
+            result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT)
+        inspection = subprocess.run(['docker', 'container', 'inspect', name],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if inspection.returncode:
+            raise RuntimeError('RPM container launch/inspection failed; inspect container.log')
+        observed = json.loads(inspection.stdout)[0]
+        state = observed['State']
+        (case / 'container-exit.json').write_text(json.dumps({
+            'id': observed['Id'], 'state': state}, indent=2) + '\n')
+        if state['Running'] or result.returncode or state['ExitCode']:
+            raise RuntimeError('Matching RPM installer/playback failed; inspect container.log and container-exit.json')
+        record = json.loads((case / 'verification.json').read_text())
+        if record['state'] != 'PASSED' or not record['owned_installation_removed']:
+            raise RuntimeError('Matching RPM installation did not qualify or retire')
+        return dict(record, image_id=image['Id'], archive_sha256=digest(archive))
+    finally:
+        # Name is unique and label-bound; this never targets another workload.
+        inspection = subprocess.run(['docker', 'container', 'inspect', name],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if inspection.returncode == 0:
+            owned = json.loads(inspection.stdout)[0]
+            if owned['Config']['Labels'].get('vlc.native-acceptance') != name:
+                raise RuntimeError('RPM container ownership changed')
+            if owned['State']['Running']:
+                run('docker', 'stop', '--time=-1', owned['Id'])
+            run('docker', 'rm', owned['Id'])
+
+
+def verify_snap_installation(archive, case, verify):
+    """Attempt the actual unsigned local package under strict confinement."""
+    # These commands affect only this disposable GitHub runner. No devmode,
+    # classic fallback, host security relaxation or store publication is used.
+    if not shutil.which('snap'):
+        run('sudo', '-n', 'apt-get', 'install', '-y', 'snapd')
+    run('sudo', '-n', 'systemctl', 'start', 'snapd.socket')
+    run('snap', 'wait', 'system', 'seed.loaded')
+    prior = subprocess.run(['snap', 'list', 'modern-vlc-fork'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if prior.returncode == 0 or Path('/snap/modern-vlc-fork').exists():
+        raise RuntimeError('Refusing to replace an existing Snap installation')
+    base = subprocess.run(['snap', 'list', 'core24'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if base.returncode:
+        run('sudo', '-n', 'snap', 'install', 'core24')
+    installed = False
+    try:
+        run('sudo', '-n', 'snap', 'install', '--dangerous', archive)
+        installed = True
+        for plug in ('desktop', 'desktop-legacy', 'x11', 'audio-playback', 'opengl', 'home'):
+            run('sudo', '-n', 'snap', 'connect', 'modern-vlc-fork:' + plug)
+        for name, argv in [('connections.txt', ['snap', 'connections', 'modern-vlc-fork']),
+                           ('confinement.txt', ['snap', 'debug', 'confinement']),
+                           ('installed.txt', ['snap', 'list', 'modern-vlc-fork', 'core24'])]:
+            with (case / name).open('w') as stream:
+                run(*argv, stdout=stream)
+        if (case / 'confinement.txt').read_text().strip() != 'strict':
+            raise RuntimeError('Hosted Snap confinement is not strict')
+        verify(Path('/snap/modern-vlc-fork/current/player'), case, archive,
+            'snap-installed', {'state': 'installed through snapd; strict confinement'},
+            Path('/snap/bin/modern-vlc-fork.modern-vlc'))
+    finally:
+        if installed:
+            run('sudo', '-n', 'snap', 'remove', '--purge', 'modern-vlc-fork')
+            if Path('/snap/modern-vlc-fork').exists():
+                raise RuntimeError('The owned Snap installation did not retire completely')
 
 
 def main():
@@ -141,6 +240,25 @@ def main():
             raise RuntimeError('The owned DEB installation did not retire completely')
     (args.scratch / 'installer-exit.json').write_text(json.dumps({
         'owned_deb_removed': True, 'original_installation_absent': True}, indent=2) + '\n')
+    # Finish both real installer attempts, retaining each exact failure instead
+    # of treating extraction as installability or skipping the second format.
+    failures = []
+    for kind in ('rpm', 'snap'):
+        case = args.scratch / (kind + '-installed'); case.mkdir()
+        try:
+            archive = packages / (normal.name + '.' + kind)
+            if kind == 'rpm':
+                rpm_result = verify_rpm_installation(archive, fixture, expected, case)
+                results.append(dict(rpm_result, format='rpm-installed', source_commit=record['source_commit']))
+            else:
+                verify_snap_installation(archive, case, verify)
+        except (OSError, RuntimeError, subprocess.CalledProcessError) as error:
+            failure = {'format': kind, 'state': 'FAILED', 'error': str(error)}
+            (case / 'failure.json').write_text(json.dumps(failure, indent=2) + '\n')
+            failures.append(failure)
+        (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')
+    if failures:
+        raise RuntimeError('Real installer qualification failed: ' + json.dumps(failures))
 
 
 if __name__ == '__main__':
