@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import tarfile
 
@@ -12,6 +13,26 @@ import tarfile
 def sha(path, algorithm='sha256'):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, algorithm).hexdigest()
+
+
+def stage_image_sources(repo, archives, retained):
+    """Stage only the two pinned source archives into native ext4 storage."""
+    spec = importlib.util.spec_from_file_location('image_source_inputs',
+        repo / 'tools/desktop-player/image_dependencies.py')
+    images = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(images)
+    for item in images.definitions(repo):
+        target = archives / item['archive']
+        if target.exists():
+            if sha(target, 'sha512') != item['sha512']:
+                raise RuntimeError('Retained native image source differs: ' + str(target))
+            continue
+        original = retained / item['archive']
+        if sha(original, 'sha512') != item['sha512']:
+            raise RuntimeError('Prepared image source differs: ' + str(original))
+        shutil.copy2(original, target)
+        if sha(target, 'sha512') != item['sha512']:
+            raise RuntimeError('Native image source transfer differs: ' + str(target))
 
 
 def main():
@@ -38,6 +59,8 @@ def main():
         PKG_CONFIG_LIBDIR=str(sdk / 'lib/pkgconfig'),
         PKG_CONFIG_PATH=str(sdk / 'lib/pkgconfig'), PKG_CONFIG_SYSROOT_DIR='/')
     image_work = base / 'image-dependencies'
+    stage_image_sources(repo, Path('/scratch/mpv-source-inputs'),
+        Path('/mnt/d/VLC-Redesign/build/windows-x64/mpv-source-inputs'))
     subprocess.run(['python3', '-B', str(repo / 'tools/desktop-player/image_dependencies.py'),
         '--repo', str(repo), '--work', str(image_work), '--prefix', str(prefix),
         '--archives', '/scratch/mpv-source-inputs', '--toolchain', str(cross_path)],

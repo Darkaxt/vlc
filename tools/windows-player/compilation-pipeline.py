@@ -55,6 +55,12 @@ def main():
     cgroup = Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip()
     assert cgroup.startswith('/llm-coordinator/'), 'Use the installed WSL gate'
     tools = args.source / 'tools/windows-player'
+    state = json.loads(args.state.read_text()) if args.state.exists() else {
+        'schema': 'vlc_redesign.compilation_pipeline.v1', 'attempts': [], 'steps': {}}
+    previous_configuration = state.get('steps', {}).get('configure-player', {})
+    configured_source = next((item.get('source_head') for item in state['attempts']
+        if item['run'] == previous_configuration.get('run') and
+           previous_configuration.get('status') == 'done'), None)
     sh = lambda name, *values: ['/bin/sh', str(tools / name), *map(str, values)]
     py = lambda name, *values: [sys.executable, '-B', str(tools / name), *map(str, values)]
     runtime_recipe = lambda phase: sh('build-mpv-runtime.sh', phase)
@@ -97,13 +103,12 @@ def main():
             ('upstream-codecs', py('build-upstream-codecs.py')),
             ('upstream-codec-cache-release', py('cache-toolchain.py', 'release')),
             ('upstream-codec-notices', py('prepare-upstream-codec-notices.py', '--notices', notices)),
-            ('configure-player', sh('configure-upstream-player.sh', args.source, args.build)),
+            ('configure-player', sh('configure-upstream-player.sh', args.source, args.build,
+                                   *([configured_source] if configured_source else []))),
             ('player', sh('build-player.sh', args.mode, args.source, args.build, args.runtime)),
         ]
     steps = select_compiler_cache_steps(steps)
     names = [name for name, _ in steps]
-    state = json.loads(args.state.read_text()) if args.state.exists() else {
-        'schema': 'vlc_redesign.compilation_pipeline.v1', 'attempts': [], 'steps': {}}
     assert state['schema'] == 'vlc_redesign.compilation_pipeline.v1'
     if args.after_interruption:
         assert state.get('status') in ('running', 'failed')

@@ -56,6 +56,7 @@ if test -z "$flags"; then
 fi
 # These generated headers belong to src's Automake graph, not an include
 # subdirectory Makefile. Explicit targets also support the first cold build.
+python3 "$source_root/tools/windows-player/release_profile.py" --write-object-profile "$build_root"
 make -C "$build_root/src" -j1 ../include/vlc_about.h fourcc_tables.h stamp-revision
 make -C "$build_root/compat" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" all-am
 make -C "$build_root/src" -j1 -f Makefile -f "$source_root/tools/windows-player/release-profile-objects.mk" libvlccore.la

@@ -54,10 +54,11 @@ def mac_link_rules(work, prefix):
     maps = work / 'link-maps'
     maps.mkdir(parents=True, exist_ok=True)
     rules = ['# Exact updated image archives for VLC, including recursive module builds.',
-        'override LIBZ = ' + str(prefix / 'lib/libz.a'),
+        'override LIBZ = -L' + str(prefix / 'lib') + ' -lz',
         'override libpng_plugin_la_LIBADD = ' + str(prefix / 'lib/libpng16.a') +
         ' ' + str(prefix / 'lib/libz.a') + ' $(LIBM)']
     filename = work / 'mac-image-links.mk'
+    rules.append('libvlc_mp4.la: ' + str(filename))
     for name in ('png', 'inflate', 'mkv', 'mp4', 'sap', 'avformat'):
         target = 'lib' + name + '_plugin.la'
         rules += [target + ': ' + str(prefix / 'lib/libz.a') + ' ' + str(filename),

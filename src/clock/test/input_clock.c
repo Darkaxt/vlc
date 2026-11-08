@@ -144,6 +144,45 @@ static void test_paused_pcr_updates(void)
     }
 }
 
+static bool test_paused_output_clock_reset(void)
+{
+    /* A seek finishes buffering against the frozen pause date. Resetting its
+     * output references must retain that date so resume shifts the new PCR
+     * and monotonic references by the actual pause duration, exactly once. */
+    for (unsigned resets = 0; resets <= 2; resets++)
+    {
+        vlc_clock_main_t *main = vlc_clock_main_New(&logger, NULL);
+        assert(main != NULL);
+        vlc_clock_main_Lock(main);
+        vlc_clock_t *output = vlc_clock_main_CreateMaster(main, "audio/test", NULL, NULL);
+        assert(output != NULL);
+        const vlc_tick_t paused_at = VLC_TICK_0 + VLC_TICK_FROM_SEC(10);
+        const vlc_tick_t resumed_at = paused_at + VLC_TICK_FROM_SEC(20);
+        const vlc_tick_t pts = VLC_TICK_0 + VLC_TICK_FROM_SEC(60);
+        vlc_clock_main_SetFirstPcr(main, paused_at, pts);
+        vlc_clock_Start(output, paused_at, pts);
+        vlc_clock_main_ChangePause(main, paused_at, true);
+        for (unsigned reset = 0; reset < resets; reset++)
+        {
+            vlc_clock_main_Reset(main);
+            vlc_clock_main_SetFirstPcr(main, paused_at, pts);
+            vlc_clock_Start(output, paused_at, pts);
+        }
+        vlc_tick_t before = vlc_clock_ConvertToSystem(output, paused_at, pts, 1., NULL);
+        vlc_clock_main_ChangePause(main, resumed_at, false);
+        vlc_tick_t after = vlc_clock_ConvertToSystem(output, resumed_at, pts, 1., NULL);
+        fprintf(stderr, "paused output reset=%u: shift=%"PRId64" expected=%"PRId64"\n",
+                resets, after - before, resumed_at - paused_at);
+        const bool valid = after - before == resumed_at - paused_at;
+        vlc_clock_main_Unlock(main);
+        vlc_clock_Delete(output);
+        vlc_clock_main_Delete(main);
+        if (!valid)
+            return false;
+    }
+    return true;
+}
+
 static void clock_update_abort(
     vlc_tick_t system_ts, vlc_tick_t ts, double rate,
     unsigned frame_rate, unsigned frame_rate_base, void *data)
@@ -212,5 +251,8 @@ int main(void)
     test_clock_update();
     fprintf(stderr, "test_paused_pcr_updates:\n");
     test_paused_pcr_updates();
+    fprintf(stderr, "test_paused_output_clock_reset:\n");
+    if (!test_paused_output_clock_reset())
+        return 1;
     return 0;
 }

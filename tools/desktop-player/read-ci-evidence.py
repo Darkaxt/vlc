@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read named small evidence files without downloading a native binary artifact.
+"""Read named diagnostic evidence without downloading a native binary artifact.
 
 Uses the current gh credential only for GitHub's artifact redirect. Signed blob
 range requests carry no GitHub credential. ZIP CRC validates selected members;
@@ -100,14 +100,22 @@ def main():
             if len(matches) != 1:
                 raise RuntimeError(f'Expected one evidence member {name}: {len(matches)}')
             entry = matches[0]
-            if entry.file_size > 4 * 1024 * 1024:
+            if entry.file_size > 4 * 1024 * 1024 and not entry.filename.endswith('.jsonl'):
                 raise RuntimeError('Selected evidence member exceeds the small-file boundary')
-            content = archive.read(entry)
             destination = args.destination / Path(name).name
-            with destination.open('xb') as stream:
-                stream.write(content)
-            members.append({'member': entry.filename, 'bytes': len(content),
-                            'sha256': hashlib.sha256(content).hexdigest(), 'path': str(destination)})
+            digest = hashlib.sha256()
+            size = 0
+            # Exact named trace files can exceed the screenshot boundary.
+            # Stream to EOF for ZIP CRC verification with bounded memory/ranges.
+            with destination.open('xb') as stream, archive.open(entry) as member:
+                while block := member.read(1024 * 1024):
+                    stream.write(block)
+                    digest.update(block)
+                    size += len(block)
+            if size != entry.file_size:
+                raise RuntimeError('Selected evidence member is truncated')
+            members.append({'member': entry.filename, 'bytes': size,
+                            'sha256': digest.hexdigest(), 'path': str(destination)})
     print(json.dumps({'artifact': args.artifact, 'range_bytes': source.downloaded,
                       'members': members, 'whole_artifact_hash_verified': False}, indent=2))
 

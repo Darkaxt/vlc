@@ -84,6 +84,16 @@ classification while paused, and retain backwards-PCR and resumed-gap detection.
 Verify the existing input-clock test with assertions enabled and real paused
 seeking in both engines; the reproduced failure remains historical evidence.
 
+The Intel44b811 trace additionally shows a resume after paused seeks starting
+audio19.18s late, while the output video clock discards frames and then waits
+for a future frame. A paused seek establishes new PCR references in the frozen
+pause domain; resetting output references must retain that domain's pause origin
+so resume shifts the new references exactly once. Reproduce with the real clock
+implementation for ordinary pause, one reset and repeated resets, then verify
+actual composed video/time alignment after paused seeking and floating restore.
+Retain the original trace and failed native picture evidence. A passing workflow
+without inspected timing/pictures does not satisfy this acceptance requirement.
+
 Native floating Queue expansion must not reenter an evaluating QML layout
 binding through synchronous height notifications. Apply geometry after the
 binding completes. Native MPV must attach its OpenGL child to the actual
@@ -181,6 +191,11 @@ runtime. Preserve the existing Windows64-bit zlib offset ABI, verify actual new
 archive linkage and matching sources/notices, and requalify affected image and
 compressed-media paths in the integrated delivery. Linux continues using its
 actual distribution-owned dependency graph and exact corresponding sources.
+Preserve completed compiler objects across a repaired failed link. Bind global
+object invalidation to effective compiler flags/config.h content rather than
+incidental configure timestamps. Reuse a verified configuration when its actual
+source inputs are unchanged; configuration regeneration must not accumulate
+SDK include/link additions or reorder arbitrary static library arguments.
 The integrated Windows observer must subscribe to the native MPV events whose
 properties it reads, including idle-active after Stop. Controller STOPPED alone
 can precede that native event; preserve the failed observation and prove the

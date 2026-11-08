@@ -1,6 +1,55 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Original Intel42495424689/watch88464 closed0. Artifact13624983673 is2555619623B,
+SHA25657960d76dd6ff0bcf46e6a029786001ee52c275487391b991d28babc0c7c64f9.
+Selected-member CRC/SHA retrieval is not whole-artifact verification. The full
+6.95MB VLC JSON trace SHA25601aab3b5078e459f8407a44f211c8954f3ad40b1b28d2a4e185835a51db68b04
+confirms resume19.38s after start, initially late output dates, and video PTS77
+held until audio catches up; restored picture03e260b0 shows frame60/core69.23652.
+Output clock reset discarded pause_date although the paused seek's new PCR uses
+the frozen pause domain. Gates315/f2fe900bbe294280960e64bf552b0fc6 and
+316/3c2b2579bcd3480e857b2de1929856cf closed0/group-empty/zeroOOM. The real native
+C regression exits1 on the original clock (paused reset loses the20s resume
+shift), and0 with the correction (zero/one/two resets each shift exactly20s).
+Original private source/mtime and core DLL were restored after reproduction.
+The tested correction is now integrated into production source; candidate SHA256
+1ed2ca24e851a7b3bc266d0813f50d4a6937d9ca36d39524b4315ea64950361d.
+Real native picture/time qualification remains required.
+Linux42499690300/job128792600068 is now running at7758874b, watch27756.
+Windows run95/gate313 a72a30c82eaa4aa5b3454e31dfde8bd2 closed1/group-empty/zeroOOM
+before image compilation because the two prepared D: archives were absent from
+native ext4 scratch and the isolated environment has no DNS. Transfer both exact
+SHA512-bound archives; original run96/gate31469ad296a7e0d4de980db44bf57daa6ed
+closed1/group-empty/zeroOOM after both new libraries and retained codecs passed.
+Libtool nested libz.a inside libvlc_mp4.a because the generated LIBZ was an
+absolute archive. Correct LIBZ to the scoped -L/-lz flags and relink its retained
+convenience archive when the rule changes; final maps still require exact new
+archive members and reject the old SDK. Resume this same failed player step,
+runtime and symbols, preserving all completed core/Qt/plugin objects. The
+maintained Windows builder now stages those exact archives before invoking the
+image helper, with a regression that rejects tampering and preserves mtimes.
+The retained configure arguments also prove repeated SDK include/link flag
+accumulation. Recover caller flags from config.status rather than generated
+Makefiles, remove only configure-owned additions, and preserve arbitrary static
+library order. Unchanged source configuration inputs reuse verified configuration;
+object invalidation now binds effective flags/config.h content, not incidental
+config.status timestamps. Focused regressions pass; real retained-build resumption
+and final qualification remain required before any release claim.
+Completed E: regression fixtures were transactionally retired:0a3747519ad7c4563c563f1844fdd1b5
+APPLIED860/509527B, plus1aa8c10cb2ff53a3ee5f75b3342b4854 APPLIED6 synthetic
+symlink names without traversal; initial misclassified inventory491f331e was discarded.
+Remote codex/native-desktop is verified at7758874b2ec2aa5a2ccd5c05d2a97f7779de5780,
+including the978212a4 merge and cohesive dependency/readiness/path repairs.
+Linux continuation42499690300 is pending behind the original Intel run; no
+second pending workflow is submitted. The Windows normal full-graph continuation
+is prepared as D:/VLC-Redesign/build/windows-x64/upstream-1.1.12-images-normal.py,
+bound to closed run94 ticket4ff8fef619b745be897b9d15a140019b. Its source bundle
+is74ad14a5e60e2cca971024d85f5deeb4dd033aca535c30c0ea2e70a37f8786e9 under
+scratch-share/upstream-normal-1.1.12-7758874b. Keep all existing SDK/compiler
+objects, MPV/DV and source consumers. This intentional D: native-I/O continuation
+and its exported runtime remain recovery inputs until final qualification.
+Portable image probe execution on Windows follows actual group-empty completion.
 Merge15e96c95229 integrates978212a42d569a8d13fd83eae205e1bff4c7096d locally;
 final native/dependency qualification remains outstanding. The new VLC libpng
 1.6.59/zlib1.4 sources verify against upstream SHA512; archives are intentional

@@ -23,6 +23,28 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_windows_image_sources_stage_exact_archives_without_overwriting_tampering(self):
+        spec = importlib.util.spec_from_file_location('codec_builder', HERE.parent / 'windows-player/build-upstream-codecs.py')
+        codecs = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(codecs)
+        root = Path(sys.argv_scratch) / ('image-transfer-' + uuid.uuid4().hex)
+        retained, archives = root / 'prepared', root / 'native'
+        retained.mkdir(parents=True)
+        archives.mkdir()
+        (retained / 'image.tar.xz').write_bytes(b'prepared')
+        inputs = [{'archive': 'image.tar.xz', 'sha512': codecs.sha(retained / 'image.tar.xz', 'sha512')}]
+        with patch.object(codecs.importlib.util, 'module_from_spec', return_value=SimpleNamespace(definitions=lambda _: inputs)), \
+             patch.object(codecs.importlib.util, 'spec_from_file_location', return_value=SimpleNamespace(loader=SimpleNamespace(exec_module=lambda _: None))):
+            codecs.stage_image_sources(HERE.parents[1], archives, retained)
+            self.assertEqual((archives / 'image.tar.xz').read_bytes(), b'prepared')
+            stamp = (archives / 'image.tar.xz').stat().st_mtime_ns
+            codecs.stage_image_sources(HERE.parents[1], archives, retained)
+            self.assertEqual((archives / 'image.tar.xz').stat().st_mtime_ns, stamp)
+            (archives / 'image.tar.xz').write_bytes(b'changed')
+            with self.assertRaisesRegex(RuntimeError, 'native image source differs'):
+                codecs.stage_image_sources(HERE.parents[1], archives, retained)
+            self.assertEqual((archives / 'image.tar.xz').read_bytes(), b'changed')
+
     def test_mac_image_archive_linkage_is_required_and_content_bound(self):
         spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
         images = importlib.util.module_from_spec(spec)
@@ -38,7 +60,8 @@ class NativePackagingTest(unittest.TestCase):
             libraries.append({'name': name, 'prefix': str(prefix), 'static_library': archive,
                               'library_sha256': images.digest(path)})
         rules = images.mac_link_rules(work, prefix)
-        self.assertIn('override LIBZ = ' + str(prefix / 'lib/libz.a'), rules.read_text())
+        self.assertIn('override LIBZ = -L' + str(prefix / 'lib') + ' -lz', rules.read_text())
+        self.assertIn('libvlc_mp4.la: ' + str(rules), rules.read_text())
         self.assertIn('-Wl,-map,', rules.read_text())
         self.assertNotIn('-Wl,-Map,', rules.read_text())
         stamp = rules.stat().st_mtime_ns
@@ -104,7 +127,8 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual([row['target'] for row in plan['targets']],
                          ['libavcodec_plugin.la', 'libpng_plugin.la', 'libqt_plugin.la'])
         rules = (build / 'player-image-links.mk').read_text()
-        self.assertIn('LIBZ = ' + str(prefix / 'lib/libz.a'), rules)
+        self.assertIn('LIBZ = -L' + str(prefix / 'lib') + ' -lz', rules)
+        self.assertIn('libvlc_mp4.la: ' + str(build / 'player-image-links.mk'), rules)
         self.assertIn('libavcodec_plugin.la: LDFLAGS += -Wl,-Map,', rules)
         stamp = (build / 'player-image-links.mk').stat().st_mtime_ns
         links.prepare_images(source, build, base, receipt)

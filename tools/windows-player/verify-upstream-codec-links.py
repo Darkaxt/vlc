@@ -50,7 +50,10 @@ def prepare_images(source, build, base, receipt):
     prefix = Path(images['libraries'][0]['prefix'])
     rules = ['# Exact image/compression archive consumers; generated from retained libtool metadata.',
         'LDFLAGS := -L' + str(prefix / 'lib') + ' $(LDFLAGS)',
-        'LIBZ = ' + str(prefix / 'lib/libz.a'),
+        'LIBZ = -L' + str(prefix / 'lib') + ' -lz',
+        # A failed prior link can retain this convenience archive with an
+        # embedded libz.a member. Relink it when its actual LIBADD rule changes.
+        'libvlc_mp4.la: ' + str(build / 'player-image-links.mk'),
         'libpng_plugin_la_LIBADD = ' + str(prefix / 'lib/libpng16.a') + ' ' + str(prefix / 'lib/libz.a') + ' $(LIBM)']
     for row in targets:
         row['map'] = str(base / 'link-maps' / ('image-' + Path(row['target']).stem + '.map'))

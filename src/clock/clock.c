@@ -394,7 +394,10 @@ static void vlc_clock_main_reset(vlc_clock_main_t *main_clock)
     AvgResetAndFill(&main_clock->coeff_avg, ctx->coeff);
 
     main_clock->wait_sync_ref_priority = UINT_MAX;
-    main_clock->pause_date = VLC_TICK_INVALID;
+    /* Paused seeks establish their new references in the frozen pause
+     * domain. Preserve its origin so resume shifts those references once. */
+    if (!main_clock->paused)
+        main_clock->pause_date = VLC_TICK_INVALID;
     vlc_cond_broadcast(&main_clock->cond);
 }
 

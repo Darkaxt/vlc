@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 import shlex
 import subprocess
-from release_profile import release_arguments, verify_release
+from release_profile import release_arguments, verify_release, configure_base_flags
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--source', type=Path, default=Path('/work/src'))
@@ -32,13 +32,13 @@ assert not (args.crt / 'libupnp.a').exists(), 'Windows import libraries must not
 assert (args.prefix / 'lib/libQt6Network.a').is_file()
 if not args.verify_only:
     config = shlex.split(subprocess.check_output([str(args.build / 'config.status'), '--config'], cwd=args.build, text=True))
+    base_flags = configure_base_flags(config, args.prefix)
     config = [entry for entry in config if entry not in ('--disable-nls', '--enable-nls')
               and not entry.startswith(('CC=', 'CXX=', 'CPPFLAGS=', 'LDFLAGS=', 'PKG_CONFIG_LIBDIR=', 'PKG_CONFIG_PATH=', 'PKG_CONFIG_SYSROOT_DIR='))]
     config.append('--enable-nls')
-    makefile = (args.build / 'Makefile').read_text(encoding='utf-8')
-    old_flags = shlex.split(re.search(r'^LDFLAGS = (.*)$', makefile, re.M).group(1))
+    old_flags = base_flags['LDFLAGS']
     old_flags = [entry for entry in old_flags if entry not in ('-L/work/runtime-fixed/lib', f'-L{args.crt}', '-static-libgcc')]
-    includes = shlex.split(re.search(r'^CPPFLAGS = (.*)$', makefile, re.M).group(1))
+    includes = base_flags['CPPFLAGS']
     includes = [item for item in includes if not item.startswith('-I$(top_')]
     if extra:
         includes = ['-I' + str(extra / 'include')] + [item for item in includes if item != '-I' + str(extra / 'include')]
@@ -52,6 +52,9 @@ if not args.verify_only:
                f'CXX=x86_64-w64-mingw32-g++ -B{args.crt}/',
                'CPPFLAGS=' + shlex.join(includes),
                f'LDFLAGS=-L{args.crt} -static-libgcc ' + shlex.join(old_flags)]
+    for variable in ('CFLAGS', 'CXXFLAGS', 'OBJCFLAGS'):
+        config = [entry for entry in config if not entry.startswith(variable + '=')]
+        config.append(variable + '=' + shlex.join(base_flags[variable]))
     env = dict(os.environ, PKG_CONFIG_LIBDIR=str(args.prefix / 'lib/pkgconfig'),
                PKG_CONFIG_PATH=str(args.prefix / 'lib/pkgconfig'), PKG_CONFIG_SYSROOT_DIR='/')
     if extra:
@@ -68,7 +71,9 @@ if not args.verify_only:
         for variable in ('CFLAGS', 'CXXFLAGS'):
             previous = next((entry.split('=', 1)[1] for entry in config if entry.startswith(variable + '=')), '')
             config = [entry for entry in config if not entry.startswith(variable + '=')]
-            config.append(variable + '=-I' + str(extra / 'include') + ' ' + previous)
+            include = '-I' + str(extra / 'include')
+            config.append(variable + '=' + shlex.join([include] +
+                [item for item in shlex.split(previous) if item != include]))
     if codecs:
         env['PKG_CONFIG_PATH'] = str(codecs / 'lib/pkgconfig') + ':' + env['PKG_CONFIG_PATH']
         env['PKG_CONFIG_LIBDIR'] = env['PKG_CONFIG_PATH']
