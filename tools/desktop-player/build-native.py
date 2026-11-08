@@ -11,8 +11,10 @@ import json
 import os
 from pathlib import Path
 import platform
+import select
 import shlex
 import shutil
+import signal
 import subprocess
 import tarfile
 import urllib.request
@@ -20,9 +22,87 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[2]
 
 
+class NativeBuildCancelled(BaseException):
+    def __init__(self, signum):
+        self.signum = signum
+
+
+def cancel_build(signum, frame):
+    raise NativeBuildCancelled(signum)
+
+
+def stop_command(process):
+    # The direct child remains unreaped, reserving this owned process-group ID.
+    # Cancellation is terminal for this exact command, including configure's
+    # shells/compilers, before the workflow snapshots its reusable build.
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    process.wait()
+    members = []
+    for line in output('ps', '-axo', 'pid=,pgid=,stat=').splitlines():
+        pid, group, state = line.split()
+        if int(group) == process.pid and not state.startswith('Z'):
+            members.append(int(pid))
+    if platform.system() == 'Darwin':
+        with select.kqueue() as queue:
+            watched = set()
+            for pid in members:
+                try:
+                    queue.control([select.kevent(pid, filter=select.KQ_FILTER_PROC,
+                        flags=select.KQ_EV_ADD | select.KQ_EV_ONESHOT,
+                        fflags=select.KQ_NOTE_EXIT)], 0, 0)
+                    watched.add(pid)
+                except ProcessLookupError:
+                    pass
+            while watched:
+                for event in queue.control(None, len(watched)):
+                    watched.discard(event.ident)
+    else:
+        descriptors = []
+        try:
+            for pid in members:
+                try:
+                    descriptors.append(os.pidfd_open(pid))
+                except ProcessLookupError:
+                    pass
+            while descriptors:
+                readable, _, _ = select.select(descriptors, [], [])
+                for descriptor in readable:
+                    os.close(descriptor)
+                    descriptors.remove(descriptor)
+        finally:
+            for descriptor in descriptors:
+                os.close(descriptor)
+    print('NATIVE COMMAND GROUP EXITED', process.pid, flush=True)
+
+
 def run(*args, cwd=None, env=None):
     print('+', ' '.join(map(str, args)), flush=True)
-    subprocess.run(list(map(str, args)), cwd=cwd, env=env, check=True)
+    signals = (signal.SIGINT, signal.SIGTERM)
+    # Register the child before delivering cancellation received during spawn.
+    mask = signal.pthread_sigmask(signal.SIG_BLOCK, signals)
+    previous = {sig: signal.signal(sig, cancel_build) for sig in (signal.SIGINT, signal.SIGTERM)}
+    process = None
+    try:
+        process = subprocess.Popen(list(map(str, args)), cwd=cwd, env=env, start_new_session=True,
+            preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, mask))
+        signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+        code = process.wait()
+    except NativeBuildCancelled:
+        # Ignore a repeated cancellation while supervising the original group.
+        for sig in previous:
+            signal.signal(sig, signal.SIG_IGN)
+        if process is not None:
+            stop_command(process)
+        raise
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+        signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+    if code:
+        raise subprocess.CalledProcessError(code, list(map(str, args)))
 
 
 def output(*args, cwd=None):
@@ -459,4 +539,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except NativeBuildCancelled as error:
+        raise SystemExit(128 + error.signum)

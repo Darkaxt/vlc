@@ -60,6 +60,8 @@ jobs:
       - name: Check unchanged normal package for test-only repair
         id: review_reuse
         run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build"
+      - name: Verify owned native command cancellation
+        run: python3 tools/desktop-player/test-native-build-cancellation.py --receipt "$RUNNER_TEMP/native-command-cancellation.json"
       - name: Build native redesign and packages
         if: steps.review_reuse.outputs.reuse != 'true'
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
@@ -106,3 +108,4 @@ jobs:
             ${{ runner.temp }}/native-player-review-session/*
             ${{ runner.temp }}/native-package-checks/verification.json
             ${{ runner.temp }}/native-package-checks/*-runtime/*log
+            ${{ runner.temp }}/native-command-cancellation.json

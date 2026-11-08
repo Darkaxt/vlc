@@ -1,6 +1,17 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42448400173/job128632185163 verified that AOM's actual Release cache passes
+and .aom/.luac/.protoc are reused. It was intentionally cancelled during
+configure to include the reproduced clock correction before compiling VLC.
+Watch42952 closed1; artifact13603839650 (241332535 bytes, SHA256
+79f4d5e21dd9b283142b509fd2329e11f6193260c7da622463dca51bc533120f)
+was retained. Cache save failed because an orphan configure bash continued
+writing; hosted final cleanup terminated pid10470. Cache ending42447292266
+remains the verified reusable cohort. Build commands now own a separate process
+group, consume cancellation and wait for its native exit before returning;
+a ready-event-based native cancellation test precedes the build. Its hosted
+result remains required before claiming this supervision repair verified.
 The paused-PCR discontinuity is reproduced by compiling the existing clock
 test with the actual input_clock.c/clock_internal.c on native Windows GCC,
 using the read-only1.1.11 core only for logging. Before correction it reports
