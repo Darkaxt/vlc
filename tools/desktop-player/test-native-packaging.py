@@ -19,17 +19,29 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
-    def test_macos_plugin_search_keeps_its_source_module_library_root(self):
-        qt = Path('D:/native-sdk/qt')
-        plugin = Path('D:/native-sdk/qtpdf/share/qt/plugins/imageformats/libqpdf.dylib')
-        base = Path('D:/native-sdk/qtbase/lib')
-        module = Path('D:/native-sdk/qtpdf/lib')
-        with patch.object(package, 'output', side_effect=[str(plugin.parent.parent), str(base)]), \
-                patch.object(Path, 'rglob', return_value=[plugin]), \
-                patch.object(package, 'native', return_value=True), \
-                patch.object(package, 'mac_runpaths', return_value=[str(module), '@executable_path/../Frameworks']), \
-                patch.object(Path, 'is_dir', lambda path: path == module):
-            self.assertEqual(package.mac_qt_library_paths(qt), sorted([base.resolve(), module.resolve()]))
+    def test_macos_gui_plugin_keeps_source_runpath_without_mutating_sdk(self):
+        root = Path(sys.argv_scratch) / ('qt-plugins-' + uuid.uuid4().hex)
+        installed = root / 'sdk/plugins'
+        app = root / 'Modern VLC.app'
+        (app / 'Contents/Resources').mkdir(parents=True)
+        for category, names in [('platforms', ['libqcocoa.dylib', 'libqminimal.dylib']),
+                                ('imageformats', ['libqpdf.dylib'])]:
+            (installed / category).mkdir(parents=True)
+            for name in names:
+                (installed / category / name).write_bytes(b'\xcf\xfa\xed\xfe' + name.encode())
+                (installed / category / name).chmod(stat.S_IREAD)
+        with patch.object(package, 'output', return_value=str(installed)), \
+                patch.object(package, 'mac_runpath_bindings',
+                    side_effect=lambda path: [('@loader_path/../../lib', str(path.parent / '../../lib'))]), \
+                patch.object(package, 'run') as command:
+            plugins = package.stage_mac_qt_plugins(root / 'sdk', app)
+        self.assertEqual({path.name for path in plugins}, {'libqcocoa.dylib', 'libqpdf.dylib'})
+        self.assertTrue(all(path.stat().st_mode & stat.S_IWUSR for path in plugins))
+        self.assertEqual(command.call_count, 2)
+        self.assertFalse((installed / 'imageformats/libqpdf.dylib').stat().st_mode & stat.S_IWUSR)
+        rows = json.loads((app / 'Contents/Resources/QT-PLUGINS.json').read_text())
+        self.assertEqual({row['source_sha256'] for row in rows},
+            {package.sha(installed / path.relative_to(app / 'Contents/PlugIns')) for path in plugins})
 
     def test_packaged_macos_dependency_rejects_runner_sdk_resolution(self):
         app = Path('E:/Temp/owned-app')

@@ -143,19 +143,39 @@ def prepare_mac_qml(work, qt, generation):
     return directory
 
 
-def mac_qt_library_paths(qt):
-    # Homebrew merges Qt's plugins in share/qt, while each module's frameworks
-    # remain in its own Cellar lib directory. macdeployqt copies plugins before
-    # resolving them, so loader-relative source paths must be supplied first.
+def stage_mac_qt_plugins(qt, app):
+    # Match the native GUI/network/image plugin categories needed by this Qt
+    # interface. Qt's automatic copy loses each Homebrew module's source RPATH;
+    # supply owned, rebased plugins as explicit deployment inputs instead.
     qmake = qt / 'bin/qmake'
-    plugins = Path(output(qmake, '-query', 'QT_INSTALL_PLUGINS'))
-    paths = {Path(output(qmake, '-query', 'QT_INSTALL_LIBS')).resolve()}
-    for plugin in sorted({path.resolve() for path in plugins.rglob('*.dylib') if native(path)}):
-        for value in mac_runpaths(plugin):
-            path = Path(value)
-            if path.is_absolute() and path.is_dir():
-                paths.add(path.resolve())
-    return sorted(paths)
+    installed = Path(output(qmake, '-query', 'QT_INSTALL_PLUGINS'))
+    copied = []
+    records = []
+    for category in ('platforms', 'printsupport', 'styles', 'tls', 'networkinformation',
+                     'imageformats', 'iconengines', 'platforminputcontexts', 'virtualkeyboard'):
+        origin = installed / category
+        if not origin.is_dir():
+            continue
+        # iterdir follows a category symlink too; rglob's default would miss
+        # categories provided solely by one separately installed Qt module.
+        for plugin in sorted(origin.glob('*.dylib')):
+            if '_debug.' in plugin.name or (category == 'platforms' and 'cocoa' not in plugin.name):
+                continue
+            target = app / 'Contents/PlugIns' / category / plugin.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(plugin, target)
+            target.chmod(target.stat().st_mode | stat.S_IWUSR)
+            bindings = mac_runpath_bindings(plugin.resolve(strict=True))
+            for original, resolved in bindings:
+                if original != resolved:
+                    run('install_name_tool', '-rpath', original, resolved, target)
+            copied.append(target)
+            records.append({'file': target.relative_to(app).as_posix(),
+                'source': str(plugin.resolve()), 'source_sha256': sha(plugin), 'runpaths': bindings})
+    if not any(path.parent.name == 'platforms' for path in copied):
+        raise RuntimeError('The installed Qt Cocoa platform plugin is missing')
+    (app / 'Contents/Resources/QT-PLUGINS.json').write_text(json.dumps(records, indent=2) + '\n')
+    return copied
 
 
 def resolve_mac_dependency(dep, origin, runpaths):
@@ -203,7 +223,7 @@ def resolve_packaged_mac_dependency(dep, origin, executable, app, runpaths=None)
             continue
         resolved = candidate.resolve()
         if not resolved.is_relative_to(app.resolve()):
-            raise RuntimeError(f'Packaged dependency resolves outside the app: {dep}: {resolved}')
+            raise RuntimeError(f'Packaged dependency resolves outside the app: {origin}: {dep}: {resolved}')
         return resolved
     raise RuntimeError(f'Missing packaged dependency {dep} in {origin}; searched {candidates}')
 
@@ -218,6 +238,7 @@ def audit_package(app, executable, arch, receipt):
     files = sorted({path.resolve() for path in app.rglob('*') if native(path)})
     records = []
     executable_runpaths = mac_runpaths(executable) if MAC else []
+    errors = []
     for path in files:
         if not path.is_relative_to(root):
             raise RuntimeError('Packaged native symlink escaped the app: ' + str(path))
@@ -239,16 +260,22 @@ def audit_package(app, executable, arch, receipt):
             if external(dep):
                 linked.append({'os_dependency': dep})
                 continue
-            resolved = resolve_packaged_mac_dependency(dep, path, executable, root, runpaths) if MAC else Path(dep).resolve()
-            if not resolved.is_relative_to(root):
-                raise RuntimeError(f'Packaged dependency resolves outside the app: {path}: {dep}')
-            linked.append({'packaged_dependency': resolved.relative_to(root).as_posix()})
+            try:
+                resolved = resolve_packaged_mac_dependency(dep, path, executable, root, runpaths) if MAC else Path(dep).resolve()
+                if not resolved.is_relative_to(root):
+                    raise RuntimeError(f'Packaged dependency resolves outside the app: {path}: {dep}')
+                linked.append({'packaged_dependency': resolved.relative_to(root).as_posix()})
+            except RuntimeError as error:
+                errors.append(str(error))
+                linked.append({'unresolved_dependency': dep, 'error': str(error)})
         records.append({'file': path.relative_to(root).as_posix(),
                         'architectures': architectures, 'dependencies': linked})
     if not records:
         raise RuntimeError('Native package contains no native binaries')
-    receipt.write_text(json.dumps({'state': 'architecture and dependency closure verified',
-        'architecture': arch, 'members': records}, indent=2) + '\n')
+    receipt.write_text(json.dumps({'state': 'FAILED' if errors else 'architecture and dependency closure verified',
+        'architecture': arch, 'members': records, 'errors': errors}, indent=2) + '\n')
+    if errors:
+        raise RuntimeError('Native package dependency audit failed:\n' + '\n'.join(errors))
 
 
 def copy_closure(initial, destination):
@@ -446,9 +473,13 @@ def package_mac(work, installed, out, version, arch):
     shutil.copy2(plugins / 'gui/libqt_plugin.dylib', gui / 'libqt_plugin.dylib')
     qt = Path(output('brew', '--prefix', 'qt'))
     qml = prepare_mac_qml(work, qt, out.name)
+    qt_plugins = stage_mac_qt_plugins(qt, app)
+    # This bundle is a new source-bound generation. Qt must keep its normal
+    # already-deployed dependency deduplication, rather than overwrite shared
+    # frameworks again for every QML/plugin branch.
     run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'),
-        '-qmlimport=' + str(qml), '-always-overwrite', '-verbose=2', '-no-codesign',
-        *('-libpath=' + str(path) for path in mac_qt_library_paths(qt)),
+        '-qmlimport=' + str(qml), '-verbose=2', '-no-codesign', '-no-plugins',
+        *('-executable=' + str(path) for path in qt_plugins),
         '-executable=' + str(frameworks / 'plugins/gui/libqt_plugin.dylib'))
     shutil.copytree(plugins, frameworks / 'plugins', dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('libqt_plugin.dylib'))

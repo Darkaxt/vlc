@@ -81,8 +81,22 @@ their signatures in the separate review copy, rebuilds the plugin index from
 final signed plugin bytes and seals the app last. Whole-package architecture and
 dependency checks reject accidental resolution against the runner SDK. Focused
 packaging regressions pass; native execution is still required before acceptance.
-Qt deployment additionally receives the installed plugins' declared, resolved
-source library paths before moving those plugins; no installed SDK is modified.
+Continuation42433818249/job128588303324 frome4a26b2425ca2bb9fa1a7fd2acd4502e30bb72ee
+reused the build and reached the new whole-package audit. It correctly rejected
+an external Homebrew QtSvg dependency; PDF/virtual-keyboard @rpath resolution
+also remained unresolved. The added -libpath flags were insufficient: Qt6.12
+handles @rpath earlier, and its automatic plugin deployment loses each plugin's
+original loader-relative module paths. The next pass stages the GUI/network/image
+Qt plugins on owned copies, resolves their source RPATH before movement, and
+provides them as explicit macdeployqt inputs with automatic plugin copying off.
+Fresh source-bound bundles also no longer force repeated framework overwrites.
+The complete VLC plugin graph and installed SDK remain unchanged. Dependency
+audit failures now identify every unresolved origin in a preserved JSON census.
+Watch85496 closed1 after retaining cache ending42433818249 and artifact13598694669
+(SHA25609ba2d61376e25f7caa5e26f0c45fbc00339f0a2b351f7a0900ab332d9978ed2).
+Focused staging/closure regressions pass; repaired native execution remains
+required. CI evidence uploads now select only the current source generation;
+older failed packages remain in their original recovery artifacts/cache.
 Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
 retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below

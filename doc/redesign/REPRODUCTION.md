@@ -80,7 +80,15 @@ configured build. Its original watch49320 closed1 after preserving cache ending
 42432058949 and artifact13598810910; no native player check ran. Signing stopped
 at unsigned plugins.dat. Qt also lacked PDF/virtual-keyboard module library
 paths; the corrected pass receives resolved source LC_RPATH roots from installed
-Qt plugins before copying them. The prepared next package generation stages all
+Qt plugins before copying them. That -libpath approach was executed in
+42433818249/job128588303324 and proved insufficient for @rpath; the package audit
+rejected an external QtSvg dependency. Watch85496 closed1 with cache ending
+42433818249 and artifact13598694669 preserved. The corrected pass now stages
+the native GUI/network/image Qt plugins on owned copies, rebases source RPATHs
+before movement and passes each to macdeployqt as an explicit executable with
+-no-plugins. Qt's normal duplicate-framework check stays enabled in the fresh
+bundle; -always-overwrite was causing repeated framework recopying. The prepared
+next package generation stages all
 VLC plugins outside the app during Qt's deployment, exposing only libqt_plugin
 to that repeated Qt dependency-rewrite pass, then merges the full relocated
 plugin tree. Compiled Lua/JAR files are signed as required by upstream's macOS
@@ -91,6 +99,8 @@ and plugin signing, using the packaged cache generator with VLC_LIB_PATH bound
 to the app's Frameworks. Sign the cache and outer app afterwards. The package
 audit checks every native architecture and resolves non-OS dependencies inside
 the bundle, rejecting a host SDK that masks an incomplete portable closure.
+Its failure receipt records the complete unresolved dependency census before
+raising, so another packaging attempt is not needed to discover each next path.
 These changes remain pending native execution; Python regressions alone do not
 qualify the app or prove playback.
 

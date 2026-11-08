@@ -79,10 +79,10 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
           path: |
-            .desktop-build/packages/*
+            .desktop-build/packages/${{ github.sha }}/**
             .desktop-build/native-build.json
             .desktop-build/package-output.json
-            .desktop-build/qml-deployment/*json
+            .desktop-build/qml-deployment/${{ github.sha }}.json
             .desktop-build/native-link-bindings.json
             .desktop-build/bootstrap-cache-migration.json
             .desktop-toolchain/*
