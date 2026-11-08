@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path, PurePosixPath
 import platform
 import re
@@ -143,9 +144,13 @@ def fetch_source(record, directory):
         if output('git', '-C', repository, 'rev-parse', revision + '^{commit}') != revision:
             raise RuntimeError('Fetched Git source revision differs')
         archive = directory / ('source-' + revision + '.tar.gz')
+        binding = archive.with_suffix(archive.suffix + '.sha256')
         if not archive.exists():
             run('git', '-C', repository, 'archive', '--format=tar.gz', '--prefix=source/',
                 '--output=' + str(archive), revision)
+            binding.write_text(sha(archive) + '\n')
+        if not binding.is_file() or sha(archive) != binding.read_text().strip():
+            raise RuntimeError('Retained Git source archive changed: ' + str(archive))
         record['archive_sha256'] = sha(archive)
     else:
         name = PurePosixPath(urllib.parse.urlsplit(record['url']).path).name
@@ -168,6 +173,15 @@ def fetch_source(record, directory):
         record['archive_sha256'] = sha(archive)
     record['archive'] = str(archive)
     return archive
+
+
+def stage_source(record, directory, cache):
+    archive = fetch_source(record, cache)
+    directory.mkdir(parents=True, exist_ok=True)
+    staged = directory / archive.name
+    shutil.copy2(archive, staged)
+    record['archive'] = str(staged)
+    return staged
 
 
 def collect_brew(work, app, generation, destination):
@@ -240,7 +254,8 @@ def collect_brew(work, app, generation, destination):
         recipe = (target / (formula + '.rb')).read_text()
         sources = brew_sources(json.loads((target / 'sbom.spdx.json').read_text()), formula, recipe)
         for record in sources:
-            archive = fetch_source(record, target)
+            archive = stage_source(record, target,
+                work / 'corresponding-source-inputs/homebrew' / formula / version)
             if not record['id'].startswith('SPDXRef-Patch-'):
                 legal = target / ('notices-' + record['archive_sha256'][:16])
                 legal.mkdir(exist_ok=True)
@@ -264,12 +279,17 @@ def collect_contrib(work, destination):
     if not recipe.exists():
         run('git', '-C', ROOT, 'archive', '--format=tar.gz', '--output=' + str(recipe), revision,
             'contrib', 'extras/tools', 'extras/package/macosx', 'extras/ci')
-    source = original / 'source'
+    # Cargo walks ancestor manifests even for a fetch/vendor operation. Keep
+    # the original contrib workspace outside this application's Cargo workspace.
+    scratch = Path(os.environ['RUNNER_TEMP']).resolve() / 'native-corresponding-contrib' / revision
+    if scratch.is_relative_to(ROOT):
+        raise RuntimeError('Original contrib fetch must be outside the application workspace')
+    source = scratch / 'source'
     if not source.exists():
-        source.mkdir()
+        source.mkdir(parents=True)
         with tarfile.open(recipe) as bundle:
             bundle.extractall(source, filter='data')
-    build = original / 'selection'
+    build = scratch / 'selection'
     build.mkdir(exist_ok=True)
     triplet = ('aarch64' if platform.machine() == 'arm64' else 'x86_64') + '-apple-darwin19'
     if not (build / 'Makefile').exists():
@@ -277,10 +297,15 @@ def collect_contrib(work, destination):
             '--enable-sections', cwd=build)
     tarballs = destination / 'contrib'
     tarballs.mkdir(parents=True, exist_ok=True)
-    flags = ['make', '-j1', 'PKGS_FOUND=', 'TARBALLS=' + str(tarballs)]
+    cached = original / 'tarballs'
+    cached.mkdir(exist_ok=True)
+    flags = ['make', '-j1', 'PKGS_FOUND=', 'TARBALLS=' + str(cached)]
     with (tarballs / 'selection.txt').open('w') as stream:
         run(*flags, 'list', cwd=build, stdout=stream)
     run(*flags, 'fetch', cwd=build)
+    for archive in cached.iterdir():
+        if archive.is_file():
+            shutil.copy2(archive, tarballs / archive.name)
     shutil.copy2(recipe, tarballs / 'original-recipes.tar.gz')
     return {'upstream_commit': revision, 'triplet': triplet,
             'selection': (tarballs / 'selection.txt').read_text(),
@@ -346,7 +371,8 @@ def collect_appimage(work, destination):
     records = []
 
     def archive_source(record, directory):
-        archive = fetch_source(record, directory)
+        archive = stage_source(record, directory,
+            work / 'corresponding-source-inputs/appimage' / runtime['commit'] / directory.relative_to(root))
         legal = directory / ('notices-' + sha(archive)[:16])
         legal.mkdir(exist_ok=True)
         record['notices'] = retain_archive_notices(archive, legal)
@@ -384,7 +410,8 @@ def collect_appimage(work, destination):
                 raise RuntimeError('Unsafe Alpine recipe source filename')
             url = base + str(PurePosixPath(component['recipe_path']).parent / name)
             patch = dict(item, id=component['name'] + '/' + name, url=url)
-            path = fetch_source(patch, directory)
+            path = stage_source(patch, directory,
+                work / 'corresponding-source-inputs/appimage' / runtime['commit'] / component['name'])
             patch['archive'] = path.relative_to(destination).as_posix()
             files.append(patch)
         record.update(version=component['version'], recipe_commit=component['commit'],
@@ -429,14 +456,15 @@ def runtime_notices(destination, app):
 
 
 def collect(work, app, out, generation):
-    # Source downloads are not compiler inputs. Keep the large extracted notice
-    # graph outside the retained build cache; published source ZIPs remain in
-    # this generation's package output and are retained with its other assets.
+    # Cache original archives separately from generation-specific assembly and
+    # extracted notices. A later packaging failure must not discard downloads.
     destination = ROOT / '.desktop-sources' / generation
     destination.mkdir(parents=True, exist_ok=True)
-    manifest = {'source_commit': generation, 'platform': platform.system(), 'architecture': platform.machine()}
+    manifest = {'source_commit': generation, 'platform': platform.system(),
+                'architecture': platform.machine(), 'status': 'collecting'}
     if platform.system() == 'Darwin':
         manifest['installed_dependencies'] = collect_brew(work, app, generation, destination)
+        (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
         manifest['original_vlc_contrib'] = collect_contrib(work, destination)
     else:
         manifest['installed_dependencies'] = collect_linux(work, app, destination)
@@ -474,6 +502,7 @@ def collect(work, app, out, generation):
         run('git', '-C', ROOT, 'archive', '--format=tar.gz', '--prefix=Modern-VLC-Fork/',
             '--output=' + str(application), generation)
     manifest['application'] = {'file': application.name, 'sha256': sha(application)}
+    manifest['status'] = 'complete'
     (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     runtime_notices(destination, app)
     # Preserve every source/notices/recipe member, grouped into bounded assets.

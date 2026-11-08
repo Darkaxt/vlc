@@ -4,6 +4,7 @@ import importlib.util
 import json
 import io
 import os
+import shutil
 import stat
 from pathlib import Path
 import subprocess
@@ -22,6 +23,85 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_source_staging_reuses_verified_downloads_and_rejects_modified_cache(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        root = Path(sys.argv_scratch) / ('source-cache-' + uuid.uuid4().hex)
+        root.mkdir()
+        original = root / 'original.tar.xz'
+        original.write_bytes(b'exact original archive')
+        record = {'id': 'original', 'url': 'https://example.org/source.tar.xz',
+                  'sha256': sources.sha(original)}
+        with patch.object(sources.urllib.request, 'urlretrieve',
+                          side_effect=lambda url, target: shutil.copy2(original, target)) as retrieve:
+            first = sources.stage_source(dict(record), root / 'generation-one', root / 'cache')
+            second = sources.stage_source(dict(record), root / 'generation-two', root / 'cache')
+            self.assertEqual(first.read_bytes(), second.read_bytes())
+            self.assertEqual(retrieve.call_count, 1)
+            cached = next((root / 'cache').glob('*.tar.xz'))
+            cached.write_bytes(b'changed cache')
+            with self.assertRaisesRegex(RuntimeError, 'Retained source checksum differs'):
+                sources.stage_source(dict(record), root / 'generation-three', root / 'cache')
+            self.assertEqual(retrieve.call_count, 1)
+
+    def test_contrib_vendor_fetch_does_not_inherit_application_cargo_workspace(self):
+        cargo = shutil.which('cargo')
+        if not cargo:
+            self.skipTest('Real Cargo metadata probe requires the installed Cargo executable')
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        root = Path(sys.argv_scratch) / ('cargo-isolation-' + uuid.uuid4().hex)
+        application = root / 'application'
+        work = application / '.desktop-build'
+        work.mkdir(parents=True)
+        (application / 'Cargo.toml').write_text('[workspace]\nmembers=[]\n')
+        inputs = application / 'tools/desktop-player/native-inputs.json'
+        inputs.parent.mkdir(parents=True)
+        inputs.write_text(json.dumps({'macos_contrib_commit': 'a' * 40}))
+        package_text = '[package]\nname="fetch-probe"\nversion="0.1.0"\nedition="2021"\n'
+
+        def metadata(folder):
+            folder.mkdir(parents=True)
+            manifest = folder / 'Cargo.toml'
+            manifest.write_text(package_text)
+            (folder / 'src').mkdir()
+            (folder / 'src/lib.rs').write_text('')
+            return subprocess.run([cargo, 'metadata', '--offline', '--no-deps', '--format-version=1',
+                                   '--manifest-path', str(manifest)], capture_output=True, text=True)
+
+        failed = metadata(work / 'vendor-rav1e-build')
+        self.assertNotEqual(failed.returncode, 0)
+        self.assertIn("believes it's in a workspace", failed.stderr)
+        observed = []
+
+        def run(*args, **kwargs):
+            if args[0] == 'git':
+                archive = Path(next(value.split('=', 1)[1] for value in args if str(value).startswith('--output=')))
+                with tarfile.open(archive, 'w:gz') as bundle:
+                    item = tarfile.TarInfo('contrib/bootstrap'); item.size = 0
+                    bundle.addfile(item, io.BytesIO())
+            elif args[0] == 'sh':
+                (kwargs['cwd'] / 'Makefile').write_text('')
+            elif args[-1] == 'list':
+                kwargs['stdout'].write('rav1e\n')
+            elif args[-1] == 'fetch':
+                observed.append(kwargs['cwd'])
+                passed = metadata(kwargs['cwd'] / 'vendor-rav1e-build')
+                self.assertEqual(passed.returncode, 0, passed.stderr)
+                cached = Path(next(value.split('=', 1)[1] for value in args if str(value).startswith('TARBALLS=')))
+                (cached / 'fetched-source.tar.xz').write_bytes(b'original source')
+
+        destination = root / 'assembly'; destination.mkdir()
+        with patch.object(sources, 'ROOT', application), patch.object(sources, 'run', side_effect=run), \
+                patch.dict(os.environ, {'RUNNER_TEMP': str(root / 'runner-temp')}):
+            result = sources.collect_contrib(work, destination)
+        self.assertEqual(len(observed), 1)
+        self.assertFalse(observed[0].is_relative_to(application))
+        self.assertTrue((destination / 'contrib/fetched-source.tar.xz').is_file())
+        self.assertEqual(result['upstream_commit'], 'a' * 40)
+
     def test_framework_source_coalesces_meta_formula_aliases_but_rejects_distinct_sources(self):
         spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
         sources = importlib.util.module_from_spec(spec)

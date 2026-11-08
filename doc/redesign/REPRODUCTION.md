@@ -2,6 +2,18 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+Native corresponding-source inputs now reuse verified originals from
+`.desktop-build/corresponding-source-inputs` and the original contrib revision's
+`tarballs` directory. These are continuing build inputs; extracted notices and
+generation-specific assembly remain under `.desktop-sources/<revision>`.
+Git archive cache entries retain their creation digest and exact source commit.
+Contrib fetch/vendor work uses `RUNNER_TEMP/native-corresponding-contrib/<pin>`
+outside the application Cargo workspace, with unchanged original recipes.
+Do not place that working directory back inside the repository: Cargo otherwise
+rejects its generated vendor package as an undeclared workspace member.
+Partial source manifests are explicitly `collecting`; only `complete` assembly
+may produce release source assets. Preserve native failure/cache receipts.
+
 `appimage-sources.json` binds the static AppImage runtime to original build
 39320578745, its exact Alpine image, the two architecture jobs and their linked
 library versions. Source collection retains the runtime Git revision,

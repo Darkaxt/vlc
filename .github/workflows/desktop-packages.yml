@@ -101,6 +101,8 @@ jobs:
             .desktop-build/native-contrib-overlays/*/aom/vlc_build/CMakeCache.txt
             .desktop-toolchain/**
             .desktop-build/sources/*
+            .desktop-sources/**/manifest.json
+            .desktop-sources/**/homebrew/**/manifest.json
             .desktop-build/vlc-build/config.log
             .desktop-build/build-*/meson-logs/meson-log.txt
             ${{ runner.temp }}/native-player-review/acceptance/**

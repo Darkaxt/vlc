@@ -1,6 +1,27 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42456233198/job128655775062 from47c3bac9caa passed both Qt ownership repairs
+and collected all44 Homebrew source graphs/notices, including pinned x264.
+Original contrib fetch then failed when Cargo inherited the application's
+enclosing Cargo.toml for vendor-rav1e-build after the upstream vendor URL404.
+The fetch workspace now lives in RUNNER_TEMP outside the application checkout;
+original recipes remain unchanged. A real offline Cargo metadata reproduction
+fails inside an enclosing workspace and passes through the isolated fetch path.
+Original source archives and contrib tarballs now have a continuing consumer
+under the retained build cohort, separate from generation-specific assembly.
+Focused cache reuse/corruption and Cargo isolation checks pass. Original
+watch96276 closed1 after cache ending42456233198 (5432663201 bytes),
+artifact13608202824 (414888479 bytes, SHA256
+20dcfcd26298ddf6bee528c6ae4278915e5035d77440cc308db989fb79fbf82f)
+and hosted cleanup. This attempt's Homebrew assembly was outside its cache and
+was not uploaded; it cannot be reused. The new input retention corrects that
+gap for subsequent runs. Preserve the compiled objects and old contrib recovery
+tree until the corrected isolated fetch passes; then retire the spent source/
+selection tree. Native acceptance and complete source assets remain required.
+The spent cache/Cargo regression fixtures were retired by transaction
+0c13bfe35ebc5b26aba8ab0fc2e85111 (174 members,34865 bytes, no residuals).
+
 Run42454511503/job128650595764 from91c29975de2 passed framework alias ownership,
 then stopped at the merged QML directory QtQuick/Controls/impl: the shared
 Homebrew directory itself is outside all installed kegs. QML staging now binds
