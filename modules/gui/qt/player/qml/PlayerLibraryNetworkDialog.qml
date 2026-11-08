@@ -58,8 +58,11 @@ T.Popup {
         spacing: 0
         Rectangle {
             Layout.fillWidth: true; implicitHeight: PlayerStyle.px(50)
-            topLeftRadius: PlayerStyle.px(14); topRightRadius: PlayerStyle.px(14)
+            radius: PlayerStyle.px(14)
             color: PlayerStyle.timeline
+            // Qt 6.4 has one radius; fill its bottom corners to retain the
+            // reference's rounded top and square join with the form below.
+            Rectangle { anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom; height: parent.radius; color: parent.color }
             Label { x: PlayerStyle.px(20); anchors.verticalCenter: parent.verticalCenter; text: qsTr("Open Network Stream"); font.pixelSize: PlayerStyle.px(14) }
             PlayerIconButton { anchors.right: parent.right; anchors.rightMargin: PlayerStyle.px(16); anchors.verticalCenter: parent.verticalCenter; glyph: "close"; description: qsTr("Close network dialog"); onClicked: dialog.close() }
         }

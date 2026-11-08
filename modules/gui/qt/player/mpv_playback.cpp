@@ -50,6 +50,9 @@
 #include <QResizeEvent>
 #include <QPointer>
 #include <QWindow>
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <QVariant>
+#endif
 #endif
 
 namespace {

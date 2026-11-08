@@ -674,6 +674,9 @@ private:
                 {QStringLiteral("x"),candidate->x()}, {QStringLiteral("y"),candidate->y()},
                 {QStringLiteral("native_id_hex"),candidate->isVisible()?QString::number(qulonglong(candidate->winId()),16):QString()},
                 {QStringLiteral("composition_ready"),candidate->property("floatingVideoCompositionReady").toBool()},
+                {QStringLiteral("mpv_render_count"),QJsonValue::fromVariant(candidate->property("mpvRenderCount"))},
+                {QStringLiteral("mpv_render_code"),QJsonValue::fromVariant(candidate->property("mpvRenderCode"))},
+                {QStringLiteral("mpv_render_samples"),candidate->property("mpvRenderSamples").toString()},
                 {QStringLiteral("window_type"), int(candidate->type())}, {QStringLiteral("visible"), candidate->isVisible()},
                 {QStringLiteral("active"), candidate->isActive()}, {QStringLiteral("width"), candidate->width()},
                 {QStringLiteral("height"), candidate->height()}, {QStringLiteral("main"), candidate == mainWindow},
@@ -1230,6 +1233,18 @@ private:
                         result.insert(QStringLiteral("native_capture_width"), pixels.width());
                         result.insert(QStringLiteral("native_capture_height"), pixels.height());
                         result.insert(QStringLiteral("native_capture_boundary"), QStringLiteral("QScreen owned top-level window; includes compositor and possible occlusion"));
+#ifndef __APPLE__
+                        QJsonArray childCaptures;
+                        for (auto child : QGuiApplication::allWindows()) {
+                            if (child->objectName() != QStringLiteral("mpvOpenGLVideo")
+                                || !child->isVisible() || !child->screen()) continue;
+                            const QString file = id + QStringLiteral("-mpv-child.png");
+                            const auto childPixels = child->screen()->grabWindow(child->winId());
+                            childCaptures.append(QJsonObject{{QStringLiteral("file"),file},
+                                {QStringLiteral("saved"),!childPixels.isNull() && childPixels.save(QDir(m_directory).filePath(file))}});
+                        }
+                        result.insert(QStringLiteral("native_child_captures"), childCaptures);
+#endif
                     }
 #endif
                     if (extra.value(QStringLiteral("capture_saved")).toBool()) {

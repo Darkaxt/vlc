@@ -1,6 +1,28 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Current553 qualification fixes the normal Linux startup/EOF deadlock and Mac ARM
+passes normal ZIP/DMG plus full native workflow. Original42525634221 continues
+its Intel build; preserve that identity. Both Linux architectures fail the fuller
+UI check because AccessibleCompat discards its assigned ID before Qt6.8; the
+visible Subtitles button cannot be addressed. Retain the compatibility property
+and change notification while preserving the newer native Accessible.id bridge.
+The network dialog also uses per-corner Rectangle properties unavailable in6.4;
+retain its rounded top/square bottom with the supported single radius geometry.
+The first composed MPV capture is black despite a ready context. Collect its
+actual GL buffer samples and owned child-window capture separately from the
+composed top-level; do not infer picture acceptance from decoded readiness.
+Media-library initialization also fails to create its fresh isolated path. The
+pinned0.14.1 source confirms recursive mkdir already exists, so adding another
+directory creator is not justified; capture the actual ancestor state first.
+Windows run103 compiled successfully in68.7s. Original327's later private check
+incorrectly expected the prior QML delta; export-only328/c5fc0e29cb4e43518301380fb83cec8c
+closed0 with417 PE/symbol mappings,409 plugins, empty group and released mounts.
+No recompilation was used to repair that check. The old installer guest is absent,
+gate idle, and its stale connection launcher is retired;0x80070002 did not indicate
+a missing player. M15 stays ACTIVE, M16 NOT STARTED,1.1.12 unpublished.
+
+Earlier553 implementation checkpoint:
 Trace42524609550 captured the same deadlock twice: the GUI waits in
 QRasterPaintEngine::fillRect/QQuickIconImage while pooled SVG readers wait in
 the ImageHelper plugin's blocking GUI invocation and static initializer guard.

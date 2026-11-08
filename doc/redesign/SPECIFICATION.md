@@ -64,6 +64,11 @@ deadlock is the reproduction; current normal VLC startup/playback/natural EOF
 and the integrated native workflows must pass after correction. Diagnostic
 observers must also retire their own debugger and inferior without a ptrace
 exit-order deadlock; their results do not qualify a player package.
+Qt 6.4 must retain explicitly assigned AccessibleCompat control identifiers and
+load every redesigned library dialog, using compatible geometry for the same
+rounded header. Actual composed video pixels remain required independently of
+decoder/context readiness. A failed first-profile media library must be diagnosed
+and recovered without weakening profile isolation or hiding the initialization error.
 Verify each installable format in an isolated matching environment where its
 platform permits it. Keep source/license obligations and matching optional
 symbols separate from release binaries. A successful compile or archive alone

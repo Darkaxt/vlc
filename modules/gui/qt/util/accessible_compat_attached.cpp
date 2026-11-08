@@ -29,12 +29,15 @@ AccessibleCompatAttached::AccessibleCompatAttached(QObject* parent)
 }
 
 void AccessibleCompatAttached::setId(const QString& id) {
+    if (getId() == id)
+        return;
+    m_id = id;
 #ifdef ACCESSIBLE_COMPAT_OK
     QQuickAccessibleAttached* accessible = qobject_cast<QQuickAccessibleAttached*>(
             qmlAttachedPropertiesObject<QQuickAccessibleAttached>(parent()));
     accessible->setId(id);
-    emit IdChanged();
 #endif
+    emit IdChanged();
 }
 
 QString AccessibleCompatAttached::getId() {
@@ -43,7 +46,7 @@ QString AccessibleCompatAttached::getId() {
         qmlAttachedPropertiesObject<QQuickAccessibleAttached>(parent()));
     return accessible->id();
 #endif
-    return {};
+    return m_id;
 }
 
 AccessibleCompatAttached* AccessibleCompatAttached::qmlAttachedProperties(QObject* parent)

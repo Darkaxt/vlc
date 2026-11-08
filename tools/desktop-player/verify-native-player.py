@@ -306,6 +306,20 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
                 client.request('quit')
             exit_code = player.wait()
             client.close()
+            if platform.system() == 'Linux':
+                # Preserve the actual failed first-profile path state before
+                # deciding whether the application or its environment failed.
+                storage = home / 'data/modern-vlc/vlc/ml/mlstorage'
+                directories = []
+                for path in reversed((storage, *storage.parents)):
+                    try:
+                        status = path.stat()
+                        directories.append({'path': str(path), 'mode': oct(status.st_mode),
+                            'uid': status.st_uid, 'gid': status.st_gid, 'directory': path.is_dir()})
+                    except OSError as error:
+                        directories.append({'path': str(path), 'errno': error.errno})
+                (evidence / 'library-path-state.json').write_text(json.dumps({
+                    'euid': os.geteuid(), 'egid': os.getegid(), 'directories': directories}, indent=2) + '\n')
             (evidence / 'exit.json').write_text(json.dumps({'exit_code': exit_code}) + '\n')
             if exit_code:
                 print((evidence / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)

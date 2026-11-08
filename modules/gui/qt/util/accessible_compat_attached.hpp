@@ -43,6 +43,9 @@ class AccessibleCompatAttached : public QObject {
     static AccessibleCompatAttached* qmlAttachedProperties(QObject* parent);
 signals:
     void IdChanged();
+private:
+    // Keep the compatibility property usable before Qt exposes Accessible.id.
+    QString m_id;
 };
 
 #endif // ACCESSIBLE_COMPAT_ATTACHED_HPP

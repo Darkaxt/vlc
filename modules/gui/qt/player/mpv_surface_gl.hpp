@@ -41,6 +41,20 @@ class GlView final : public QWindow {
             {MPV_RENDER_PARAM_INVALID, nullptr}};
         const int code = api->render_context_render(render, params);
         if (code < 0) report(QString::fromUtf8(api->error_string(code)));
+#ifdef VLC_PLAYER_DIAGNOSTICS
+        // Observe the actual rendered buffer separately from X11 composition.
+        // This is test-only and never changes normal rendering or readiness.
+        QByteArray samples;
+        for (int column = 1; column < 8; ++column) {
+            unsigned char rgba[4]{};
+            context.functions()->glReadPixels(fbo.w * column / 8, fbo.h / 2,
+                1, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+            samples.append(reinterpret_cast<const char *>(rgba), 4);
+        }
+        setProperty("mpvRenderSamples", QString::fromLatin1(samples.toHex()));
+        setProperty("mpvRenderCode", code);
+        setProperty("mpvRenderCount", property("mpvRenderCount").toULongLong() + 1);
+#endif
         context.swapBuffers(this);
         api->render_context_report_swap(render);
         context.doneCurrent();
