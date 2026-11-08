@@ -160,6 +160,10 @@ by normal merge history within M15 before the final architecture/package matrix
 qualification and M16 publication. Preserve the
 fork's interface, Windows MPV/DV runtime, native port and existing data. Refresh
 and record exact revisions at integration; a reported backlog count is not a pin.
+The integrated Windows observer must subscribe to the native MPV events whose
+properties it reads, including idle-active after Stop. Controller STOPPED alone
+can precede that native event; preserve the failed observation and prove the
+corrected full stop/idle-switch/restart workflow without polling or deadlines.
 
 **7 November stabilization logging, R110 (M14), already authorized:**
 

@@ -36,8 +36,17 @@ desktop and issue no desktop controls. Real WASAPI ordinary/start-paused/resume
 checks pass after the verifier attaches libVLC's supported log callback in both
 cases, rather than assuming a CLI stderr sink for API instances. Preserve the
 initial missing-log result; it did not establish a playback failure.
-Run90/gate302 (599a257274394e97a754e9a4deca6055, session91033) now builds only
-the diagnostic Qt variant against this retained full plugin cohort. The normal
+Run90/gate302 (599a257274394e97a754e9a4deca6055, session91033) closed0 in147.71s;
+the diagnostic Qt step used121.2s and retained409 non-Qt plugins/416 non-Qt PE
+runtime images identical to normal. Integrated handover preserved paused position
+and applied/restored backend controls, then the bridge missed MPV's idle-active
+event after Stop. A fresh UI-dispatcher snapshot proves native state0/Home with
+no QML error; the original pending observation was explicitly cancelled and the
+owned player exited0/QApp finished. Preserve the failed observation. Repair the
+bridge's native event subscription and reverify stop/idle-switch/restart; this is
+a diagnostic-only correction, not an established production playback failure.
+The final source-rebind guard also proves the shared Windows AOM policy unchanged
+when accepting the reviewed hosted Cocoa build-helper changes. The normal
 runtime/symbols remain immutable. Handover, seeking/subtitles, miniplayer, actual
 native visual inspection and final one-revision delivery remain required.
 

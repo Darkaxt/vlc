@@ -226,11 +226,17 @@ def main():
                     assert any(track['selected'] for track in after['core']['video_tracks']), after['core']
                     assert after['core']['video-out-params'], after['core']
                     restrictions = [node for node in after['tree'] if node['visible']
-                        and node.get('name') == 'Show Statistics (VLC)' and node.get('actions')
+                        and node.get('name') == 'Show Statistics' and node.get('actions')
                         and 'Press' in node['actions']]
                     assert len(restrictions) == 1 and not restrictions[0]['enabled'], restrictions
-                    assert any(node['visible'] and 'statistics require VLC playback' in node.get('text', '')
-                        for node in after['tree']), 'Missing actionable VLC-only tool disclosure'
+                    # The authorized Figma layout removed the old banner and
+                    # suffix. Verify the actual disabled tool and the current
+                    # visible capability disclosure; inactive-desktop hover
+                    # is not evidence that a shared Qt tooltip was presented.
+                    assert any(node['visible'] and 'requires VLC playback' in node.get('text', '')
+                        for node in after['tree']), 'Missing VLC-only capability disclosure'
+                    records['vlc_only_statistics_disabled'] = True
+                    records['statistics_hover_tooltip_verified'] = False
                     inspect('mpv-audio-ready', 'snapshot', '--await-core', 'mpv_audio_output',
                         '--await-value', json.dumps('wasapi'))
                     actual_audio, _ = inspect('mpv-session-volume', 'snapshot', '--await-core', 'mpv_audio_volume',

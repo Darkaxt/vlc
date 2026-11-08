@@ -222,10 +222,10 @@ private:
         if (m_player->usesMpv()) {
             m_coreObservationCheck = std::move(check);
             m_mpvCoreConnection = connect(m_player->mpvPlayback(), &MpvPlayback::changed, this,
-                [this](const QString &name, const QVariant &) {
-                    if (name != QStringLiteral("time-pos") && name != QStringLiteral("duration")
-                        && name != QStringLiteral("speed") && name != QStringLiteral("audio-delay")
-                        && name != QStringLiteral("sub-delay")) return;
+                [this](const QString &, const QVariant &) {
+                    // Core snapshots read MPV's event-backed properties. In
+                    // particular idle-active arrives after ended/controller
+                    // STOPPED, so controller notifications alone miss Stop.
                     const auto callback = m_coreObservationCheck;
                     if (callback) callback();
                 });
@@ -1305,15 +1305,13 @@ private:
         }
         if (awaitCore.startsWith(QStringLiteral("mpv_audio_")) && m_player->usesMpv()) {
             auto *mpv = m_player->mpvPlayback();
-            connect(mpv, &MpvPlayback::changed, expression, check);
             connect(m_player, &PlayerController::playbackEngineChanged, expression, check);
 #ifdef _WIN32
             if (awaitCore != QStringLiteral("mpv_audio_output")) mpv->requestAudioSessionState();
 #endif
         }
-        if (awaitCore == QStringLiteral("mpv_video_ready") && m_player->usesMpv())
-            connect(m_player->mpvPlayback(), &MpvPlayback::changed, expression, check);
-        if ((awaitCore==QStringLiteral("position") || awaitCore==QStringLiteral("time_seconds")
+        if (((!awaitCore.isEmpty() && m_player->usesMpv())
+            || awaitCore==QStringLiteral("position") || awaitCore==QStringLiteral("time_seconds")
             || awaitCore==QStringLiteral("rate") || awaitCore==QStringLiteral("audio_delay_ms")
             || awaitCore==QStringLiteral("subtitle_delay_ms"))
             && !observeCoreValue(check)) {
