@@ -159,7 +159,7 @@ def native_make_flags(work, env):
         # Upstream's prebuilt ncurses .pc embeds its producer's -isysroot.
         # Keep its exact libraries, but bind the consumer link to this runner's
         # selected SDK. This is a make-time variable, not a configure rerun.
-        original = subprocess.check_output(['pkg-config', '--libs', 'ncursesw'],
+        original = subprocess.check_output(['pkg-config', '--static', '--libs', 'ncursesw'],
                                            text=True, env=env).strip()
         arguments = shlex.split(original)
         sdk = output('xcrun', '--show-sdk-path')
@@ -176,10 +176,22 @@ def native_make_flags(work, env):
             else:
                 rewritten.append(value); index += 1
         resolved = shlex.join(rewritten)
+        # This archive's libplacebo pulls glslang/SPIRV C++ objects into VLC's
+        # C-linked Vulkan plugin. Its static pkg-config metadata omits libc++.
+        placebo_original = subprocess.check_output(['pkg-config', '--static', '--libs', 'libplacebo'],
+                                                  text=True, env=env).strip()
+        placebo_arguments = shlex.split(placebo_original)
+        if '-lc++' not in placebo_arguments:
+            placebo_arguments.append('-lc++')
+        placebo_resolved = shlex.join(placebo_arguments)
         (work / 'native-link-bindings.json').write_text(json.dumps({
             'ncurses_pkgconfig_libs': original, 'ncurses_consumer_libs': resolved,
-            'selected_sdk': sdk, 'reason': 'prebuilt producer SDK path is not a consumer toolchain'}, indent=2) + '\n')
+            'selected_sdk': sdk, 'reason': 'prebuilt producer SDK path is not a consumer toolchain',
+            'libplacebo_static_pkgconfig_libs': placebo_original,
+            'libplacebo_consumer_libs': placebo_resolved,
+            'libplacebo_reason': 'C-linked plugin consumes glslang/SPIRV C++ archive objects'}, indent=2) + '\n')
         flags.append('NCURSES_LIBS=' + resolved)
+        flags.append('LIBPLACEBO_LIBS=' + placebo_resolved)
     return flags
 
 

@@ -30,6 +30,7 @@ SOURCES
         libxcb-composite0-dev libxcb-damage0-dev libxcb-render0-dev libxcb-xfixes0-dev \
         libxcb-keysyms1-dev libxkbcommon-x11-dev libprotobuf-dev protobuf-compiler \
         libprotobuf-c-dev protobuf-c-compiler libsqlite3-dev libxxhash-dev liblcms2-dev \
-        patchelf rpm squashfs-tools zstd xvfb openbox xcompmgr pulseaudio-utils
+        patchelf rpm squashfs-tools zstd xvfb openbox xcompmgr pulseaudio pulseaudio-utils \
+        ffmpeg python3-xlib
     dpkg-query -W -f='${binary:Package}\t${Version}\n' > "$1/dpkg-packages.tsv"
 fi

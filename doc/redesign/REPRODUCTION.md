@@ -49,7 +49,18 @@ mtimes in `finally`. `verify-native-player.py` uses owned filesystem/process
 events, isolated profiles and synthetic media; it requests both Qt-only and
 owned native-window captures. Neither its prepared source nor Quick-only
 pictures qualify native playback. Inspect composed pixels and actual results.
-Linux's equivalent display/audio session remains required implementation.
+Linux uses `run-linux-review.py` under the workflow's owned `xvfb-run`, with
+Openbox/xcompmgr manager-selection readiness, private PulseAudio initialization
+and exact process-exit observation. Those paths remain pending native execution.
+The added test prerequisites use a new Linux toolchain binding; earlier partial
+Linux caches remain preserved and are not adopted as an identical toolchain.
+
+Run42429162484/job128574013698 verified object reuse and the ncurses SDK correction,
+then exposed missing libc++ in the C-linked Vulkan plugin's static shader graph.
+The driver now retains static pkg-config flags and adds libc++ for that dependency
+set. Cache ending42429162484 is the next Mac continuation; no cold configure is
+required. The normal package verifies MPV members against their compiled identity
+after relocation/signing, before archiving. No runtime qualification is implied.
 
 ## Current1.1.11 stabilization diagnostics
 

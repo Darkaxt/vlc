@@ -35,8 +35,19 @@ are retained; its watch exited1 after the job completed. This is not native
 playback acceptance. The next run restores generated bootstrap files/mtimes,
 resumes the same configured objects, and prepares a separate instrumented
 Mac review app while restoring normal release objects byte-for-byte. Native
-client checks and composed pictures remain pending actual execution. Linux
-display-session acceptance is still unwired and remains an internal blocker.
+client checks and composed pictures remain pending actual execution.
+Run42429162484/job128574013698 from728bd4c6934edf7f971ee99ad00d0d6e8be7c8fe
+reused the native objects, reconstructed bootstrap files without reconfiguring,
+and linked ncurses against the selected SDK. Its next link failure was Vulkan's
+C plugin consuming static glslang/SPIRV C++ objects without libc++; the make-time
+binding now preserves static pkg-config dependencies and supplies that runtime.
+Its watch closed1; cache ending42429162484 and artifact13597032189
+(SHA256 54acc3913f553d0c2560941dad0dd25f36a17859ba845beb533aa04c5b42d9c58)
+remain recovery inputs. No native package/player acceptance passed yet.
+Linux review now has a prepared owned Xvfb/window-manager/compositor and private
+audio session, with event-based readiness and exit verification; actual native
+execution remains required. Its explicit test prerequisites start a new bound
+Linux toolchain cohort, preserving the earlier incomplete caches separately.
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
 MPV0.42's required7.387.0. Linux x86 job128558356559 found the missing GLAD2
 submodule in the source archive; Linux ARM job128558356675 confirmed the same
@@ -53,7 +64,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; stock MPV and redesigned Qt player compiled/linked on macOS ARM. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | Resume ncurses SDK binding, complete package/runtime acceptance and Linux display-session checks; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; stock MPV and redesigned Qt player compiled/linked on macOS ARM; native object/configuration reuse and ncurses SDK repair executed. | R111 complete native packages/relocation/source/licenses and R112 real native VLC/MPV/UI workflows. | Resume Vulkan C++ runtime linkage, complete package/runtime acceptance and Linux display-session execution; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Preserve historical M6's exact native-cleanup limitation. S9 Rust has not started.

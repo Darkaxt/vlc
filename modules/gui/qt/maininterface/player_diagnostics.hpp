@@ -1047,7 +1047,8 @@ private:
         const auto render = [this, id, before, error, command] {
             const qint64 predicateObserved = m_clock.elapsed();
             auto window = observationWindow();
-            if (!window || !window->isVisible() || window->windowStates().testFlag(Qt::WindowMinimized)) {
+            const auto nativeWindow = nativeTopLevel(window);
+            if (!window || !nativeWindow->isVisible() || nativeWindow->windowStates().testFlag(Qt::WindowMinimized)) {
                 auto result=snapshot();
                 result.insert(QStringLiteral("id"),id);
                 result.insert(QStringLiteral("status"),error.isEmpty()?QStringLiteral("completed"):QStringLiteral("failed"));

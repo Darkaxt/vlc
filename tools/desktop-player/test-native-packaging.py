@@ -30,8 +30,9 @@ class NativePackagingTest(unittest.TestCase):
         spec.loader.exec_module(build_module)
         work = MagicMock()
         original = '-L/pinned/lib -lncursesw -isysroot /producer/MacOSX26.2.sdk -lm'
+        placebo = '-L/pinned/lib -lplacebo -lSPIRV -lMachineIndependent'
         with patch.object(build_module.platform, 'system', return_value='Darwin'), \
-                patch.object(build_module.subprocess, 'check_output', return_value=original), \
+                patch.object(build_module.subprocess, 'check_output', side_effect=[original, placebo]), \
                 patch.object(build_module, 'output', return_value='/selected SDK/MacOSX.sdk'):
             flags = build_module.native_make_flags(work, {})
         self.assertEqual(flags[0], 'PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY')
@@ -39,6 +40,8 @@ class NativePackagingTest(unittest.TestCase):
             ['-L/pinned/lib', '-lncursesw', '-isysroot', '/selected SDK/MacOSX.sdk', '-lm'])
         record = json.loads((work / 'native-link-bindings.json').write_text.call_args.args[0])
         self.assertEqual(record['ncurses_pkgconfig_libs'], original)
+        self.assertEqual(build_module.shlex.split(flags[2].removeprefix('LIBPLACEBO_LIBS=')),
+            ['-L/pinned/lib', '-lplacebo', '-lSPIRV', '-lMachineIndependent', '-lc++'])
 
     def test_bootstrap_cache_restores_generated_bytes_and_exact_mtime(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')

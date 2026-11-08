@@ -184,6 +184,13 @@ def write_executable(path, text):
     path.chmod(0o755)
 
 
+def verify_bundled_mpv(work, directory):
+    rows = json.loads((work / 'mpv-runtime/runtime.json').read_text())
+    for row in rows:
+        if sha(directory / row['name']) != row['sha256']:
+            raise RuntimeError('Packaging changed the compiled MPV runtime identity: ' + row['name'])
+
+
 def mac_minimum_system(load_commands):
     """Read deployment targets, without confusing SDK versions with minOS."""
     versions = []
@@ -269,6 +276,7 @@ def package_mac(work, installed, out, version, arch):
             run('codesign', '--force', '--sign', '-', path)
     run('codesign', '--force', '--sign', '-', app)
     run('codesign', '--verify', '--deep', '--strict', app)
+    verify_bundled_mpv(work, frameworks / 'mpv')
     zip_path = out / f'Modern-VLC-Fork-{version}-macos-{arch}.zip'
     run('ditto', '-c', '-k', '--sequesterRsrc', '--keepParent', app, zip_path)
     run('hdiutil', 'create', '-volname', 'Modern VLC Fork', '-srcfolder', app,
@@ -316,6 +324,7 @@ exec "$root/bin/vlc" --intf=qt "$@"
     desktop = '[Desktop Entry]\nType=Application\nName=Modern VLC Fork\nExec=modern-vlc %U\nIcon=modern-vlc\nCategories=AudioVideo;Player;\n'
     (app / 'modern-vlc.desktop').write_text(desktop)
     shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', app / 'modern-vlc.png')
+    verify_bundled_mpv(work, app / 'lib/mpv')
     with tarfile.open(out / (app.name + '.tar.xz'), 'w:xz') as archive:
         archive.add(app, arcname=app.name)
     deb = work / 'deb'
