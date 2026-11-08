@@ -1,23 +1,48 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
-Current qualification is21f1d8edb1d77313fe79b647929ebf6670f1d330;
-four-platform run42519018892 is active on four independent hosted runners.
+Qualification42519018892 was cancelled for normal Linux playback diagnosis,
+not a compiler failure: its one-second VLC input never reached interface/input
+readiness. Original cache retention and artifact upload completed. Linux21f1
+artifact13634028776 is2088155843B, published SHA256
+bb19f56db94124ace23ca63f83a71d965b77e5d5c1e18eb83d71ffec2addc066.
+The bounded retrieved stderr stops after Qt theme-provider initialization, with
+no QML error; this does not establish the root cause. The queued1ca run42521685024
+was cancelled before any job started to avoid replaying that unresolved path.
+Use compiler-free, whole-artifact-hash-bound recovery of this exact normal player
+to collect live GDB thread observations after the observed theme-provider phase.
+Its five-second diagnostic cadence resumes after the first snapshot and never
+qualifies/cancels playback on expiry; completion retires only the owned debugger
+group after requested stacks are saved. No production workaround is justified
+before those stacks. M15 stays ACTIVE; Linux startup and final native acceptance
+remain internal blockers. No external blocker or tracked deferral.
+
+Prior qualification checkpoint:
+Current recipe candidate is1ca112c0c07ee9b52978e28dc3dc29613493539d;
+four-platform run42521685024 is queued behind original qualification42519018892.
+The latter's Linux x86 normal packages built and actual UI acceptance is running;
+Linux ARM/Intel continue. Mac ARM reproduced the raw-map failure below.
+Windows qualification remains bound to21f1d8edb1d77313fe79b647929ebf6670f1d330.
 Windows run102/0a9c5196148441189188fe72a2b1b22d closed0,174.46s total,
 56.1s player step, unchanged configuration/409 plugins and417 verified stripped
 PE/symbol mappings. Current ZIP/7z/source6466 members/symbols417 mappings pass;
 fresh P5/P8.1/P8.4 normal placement/presentation/EOF/release pass. NSIS326/
 9d0ac24260c542129b0784056a998cda closed0,418.55s, empty Linux group/no OOM.
 Current installer SHA2561f9d11f2e99ebf286af481bbee4ca5b9f1d5985e204dde7fce53ab9ac212e94b,
-84851492B, is under install/upgrade/profile/uninstall acceptance in the same
-owned logged-in guest; original9b installed VLC/MPV pictures/EOF and scoped
-uninstall passed. Do not repeat or relabel that old installed-payload evidence.
+84851492B, passed current21 install/upgrade/profile/extra-file/newer-registration
+preservation and uninstall in the original owned guest. Both current installed
+engine pictures were inspected, and separate12s natural EOF/resource/UI shutdown
+checks passed. The extra long MPV capture wait was interrupted by intentional
+guest disposal, not counted passing: MPV ignores VLC's stop-time option. The
+exact guest is absent; original6417/protocol65533 ended, gate idle/no recovery.
+Small evidence was copied/hash-verified before retiring the spent guest mapping.
 Mac recovery42516523219 compiled successfully, then failed in map verification:
 Darwin ld emitted a non-UTF-8 symbol byte and read_text raised UnicodeDecodeError.
 A UTF-8-mode regression reproduces it. Match exact archive paths in raw map
 bytes, retain their SHA256 and preserve the map as failure/qualification evidence.
-No SDK reset or player behavior change is involved. Actual current native matrix,
-corrected Mac link verification and final Windows installer pictures remain
+No SDK reset or player behavior change is involved. UTF-8 red/green archive-link
+and source/release-policy diagnostics pass. Actual current native matrix,
+corrected Mac link verification and final common package revision binding remain
 acceptance blockers; M16 is NOT STARTED and1.1.12 remains unpublished.
 
 Previous qualification checkpoints (historical):

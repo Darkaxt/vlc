@@ -2,8 +2,21 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
-Current qualification source is21f1d8ed; matrix42519018892 runs all four native
-targets. Mac recovery42516523219 retained its successful compilation and failed
+Linux21f1 normal VLC startup stalls before interface/input readiness on the
+one-second package fixture. Saved stderr has no QML load error and ends after
+theme-provider initialization. Compiler-free `startup_trace=true` with
+`package_artifact=13634028776`, `package_source=21f1d8edb1d77313fe79b647929ebf6670f1d330`
+and `target=linux-x86_64` recovers the exact hash-verified normal package, then
+runs two live GDB observations in the existing owned X/audio session. This is
+diagnosis, not package acceptance; no compiler, renderer fallback, timeout-based
+playback result or publication is performed. Preserve gdb-mi.log, diagnosis.json,
+package-recovery.json and native-group/session cleanup evidence.
+
+Prior checkpoint:
+
+Current recipe candidate is1ca112c0; matrix42521685024 is queued behind the
+original21f1d8ed four-target qualification42519018892. Mac recovery42516523219
+retained its successful compilation and failed
 only when the image archive verifier decoded a raw ld symbol as UTF-8. Read maps
 as bytes and match os.fsencode of the exact archive path plus the member opener;
 keep the original byte hash. Do not ignore decoding errors or reset dependencies.
@@ -11,6 +24,12 @@ The UTF-8-mode link-map regression includes invalid symbol bytes and must also
 continue rejecting missing archive links and modified static libraries.
 Windows installer326 is bound to21f1d8ed and uses fresh final-inputs-21f1d8ed
 inside the original owned guest mapping; preserve old9b evidence separately.
+That current21 installer lifecycle and both installed-engine natural EOF/shutdown
+and composed-picture checks passed. Guest disposal was verified and its original
+managed sessions ended; the gate is idle without recovery. MPV does not apply
+VLC's stop-time to the extra capture clip, so its observer was interrupted at
+disposal and is not counted as passing. Future bounded captures should use a
+fixture with that intrinsic duration; the separate12s EOF proof is unchanged.
 
 Earlier checkpoints:
 

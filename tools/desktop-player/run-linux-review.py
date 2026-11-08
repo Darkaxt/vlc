@@ -46,6 +46,8 @@ def main():
     parser.add_argument('--review-root', required=True, type=Path)
     parser.add_argument('--packages-only', action='store_true',
         help='Verify recovered immutable packages without building a diagnostic Qt module')
+    parser.add_argument('--startup-trace', action='store_true',
+        help='Diagnose the recovered normal player with GDB; no package acceptance')
     args = parser.parse_args()
     session = args.review_root.with_name(args.review_root.name + '-session')
     session.mkdir(parents=True, exist_ok=False)
@@ -112,9 +114,13 @@ def main():
         pulse_fd = os.pidfd_open(pulse_pid)
         with (session / 'audio-ready.txt').open('w') as stream:
             subprocess.run(['pactl', 'info'], env=env, stdout=stream, check=True)
-        subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
-                        '--scratch', args.review_root.with_name('native-package-checks')], env=env, check=True)
-        if not args.packages_only:
+        if args.startup_trace:
+            subprocess.run([sys.executable, HERE / 'diagnose-linux-startup.py', '--work', args.work,
+                            '--scratch', args.review_root], env=env, check=True)
+        else:
+            subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
+                            '--scratch', args.review_root.with_name('native-package-checks')], env=env, check=True)
+        if not args.packages_only and not args.startup_trace:
             subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
                             '--review-root', args.review_root], env=env, check=True)
     finally:
