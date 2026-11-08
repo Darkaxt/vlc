@@ -167,6 +167,14 @@ def main():
             env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
                 XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
                 QML_DISK_CACHE_PATH=str(home / 'qml-cache'), QT_FORCE_STDERR_LOGGING='1')
+            if engine == 'vlc':
+                with (case / 'qt-loader.txt').open('w') as stream:
+                    observed = subprocess.run(['ldd', '-r', str(app / 'lib/vlc/plugins/gui/libqt_plugin.so')],
+                        env=env, stdout=stream, stderr=subprocess.STDOUT, text=True)
+                    stream.write('\nloader_exit=' + str(observed.returncode) + '\n')
+                with (case / 'module-registry.txt').open('wb') as stream:
+                    subprocess.run([str(launcher or app / 'modern-vlc'), '--list', '--verbose=2'],
+                        env=env, stdout=stream, stderr=subprocess.STDOUT, check=True)
             stdout, stderr = case / (engine + '-stdout.log'), case / (engine + '-stderr.log')
             with stdout.open('wb') as out, stderr.open('wb') as err:
                 run(launcher or app / 'modern-vlc', '--no-qt-privacy-ask', '--no-metadata-network-access',

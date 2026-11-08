@@ -128,6 +128,7 @@ jobs:
             ${{ runner.temp }}/native-package-checks/installer-exit.json
             ${{ runner.temp }}/native-package-checks/*/*-stdout.log
             ${{ runner.temp }}/native-package-checks/*/*-stderr.log
+            ${{ runner.temp }}/native-package-checks/*/*txt
             ${{ runner.temp }}/native-package-checks/*-installed/*json
             ${{ runner.temp }}/native-package-checks/*-installed/*txt
             ${{ runner.temp }}/native-package-checks/*-installed/container.log
@@ -166,5 +167,6 @@ jobs:
             ${{ runner.temp }}/native-package-checks/*-installed/*json
             ${{ runner.temp }}/native-package-checks/*-installed/*txt
             ${{ runner.temp }}/native-package-checks/*-installed/*log
+            ${{ runner.temp }}/native-package-checks/*/*txt
             ${{ runner.temp }}/native-package-checks/*/*-stdout.log
             ${{ runner.temp }}/native-package-checks/*/*-stderr.log

@@ -6,4 +6,4 @@ test "$(uname -s)" = Linux
 sudo -n apt-get update
 sudo -n apt-get install -y --no-install-recommends python3-xlib xvfb xauth \
     openbox xcompmgr pulseaudio ffmpeg cpio rpm squashfs-tools snapd \
-    libgl1-mesa-dri libegl1 libgl1
+    libgl1-mesa-dri libegl1 libgl1 libopengl0

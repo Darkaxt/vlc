@@ -1,6 +1,14 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Compiler-free workflow42506251116 at17e31084 verified the complete original
+Linux artifact SHA256 and recovered all five formats; normal matrix/build jobs
+were SKIPPED. Clean-runner TAR playback reproduces the same unknown Qt option,
+so the failure is not RPM-specific. Artifact13627970133 retains the failed
+observation. The original native audit lists libOpenGL.so.0 as an external host
+dependency, absent from the package metadata/review dependency list. Add that
+review host library and retain ldd/module-registry evidence on every format to
+confirm the loader cause before changing production package dependencies.
 Windows run98/gate3197ef9899de04b4627b951c21c229c8983 closed0, zeroOOM,
 empty Linux group and released private mounts. Player step524.8s/517.2CPU seconds;
 configuration hash/mtime unchanged;2147 of3345 prior object records retained.
