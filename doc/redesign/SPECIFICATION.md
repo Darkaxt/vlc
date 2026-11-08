@@ -185,6 +185,12 @@ For Debian merged-/usr layouts, bind each shipped source file to its unique dpkg
 owner using only actual symlink aliases resolving to that identical physical file.
 Record original/resolved/registered paths; never infer ownership from a basename
 or ignore a package database failure.
+When an installed Debian source version has left the current Sources index,
+retain that exact original descriptor and its complete upstream/Ubuntu patch
+archives from a checksum-pinned Canonical snapshot. Verify descriptor identity,
+member names, sizes and SHA256 closure; preserve reconstructible DSC-relative
+filenames. Do not replace the compiled library or substitute newer sources to
+make collection pass. PCRE2 10.42-4ubuntu2.1 is the evidenced case.
 
 **7 November stabilization logging, R110 (M14), already authorized:**
 

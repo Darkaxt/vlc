@@ -59,6 +59,34 @@ def inspect_result(result):
     return result
 
 
+def retain_timing_observation(evidence):
+    """Summarize all native trace events without loading the trace into RAM."""
+    trace = evidence / 'native-timing.jsonl'
+    groups = {}
+    with trace.open() as stream:
+        for line in stream:
+            row = json.loads(line)
+            body = row['Body']
+            key = '|'.join(str(body.get(name, '')) for name in ('type', 'id', 'mode', 'event'))
+            group = groups.setdefault(key, {'count': 0, 'first': row, 'last': row, 'ranges': {}})
+            group['count'] += 1
+            group['last'] = row
+            for field in ('Timestamp', 'pts', 'render_ts', 'render_pts', 'drift'):
+                value = row.get(field) if field == 'Timestamp' else body.get(field)
+                if value is not None:
+                    number = int(value)
+                    bounds = group['ranges'].setdefault(field, [number, number])
+                    bounds[0], bounds[1] = min(bounds[0], number), max(bounds[1], number)
+    with trace.open('rb') as stream:
+        trace_digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    log = (evidence / 'stderr.log').read_text(errors='replace')
+    (evidence / 'timing-observation.json').write_text(json.dumps({
+        'trace_sha256': trace_digest, 'groups': groups,
+        'input_clock_gap_warnings': log.count('clock gap, unexpected stream discontinuity:'),
+        'coreaudio_late_start_messages': log.count('auhal audio output debug: starting late'),
+        'qualification': 'Diagnostic evidence; timing correctness requires review'}, indent=2) + '\n')
+
+
 def inspect_cocoa_video_placement(result):
     """Reject a decoded Cocoa picture placed outside its native parent view."""
     if result['core']['engine'] != 'vlc' or 'cocoa_graphics' not in result:
@@ -153,6 +181,7 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         '--no-qt-privacy-ask', '--no-metadata-network-access',
         '--restore-playback-pos=0', '--no-video-title-show', '--start-paused',
         '--qt-playback-engine=' + engine, '--verbose=2', str(fixture)]
+    argv[1:1] = ['--tracer=json', '--json-tracer-file=' + str(evidence / 'native-timing.jsonl')]
     if software_decoding:
         argv[1:1] = ['--codec=avcodec', '--avcodec-hw=none']
     (evidence / 'launch.json').write_text(json.dumps({'argv': argv, 'platform': platform.platform(),
@@ -282,6 +311,7 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
                 print((evidence / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)
                 raise RuntimeError('Owned native player exited with ' + str(exit_code))
     stderr_text = (evidence / 'stderr.log').read_text(errors='replace')
+    retain_timing_observation(evidence)
     if 'OpenGL (ES) 3.0 context creation failed.' in stderr_text:
         raise RuntimeError('Native Qt graphics probe fell back after context creation failure')
     if any('using services_discovery module "' + name + '"' in stderr_text
@@ -291,7 +321,9 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
     # without a command-line engine override to verify actual persistence.
     reopen = case / 'reopen'; reopen.mkdir()
     env['VLC_PLAYER_DIAGNOSTICS_DIR'] = str(reopen)
-    reopened_argv = [argument for argument in argv if not argument.startswith('--qt-playback-engine=')]
+    reopened_argv = [argument for argument in argv if not argument.startswith(
+        ('--qt-playback-engine=', '--json-tracer-file='))]
+    reopened_argv[1:1] = ['--json-tracer-file=' + str(reopen / 'native-timing.jsonl')]
     with (reopen / 'stdout.log').open('wb') as stdout, (reopen / 'stderr.log').open('wb') as stderr:
         player = subprocess.Popen(reopened_argv, cwd=executable.parent, env=env, stdout=stdout, stderr=stderr)
         client = client_module.NativePlayerClient(player, reopen, token)

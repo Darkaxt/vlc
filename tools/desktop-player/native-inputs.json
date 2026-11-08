@@ -1,5 +1,31 @@
 {
   "upstream_baseline": "2cb78ca89c016df5b15b4f421d8b11e3253cb1a7",
+  "linux_archived_sources": [
+    {
+      "source_package": "pcre2",
+      "version": "10.42-4ubuntu2.1",
+      "reason": "The installed runner library's original version is no longer in current Sources indexes; retain its exact Canonical snapshot sources.",
+      "descriptor": {
+        "id": "pcre2-10.42-4ubuntu2.1-dsc",
+        "url": "https://snapshot.ubuntu.com/ubuntu/20261101T000000Z/pool/main/p/pcre2/pcre2_10.42-4ubuntu2.1.dsc",
+        "sha256": "6272177be186d6f8ad16b668bb508b2e07645e05b5b8402d446492cb6d18104e"
+      },
+      "files": [
+        {
+          "id": "pcre2-original",
+          "url": "https://snapshot.ubuntu.com/ubuntu/20261101T000000Z/pool/main/p/pcre2/pcre2_10.42.orig.tar.gz",
+          "sha256": "c33b418e3b936ee3153de2c61cc638e7e4fe3156022a5c77d0711bcbb9d64f1f",
+          "bytes": 2397194
+        },
+        {
+          "id": "pcre2-ubuntu-patch",
+          "url": "https://snapshot.ubuntu.com/ubuntu/20261101T000000Z/pool/main/p/pcre2/pcre2_10.42-4ubuntu2.1.diff.gz",
+          "sha256": "29c5cb6ff392544bf48bd3ec2a98aa0da5297457fa4f4199a1c392ec3d41f19c",
+          "bytes": 8431
+        }
+      ]
+    }
+  ],
   "macos_contrib_commit": "e0baa29690f97c5d746643d59358fd6055eda8f6",
   "macos_contrib_triplet_kernel": "19",
   "native_contrib_aom_overlay": {

@@ -378,6 +378,37 @@ def dpkg_owner(path):
     raise RuntimeError('No unique installed dpkg owner: ' + str(path))
 
 
+def collect_archived_debian_source(pin, directory, cache):
+    """Retain one exact installed source version absent from current indexes."""
+    descriptor = fetch_source(dict(pin['descriptor']), cache)
+    text = descriptor.read_text()
+    if not re.search(r'^Source: ' + re.escape(pin['source_package']) + r'$', text, re.M) or not re.search(
+            r'^Version: ' + re.escape(pin['version']) + r'$', text, re.M):
+        raise RuntimeError('Archived Debian descriptor identity differs')
+    checksums = text.split('Checksums-Sha256:\n', 1)[1].split('\nFiles:', 1)[0]
+    declared = {}
+    for line in checksums.splitlines():
+        digest, size, name = line.split()
+        if name in declared or Path(name).name != name or not re.fullmatch('[0-9a-f]{64}', digest):
+            raise RuntimeError('Invalid archived Debian source member')
+        declared[name] = (digest, int(size))
+    expected = {PurePosixPath(urllib.parse.urlsplit(row['url']).path).name:
+                (row['sha256'], row['bytes']) for row in pin['files']}
+    if declared != expected or len(expected) != len(pin['files']):
+        raise RuntimeError('Archived Debian source closure differs from descriptor')
+    rows = [pin['descriptor'], *pin['files']]
+    for row in rows:
+        url = urllib.parse.urlsplit(row['url'])
+        if url.scheme != 'https' or url.hostname != 'snapshot.ubuntu.com':
+            raise RuntimeError('Archived source must use the pinned Canonical snapshot')
+        source = descriptor if row is pin['descriptor'] else fetch_source(dict(row), cache)
+        if 'bytes' in row and source.stat().st_size != row['bytes']:
+            raise RuntimeError('Archived Debian source size differs')
+        # Preserve DSC-relative names so dpkg-source can reconstruct this source.
+        shutil.copy2(source, directory / PurePosixPath(url.path).name)
+    (directory / 'archival-source.json').write_text(json.dumps(pin, indent=2) + '\n')
+
+
 def collect_linux(work, app, destination):
     paths = []
     for filename in (app / 'NATIVE-DEPENDENCIES.json', app / 'lib/mpv/runtime.json'):
@@ -398,10 +429,19 @@ def collect_linux(work, app, destination):
             raise RuntimeError('No installed source version: ' + package)
         sources.setdefault(tuple(record), []).append(package)
     result = []
+    archived = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text()).get(
+        'linux_archived_sources', [])
     for (name, version), binaries in sorted(sources.items()):
         directory = destination / 'debian' / name / version
         directory.mkdir(parents=True, exist_ok=True)
-        run('apt-get', 'source', '--download-only', '--only-source', name + '=' + version, cwd=directory)
+        pins = [pin for pin in archived if (pin['source_package'], pin['version']) == (name, version)]
+        if len(pins) > 1:
+            raise RuntimeError('Ambiguous archived Debian source pin')
+        if pins:
+            collect_archived_debian_source(pins[0], directory,
+                work / 'corresponding-source-inputs/debian' / name / version)
+        else:
+            run('apt-get', 'source', '--download-only', '--only-source', name + '=' + version, cwd=directory)
         for package in binaries:
             copyright_file = Path('/usr/share/doc') / package.split(':')[0] / 'copyright'
             if not copyright_file.is_file():

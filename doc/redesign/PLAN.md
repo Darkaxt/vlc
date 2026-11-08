@@ -1,6 +1,39 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Fresh upstream inspection at14:43UTC resolves master to
+978212a42d569a8d13fd83eae205e1bff4c7096d: four commits beyond the already merged
+97-commit2cb78ca89c016df5b15b4f421d8b11e3253cb1a7 snapshot. Their bounded delta is
+MediaTreeListener lifetime ordering/nonmovability, colorized Record-menu entry,
+libpng1.6.59 and zlib1.4 contrib recipes. Keep current Intel/Linux source-closure
+continuations intact; merge the pinned delta after the base native pipeline works
+and before the final common-source matrix, preserving theme replacement and
+actual installed/pinned dependency provenance. Do not chase a moving upstream
+head or restart these owned operations to include the new metadata early.
+Intel42489527647/job128759875804 at614f745e closed0 (original watch98184),
+including source closure, normal ZIP/DMG strict signing/4193 identical members,
+natural EOF, native workflow, cache/artifact and cleanup. Artifact13622158315 is
+2553635553B, SHA25642a40108751db6fadaa179d540ddcad3cc817d5b8d6875ca5228ba1420936005.
+Retrieved/inspected native VLC/MPV main subtitles, floating and restored pictures
+show the Figma interface and video; selected-member CRC/SHA is not whole-artifact
+verification. Inspection also finds VLC's restored frame80 versus core/UI68.75s,
+CoreAudio late-start messages and repeated input-clock gaps. This remains an
+internal native timing acceptance blocker, despite the passing workflow. Enable
+the existing JSON tracer in owned tests and retain complete-event timing summaries
+before changing production behavior; normal untraced packages remain unchanged.
+Linux42490752556/job128769362707 at9c13037e closed1 (original watch8112), after
+all ownership checks passed: current Sources no longer lists installed PCRE2
+10.42-4ubuntu2.1. Artifact13621724423 is247609989B, SHA256
+0c1ebc9cf43271105ebb6a869a8e3d65aef6c770b22a64cd421aa1f2c3c63a26.
+The exact Canonical20261101T000000Z descriptor SHA256
+6272177be186d6f8ad16b668bb508b2e07645e05b5b8402d446492cb6d18104e and both
+listed original/Ubuntu patch archives now verify locally. Focused descriptor
+identity/complete-patch rejection, all-event timing summary and prior ownership
+checks pass. Native continuation is still required; no newer source substitution,
+runtime/library upgrade or cold SDK rebuild is used for this correction.
+Guest40's spent installed payload was transactionally retired after guest absence,
+profile-copy/hash and original-installer/failure-log preservation:
+e09f4dc776407d58f41ed9fcca5c1858 APPLIED,2731 members/370630498B, no errors.
 MacARM42473153325/job128709928646 closed0 (watch45548); cache, artifact and
 hosted cleanup completed. Normal untraced ZIP/DMG playback/signature/identical
 member checks pass. Actual Qt diagnostics select Metal (graphics_api6), and
@@ -127,6 +160,11 @@ when that pathname is unregistered. Diversions/multiple-owner rows remain reject
 Artifact13620823495 is247609923B, SHA256338c6d8b93218a9ea39923659dcadd5aab319c7be8b03fa8bc45eef1f094a35d.
 Intel42489527647 at614f745eadb84c8206248f7e424ab8b2007c9316 is active; preserve its
 original session and pending source-closure/normal playback qualification.
+Linux continuation42490752556 is queued at9c13037e3144b2518c8d4e4e8a6cabb71b89bbbc
+behind that Intel run. The canonical-owner, pre-SBOM recipe and strict source-graph
+regression checks pass. Preserve original watch sessions98184 (Intel) and8112
+(Linux), existing cached objects and each run's source identity; no duplicate
+workflow or partial release is authorized by these diagnostics.
 Guest41/fb97567652744293a592e92e380d9bd2 lifecycle-only diagnostics exited0 and
 released the guest: rejection/install/upgrade/two-install namespace/uninstall and
 profile/extra-file preservation all pass. Overall passed and playback_qualified

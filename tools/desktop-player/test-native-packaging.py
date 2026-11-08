@@ -23,6 +23,59 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_native_timing_observation_keeps_all_render_events(self):
+        spec = importlib.util.spec_from_file_location('native_verifier', HERE / 'verify-native-player.py')
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        root = Path(sys.argv_scratch) / ('timing-observation-' + uuid.uuid4().hex)
+        root.mkdir()
+        rows = [{'Timestamp': str(index), 'Body': {'type': 'RENDER', 'id': 'audio/2',
+                 'mode': 'realtime', 'pts': str(index * 1000), 'drift': str(20 - index)}}
+                for index in range(1001)]
+        (root / 'native-timing.jsonl').write_text(''.join(json.dumps(row) + '\n' for row in rows))
+        (root / 'stderr.log').write_text('main generic warning: clock gap, unexpected stream discontinuity:\n')
+        verifier.retain_timing_observation(root)
+        report = json.loads((root / 'timing-observation.json').read_text())
+        group = report['groups']['RENDER|audio/2|realtime|']
+        self.assertEqual(group['count'], 1001)
+        self.assertEqual(group['ranges']['pts'], [0, 1000000])
+        self.assertEqual(group['last'], rows[-1])
+        self.assertEqual(report['input_clock_gap_warnings'], 1)
+
+    def test_archived_debian_sources_preserve_descriptor_identity_and_patches(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        root = Path(sys.argv_scratch) / ('archived-debian-' + uuid.uuid4().hex)
+        root.mkdir()
+        original = root / 'original-input'; original.write_bytes(b'original source archive')
+        patch_file = root / 'patch-input'; patch_file.write_bytes(b'Ubuntu source patch')
+        descriptor = root / 'descriptor-input'
+        base = 'https://snapshot.ubuntu.com/ubuntu/20261101T000000Z/pool/main/p/pcre2/'
+        files = [{'id': 'original', 'url': base + 'pcre2.orig.tar.gz', 'sha256': sources.sha(original),
+                  'bytes': original.stat().st_size},
+                 {'id': 'patch', 'url': base + 'pcre2.diff.gz', 'sha256': sources.sha(patch_file),
+                  'bytes': patch_file.stat().st_size}]
+        text = ('Source: pcre2\nVersion: 10.42-4ubuntu2.1\nChecksums-Sha256:\n'
+                + ''.join(f" {row['sha256']} {row['bytes']} {row['url'].rsplit('/', 1)[1]}\n" for row in files)
+                + 'Files:\n')
+        descriptor.write_text(text)
+        pin = {'source_package': 'pcre2', 'version': '10.42-4ubuntu2.1',
+               'descriptor': {'id': 'dsc', 'url': base + 'pcre2.dsc', 'sha256': sources.sha(descriptor)},
+               'files': files}
+        output_dir = root / 'retained'; output_dir.mkdir()
+        with patch.object(sources, 'fetch_source', side_effect=lambda row, cache:
+                          {'dsc': descriptor, 'original': original, 'patch': patch_file}[row['id']]):
+            sources.collect_archived_debian_source(pin, output_dir, root / 'cache')
+            self.assertEqual((output_dir / 'pcre2.diff.gz').read_bytes(), patch_file.read_bytes())
+            self.assertEqual((output_dir / 'pcre2.dsc').read_text(), text)
+            missing_patch = dict(pin, files=files[:1])
+            with self.assertRaisesRegex(RuntimeError, 'source closure differs'):
+                sources.collect_archived_debian_source(missing_patch, output_dir, root / 'cache')
+            descriptor.write_text(text.replace('Version: 10.42-4ubuntu2.1', 'Version: different'))
+            with self.assertRaisesRegex(RuntimeError, 'descriptor identity differs'):
+                sources.collect_archived_debian_source(pin, output_dir, root / 'cache')
+
     def test_mpv_cocoa_restore_retains_objects_and_rejects_other_changes(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
         build = importlib.util.module_from_spec(spec)
