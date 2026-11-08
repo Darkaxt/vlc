@@ -112,7 +112,12 @@ matches the packaged source input. Bind only actual symlink aliases to the same
 physical file and retain unique ownership; source archive checks remain strict.
 Artifact13620411149 is247609977 bytes, SHA2563dfbbe59556b286a2c80021ea7ba9e9a1c49e7435c290b31e4e836a7ded5b46f.
 Intel continuation42487524069 is active atbec7ce258a78b0b9e2364209160a230bef26bea5;
-its pre-SBOM recipe extraction still needs native verification. No release published.
+its native compilation/package assembly finished, but source collection rejected
+the copied recipe outside Homebrew's permitted roots. Preserve that failure.
+Use the original installed Cellar/.brew recipe through the permitted keg loader,
+requiring its SHA256 to match the retained receipt-bound copy. Do not relocate a
+formula, disable Homebrew's path policy, create a tap or use the current API recipe.
+Native continuation/qualification remain required. No release published.
 Windows supplementary formats: the installed7z executable is available at
 C:/Users/darka/scoop/shims/7z.exe. The maintained package helper can produce7z
 from exactly the same stripped, empty-profile portable tree, with one compressor

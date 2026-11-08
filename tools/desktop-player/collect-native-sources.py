@@ -76,7 +76,7 @@ def brew_sources(sbom, formula, recipe):
     return result
 
 
-def installed_brew_sources(target, formula, version):
+def installed_brew_sources(target, formula, version, keg):
     """Use the installed SBOM, or its original recipe for pre-SBOM bottles."""
     recipe_path = target / (formula + '.rb')
     recipe = recipe_path.read_text()
@@ -87,10 +87,13 @@ def installed_brew_sources(target, formula, version):
         receipt = json.loads((target / 'INSTALL_RECEIPT.json').read_text())
         if receipt['source']['spec'] != 'stable':
             raise RuntimeError('Unsupported pre-SBOM installed source spec: ' + formula)
+        installed_recipe = Path(keg) / '.brew' / (formula + '.rb')
+        if sha(installed_recipe) != sha(recipe_path):
+            raise RuntimeError('Original installed recipe changed: ' + formula)
         # Homebrew evaluates platform/resource/patch blocks from this exact keg
         # recipe. Its package version must match the recorded installed owner.
         metadata = json.loads(output('brew', 'ruby',
-            Path(__file__).with_name('read-installed-brew-sources.rb'), recipe_path, version))
+            Path(__file__).with_name('read-installed-brew-sources.rb'), installed_recipe, version))
         if metadata['formula'] != formula or metadata['version'] != version:
             raise RuntimeError('Installed recipe identity differs: ' + formula)
         (target / 'installed-recipe-sources.json').write_text(json.dumps(metadata, indent=2) + '\n')
@@ -272,7 +275,7 @@ def collect_brew(work, app, generation, destination):
             if sha(source) != digest:
                 raise RuntimeError('Installed source metadata changed: ' + str(source))
             shutil.copy2(source, target / source.name)
-        sources = installed_brew_sources(target, formula, version)
+        sources = installed_brew_sources(target, formula, version, row['keg'])
         for record in sources:
             archive = stage_source(record, target,
                 work / 'corresponding-source-inputs/homebrew' / formula / version)

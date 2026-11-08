@@ -457,6 +457,7 @@ class NativePackagingTest(unittest.TestCase):
         sources = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(sources)
         target = Path('/retained/libb2/0.98.1')
+        keg = Path('/usr/local/Cellar/libb2/0.98.1')
         metadata = {'formula': 'libb2', 'version': '0.98.1', 'packages': [
             {'SPDXID': 'SPDXRef-Archive-libb2-src', 'downloadLocation': 'https://example.org/source.tar.gz',
              'checksums': [{'algorithm': 'SHA256', 'checksumValue': 'a' * 64}]},
@@ -467,20 +468,26 @@ class NativePackagingTest(unittest.TestCase):
                 return json.dumps({'source': {'spec': 'stable'}})
             return 'Original hash-bound installed Ruby recipe'
         with patch.object(Path, 'is_file', return_value=False), patch.object(Path, 'read_text', read), \
+                patch.object(sources, 'sha', return_value='original-recipe-digest'), \
                 patch.object(Path, 'write_text') as write, patch.object(sources, 'output', return_value=json.dumps(metadata)) as query:
-            self.assertEqual([row['sha256'] for row in sources.installed_brew_sources(target, 'libb2', '0.98.1')],
+            self.assertEqual([row['sha256'] for row in sources.installed_brew_sources(target, 'libb2', '0.98.1', keg)],
                              ['a' * 64, 'b' * 64])
             self.assertEqual(query.call_args.args, ('brew', 'ruby', HERE / 'read-installed-brew-sources.rb',
-                                                   target / 'libb2.rb', '0.98.1'))
+                                                   keg / '.brew/libb2.rb', '0.98.1'))
             write.assert_called_once()
             metadata['version'] = 'newer'
             query.return_value = json.dumps(metadata)
             with self.assertRaisesRegex(RuntimeError, 'identity differs'):
-                sources.installed_brew_sources(target, 'libb2', '0.98.1')
+                sources.installed_brew_sources(target, 'libb2', '0.98.1', keg)
+        with patch.object(Path, 'is_file', return_value=False), patch.object(Path, 'read_text', read), \
+                patch.object(sources, 'sha', side_effect=['modified', 'original']), patch.object(sources, 'output') as query:
+            with self.assertRaisesRegex(RuntimeError, 'Original installed recipe changed'):
+                sources.installed_brew_sources(target, 'libb2', '0.98.1', keg)
+            query.assert_not_called()
         with patch.object(Path, 'is_file', return_value=True), \
                 patch.object(Path, 'read_text', return_value='{}'), patch.object(sources, 'output') as query:
             with self.assertRaises(KeyError):
-                sources.installed_brew_sources(target, 'libb2', '0.98.1')
+                sources.installed_brew_sources(target, 'libb2', '0.98.1', keg)
             query.assert_not_called()  # A broken present SBOM must never be ignored.
 
     def test_dpkg_owner_resolves_only_actual_merged_usr_aliases(self):
