@@ -145,6 +145,10 @@ using the existing spu-fill option, retaining explicit user overrides and the
 Windows/mobile defaults. Inspect main, floating and restored subtitle pixels.
 Linux installable copies must preserve the portable payload's internal library
 links, bytes and modes; dereferencing links is not identical-payload delivery.
+The first complete Linux compile also links VLC's scale filter to the owned
+libplacebo prefix. Resolve that declared prefix during raw VLC closure staging
+as well as raw MPV staging; final portable audits must still reject dependencies
+outside the shipped application. Do not alter the machine's loader configuration.
 
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master

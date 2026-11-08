@@ -50,8 +50,8 @@ def dependencies(path, search_paths=()):
         identity = output('otool', '-D', path).splitlines()[1:]
         return [dep for line in lines if (dep := line.strip().split(' (')[0]) not in identity]
     if search_paths:
-        # Raw MPV and libplacebo share this owned install prefix before their
-        # portable copies receive $ORIGIN. Keep this resolver local to staging;
+        # Raw native libraries use owned install prefixes before their portable
+        # copies receive $ORIGIN. Keep this resolver local to staging;
         # final package audits must resolve only the shipped runtime.
         env = dict(os.environ, LD_LIBRARY_PATH=os.pathsep.join(
             str(Path(directory).resolve()) for directory in search_paths))
@@ -568,11 +568,15 @@ def package_linux(work, installed, out, version, arch):
     (app / 'QT-SOURCES.json').write_text(json.dumps(sorted(set(qt_sources)), indent=2) + '\n')
     deps = app / 'lib/native'; deps.mkdir()
     binaries = [p for p in app.rglob('*') if native(p) and 'mpv' not in p.relative_to(app).parts]
+    # VLC's filters can use the same source-built libplacebo as MPV. Their
+    # install RPATH covers VLC's prefix, not this separate dependency prefix.
+    # Scope both declared inputs to discovery; audit_package gets neither.
+    search_paths = (work / 'deps/lib', installed / 'lib')
     required = []
     for path in binaries:
-        required.extend(Path(dep) for dep in dependencies(path) if not external(dep)
+        required.extend(Path(dep) for dep in dependencies(path, search_paths=search_paths) if not external(dep)
                         and not Path(dep).is_relative_to(installed))
-    closure = copy_closure(required, deps)
+    closure = copy_closure(required, deps, search_paths=search_paths)
     (app / 'NATIVE-DEPENDENCIES.json').write_text(json.dumps(closure, indent=2) + '\n')
     for path in binaries:
         split_symbols(path, path.relative_to(app), work)

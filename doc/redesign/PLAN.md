@@ -1,6 +1,17 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Linux42471682713/job128706586154 closed1 (watch2279), after the full Qt/player
+and plugin graph compiled and installed. Raw package closure failed on VLC's
+libpl_scale_plugin.so -> libplacebo.so.387, which is present in the owned deps
+prefix but absent from that plugin's install RPATH. Scope the declared deps
+and VLC install prefixes to raw closure discovery/copying; leave the final
+portable audit strict and the global loader environment unchanged. The native
+objects/cache/artifact and hosted cleanup are retained. Artifact13613999310 is
+135296433 bytes, GitHub SHA256463c7f902a13c87d3a9548bda4cda8f89d9fa02bb23270456a99216d9737bd3c.
+Mac42473153325/job128709928646 (watch45548) is running at
+d8a53a6231fd7037829c33fa505633078bc832fe with the cohesive native rendering and
+subtitle correction. Native qualification remains incomplete.
 Mac diagnostic42470993172/job128703252504 closed1 (watch42962); its cache,
 artifact and hosted cleanup completed. Artifact13613926596 is2498691378 bytes,
 GitHub SHA25617c78ef9a556176ce54a79751d2b3f7fb0cb7a029bbd185fbc27c90219776be8.
@@ -13,9 +24,10 @@ a distinct Cocoa probe cache, defaults native desktop subtitles to the video
 area while preserving explicit overrides/Windows/mobile behavior, and records
 the actual selected Qt graphics API. Untraced normal package qualification is
 restored; these corrections still require real native evidence.
-Linux continuation42471682713/job128706586154 (watch2279) is now running at
+Linux continuation42471682713/job128706586154 (watch2279) ran at
 e85635baf98678c17dc868bbed5da08bd76c4ea0 with the retained dependency/Qt objects.
-It does not include the subsequent native subtitle-default/Metal corrections.
+It did not include the subsequent native subtitle-default/Metal corrections;
+its completed compile and packaging failure are recorded above.
 Linux42469710665/job128700161527 closed1 (original watch18174) after its first
 Qt/QML compile reached the native X11 compositor. Its display-name assignment
 passed constData into VLC's mutable char pointer; use the compositor-owned
