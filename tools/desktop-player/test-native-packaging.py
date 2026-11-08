@@ -191,6 +191,8 @@ class NativePackagingTest(unittest.TestCase):
         placebo = '/owned-prefix/lib/libplacebo.so.387'
 
         def ldd(args, **kwargs):
+            if args == ['readelf', '--dynamic', 'libmpv.so.2']:
+                return '0x1 (NEEDED) Shared library: [libplacebo.so.387]\n'
             self.assertEqual(args, ['ldd', 'libmpv.so.2'])
             if kwargs.get('env', {}).get('LD_LIBRARY_PATH') == str(prefix):
                 return 'libplacebo.so.387 => ' + placebo + ' (0x1234)\n'
@@ -205,6 +207,22 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'libplacebo.so.387 => not found'):
                 package.dependencies('libmpv.so.2')
             self.assertEqual(os.environ['LD_LIBRARY_PATH'], 'unrelated-sdk')
+
+    def test_linux_audit_keeps_direct_app_edges_and_os_driver_children_distinct(self):
+        def lookup(argv, **kwargs):
+            if argv[0] == 'readelf':
+                return '0x1 (NEEDED) Shared library: [libGL.so.1]\n'
+            return ('libGL.so.1 => /lib/libGL.so.1 (0x1)\n'
+                    'libexpat.so.1 => /lib/libexpat.so.1 (0x2)\n')
+        with patch.object(package, 'MAC', False), \
+                patch.object(package.subprocess, 'check_output', side_effect=lookup):
+            self.assertEqual(package.dependencies('app.so'), ['/lib/libGL.so.1'])
+        # The same library is still a required application edge when its own
+        # ELF declares it; the final ownership audit must then inspect it.
+        with patch.object(package, 'MAC', False), patch.object(package, 'output', side_effect=[
+                '0x1 (NEEDED) Shared library: [libexpat.so.1]',
+                'libexpat.so.1 => /lib/libexpat.so.1 (0x2)']):
+            self.assertEqual(package.dependencies('fontconfig.so'), ['/lib/libexpat.so.1'])
 
     def test_native_picture_rejects_decoded_video_outside_its_cocoa_parent(self):
         spec = importlib.util.spec_from_file_location('native_verify', HERE / 'verify-native-player.py')

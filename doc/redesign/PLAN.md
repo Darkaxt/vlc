@@ -39,6 +39,19 @@ snapd/core24 installation with strict interfaces and no devmode/classic fallback
 These new installer paths are implemented and await the Linux workflow; extraction
 alone remains insufficient. Preserve each failure, container/process exit and
 owned installation retirement evidence.
+Linux42476051222/job128718743422 closed1 (watch28845); cache/artifact/hosted
+cleanup completed. Artifact13616145027 is247635699 bytes, GitHub SHA256
+4d213778bf5babb1dcfa023dc6f098fb1eb13f85b45441beb6c8566cb0cbfd15.
+The pkglibdir correction passed; the final audit now exposes a flattened ldd
+graph treating OS graphics-driver children (libexpat) as application edges.
+Resolve actual DT_NEEDED edges and recurse through every shipped ELF; retain
+strict missing-edge and outside-app checks for those application dependencies.
+Focused graph/prefix diagnostics pass; actual Linux qualification is pending.
+The Mac library-only configuration selects a separate immutable MPV staging
+cohort, preserving the earlier Swift-enabled runtime and its normal-package
+consumers. MacIntel continuation42476757091/job128719904911 (watch32496) is active
+at4708c0d6ad7. No second pending workflow is submitted until its existing identity
+and the next Linux continuation are recorded.
 
 **Earlier M15 investigation checkpoints (historical; current status above).**
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)

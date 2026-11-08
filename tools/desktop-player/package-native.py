@@ -49,6 +49,13 @@ def dependencies(path, search_paths=()):
         lines = output('otool', '-L', path).splitlines()[1:]
         identity = output('otool', '-D', path).splitlines()[1:]
         return [dep for line in lines if (dep := line.strip().split(' (')[0]) not in identity]
+    # ldd flattens the complete loader graph, including children of the OS's
+    # graphics drivers. Read the actual ELF edges so closure staging/auditing
+    # can recurse through shipped libraries without claiming ownership of the
+    # OS driver subtree. Every shipped ELF is independently audited below.
+    needed = re.findall(r'\(NEEDED\).*?\[([^\]]+)\]', output('readelf', '--dynamic', path))
+    if not needed:
+        return []
     if search_paths:
         # Raw native libraries use owned install prefixes before their portable
         # copies receive $ORIGIN. Keep this resolver local to staging;
@@ -60,7 +67,17 @@ def dependencies(path, search_paths=()):
         lines = output('ldd', path).splitlines()
     if any('not found' in line for line in lines):
         raise RuntimeError(f'Unresolved native dependency: {path}\n' + '\n'.join(lines))
-    return [match.group(1) for line in lines if (match := re.search(r'=> (/[^ ]+)', line))]
+    resolved = {}
+    for line in lines:
+        match = re.match(r'\s*(\S+)\s+=>\s+(/\S+)', line)
+        if match:
+            resolved[match.group(1)] = match.group(2)
+        elif match := re.match(r'\s*(/\S+)\s+\(', line):
+            resolved[match.group(1)] = match.group(1)
+    missing = set(needed) - resolved.keys()
+    if missing:
+        raise RuntimeError(f'ELF dependency resolution omitted declared entries: {path}: {sorted(missing)}')
+    return [resolved[name] for name in needed]
 
 
 def mac_runpath_bindings(origin):
@@ -284,6 +301,7 @@ def audit_package(app, executable, arch, receipt):
     if not records:
         raise RuntimeError('Native package contains no native binaries')
     receipt.write_text(json.dumps({'state': 'FAILED' if errors else 'architecture and dependency closure verified',
+        'dependency_scope': 'Direct native edges for every shipped binary; OS graphics drivers retain their own dependency subtree',
         'architecture': arch, 'members': records, 'errors': errors}, indent=2) + '\n')
     if errors:
         raise RuntimeError('Native package dependency audit failed:\n' + '\n'.join(errors))
@@ -346,12 +364,19 @@ def split_symbols(path, relative, work):
         run('objcopy', '--only-keep-debug', path, saved)
 
 
+def mpv_runtime_directory(work):
+    # The Mac library-only configuration is a new immutable runtime cohort.
+    # Keep the prior Swift-enabled runtime intact for its retained normal app;
+    # Windows and Linux retain their existing, unchanged runtime binding.
+    return work / ('mpv-runtime-embedded' if MAC else 'mpv-runtime')
+
+
 def stage_mpv(work, prefix):
     matches = sorted((prefix / 'lib').glob('libmpv.*.dylib' if MAC else 'libmpv.so.*'))
     if not matches:
         raise RuntimeError('Native libmpv was not installed')
     library = matches[0]
-    directory = work / 'mpv-runtime'
+    directory = mpv_runtime_directory(work)
     # Immutable runtime members are staged once per content-keyed build. A new
     # dependency build must get a new key instead of mixing old/new libraries.
     binding = directory / 'runtime.json'
@@ -382,7 +407,7 @@ def write_executable(path, text):
 
 
 def verify_bundled_mpv(work, directory):
-    rows = json.loads((work / 'mpv-runtime/runtime.json').read_text())
+    rows = json.loads((mpv_runtime_directory(work) / 'runtime.json').read_text())
     for row in rows:
         if sha(directory / row['name']) != row['sha256']:
             raise RuntimeError('Packaging changed the compiled MPV runtime identity: ' + row['name'])
@@ -501,9 +526,9 @@ def package_mac(work, installed, out, version, arch):
     # libmpv is loaded dynamically and has no Qt dependency. Install its already
     # signed immutable closure after Qt's deployment rewrites, not as input to
     # a second linker/signing pass over every library in the bundle.
-    shutil.copytree(work / 'mpv-runtime', frameworks / 'mpv',
+    shutil.copytree(mpv_runtime_directory(work), frameworks / 'mpv',
                     ignore=shutil.ignore_patterns('runtime.json'))
-    shutil.copy2(work / 'mpv-runtime/runtime.json', resources / 'MPV-RUNTIME.json')
+    shutil.copy2(mpv_runtime_directory(work) / 'runtime.json', resources / 'MPV-RUNTIME.json')
     minimums = {str(path.relative_to(app)): mac_minimum_system(output('otool', '-l', path))
                 for path in app.rglob('*') if native(path)}
     minimum = max((13, 0), *minimums.values())
@@ -555,7 +580,7 @@ def package_linux(work, installed, out, version, arch):
     if app.exists():
         raise RuntimeError('Package directory already exists; finish consumers and retire old staging explicitly')
     shutil.copytree(installed, app, symlinks=True, ignore=shutil.ignore_patterns('*.la', '*.a'))
-    shutil.copytree(work / 'mpv-runtime', app / 'lib/mpv')
+    shutil.copytree(mpv_runtime_directory(work), app / 'lib/mpv')
     qt_plugins = Path(output('qmake6', '-query', 'QT_INSTALL_PLUGINS'))
     qt_qml = Path(output('qmake6', '-query', 'QT_INSTALL_QML'))
     qt_sources = []
