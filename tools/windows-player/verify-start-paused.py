@@ -113,8 +113,10 @@ def worker(options):
         b'--no-volume-save', b'--mmdevice-volume=0', b'--vout=dummy', b'-vv']
     instance = new(len(arguments), (C.c_char_p * len(arguments))(*arguments))
     assert instance, 'libvlc_new failed'
-    if options.resume_on_hardware_start:
-        log_set(instance, C.cast(log_message, pointer), None)
+    # libVLC API instances do not automatically attach the CLI stderr logger.
+    # Always observe the real backend selection through its supported log API;
+    # only the explicit diagnostic case uses that event to control resumption.
+    log_set(instance, C.cast(log_message, pointer), None)
     media = media_new(os.fsencode(options.fixture.resolve()))
     assert media, 'media creation failed'
     if options.case == 'startup-paused':

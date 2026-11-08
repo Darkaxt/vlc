@@ -21,11 +21,25 @@ may return to auto; unrelated cache changes remain rejected. A distinct immutabl
 mpv-runtime-cocoa-guard cohort preserves earlier normal Mac runtime consumers.
 Actual patch application, repeat stability, changed-source rejection and narrow
 Meson restoration diagnostics pass; native Intel qualification remains required.
-Windows original state now continues in run89/gate301
-(12ae967adf144be8a5e9c455f6f3cbb4, session16997), after a fresh symbol generation
-resolved raw MPV prefix bytes versus prior stripped mappings. AOM3.15.3,
-candidate notices and corrected configure passed; player compilation is active.
-No Windows native acceptance or new release is claimed.
+Windows run89/gate301 (12ae967adf144be8a5e9c455f6f3cbb4, session16997) closed0:
+AOM3.15.3, notices, configure and the full player/plugin assembly passed. The
+player step used2088.2s elapsed/2080.5s CPU; whole gate peak3632283648 bytes,
+zero OOM, empty Linux group and released private mounts. Export1565859840 bytes
+SHA256a9eabc2a6386e727e113f60656527e43ceada39d00d0dc8a781a07312dc62fff
+was independently hashed/extracted to D:/Temp/vlc-desktop-1.1.12-20261108/
+normal-5fcb86e9 (native I/O exception; retire after delivery/recovery consumers).
+All417 stripped PEs and matching separate symbols pass. Normal native VLC with
+medialibrary passes picture/EOF/release/no-QML/no-plugin-error checks. Normal MPV
+passes separate fresh inactive placement and actual nonactivating offscreen
+presentation/EOF/release for SDR/P5/P8.1/P8.4. These checks preserve the input
+desktop and issue no desktop controls. Real WASAPI ordinary/start-paused/resume
+checks pass after the verifier attaches libVLC's supported log callback in both
+cases, rather than assuming a CLI stderr sink for API instances. Preserve the
+initial missing-log result; it did not establish a playback failure.
+Run90/gate302 (599a257274394e97a754e9a4deca6055, session91033) now builds only
+the diagnostic Qt variant against this retained full plugin cohort. The normal
+runtime/symbols remain immutable. Handover, seeking/subtitles, miniplayer, actual
+native visual inspection and final one-revision delivery remain required.
 
 Current remaining acceptance: Intel Mac and both Linux architecture packages,
 matching installer execution, Windows normal compilation/native VLC+MPV/DV
@@ -51,6 +65,9 @@ The successful d8 MacARM picture proof predates the optional-Metal source guard;
 final delivery must requalify its new runtime cohort at the selected final revision.
 Only one pending hosted workflow may be submitted; retain each original identity
 through cache/artifact/cleanup completion.
+Intel continuation42478095674/job128723887781 (watch91262) is active at
+934f87f420a57a85912077f827e9128684aed21a; Linux42478117547 is its single pending
+continuation at the same revision. No final release has been published.
 
 **Earlier M15 investigation checkpoints (historical; current status above).**
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)
@@ -694,7 +711,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. macOS ARM integrated build, complete original-source assembly, signed ZIP/DMG recovery and natural EOF pass. Actual VLC main/floating/restored video placement and MPV video/subtitles inspected; handover selection, media replacement and profile state checks pass. Hosted retention preserves SDK/objects. | R111 remaining architectures/formats and recovered-package/source/license/symbol qualification; R112 actual paused VLC seek frame and main/restored subtitles; R113 integrated Windows regression and final matrix. | Paused replacement frames use running-clock deadlines; main SPU uses window-relative conversion for local regions. Linux raw MPV staging misses its owned libplacebo prefix. Cohesive corrections await native verification. Internal acceptance blockers; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. MacARM d8 normal ZIP/DMG and actual Metal VLC/MPV main/floating/restored pictures/subtitles pass. Windows full upstream normal build, all417 PE/symbol mappings, VLC+ML EOF/release, real WASAPI normal/start-paused/resume and MPV SDR/P5/P8.1/P8.4 actual presentation/EOF/release pass. SDK/objects retained. | R111 remaining architectures/formats and final package/source/license qualification; R112 new Mac Cocoa runtime cohort and final matrix; R113 Windows handover/seek/subtitle/miniplayer/picture inspection and final one-revision qualification. | Intel optional MetalLayer guard and Linux direct ELF/interpreter resolution await actual workflows; remaining integrated Windows diagnostic Qt acceptance is active. Internal acceptance blockers; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch
