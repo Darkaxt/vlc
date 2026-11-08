@@ -68,14 +68,14 @@ def main():
     (review / 'normal-recovery.json').write_text(json.dumps(rows, indent=2) + '\n')
     mac = platform.system() == 'Darwin'
     output_record = json.loads((work / 'package-output.json').read_text())
+    reuse_path = work / 'review-reuse.json'
+    reuse = json.loads(reuse_path.read_text()) if reuse_path.exists() else None
+    if reuse and reuse['normal_source_commit'] != output_record['source_commit']:
+        raise RuntimeError('Recovered normal app belongs to another source generation')
     packages = Path(output_record['directory']).resolve()
     if not packages.is_relative_to(work / 'packages'):
         raise RuntimeError('Native package generation escaped its owned work directory')
     if mac:
-        reuse_path = work / 'review-reuse.json'
-        reuse = json.loads(reuse_path.read_text()) if reuse_path.exists() else None
-        if reuse and reuse['normal_source_commit'] != output_record['source_commit']:
-            raise RuntimeError('Recovered normal app belongs to another source generation')
         normal = Path(reuse['normal_application']) if reuse else packages / 'Modern VLC.app'
         payload = review / 'Modern VLC.app'
         plugin_relative = Path('Contents/Frameworks/plugins/gui/libqt_plugin.dylib')
@@ -85,7 +85,7 @@ def main():
         candidates = [path for path in candidates if path.is_dir()]
         if len(candidates) != 1:
             raise RuntimeError('Expected exactly one normal Linux payload')
-        normal = candidates[0]
+        normal = Path(reuse['normal_application']) if reuse else candidates[0]
         payload = review / normal.name
         plugin_relative = Path('lib/vlc/plugins/gui/libqt_plugin.so')
         executable_relative = Path('modern-vlc')

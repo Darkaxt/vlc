@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reuse a normal Mac package only when every changed file is test-only.
+"""Reuse a normal native package only when every changed file is test-only.
 
 The receipt keeps the original normal source identity. It does not qualify a
 release or allow production/header/QML changes to reuse an older executable.
@@ -12,6 +12,7 @@ from pathlib import Path
 import platform
 import re
 import subprocess
+import tarfile
 
 ROOT = Path(__file__).resolve().parents[2]
 TEST_ONLY = {
@@ -26,8 +27,8 @@ TEST_ONLY = {
     'tools/desktop-player/install-ci-dependencies.sh',
     'tools/desktop-player/native-player-client.py',
     'tools/desktop-player/test-native-packaging.py',
-    # This reuse function runs only on Mac. These Windows-only recipes are not
-    # consumed by its native build, packaging or player, and cannot alter it.
+    # These Windows-only recipes are not consumed by the native Mac/Linux
+    # build, packaging or player, and cannot alter their normal packages.
     'tools/windows-player/build-upstream-codecs.py',
     'tools/windows-player/compilation-pipeline.py',
 }
@@ -80,6 +81,8 @@ def workflow_build_contract(text):
                         "        if: runner.os == 'macOS'\n")
     text = text.replace("        if: ${{ !cancelled() && runner.os == 'Linux' && steps.normal_build.outcome == 'success' }}\n",
                         "        if: runner.os == 'Linux'\n")
+    text = text.replace("        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}\n",
+                        "        if: runner.os == 'Linux'\n")
     text = text.replace('            .desktop-build/review-reuse.json\n', '')
     text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n', '')
     text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n', '')
@@ -103,8 +106,27 @@ def recover_signed_app(directory, scratch):
     return app
 
 
+def recover_linux_app(directory, scratch):
+    archives = list(directory.glob('*.tar.xz'))
+    if len(archives) != 1:
+        raise RuntimeError('Expected one hash-verified normal Linux TAR')
+    name = archives[0].name.removesuffix('.tar.xz')
+    scratch.mkdir(parents=True, exist_ok=False)
+    with tarfile.open(archives[0], 'r:xz') as archive:
+        for member in archive.getmembers():
+            path = Path(member.name)
+            if path.is_absolute() or '..' in path.parts or not path.parts or path.parts[0] != name:
+                raise RuntimeError('Normal TAR escaped its source-bound payload')
+        archive.extractall(scratch, filter='data')
+    app = scratch / name
+    if not (app / 'modern-vlc').is_file():
+        raise RuntimeError('Recovered Linux payload has no native player')
+    return app
+
+
 def reusable(work):
-    if platform.system() != 'Darwin':
+    mac = platform.system() == 'Darwin'
+    if not mac and platform.system() != 'Linux':
         return None
     required = ['native-build.json', 'package-output.json', 'toolchain-binding.json',
                 'bootstrap-generated.tar', 'source-times.json']
@@ -129,7 +151,9 @@ def reusable(work):
             return None
     setup = 'tools/desktop-player/install-ci-dependencies.sh'
     old_setup = subprocess.check_output(['git', 'show', base + ':' + setup], cwd=ROOT, text=True)
-    if mac_dependency_setup(old_setup) != mac_dependency_setup((ROOT / setup).read_text()):
+    current_setup = (ROOT / setup).read_text()
+    same_setup = (mac_dependency_setup(old_setup) == mac_dependency_setup(current_setup)) if mac else old_setup == current_setup
+    if not same_setup:
         return None
     workflow = '.github/workflows/desktop-packages.yml'
     old_workflow = subprocess.check_output(['git', 'show', base + ':' + workflow], cwd=ROOT, text=True)
@@ -141,7 +165,7 @@ def reusable(work):
     if not (directory / 'PACKAGE-STATUS.json').is_file():
         return None
     status = json.loads((directory / 'PACKAGE-STATUS.json').read_text())
-    if status['source_commit'] != base or not (directory / 'Modern VLC.app').is_dir():
+    if status['source_commit'] != base or (mac and not (directory / 'Modern VLC.app').is_dir()):
         raise RuntimeError('Retained normal package generation is incomplete')
     spec = importlib.util.spec_from_file_location('native_build', Path(__file__).with_name('build-native.py'))
     builder = importlib.util.module_from_spec(spec)
@@ -151,14 +175,16 @@ def reusable(work):
         path = directory / row['name']
         if path.parent != directory or builder.sha(path) != row['sha256']:
             raise RuntimeError('Retained package member changed: ' + row['name'])
-    app = recover_signed_app(directory, Path(os.environ['RUNNER_TEMP']) / 'native-normal-recovered')
+    recovery = Path(os.environ['RUNNER_TEMP']) / 'native-normal-recovered'
+    app = recover_signed_app(directory, recovery) if mac else recover_linux_app(directory, recovery)
     previous = builder.bind_source_mtimes(work)
     builder.prepare_bootstrap_sources(work, work / 'vlc-build', os.environ.copy(), previous)
     return {'normal_source_commit': base,
             'diagnostic_source_commit': builder.output('git', 'rev-parse', 'HEAD', cwd=ROOT),
             'changed_test_only_paths': changed, 'normal_package_directory': str(directory),
             'normal_application': str(app),
-            'normal_archive_hashes_and_signature_verified': True}
+            'normal_archive_hashes_verified': True,
+            'normal_archive_hashes_and_signature_verified': mac}
 
 
 def main():

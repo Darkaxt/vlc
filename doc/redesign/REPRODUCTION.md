@@ -2,6 +2,17 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+The normal application generation is9b0439e8a274083af4fe1d291ad897e24fdd35b3.
+A later test-only Qt focus repair uses handleWindowActivated before Qt6.7 and
+handleFocusWindowChanged afterward, confined to VLC_PLAYER_DIAGNOSTICS. Reuse
+checks compare every normal header byte outside that guard. Linux now follows
+the existing Mac retained-package path: exact source/architecture/toolchain,
+test-only diff and build-contract checks, every original archive SHA256, then
+safe normal TAR recovery. SDK/configuration/production changes reject reuse.
+The Linux review condition accepts that verified normal generation and records
+its original source separately from the diagnostic/verifier commit. Only the
+diagnostic Qt objects are rebuilt and their normal bytes/mtimes restored.
+
 For installer/verifier-only Linux repairs, dispatch `desktop-packages.yml` on the
 maintained branch with `target=linux-x86_64` (or `linux-aarch64`),
 `package_artifact=<exact artifact ID>` and `package_source=<its exact source SHA>`.

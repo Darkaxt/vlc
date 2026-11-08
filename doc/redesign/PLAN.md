@@ -1,6 +1,26 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Current normal application source is frozen at9b0439e8a274083af4fe1d291ad897e24fdd35b3.
+Windows run101/gate323576d4fa418fe47a097fd8bc122d4e538 closed0/116.56s,
+configuration unchanged,417 stripped PE/symbol mappings verified, no OOM,
+empty Linux group and released private mounts. Actual portable ZIP extraction,
+VLC playback/EOF, source6466 members, matching417 symbols and7z integrity pass.
+Fresh private placement and nonactivating normal P5/P8.1/P8.4 presentation/EOF/
+release pass after the user unlocked; the earlier blocked launch remains recorded.
+Compiler-free Linux9b run42512453152 passes all five formats and actual DEB/
+Fedora/strict Snap installation/playback/removal. Full Linux9b run42512868965
+built normal packages but its diagnostic Qt module fails to compile: Qt6.4
+uses handleWindowActivated; handleFocusWindowChanged starts at6.7. Repair only
+that guarded instrumentation and reuse hash-verified normal Linux TAR/source,
+restoring normal objects after review. No normal player rebuild is needed for
+this verifier-only repair. Artifact13630458436 is2088561756B,
+SHA2568bac099c8d66338e0fb0d7dc6c5b18ea6088b2688c1f4e0a3abf7d53bd1f5927.
+Mac ARM42515010621 is active at the same9b application source; Intel/Linux ARM,
+Linux full UI acceptance and current installed Windows picture remain required.
+M16 remains NOT STARTED;1.1.12 is not published. No tracked deferrals.
+
+Earlier observations and recovery history:
 Compiler-free debd6ade run42511680836 verifies all five extracted formats plus
 real DEB and strict Snap installation, both engines and2166 identical payload
 members. Only actual Fedora playback fails: Qt resolves all dependencies

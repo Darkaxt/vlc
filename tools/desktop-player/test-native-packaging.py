@@ -952,6 +952,32 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual(run.call_args_list[1].args[0],
                          ['codesign', '--verify', '--deep', '--strict', scratch / 'Modern VLC.app'])
 
+    def test_linux_review_recovery_preserves_payload_and_rejects_escape(self):
+        import io
+        spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reuse)
+        root = Path(sys.argv_scratch) / ('linux-review-recovery-' + uuid.uuid4().hex)
+        for escaped in (False, True):
+            directory = root / ('escaped' if escaped else 'normal')
+            directory.mkdir(parents=True)
+            name = 'Modern-VLC-Fork-1.1.12-linux-x86_64'
+            archive = directory / (name + '.tar.xz')
+            with tarfile.open(archive, 'w:xz') as output:
+                entry = tarfile.TarInfo(name + ('/../outside' if escaped else '/modern-vlc'))
+                blob = b'verified normal player'
+                entry.size, entry.mode, entry.mtime = len(blob), 0o755, 1793232000
+                output.addfile(entry, io.BytesIO(blob))
+            scratch = directory / 'recovered'
+            if escaped:
+                with self.assertRaisesRegex(RuntimeError, 'escaped'):
+                    reuse.recover_linux_app(directory, scratch)
+                self.assertFalse(any(scratch.iterdir()))
+            else:
+                application = reuse.recover_linux_app(directory, scratch)
+                self.assertEqual((application / 'modern-vlc').read_bytes(), blob)
+                self.assertEqual(int((application / 'modern-vlc').stat().st_mtime), entry.mtime)
+
     def test_review_reuse_rejects_all_production_and_configuration_changes(self):
         spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
         reuse = importlib.util.module_from_spec(spec)

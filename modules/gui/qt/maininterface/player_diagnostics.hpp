@@ -810,6 +810,19 @@ private:
         return result;
     }
 
+#ifdef QT_GUI_PRIVATE
+    static void focusWindow(QWindow *window)
+    {
+        // Qt 6.7 renamed this QPA event. Both update Qt's virtual focus only;
+        // neither asks the window system to activate a native window.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+        QWindowSystemInterface::handleFocusWindowChanged<QWindowSystemInterface::SynchronousDelivery>(window, Qt::OtherFocusReason);
+#else
+        QWindowSystemInterface::handleWindowActivated<QWindowSystemInterface::SynchronousDelivery>(window, Qt::OtherFocusReason);
+#endif
+    }
+#endif
+
     void tracePointer(const QPointer<QQuickItem> &item, QEvent::Type type, const QPointF &point)
     {
         if (!item) return;
@@ -829,7 +842,7 @@ private:
 #ifdef QT_GUI_PRIVATE
         QMetaObject::invokeMethod(window, [this, window, type, point, button, buttons, traceItem] {
             if (!window->isActive())
-                QWindowSystemInterface::handleFocusWindowChanged<QWindowSystemInterface::SynchronousDelivery>(window, Qt::OtherFocusReason);
+                focusWindow(window);
             QWindowSystemInterface::handleMouseEvent<QWindowSystemInterface::SynchronousDelivery>(
                 window, ulong(m_clock.elapsed()), QHighDpi::toNativeLocalPosition(point, window),
                 QHighDpi::toNativeGlobalPosition(window->mapToGlobal(point), window), buttons, button, type);
@@ -1121,7 +1134,7 @@ private:
                         const QString text=command.value(QStringLiteral("text")).toString();
 #ifdef QT_GUI_PRIVATE
                         QMetaObject::invokeMethod(native,[native,key,modifiers,text] {
-                            QWindowSystemInterface::handleFocusWindowChanged<QWindowSystemInterface::SynchronousDelivery>(native,Qt::OtherFocusReason);
+                            focusWindow(native);
                             QWindowSystemInterface::handleKeyEvent<QWindowSystemInterface::SynchronousDelivery>(native,QEvent::KeyPress,key,modifiers,text);
                             QWindowSystemInterface::handleKeyEvent<QWindowSystemInterface::SynchronousDelivery>(native,QEvent::KeyRelease,key,modifiers);
                         },Qt::QueuedConnection);
@@ -1140,7 +1153,7 @@ private:
             // This updates only Qt's own dispatcher, never OS focus or input.
             const QString text = command.value(QStringLiteral("text")).toString();
             QMetaObject::invokeMethod(window, [window, key, modifiers, text] {
-                QWindowSystemInterface::handleFocusWindowChanged<QWindowSystemInterface::SynchronousDelivery>(window, Qt::OtherFocusReason);
+                focusWindow(window);
                 QWindowSystemInterface::handleKeyEvent<QWindowSystemInterface::SynchronousDelivery>(window, QEvent::KeyPress, key, modifiers, text);
                 QWindowSystemInterface::handleKeyEvent<QWindowSystemInterface::SynchronousDelivery>(window, QEvent::KeyRelease, key, modifiers);
             }, Qt::QueuedConnection);
