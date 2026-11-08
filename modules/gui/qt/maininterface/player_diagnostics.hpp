@@ -1215,8 +1215,9 @@ private:
 #if !defined(_WIN32)
                     // Native hosted-runner acceptance needs the composed video,
                     // which QQuickItem::grabToImage intentionally excludes.
-                    // Capture only this process's top-level player window;
-                    // never use WId(0), which would capture the whole screen.
+                    // Capture only this process's top-level player window.
+                    // The Linux private-X-server check also observes just its
+                    // rectangle on the composed display, not the whole screen.
                     if (command.value(QStringLiteral("capture_native")).toBool()
                         && qEnvironmentVariableIntValue("VLC_NATIVE_CI_CAPTURE") == 1) {
                         QWindow *nativeWindow = nativeTopLevel(observationWindow());
@@ -1234,6 +1235,15 @@ private:
                         result.insert(QStringLiteral("native_capture_height"), pixels.height());
                         result.insert(QStringLiteral("native_capture_boundary"), QStringLiteral("QScreen owned top-level window; includes compositor and possible occlusion"));
 #ifndef __APPLE__
+                        if (nativeId && nativeWindow->screen()) {
+                            const auto origin = nativeWindow->mapToGlobal(QPoint(0,0));
+                            const auto composed = nativeWindow->screen()->grabWindow(WId(0),
+                                origin.x(), origin.y(), nativeWindow->width(), nativeWindow->height());
+                            result.insert(QStringLiteral("display_rectangle_saved"), !composed.isNull()
+                                && composed.save(QDir(m_directory).filePath(id + QStringLiteral("-composed.png"))));
+                            result.insert(QStringLiteral("display_rectangle_boundary"),
+                                QStringLiteral("Owned CI X server, exact player rectangle; no host desktop"));
+                        }
                         QJsonArray childCaptures;
                         for (auto child : QGuiApplication::allWindows()) {
                             if (child->objectName() != QStringLiteral("mpvOpenGLVideo")

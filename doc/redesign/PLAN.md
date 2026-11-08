@@ -11,7 +11,8 @@ The network dialog also uses per-corner Rectangle properties unavailable in6.4;
 retain its rounded top/square bottom with the supported single radius geometry.
 The first composed MPV capture is black despite a ready context. Collect its
 actual GL buffer samples and owned child-window capture separately from the
-composed top-level; do not infer picture acceptance from decoded readiness.
+top-level drawable and the exact player rectangle on the private CI display;
+do not infer picture acceptance from decoded readiness.
 Media-library initialization also fails to create its fresh isolated path. The
 pinned0.14.1 source confirms recursive mkdir already exists, so adding another
 directory creator is not justified; capture the actual ancestor state first.
