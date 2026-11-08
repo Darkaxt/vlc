@@ -35,6 +35,8 @@ QPair<QByteArray, QColor> colorizeSvg(const QString& filename, const QList<QPair
 class SVGColorImageImageProvider: public QQuickAsyncImageProvider
 {
 public:
+    // Construct on the GUI thread, before asynchronous image requests start.
+    SVGColorImageImageProvider();
     QQuickImageResponse* requestImageResponse(const QString &id, const QSize &requestedSize) override;
 };
 

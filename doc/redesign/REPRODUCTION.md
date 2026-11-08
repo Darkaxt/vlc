@@ -2,6 +2,17 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+The two normal21f1 thread observations in trace42524609550 show a circular
+wait: GUI icon painting waits for the global pool; its SVG readers wait for
+ImageHelper's lazy plugin initialization on that GUI thread. Constructing the
+svgcolor provider now initializes its handler on the GUI owner before requests.
+Do not disable raster threading, change artwork or add startup retries.
+The old observer cleanup stalled because ptrace exit had to be handled by GDB
+before the inferior pidfd could signal exit. The repaired observer quits and
+drains/reaps GDB first, then verifies the original pidfd and empty owned group.
+Current correction and observer lifecycle still need actual native execution.
+
+Earlier reproduction:
 Linux21f1 normal VLC startup stalls before interface/input readiness on the
 one-second package fixture. Saved stderr has no QML load error and ends after
 theme-provider initialization. Compiler-free `startup_trace=true` with

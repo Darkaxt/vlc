@@ -29,6 +29,8 @@
 #include <QDebug>
 #include <QBuffer>
 #include <QImageIOHandler>
+#include <QApplication>
+#include <QThread>
 
 static const QMap<QString, QString> predefinedSubst = {
     {COLOR1_KEY, "#FF00FF"},
@@ -234,6 +236,16 @@ private:
     QImage m_result;
     QString m_error;
 };
+}
+
+SVGColorImageImageProvider::SVGColorImageImageProvider()
+{
+    assert(qApp && QThread::currentThread() == qApp->thread());
+    // The plugin QObject belongs to the GUI thread. Initialize it here rather
+    // than on an image worker: its lazy initializer otherwise blocks on the GUI
+    // event loop while other workers wait for the same static. Qt's GUI raster
+    // painter can itself wait for that global pool, completing a deadlock.
+    const QScopedPointer<QImageIOHandler> handler(ImageHelper::createSvgImageIOHandler());
 }
 
 QQuickImageResponse* SVGColorImageImageProvider::requestImageResponse(const QString& id, const QSize& requestedSize)

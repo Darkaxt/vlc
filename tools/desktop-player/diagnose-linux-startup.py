@@ -152,15 +152,23 @@ def main():
     finally:
         for sig in previous:
             signal.signal(sig, signal.SIG_IGN)
+        # GDB must handle its own ptrace exit stops before a pidfd can become
+        # readable. Waiting for the inferior first deadlocks the observer.
+        # communicate drains the MI pipe while GDB quits and retires its target.
+        remaining, _ = process.communicate(input=(str(token + 1) + '-gdb-exit\n').encode())
+        if remaining:
+            with (args.scratch / 'gdb-mi.log').open('ab') as log:
+                log.write(remaining)
+            print(remaining.decode('utf-8', errors='backslashreplace'), flush=True)
         if inferior_fd is not None:
-            if not select.select([inferior_fd], [], [], 0)[0]:
-                signal.pidfd_send_signal(inferior_fd, signal.SIGKILL)
             select.select([inferior_fd], [], [])
             os.close(inferior_fd)
             result['owned_inferior_exit_verified'] = True
-        # The existing native cancellation helper owns this exact new process
-        # group and verifies its exit. Diagnostic completion is not media EOF.
-        builder.stop_command(process)
+        # communicate reaped GDB; never signal its now reusable PID/group.
+        members = [line for line in builder.output('ps', '-axo', 'pid=,pgid=,stat=').splitlines()
+                   if int(line.split()[1]) == process.pid and not line.split()[2].startswith('Z')]
+        if members or process.returncode != 0:
+            raise RuntimeError('Debugger quit did not leave its owned group empty')
         result['owned_debugger_group_exited'] = True
         result['gdb_log_sha256'] = builder.sha(args.scratch / 'gdb-mi.log')
         (args.scratch / 'diagnosis.json').write_text(json.dumps(result, indent=2) + '\n')

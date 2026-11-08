@@ -57,6 +57,13 @@ truthful and recorded, without silently removing existing Windows capabilities.
 Acceptance requires native executable architecture/dependency checks, relocation,
 actual Qt redesign and video evidence, VLC/MPV playback/audio/subtitles/seek,
 handover, miniplayer/restore/dismissal, clean exit and profile preservation.
+The R112 Linux startup regression must be repaired: load the SVG image plugin
+on its GUI owner before starting asynchronous image requests, preserving the
+existing artwork, rendering and worker pool. The captured normal-package
+deadlock is the reproduction; current normal VLC startup/playback/natural EOF
+and the integrated native workflows must pass after correction. Diagnostic
+observers must also retire their own debugger and inferior without a ptrace
+exit-order deadlock; their results do not qualify a player package.
 Verify each installable format in an isolated matching environment where its
 platform permits it. Keep source/license obligations and matching optional
 symbols separate from release binaries. A successful compile or archive alone

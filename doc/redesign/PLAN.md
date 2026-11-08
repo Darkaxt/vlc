@@ -1,6 +1,21 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Trace42524609550 captured the same deadlock twice: the GUI waits in
+QRasterPaintEngine::fillRect/QQuickIconImage while pooled SVG readers wait in
+the ImageHelper plugin's blocking GUI invocation and static initializer guard.
+The provider is constructed by MainUI::setup on the GUI thread; initialize its
+SVG handler there before any asynchronous request is possible. This preserves
+the global pool, renderer and SVG pixels. The normal package's startup/EOF and
+integrated workflows remain unverified after this correction.
+The trace's old cleanup waited for the inferior before GDB handled ptrace exit,
+so it was cancelled after saving both stacks and is not a passing lifecycle
+result. Quit/drain/reap GDB first, then observe the original pidfd and empty
+debugger group. Re-run the exact old artifact diagnostically to verify that
+cleanup, then qualify the cohesive correction through the normal native matrix.
+No release, second ACTIVE stage or external blocker is introduced.
+
+Earlier diagnostic checkpoint:
 Compiler-free trace42524059935 recovered the exact original artifact, then its
 GDB exec-interrupt acknowledged without a stopped event. bin/vlc.c blocks SIGINT
 before interface startup and does not sigwait until afterward; this is a probe
