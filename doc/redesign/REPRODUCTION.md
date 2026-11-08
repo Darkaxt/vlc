@@ -104,6 +104,14 @@ raising, so another packaging attempt is not needed to discover each next path.
 These changes remain pending native execution; Python regressions alone do not
 qualify the app or prove playback.
 
+Continuation42435184969/job128592430975 executed owned Qt plugin staging without
+the earlier QtPdf/virtual-keyboard resolution errors. Its dependency census
+identified only vlc-qt-check as still referencing the runner's Qt frameworks.
+The next macdeployqt invocation includes all native Contents/MacOS helpers as
+explicit executable inputs; discovering .dylib plugins alone does not cover the
+separate startup probe. Watch11254 closed1 with cache ending42435184969 and
+artifact13598853311 retained. Signing and native player acceptance remain pending.
+
 ## Current1.1.11 stabilization diagnostics
 
 Normal [1.1.11](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.11)

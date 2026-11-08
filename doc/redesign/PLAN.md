@@ -97,6 +97,15 @@ Watch85496 closed1 after retaining cache ending42433818249 and artifact135986946
 Focused staging/closure regressions pass; repaired native execution remains
 required. CI evidence uploads now select only the current source generation;
 older failed packages remain in their original recovery artifacts/cache.
+Run42435184969/job128592430975 from83ddc1f6ff7c60a51e6550e0d6261faaba2b8d8c
+executed the staged Qt plugin correction without deployment-resolution errors.
+The full dependency census found exactly one remaining origin: vlc-qt-check,
+whose twelve Qt framework references were outside the bundle. macdeployqt's
+default executable root is only the main vlc binary; the corrected inputs now
+include all shipped native helper executables in that same relocation pass.
+The original watch11254 closed1 after retaining cache ending42435184969 and
+artifact13598853311 (SHA256ae03159eab323569fbf481142d9e6bb924692df060ee197b1e4efc7045249006).
+Signing, native launch and playback remain unverified; no stage or release closes.
 Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
 retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below

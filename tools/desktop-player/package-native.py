@@ -474,12 +474,15 @@ def package_mac(work, installed, out, version, arch):
     qt = Path(output('brew', '--prefix', 'qt'))
     qml = prepare_mac_qml(work, qt, out.name)
     qt_plugins = stage_mac_qt_plugins(qt, app)
+    # macdeployqt discovers dylibs, but its default executable root is only
+    # vlc. The startup Qt probe is a separate linked executable, not a dylib.
+    qt_executables = [path for path in binaries.iterdir() if path.name != 'vlc' and native(path)]
     # This bundle is a new source-bound generation. Qt must keep its normal
     # already-deployed dependency deduplication, rather than overwrite shared
     # frameworks again for every QML/plugin branch.
     run(qt / 'bin/macdeployqt', app, '-qmldir=' + str(ROOT / 'modules/gui/qt'),
         '-qmlimport=' + str(qml), '-verbose=2', '-no-codesign', '-no-plugins',
-        *('-executable=' + str(path) for path in qt_plugins),
+        *('-executable=' + str(path) for path in qt_plugins + qt_executables),
         '-executable=' + str(frameworks / 'plugins/gui/libqt_plugin.dylib'))
     shutil.copytree(plugins, frameworks / 'plugins', dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('libqt_plugin.dylib'))
