@@ -143,6 +143,18 @@ for configured/explicit network roots and requests Cocoa's supported 3.2 Core
 profile. Actual repaired picture/workflows remain required; the obscured capture
 is not picture acceptance. Bounded artifact-member retrieval validates selected
 members only, not the complete package digest.
+Continuation42440467166/job128608441252 (b2946aba20caf48a65f6ce496050324db792cf02)
+restored cache ending42438592554 and compiled the corrected Qt graphics probe.
+The ML translation unit then failed because its new exception handlers omitted
+the explicit medialibrary/filesystem/Errors.h include; that include is added.
+Watch62479 closed1 after retaining cache ending42440467166 and artifact13601403315
+(SHA256d911bfbaf6e841d2b06539914df69c6d304593b9df73ed0e20a55100fee74fac).
+No native player ran on that failed compile. Installed Homebrew metadata
+collection itself passed. The next pass also recovers each normal ZIP/DMG app
+in isolated runner storage, verifies exact bundle identity/signatures and runs
+normal Qt playback through natural EOF; these format checks are prepared,
+not yet native-verified. Spent local inspection/test files were retired through
+transaction967e2a31684622d6aeefaf279133b2db (96 members/458,199 bytes, no residuals).
 Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
 retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below

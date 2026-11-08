@@ -42,6 +42,7 @@
 #include <medialibrary/IPlaylist.h>
 #include <medialibrary/IBookmark.h>
 #include <medialibrary/IFolder.h>
+#include <medialibrary/filesystem/Errors.h>
 
 #include <algorithm>
 #include <sstream>

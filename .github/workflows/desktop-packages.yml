@@ -61,6 +61,9 @@ jobs:
       - name: Exercise the actual native player
         if: runner.os == 'macOS'
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
+      - name: Verify recovered normal macOS ZIP and DMG applications
+        if: runner.os == 'macOS'
+        run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks"
       - name: Exercise the actual Linux player on its owned display
         if: runner.os == 'Linux'
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
@@ -92,3 +95,5 @@ jobs:
             ${{ runner.temp }}/native-player-review/acceptance/**
             ${{ runner.temp }}/native-player-review/*json
             ${{ runner.temp }}/native-player-review-session/*
+            ${{ runner.temp }}/native-package-checks/verification.json
+            ${{ runner.temp }}/native-package-checks/*-runtime/*log
