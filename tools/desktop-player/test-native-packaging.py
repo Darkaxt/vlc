@@ -2,12 +2,14 @@
 import ast
 import importlib.util
 import json
+import io
 import os
 import stat
 from pathlib import Path
 import subprocess
 import sys
 import uuid
+import tarfile
 import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -20,6 +22,54 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_installed_source_graph_uses_original_resources_and_rejects_unpinned_git(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        def row(identifier, url, digest):
+            return {'SPDXID': identifier, 'downloadLocation': url,
+                    'checksums': [{'algorithm': 'SHA256', 'checksumValue': digest}]}
+        sbom = {'packages': [row('SPDXRef-Archive-example-src', 'https://example.org/source.tar.xz', 'a' * 64),
+            row('SPDXRef-Patch-example-0', 'https://example.org/fix.patch', 'b' * 64),
+            row('SPDXRef-Package-SPDXRef-dependency', 'https://example.org/bottle.tar.gz', 'c' * 64)]}
+        result = sources.brew_sources(sbom, 'example', '')
+        self.assertEqual([item['sha256'] for item in result], ['a' * 64, 'b' * 64])
+        encoded = {'packages': [row('SPDXRef-Archive-example.40.2-src',
+            'https://example.org/source.tar.xz', 'e' * 64)]}
+        self.assertEqual(sources.brew_sources(encoded, 'example@2', '')[0]['sha256'], 'e' * 64)
+        git = {'packages': [row('SPDXRef-Archive-x264-src', 'https://example.org/x264.git', '')]}
+        with self.assertRaisesRegex(RuntimeError, 'exact installed Git revision'):
+            sources.brew_sources(git, 'x264', 'url "https://example.org/x264.git"')
+        result = sources.brew_sources(git, 'x264',
+            'url "https://example.org/x264.git", revision: "' + 'd' * 40 + '"')
+        self.assertEqual(result[0]['git_revision'], 'd' * 40)
+        self.assertNotIn('sha256', result[0])
+
+    def test_source_notice_extraction_is_safe_and_resumable(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        root = Path(sys.argv_scratch) / ('notices-' + uuid.uuid4().hex)
+        root.mkdir()
+        archive = root / 'source.tar.gz'
+        with tarfile.open(archive, 'w:gz') as bundle:
+            for name, data in [('project/COPYING', b'license'), ('project/PATENTS', b'patent grant'),
+                               ('project/src/code.c', b'not a notice')]:
+                item = tarfile.TarInfo(name); item.size = len(data)
+                bundle.addfile(item, io.BytesIO(data))
+        target = root / 'notices'
+        first = sources.retain_archive_notices(archive, target)
+        self.assertEqual(first, sources.retain_archive_notices(archive, target))
+        self.assertEqual([row['file'] for row in first], ['project/COPYING', 'project/PATENTS'])
+        (target / 'project/COPYING').write_bytes(b'changed')
+        with self.assertRaisesRegex(RuntimeError, 'Retained notice changed'):
+            sources.retain_archive_notices(archive, target)
+        with tarfile.open(root / 'unsafe.tar', 'w') as bundle:
+            item = tarfile.TarInfo('../COPYING'); item.size = 1
+            bundle.addfile(item, io.BytesIO(b'x'))
+        with self.assertRaisesRegex(RuntimeError, 'Unsafe archive notice path'):
+            sources.retain_archive_notices(root / 'unsafe.tar', root / 'unsafe')
+
     def test_cancelled_command_waits_for_native_descendants_and_closes_kqueue(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
         build = importlib.util.module_from_spec(spec)
@@ -90,7 +140,8 @@ class NativePackagingTest(unittest.TestCase):
         directory = Path('D:/owned-native-generation')
         scratch = Path('E:/Temp/owned-native-recovery')
         archive = directory / 'normal.zip'
-        with patch.object(Path, 'glob', return_value=[archive, directory / 'normal-symbols.zip']), \
+        with patch.object(Path, 'glob', return_value=[archive, directory / 'normal-symbols.zip',
+                directory / 'normal-corresponding-source-01.zip']), \
                 patch.object(Path, 'mkdir'), patch.object(reuse.subprocess, 'run') as run:
             self.assertEqual(reuse.recover_signed_app(directory, scratch), scratch / 'Modern VLC.app')
         self.assertEqual(run.call_args_list[0].args[0], ['ditto', '-x', '-k', archive, scratch])

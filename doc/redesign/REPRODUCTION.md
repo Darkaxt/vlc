@@ -95,6 +95,21 @@ bootstrap files now retain exact nanosecond mtimes, avoiding a cold configure
 on a new runner checkout. The initial cache needs its explicitly recorded,
 input-verified bootstrap reconstruction once.
 
+`collect-native-sources.py` binds native corresponding source to the packaged
+runtime's original installed owners. Homebrew inputs use retained installed
+SBOM source/resource/patch hashes and recipes, including pinned Git revisions;
+dependency bottle references are excluded. Follow the original Qt framework,
+plugin and QML dependency graph as well as VLC/MPV's recorded closures. Linux
+uses installed dpkg source package/version identities and matching source
+downloads. The original Mac contrib selection is fetched from its pinned
+producer recipes with PKGS_FOUND cleared, separately from the consumer SDK.
+Notices enter the player before macOS sealing; full archives, recipes and a
+member/hash index remain separate corresponding-source ZIP assets. Downloads
+and extracted notices live in hosted `.desktop-sources/<source-generation>`;
+they are not compiler objects or a reason to discard the retained build cohort.
+This prepared route still needs native execution and full closure inspection,
+including the separately supplied AppImage runtime, before release qualification.
+
 `prepare-native-review.py` copies the normal Mac app into `$RUNNER_TEMP`, builds
 only the existing native diagnostic translation units and controller MOC metadata,
 relocates that plugin against

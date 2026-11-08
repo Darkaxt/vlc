@@ -92,7 +92,8 @@ def main():
         (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')
 
     archives = {suffix: sorted(packages.glob('*' + suffix)) for suffix in ('.zip', '.dmg')}
-    archives['.zip'] = [path for path in archives['.zip'] if '-symbols' not in path.name]
+    archives['.zip'] = [path for path in archives['.zip']
+                        if '-symbols' not in path.name and '-corresponding-source-' not in path.name]
     if any(len(paths) != 1 for paths in archives.values()):
         raise RuntimeError('Expected one normal ZIP and one DMG in the source generation')
     archive = archives['.zip'][0]

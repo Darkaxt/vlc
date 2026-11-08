@@ -500,6 +500,8 @@ def package_mac(work, installed, out, version, arch):
     (resources / 'MINIMUM-SYSTEM.json').write_text(json.dumps({
         'minimum_macos': info['LSMinimumSystemVersion'], 'native_members': minimums}, indent=2) + '\n')
     audit_package(app, binaries / 'vlc', arch, resources / 'NATIVE-PACKAGE.json')
+    run('python3', ROOT / 'tools/desktop-player/collect-native-sources.py', '--work', work,
+        '--app', app, '--out', out, '--generation', out.name)
     # Sign inner objects before the outer bundle. MPV payloads were signed
     # before their identities were compiled and must remain byte-identical.
     for path in sorted(app.rglob('*'), key=lambda p: len(p.parts), reverse=True):
@@ -544,10 +546,14 @@ def package_linux(work, installed, out, version, arch):
     shutil.copytree(work / 'mpv-runtime', app / 'lib/mpv')
     qt_plugins = Path(output('qmake6', '-query', 'QT_INSTALL_PLUGINS'))
     qt_qml = Path(output('qmake6', '-query', 'QT_INSTALL_QML'))
+    qt_sources = []
     for name in ('platforms', 'imageformats', 'iconengines', 'platformthemes', 'styles', 'tls', 'xcbglintegrations'):
         if (qt_plugins / name).exists():
             shutil.copytree(qt_plugins / name, app / 'lib/qt/plugins' / name, symlinks=True)
+            qt_sources.extend(str(path.resolve()) for path in (qt_plugins / name).rglob('*') if path.is_file())
     shutil.copytree(qt_qml, app / 'lib/qt/qml', symlinks=True)
+    qt_sources.extend(str(path.resolve()) for path in qt_qml.rglob('*') if path.is_file())
+    (app / 'QT-SOURCES.json').write_text(json.dumps(sorted(set(qt_sources)), indent=2) + '\n')
     deps = app / 'lib/native'; deps.mkdir()
     binaries = [p for p in app.rglob('*') if native(p) and 'mpv' not in p.relative_to(app).parts]
     required = []
@@ -579,6 +585,8 @@ exec "$root/bin/vlc" --intf=qt "$@"
     shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', app / 'modern-vlc.png')
     verify_bundled_mpv(work, app / 'lib/mpv')
     audit_package(app, app / 'bin/vlc', arch, app / 'NATIVE-PACKAGE.json')
+    run('python3', ROOT / 'tools/desktop-player/collect-native-sources.py', '--work', work,
+        '--app', app, '--out', out, '--generation', out.name)
     with tarfile.open(out / (app.name + '.tar.xz'), 'w:xz') as archive:
         archive.add(app, arcname=app.name)
     staging = work / 'linux-package-staging' / out.name

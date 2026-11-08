@@ -1,6 +1,19 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42449524457/job128635581535 from2f99ff77 restored cache ending42449059397,
+passed the real macOS descendant-cancellation probe, compiled the integrated
+upstream source and passed test_input_clock with Release assertions enabled.
+Normal ZIP/DMG generation and package/player acceptance are in progress under
+original watch80778. No native release or master update is qualified yet.
+Native source/notices assembly is being completed against actual installed
+Homebrew source/patch SBOMs and dpkg source versions, including Qt's additional
+dynamic-library graph and the original contrib recipes. Focused metadata and
+notice extraction checks pass; real collection and package closure remain
+unverified. AppImage's static runtime source closure also remains to be qualified.
+Source diagnostic transaction3c95bcc4e1e2619762cc7f8a176a4a3e removed all265
+members (68326 bytes) after their test consumers exited, without residuals.
+
 Run42449059397/job128634188279 stopped before compilation at the new native
 cancellation check: select.kqueue has no context-manager protocol. The owned
 command group was killed, but the erroneous `with` prevented the completion
