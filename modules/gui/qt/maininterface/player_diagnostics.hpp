@@ -95,12 +95,36 @@ class PlayerDiagnostics final : public QObject
         };
         QJsonObject row{{QStringLiteral("class"), QString::fromUtf8(object_getClassName(object))}};
         for (const char *key : {"frame", "bounds", "isFlipped", "hidden", "opaque", "status", "error",
-                               "readyForMoreMediaData", "requiresFlushToResumeDecoding", "preventsCapture"}) {
+                               "readyForMoreMediaData", "requiresFlushToResumeDecoding", "preventsCapture",
+                               "needsDisplay", "visibleRect"}) {
             if (!responds(object, key)) continue;
             id name = reinterpret_cast<id (*)(id, SEL, const char *)>(objc_msgSend)(
                 reinterpret_cast<id>(objc_getClass("NSString")), sel_registerName("stringWithUTF8String:"), key);
             id value = reinterpret_cast<id (*)(id, SEL, id)>(objc_msgSend)(object, sel_registerName("valueForKey:"), name);
             row.insert(QString::fromLatin1(key), string(value));
+        }
+        if (QString::fromUtf8(object_getClassName(object)) == QStringLiteral("VLCSampleBufferSubpictureView")) {
+            // Observe the actual pending regions on the main thread. A selected
+            // subtitle track is not proof that the native compositor received it.
+            Ivar pending = class_getInstanceVariable(object_getClass(object), "_pendingSubpicture");
+            id subpicture = pending ? object_getIvar(object, pending) : nil;
+            QJsonArray regions;
+            id array = subpicture ? get(subpicture, "regions") : nil;
+            const auto count = reinterpret_cast<unsigned long (*)(id, SEL)>(objc_msgSend)(array, sel_registerName("count"));
+            for (unsigned long i = 0; i < count; ++i) {
+                id region = reinterpret_cast<id (*)(id, SEL, unsigned long)>(objc_msgSend)(array,
+                    sel_registerName("objectAtIndex:"), i);
+                QJsonObject details;
+                for (const char *key : {"backingFrame", "alpha"}) {
+                    id name = reinterpret_cast<id (*)(id, SEL, const char *)>(objc_msgSend)(
+                        reinterpret_cast<id>(objc_getClass("NSString")), sel_registerName("stringWithUTF8String:"), key);
+                    id value = reinterpret_cast<id (*)(id, SEL, id)>(objc_msgSend)(region, sel_registerName("valueForKey:"), name);
+                    details.insert(QString::fromLatin1(key), string(value));
+                }
+                regions.append(details);
+            }
+            row.insert(QStringLiteral("pending_subpicture"), subpicture != nil);
+            row.insert(QStringLiteral("subtitle_regions"), regions);
         }
         if (responds(object, "sampleBufferRenderer")) {
             id renderer = get(object, "sampleBufferRenderer");

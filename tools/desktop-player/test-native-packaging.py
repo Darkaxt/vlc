@@ -23,6 +23,18 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_normal_reuse_checks_bytes_outside_the_diagnostic_guard(self):
+        spec = importlib.util.spec_from_file_location('native_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reuse)
+        original = '#ifndef HEADER\n#define HEADER\n#ifdef VLC_PLAYER_DIAGNOSTICS\nint test;\n#endif\n#endif\n'
+        changed = original.replace('int test;', '#ifdef __APPLE__\nint observed;\n#endif')
+        self.assertEqual(reuse.normal_diagnostic_header(original), reuse.normal_diagnostic_header(changed))
+        self.assertNotEqual(reuse.normal_diagnostic_header(original),
+            reuse.normal_diagnostic_header(changed.replace('#define HEADER', '#define OTHER')))
+        with self.assertRaisesRegex(RuntimeError, 'production alternate'):
+            reuse.normal_diagnostic_header(original.replace('int test;', '#else\nint production;'))
+
     def test_traced_mac_launch_cannot_pass_a_target_fault_with_debugger_exit_zero(self):
         spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
         verifier = importlib.util.module_from_spec(spec)
@@ -60,6 +72,45 @@ class NativePackagingTest(unittest.TestCase):
             os.environ['VLC_PLAYER_COMPILE_CACHE_REASON'] = ''
             with self.assertRaisesRegex(RuntimeError, 'explicit reason'):
                 pipeline.select_compiler_cache_steps(steps)
+
+    def test_native_windows_full_pipeline_runs_after_copy_cache_steps_are_removed(self):
+        spec = importlib.util.spec_from_file_location('windows_pipeline',
+            HERE.parent / 'windows-player/compilation-pipeline.py')
+        pipeline = importlib.util.module_from_spec(spec)
+        accounting = SimpleNamespace(RUSAGE_CHILDREN=0,
+            getrusage=lambda _: SimpleNamespace(ru_utime=0, ru_stime=0))
+        with patch.dict(sys.modules, {'resource': accounting}):
+            spec.loader.exec_module(pipeline)
+        def process(*args, **kwargs):
+            child = MagicMock()
+            child.stdout = io.StringIO('')
+            child.wait.return_value = 0
+            return child
+        arguments = ['pipeline', '--source', str(HERE.parents[1]),
+            '--state', '/owned/state.json', '--runtime', '/owned/runtime',
+            '--release-symbols', '/owned/symbols', '--mode', 'normal-mpv-full',
+            '--from-step', 'upstream-medialibrary']
+        with patch.dict(os.environ, {'VLC_PLAYER_COMPILE_CACHE': '0',
+                'VLC_PLAYER_COMPILE_CACHE_REASON': 'Verified native ext4 cohort'}), \
+                patch.object(sys, 'argv', arguments), \
+                patch.object(Path, 'read_text', return_value='0::/llm-coordinator/owned\n'), \
+                patch.object(Path, 'exists', return_value=False), \
+                patch.object(Path, 'is_file', return_value=True), \
+                patch.object(Path, 'read_bytes', return_value=b'bound recipe'), \
+                patch.object(Path, 'mkdir'), patch.object(Path, 'replace'), \
+                patch.object(Path, 'write_text') as save, \
+                patch.object(Path, 'open', MagicMock()), \
+                patch.object(pipeline.subprocess, 'check_output', return_value='a' * 40), \
+                patch.object(pipeline.subprocess, 'Popen', side_effect=process) as launch, \
+                patch.object(pipeline.subprocess, 'call') as prepare_cache, \
+                patch('builtins.print'):
+            self.assertEqual(pipeline.main(), 0)
+        prepare_cache.assert_not_called()
+        commands = [call.args[0] for call in launch.call_args_list]
+        self.assertFalse(any('cache-toolchain.py' in str(command) for command in commands))
+        self.assertIn('build-upstream-codecs.py', str(commands))
+        self.assertIn('build-player.sh', str(commands))
+        self.assertEqual(json.loads(save.call_args.args[0])['status'], 'complete')
 
     def test_linux_raw_dependency_discovery_uses_only_its_owned_prefix(self):
         prefix = Path('owned-prefix/lib').resolve()
@@ -405,13 +456,13 @@ class NativePackagingTest(unittest.TestCase):
         reuse = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(reuse)
         self.assertTrue(reuse.test_only(['tools/desktop-player/verify-native-player.py',
+                                        'modules/gui/qt/maininterface/player_diagnostics.hpp',
                                         'tools/desktop-player/verify-linux-packages.py',
                                         'tools/desktop-player/run-linux-review.py',
                                         'tools/windows-player/build-upstream-codecs.py',
                                         'tools/windows-player/compilation-pipeline.py',
                                         'doc/redesign/PLAN.md']))
-        for path in ['modules/gui/qt/maininterface/player_diagnostics.hpp',
-                     'modules/gui/qt/player/qml/PlayerView.qml', 'configure.ac',
+        for path in ['modules/gui/qt/player/qml/PlayerView.qml', 'configure.ac',
                      'tools/desktop-player/build-native.py', 'tools/desktop-player/package-native.py']:
             self.assertFalse(reuse.test_only([path]), path)
         workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()

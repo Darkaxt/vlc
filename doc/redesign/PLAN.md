@@ -1,6 +1,24 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Diagnostic continuation42469673266/job128697315895 closed0 (watch89925).
+It reused the388310 normal ZIP/DMG, preserving the SDK; traced normal launches
+and native workflows passed their state checks. Actual inspected VLC captures
+now show frame6 at the paused6s seek. The selected subtitle is still absent in
+the main/restored pictures, while the expanded floating picture shows the cue.
+That subtitle criterion and the earlier untraced SIGBUS remain unresolved.
+Read-only diagnostics now include the actual pending subtitle-region geometry;
+normal reuse additionally compares every byte outside its diagnostic guard.
+The new Windows full-dispatch regression reproduced a ValueError after removal
+of copy-cache steps; its preparation boundary now honors that same disabled
+cache contract. Complete simulated dispatch passes without any cache command.
+Linux continuation42469710665/job128700161527 is the active original build;
+watch18174 remains its owner through cache/artifact and hosted cleanup.
+Mac cache ending42469673266 retained4883035818 bytes; hosted cleanup completed.
+Artifact13613028580 is2498653117 bytes, GitHub SHA256
+91cc137548c038f0f80bdd2f4363dd20101b0a9742cf4c970d5fbe36e07677de.
+Selected picture/state members pass CRC/SHA checks, not a whole-artifact digest.
+
 Current normal Mac generation38831022dd32dccf3951323adea2a002ab8a758f built and
 sealed successfully, but run42467880197/job128691542687 closed1 (watch80448):
 ZIP natural EOF passed; the untraced recovered DMG launch died with SIGBUS10

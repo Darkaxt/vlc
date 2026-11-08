@@ -10,10 +10,12 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 TEST_ONLY = {
+    'modules/gui/qt/maininterface/player_diagnostics.hpp',
     '.github/workflows/desktop-packages.yml',
     'tools/desktop-player/reuse-native-review.py',
     'tools/desktop-player/prepare-native-review.py',
@@ -33,6 +35,24 @@ TEST_ONLY = {
 
 def test_only(paths):
     return all(path in TEST_ONLY or path.startswith('doc/redesign/') for path in paths)
+
+
+def normal_diagnostic_header(text):
+    """Compare every byte outside the diagnostic-only preprocessor branch."""
+    lines = text.splitlines(keepends=True)
+    start = lines.index('#ifdef VLC_PLAYER_DIAGNOSTICS\n')
+    depth = 1
+    for index in range(start + 1, len(lines)):
+        directive = lines[index].lstrip()
+        if re.match(r'#\s*(if|ifdef|ifndef)\b', directive):
+            depth += 1
+        elif re.match(r'#\s*endif\b', directive):
+            depth -= 1
+            if depth == 0:
+                return ''.join(lines[:start + 1] + lines[index:])
+        elif depth == 1 and re.match(r'#\s*(else|elif)\b', directive):
+            raise RuntimeError('Diagnostic header has a production alternate branch')
+    raise RuntimeError('Unclosed diagnostic header guard')
 
 
 def mac_dependency_setup(text):
@@ -102,6 +122,11 @@ def reusable(work):
     changed = [path for path in changed if path]
     if not test_only(changed):
         return None
+    diagnostic_header = 'modules/gui/qt/maininterface/player_diagnostics.hpp'
+    if diagnostic_header in changed:
+        original = subprocess.check_output(['git', 'show', base + ':' + diagnostic_header], cwd=ROOT, text=True)
+        if normal_diagnostic_header(original) != normal_diagnostic_header((ROOT / diagnostic_header).read_text()):
+            return None
     setup = 'tools/desktop-player/install-ci-dependencies.sh'
     old_setup = subprocess.check_output(['git', 'show', base + ':' + setup], cwd=ROOT, text=True)
     if mac_dependency_setup(old_setup) != mac_dependency_setup((ROOT / setup).read_text()):

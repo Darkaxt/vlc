@@ -114,8 +114,10 @@ objects; verify real staging, relocated dependency closure and player behavior.
 The retained Windows ext4 cohort explicitly disables the former NTFS compiler
 copy cache. Its full upstream pipeline must honor that setting for the dependency
 steps too, without attempting to unmount a stale receipt or recreating header
-copies. Preserve the legacy enabled-cache route. The new upstream AOM3.15.3 build
-must use and verify Release/O3/g0/NDEBUG before compilation; retain unchanged old
+copies. Preserve the legacy enabled-cache route.
+The preparation dispatcher must also accept that removed cache-step boundary;
+exercise the complete disabled-cache dispatch, not only its filtered command list.
+The new upstream AOM3.15.3 build must use and verify Release/O3/g0/NDEBUG before compilation; retain unchanged old
 dependency objects and the independently verified1.1.11 recovery binding.
 
 Normal Mac DMG verification again exposes an intermittent SIGBUS10 with the

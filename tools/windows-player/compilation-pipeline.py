@@ -177,7 +177,7 @@ def main():
         environment['VLC_PLAYER_RELEASE_SYMBOLS'] = str(args.release_symbols)
     state.update(status='preparing', current_step=names[start])
     save()
-    if start < names.index('release-compiler-cache'):
+    if 'release-compiler-cache' in names and start < names.index('release-compiler-cache'):
         print('PIPELINE preparing bounded compiler cache', flush=True)
         cache_began = time.monotonic()
         cache_before = resource.getrusage(resource.RUSAGE_CHILDREN)
