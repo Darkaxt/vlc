@@ -109,6 +109,12 @@ class NativePackagingTest(unittest.TestCase):
                      'tools/desktop-player/install-ci-dependencies.sh']:
             self.assertFalse(reuse.test_only([path]), path)
         workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
+        evidence_lines = ('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n',
+                          '            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n')
+        previous = workflow
+        for line in evidence_lines:
+            previous = previous.replace(line, '')
+        self.assertEqual(reuse.workflow_build_contract(previous), reuse.workflow_build_contract(workflow))
         self.assertNotEqual(reuse.workflow_build_contract(workflow.replace("PYTHONDONTWRITEBYTECODE: '1'",
             "PYTHONDONTWRITEBYTECODE: '0'")), reuse.workflow_build_contract(workflow))
 

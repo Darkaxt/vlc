@@ -12,7 +12,7 @@ toolchain package/compiler identities bind the reusable objects. Preserve the
 original run/job and cache identities during repair; do not clean/reconfigure
 unchanged inputs or infer native playback from an uploaded artifact.
 
-The current retained Mac ARM cohort is cache ending42449059397 with installed
+The current retained Mac ARM cohort is cache ending42449524457 with installed
 toolchain SHA256757f9c1e1df776f5146d23c2a0a76c0bd0d5a246091b801234b6be6bd593e4ec.
 Run42448400173 proved AOM3.15.3 Release flags and no recompilation of unchanged
 AOM/native tools. Its cancellation exposed a surviving configure shell; build
@@ -21,6 +21,11 @@ The native cancellation probe gates compilation and cache retention; it uses a
 descendant readiness event and SIGTERM, without a completion deadline. Its first
 run caught an unsupported kqueue context-manager assumption, now corrected by
 explicit closure. PLAN records each original run, artifact and actual outcome.
+Run42449524457 passed that native probe, integrated compilation and the clock
+test. Its normal ZIP passed natural EOF; the byte-identical DMG copy crashed
+with SIGBUS during video-window setup. Reuse that normal signed ZIP for the
+verification-only crash continuation; preserve the failed normal launch as
+failure even if its single LLDB stack-capture reproduction exits successfully.
 The frozen paused-PCR gap is reproduced in the existing input-clock test and
 corrected without removing the earlier pause-date lateness fix. The assertion
 checks pass natively on Windows GCC; integrated native/Windows player acceptance

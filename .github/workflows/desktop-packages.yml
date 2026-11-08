@@ -108,4 +108,6 @@ jobs:
             ${{ runner.temp }}/native-player-review-session/*
             ${{ runner.temp }}/native-package-checks/verification.json
             ${{ runner.temp }}/native-package-checks/*-runtime/*log
+            ${{ runner.temp }}/native-package-checks/*-runtime/*json
+            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**
             ${{ runner.temp }}/native-command-cancellation.json

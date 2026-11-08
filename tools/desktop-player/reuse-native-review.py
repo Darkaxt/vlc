@@ -37,6 +37,8 @@ def workflow_build_contract(text):
         '        run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build"\n', '')
     text = text.replace("        if: steps.review_reuse.outputs.reuse != 'true'\n", '')
     text = text.replace('            .desktop-build/review-reuse.json\n', '')
+    text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n', '')
+    text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n', '')
     return text.replace('${{ steps.review_reuse.outputs.normal_generation || github.sha }}', '${{ github.sha }}')
 
 

@@ -1,6 +1,23 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42449524457/job128635581535 from2f99ff77 passed the real Mac cancellation
+probe, integrated compilation and the assertion-enabled input-clock test.
+Normal ZIP/DMG generation, strict signatures and identical recovered bytes passed;
+the ZIP player reached natural EOF/exit0. The DMG-recovered identical player
+then died with SIGBUS after VideoToolbox's first frame and a320x180 window-size
+request. That is a runtime failure, not a corrupt DMG or proven decoder cause.
+Original watch80778 closed1 after cache ending42449524457 (4844695640 bytes),
+artifact13605473314 (768130626 bytes, SHA256
+8f96a97e64e47f5639e8cbb8a7d3c69cc7fca1d3f38745367e33ae15cf1e4789)
+and hosted orphan cleanup without listed surviving processes. Preserve this
+cohort; the next verification-only continuation must reuse its normal app and
+capture actual crash stacks/reports rather than rebuild or guess at a fix.
+Prepared native source/notices work is preserved locally on
+codex/native-source-closure atc54c25d3be2, pending native execution and closure
+qualification. It is not published or discarded while this runtime failure is
+diagnosed. M15 remains the only ACTIVE stage; no release/master update is ready.
+
 Run42449059397/job128634188279 stopped before compilation at the new native
 cancellation check: select.kqueue has no context-manager protocol. The owned
 command group was killed, but the erroneous `with` prevented the completion

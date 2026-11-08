@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import platform
 import plistlib
+import shutil
 import stat
 import subprocess
 
@@ -39,6 +40,36 @@ def app_identity(app):
 def run(*argv, **kwargs):
     print('+', ' '.join(map(str, argv)), flush=True)
     return subprocess.run(list(map(str, argv)), check=True, **kwargs)
+
+
+def diagnose_crash(argv, environment, case, app, prior_reports):
+    """One stack-capture reproduction; never convert the failed launch to a pass."""
+    command = ['xcrun', 'lldb', '--batch', '--no-lldbinit',
+        '-o', 'settings set target.disable-aslr false', '-o', 'run',
+        '-o', 'thread backtrace all', '-k', 'thread backtrace all',
+        '-k', 'register read', '-k', 'image list', '-k', 'process kill', '--', *map(str, argv)]
+    with (case / 'crash-lldb.log').open('wb') as stream:
+        result = subprocess.run(command, cwd=app / 'Contents/MacOS', env=environment,
+                                stdout=stream, stderr=subprocess.STDOUT)
+    print((case / 'crash-lldb.log').read_text(errors='replace')[-18000:], flush=True)
+    reports = []
+    roots = {Path.home() / 'Library/Logs/DiagnosticReports',
+             Path(environment['HOME']) / 'Library/Logs/DiagnosticReports'}
+    executable = str(app / 'Contents/MacOS/vlc')
+    for root in roots:
+        for path in root.glob('vlc*'):
+            if path in prior_reports or not path.is_file() or path.suffix not in ('.ips', '.crash'):
+                continue
+            text = path.read_text(errors='replace')
+            if executable not in text:
+                continue
+            destination = case / 'crashes' / path.name
+            destination.parent.mkdir(exist_ok=True)
+            shutil.copy2(path, destination)
+            reports.append({'file': destination.name, 'sha256': digest(destination)})
+    (case / 'crash-diagnostics.json').write_text(json.dumps({
+        'purpose': 'Capture stacks for the already failed normal launch; not a retry acceptance',
+        'debugger_returncode': result.returncode, 'reports': reports}, indent=2) + '\n')
 
 
 def main():
@@ -77,11 +108,21 @@ def main():
         env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
             XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
             QML_DISK_CACHE_PATH=str(case / 'qml-cache'), QT_FORCE_STDERR_LOGGING='1')
-        with (case / 'stdout.log').open('wb') as stdout, (case / 'stderr.log').open('wb') as stderr:
-            run(app / 'Contents/MacOS/vlc', '--intf=qt', '--no-qt-privacy-ask',
+        argv = [app / 'Contents/MacOS/vlc', '--intf=qt', '--no-qt-privacy-ask',
                 '--no-metadata-network-access', '--restore-playback-pos=0',
-                '--qt-playback-engine=vlc', '--play-and-exit', '--verbose=2', fixture,
-                env=env, stdout=stdout, stderr=stderr)
+                '--qt-playback-engine=vlc', '--play-and-exit', '--verbose=2', fixture]
+        prior_reports = {path for root in (Path.home(), home)
+                         for path in (root / 'Library/Logs/DiagnosticReports').glob('vlc*')}
+        try:
+            with (case / 'stdout.log').open('wb') as stdout, (case / 'stderr.log').open('wb') as stderr:
+                run(*argv, env=env, stdout=stdout, stderr=stderr)
+        except subprocess.CalledProcessError as error:
+            print((case / 'stderr.log').read_text(errors='replace')[-10000:], flush=True)
+            (case / 'failure.json').write_text(json.dumps({'argv': list(map(str, argv)),
+                'normal_returncode': error.returncode, 'archive_sha256': digest(archive)}, indent=2) + '\n')
+            if error.returncode < 0:
+                diagnose_crash(argv, env, case, app, prior_reports)
+            raise
         log = (case / 'stderr.log').read_text(errors='replace')
         if 'EOF reached' not in log:
             raise RuntimeError('Normal packaged player did not report natural media EOF')
