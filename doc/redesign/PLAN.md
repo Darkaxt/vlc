@@ -36,6 +36,13 @@ library order. Unchanged source configuration inputs reuse verified configuratio
 object invalidation now binds effective flags/config.h content, not incidental
 config.status timestamps. Focused regressions pass; real retained-build resumption
 and final qualification remain required before any release claim.
+Run97/gate3179654f86486b647ee8c0a4de6a3b8c350 closed1 before compilation;
+the image consumer checker lost PNG after libtool removed explicitly linked
+static archives from dependency_libs. Read-only gate318d5fbb8e3e50e448183a260bbe9112d2a
+confirms PNG remains configured and its original bound graph contains it.
+Preserve that graph across resumption and re-read each actual DLL identity;
+reject missing retained metadata rather than dropping a consumer. The focused
+regression reproduces the real metadata transition and passes with this repair.
 Completed E: regression fixtures were transactionally retired:0a3747519ad7c4563c563f1844fdd1b5
 APPLIED860/509527B, plus1aa8c10cb2ff53a3ee5f75b3342b4854 APPLIED6 synthetic
 symlink names without traversal; initial misclassified inventory491f331e was discarded.

@@ -12,8 +12,9 @@ def sha(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def image_targets(build):
+def image_targets(build, retained=()):
     targets = []
+    retained = {row['target'] for row in retained}
     candidates = [*(build / 'modules').glob('*.la'), build / 'modules/gui/qt/libqt_plugin.la']
     for path in candidates:
         text = path.read_text()
@@ -22,9 +23,15 @@ def image_targets(build):
         if not dependencies or not dlname:
             continue
         tokens = shlex.split(dependencies.group(1))
-        if any(token in ('-lz', '-lpng', '-lpng16') or Path(token).name in
+        # Explicitly linked static archive members disappear from libtool's
+        # dependency_libs after linking. The previously bound consumer remains
+        # part of this retained graph; re-read its actual DLL identity here.
+        if path.name in retained or any(token in ('-lz', '-lpng', '-lpng16') or Path(token).name in
                ('libz.a', 'libpng.a', 'libpng16.a') for token in tokens):
             targets.append({'target': path.name, 'build_source': str(path.parent / '.libs' / dlname.group(1))})
+    missing = retained - {row['target'] for row in targets}
+    if missing:
+        raise RuntimeError('Retained image consumer metadata disappeared: ' + ', '.join(sorted(missing)))
     return sorted(targets, key=lambda row: row['target'])
 
 
@@ -35,7 +42,7 @@ def prepare_images(source, build, base, receipt):
     signature = hashlib.sha256(json.dumps(images, sort_keys=True).encode()).hexdigest()
     plan_path = build / 'player-image-inputs.json'
     previous = json.loads(plan_path.read_text()) if plan_path.exists() else None
-    targets = image_targets(build)
+    targets = image_targets(build, previous['targets'] if previous else ())
     if not any(row['target'] == 'libpng_plugin.la' for row in targets):
         raise RuntimeError('The configured PNG plugin is missing from the image link graph')
     libraries = [Path(row['prefix']) / 'lib' / row['static_library'] for row in images['libraries']]

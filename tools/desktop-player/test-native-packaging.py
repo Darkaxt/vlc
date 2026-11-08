@@ -131,8 +131,15 @@ class NativePackagingTest(unittest.TestCase):
         self.assertIn('libvlc_mp4.la: ' + str(build / 'player-image-links.mk'), rules)
         self.assertIn('libavcodec_plugin.la: LDFLAGS += -Wl,-Map,', rules)
         stamp = (build / 'player-image-links.mk').stat().st_mtime_ns
+        # Libtool omits static archives from dependency_libs after they have
+        # been linked explicitly. A resumed build must retain its bound graph.
+        (build / 'modules/libpng_plugin.la').write_text(
+            "dlname='libpng_plugin.dll'\ndependency_libs='-lm'\n")
+        (build / 'modules/gui/qt/libqt_plugin.la').write_text(
+            "dlname='libqt_plugin.dll'\ndependency_libs='-lm'\n")
         links.prepare_images(source, build, base, receipt)
         self.assertEqual((build / 'player-image-links.mk').stat().st_mtime_ns, stamp)
+        self.assertEqual(json.loads((build / 'player-image-inputs.json').read_text())['targets'], plan['targets'])
         (prefix / 'lib/libz.a').write_bytes(b'changed')
         with self.assertRaises(AssertionError):
             links.prepare_images(source, build, base, receipt)
