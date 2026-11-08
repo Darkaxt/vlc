@@ -118,7 +118,11 @@ work lives on `codex/native-desktop`; it has not replaced master or published a
 release. The workflow is `.github/workflows/desktop-packages.yml`, using native
 `macos-15`, `macos-15-intel`, `ubuntu-24.04` and `ubuntu-24.04-arm` runners,
 one compiler job and no local WSL workload. Its explicit target selector avoids
-adding unrequested matrix rows. Native sources/actions are pinned; installed
+adding unrequested matrix rows. The final `target=all` matrix permits four
+independent hosted machines concurrently, each retaining one compiler job;
+architecture jobs do not share writable SDK/build trees. Branch-level workflow
+concurrency still prevents overlapping runs from competing for the same cache.
+Native sources/actions are pinned; installed
 toolchain package/compiler identities bind the reusable objects. Preserve the
 original run/job and cache identities during repair; do not clean/reconfigure
 unchanged inputs or infer native playback from an uploaded artifact.

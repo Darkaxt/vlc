@@ -46,6 +46,9 @@ SHA2568bac099c8d66338e0fb0d7dc6c5b18ea6088b2688c1f4e0a3abf7d53bd1f5927.
 Mac ARM native recipe recovery, Intel/Linux ARM,
 Linux full UI acceptance and current installed Windows picture remain required.
 M16 remains NOT STARTED;1.1.12 is not published. No tracked deferrals.
+Final native matrix concurrency is four independent hosted runners, retaining
+one compiler job per runner and the unchanged local WSL resource limits. The
+current Mac/Linux recovery runs retain their original identities/configuration.
 
 Earlier observations and recovery history:
 Compiler-free debd6ade run42511680836 verifies all five extracted formats plus
