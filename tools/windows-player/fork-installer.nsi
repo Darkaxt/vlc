@@ -31,10 +31,12 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "VLC authors and contributors; indep
 Function CheckDestination
   StrLen $0 $INSTDIR
   ${If} $0 <= 3
+    SetErrorLevel 2
     Abort "Choose a dedicated Modern VLC Fork folder."
   ${EndIf}
   IfFileExists "$INSTDIR\vlc.exe" 0 done
   IfFileExists "$INSTDIR\MODERN-VLC-INSTALLATION.txt" done
+  SetErrorLevel 2
   Abort "This folder contains another VLC installation. Choose a different folder."
   done:
 FunctionEnd
@@ -47,13 +49,16 @@ Section "Modern VLC Fork"
   Call CheckDestination
   SetShellVarContext current
   SetOutPath "$INSTDIR"
+  ClearErrors
   File /r "${PAYLOAD}/*"
   File /oname=NSIS-LICENSE.txt "${NSIS_NOTICE}"
+  IfErrors install_failed
   CreateDirectory "$INSTDIR\portable"
   FileOpen $0 "$INSTDIR\MODERN-VLC-INSTALLATION.txt" w
   FileWrite $0 "Modern VLC Fork ${VERSION}$\r$\nSource: ${SOURCE_COMMIT}$\r$\n"
   FileClose $0
   WriteUninstaller "$INSTDIR\uninstall.exe"
+  IfErrors install_failed
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "DisplayName" "Modern VLC Fork"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "DisplayVersion" "${VERSION}"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "Publisher" "Darkaxt"
@@ -65,6 +70,12 @@ Section "Modern VLC Fork"
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "NoRepair" 1
   CreateDirectory "$SMPROGRAMS\Modern VLC Fork"
   CreateShortcut "$SMPROGRAMS\Modern VLC Fork\Modern VLC Fork.lnk" "$INSTDIR\vlc.exe"
+  IfErrors install_failed
+  Goto install_complete
+  install_failed:
+    SetErrorLevel 1
+    Abort "Installation could not finish. Close the player and check the selected folder."
+  install_complete:
 SectionEnd
 
 Section "Uninstall"
