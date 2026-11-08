@@ -1,6 +1,18 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42447292266/job128628834386 built and installed AOM3.15.3 as Release,
+then rejected its cache because the verification required literal equality.
+AOM's verified source appends supported warning/language flags to those cache
+values. The check now verifies effective -O3/-g0/NDEBUG in argument order,
+rejects later overrides and logs the actual values; the cache is also retained
+in failure artifacts. Focused regression checks pass, including rejection of
+RelWithDebInfo, disabled optimization, debug symbols and enabled assertions.
+The original watch71082 closed1, cache ending42447292266 was saved, artifact
+13604721178 (241346971 bytes, SHA256
+f81fdffb9e7e0f7c38a9704245aa9ff6f034a87967d1287514226c5bc05f77fb)
+was finalized and hosted orphan cleanup completed. No VLC/player had started.
+Resume this retained cohort; native runtime acceptance remains outstanding.
 Normal merge a488ffd10bbd4873ac768be294bb875a97c270b9 is pushed and includes
 the full pinned upstream revision; master and Windows1.1.11 remain unchanged.
 Integrated run42446672952/job128626964842 restored the exact previous toolchain

@@ -34,6 +34,36 @@ def sha(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def verify_aom_release_flags(cache):
+    values = {}
+    for line in cache.splitlines():
+        if line and not line.startswith(('#', '//')) and ':' in line and '=' in line:
+            key, value = line.split('=', 1)
+            values[key.split(':', 1)[0]] = value
+    required = ('CMAKE_BUILD_TYPE', 'CMAKE_C_FLAGS', 'CMAKE_C_FLAGS_RELEASE',
+                'CMAKE_CXX_FLAGS', 'CMAKE_CXX_FLAGS_RELEASE')
+    observed = {key: values.get(key, '') for key in required}
+    print('AOM release flags:', json.dumps(observed, sort_keys=True), flush=True)
+    valid = observed['CMAKE_BUILD_TYPE'] == 'Release'
+    for language in ('C', 'CXX'):
+        # AOM appends supported warning/language flags to the configuration
+        # cache. Check the effective policy in compiler argument order rather
+        # than rejecting those upstream additions by literal string equality.
+        flags = shlex.split(observed[f'CMAKE_{language}_FLAGS'] + ' ' +
+                            observed[f'CMAKE_{language}_FLAGS_RELEASE'])
+        optimization = [flag for flag in flags if flag.startswith('-O')]
+        debug = [flag for flag in flags if flag.startswith('-g')]
+        assertions = [flag for flag in flags if flag in ('-DNDEBUG', '-UNDEBUG')
+                      or flag.startswith('-DNDEBUG=')]
+        valid &= (bool(optimization) and optimization[-1] == '-O3'
+                  and bool(debug) and debug[-1] == '-g0'
+                  and bool(assertions) and assertions[-1] == '-DNDEBUG')
+    if not valid:
+        raise RuntimeError('AOM overlay did not retain the required release compiler flags: ' +
+                           json.dumps(observed, sort_keys=True))
+    return observed
+
+
 def source(work, name, url, expected=None):
     archive = work / 'sources' / (name + '.tar.gz')
     archive.parent.mkdir(parents=True, exist_ok=True)
@@ -362,11 +392,7 @@ def main():
             run('make', '-f', release_makefile.name, '-j1', '.aom',
                 'TARBALLS=' + str(work / 'sources'), cwd=overlay_work, env=env)
             cache = (overlay_work / 'aom/vlc_build/CMakeCache.txt').read_text()
-            required = ('CMAKE_BUILD_TYPE:STRING=Release',
-                'CMAKE_C_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG',
-                'CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG')
-            if any(line not in cache.splitlines() for line in required):
-                raise RuntimeError('AOM overlay did not retain the required release compiler flags')
+            verify_aom_release_flags(cache)
             source_archive = work / 'sources' / ('libaom-' + overlay['version'] + '.tar.gz')
             sources.append({'name': 'native-contrib-aom-overlay', 'version': overlay['version'],
                             'upstream_input_commit': overlay['upstream_commit'],

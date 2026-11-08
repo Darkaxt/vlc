@@ -19,6 +19,25 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_aom_release_policy_accepts_upstream_flags_and_rejects_overrides(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        cache = ('CMAKE_BUILD_TYPE:STRING=Release\n'
+            'CMAKE_C_FLAGS:STRING=-O3 -g0 -DNDEBUG -I/sdk/include\n'
+            'CMAKE_CXX_FLAGS:STRING=-O3 -g0 -DNDEBUG -stdlib=libc++\n'
+            'CMAKE_C_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG -std=c11 -Wall\n'
+            'CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -g0 -DNDEBUG -Wall -Wextra\n')
+        with patch('builtins.print'):
+            self.assertEqual(build.verify_aom_release_flags(cache)['CMAKE_BUILD_TYPE'], 'Release')
+            for original, changed in [('=Release', '=RelWithDebInfo'),
+                    ('-std=c11 -Wall', '-std=c11 -Wall -O0'),
+                    ('-std=c11 -Wall', '-std=c11 -Wall -g'),
+                    ('-Wall -Wextra', '-Wall -Wextra -g2'),
+                    ('-Wall -Wextra', '-Wall -Wextra -UNDEBUG')]:
+                with self.assertRaisesRegex(RuntimeError, 'required release compiler flags'):
+                    build.verify_aom_release_flags(cache.replace(original, changed))
+
     def test_review_recovery_preserves_archived_signatures_instead_of_signing_cache(self):
         spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
         reuse = importlib.util.module_from_spec(spec)
