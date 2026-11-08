@@ -127,6 +127,22 @@ source-integrity, unexpected-file/profile rejection and NSIS token escaping
 diagnostics pass. Actual compiler/guest installation and lifecycle qualification
 remain acceptance blockers. The Sandbox gate reports no live owned guest; use
 its supported headless route, not the user's desktop.
+Run94/gate309 (4ff8fef619b745be897b9d15a140019b) closed0: normal player14.9s,
+zero OOM, group empty,417 stripped images/symbols verified. Real ZIP146731202B
+and7z82826358B independently extract to the same1637 files and preserve the
+native plugin cache. Relocated VLC picture/EOF/shutdown passes; inactive MPV
+EOF/release passes but has no Present(S_OK), so picture remains unverified there.
+The real NSIS installer is84849026B, SHA256d40b581712b8ae22397842ede63d2b862daa93040e3b18c48701c3c97388935f;
+gate310 closed0 with zero OOM/group empty. Guest40/b3f531f6a77a4eae94ee3feefc4e2aed
+rejected an unrelated VLC folder (exit2), installed (exit0) and verified all
+payload bytes. Its System-context graphics path reported DXGI0x887A0022/D3D9/GL
+failures and ceased progressing after first picture. Exact owned stop verified
+guest absence, then original uncertain call was acknowledged and lease released.
+Preserve its logs/partial outcome; neither playback nor upgrade/uninstall passed.
+Use explicit lifecycle-only diagnostics for the remaining installation mechanics;
+that mode must retain passed=false/playback_qualified=false. Complete installer
+qualification remains blocked by the actual guest graphics requirement, not by
+compilation or an assumed permission. No host fallback, vGPU change or replay.
 Normal Windows run92/gate304 closed1 after104.8s player/100.5s CPU, zero OOM and
 group-empty. Qt linked successfully; the continuation's symbol seed incorrectly
 omitted retained hotkeys. Preserve the failed pending/debug outputs. Run93/

@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory=$true)][string]$Payload,
     [Parameter(Mandatory=$true)][string]$Fixture,
     [Parameter(Mandatory=$true)][string]$ExpectedSourceCommit,
-    [Parameter(Mandatory=$true)][string]$Version
+    [Parameter(Mandatory=$true)][string]$Version,
+    [switch]$LifecycleOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -20,7 +21,9 @@ $original = Join-Path $work 'original-vlc'
 $registration = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork'
 $manifest = Get-Content -LiteralPath (Join-Path $Payload 'FILE-MANIFEST.json') -Raw | ConvertFrom-Json
 if ($manifest.source_commit -ne $ExpectedSourceCommit -or $manifest.version -ne $Version) { throw 'Payload release identity mismatch' }
-$record = [ordered]@{ passed=$false; source_commit=$ExpectedSourceCommit; version=$Version; events=@(); scope='Owned headless guest; per-user installation and software video, no audio endpoint or host desktop control' }
+$record = [ordered]@{ passed=$false; lifecycle_passed=$false; playback_qualified=$false;
+    source_commit=$ExpectedSourceCommit; version=$Version; events=@(); lifecycle_only=[bool]$LifecycleOnly;
+    scope='Owned headless guest; per-user installation; lifecycle-only mode cannot qualify playback or the complete installer' }
 $resultPath = Join-Path $work 'result.json'
 
 function Save-Record {
@@ -71,7 +74,8 @@ try {
     if (Test-Path -LiteralPath $registration) { throw 'Rejected install created a registration' }
     if ((Invoke-OwnedProcess $Installer @('/S', "/D=$installation") 'install') -ne 0) { throw 'Installer failed' }
     Assert-Payload
-    foreach ($engine in @('vlc', 'mpv')) {
+    $engines = if ($LifecycleOnly) { @() } else { @('vlc', 'mpv') }
+    foreach ($engine in $engines) {
         $log = Join-Path $work "$engine-native.log"
         $arguments = @("--qt-playback-engine=$engine", '--intf=qt', '--no-one-instance', '--no-media-library',
             '--restore-playback-pos=0', '--no-save-recentplay', '--no-qt-privacy-ask', '--no-qt-updates-notif',
@@ -106,7 +110,9 @@ try {
     if ((Invoke-OwnedProcess (Join-Path $newer 'uninstall.exe') @('/S') 'uninstall-current') -ne 0) { throw 'Current installation uninstall failed' }
     if (Test-Path -LiteralPath $registration) { throw 'Current uninstall retained its registration' }
     if (Test-Path -LiteralPath (Join-Path $newer 'vlc.exe')) { throw 'Current uninstall retained its program' }
-    $record.passed = $true
+    $record.lifecycle_passed = $true
+    $record.playback_qualified = -not $LifecycleOnly
+    $record.passed = $record.playback_qualified
     $record.portable_profile_preserved = $true
     $record.extra_user_files_preserved = $true
     $record.original_vlc_preserved = $true
