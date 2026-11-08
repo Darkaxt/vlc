@@ -63,16 +63,17 @@ jobs:
       - name: Verify owned native command cancellation
         run: python3 tools/desktop-player/test-native-build-cancellation.py --receipt "$RUNNER_TEMP/native-command-cancellation.json"
       - name: Build native redesign and packages
+        id: normal_build
         if: steps.review_reuse.outputs.reuse != 'true'
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
       - name: Verify recovered normal macOS ZIP and DMG applications
         if: runner.os == 'macOS'
-        run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks"
+        run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --trace-launch
       - name: Exercise the actual native player
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && runner.os == 'macOS' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Exercise the actual Linux player on its owned display
-        if: runner.os == 'Linux'
+        if: ${{ !cancelled() && runner.os == 'Linux' && steps.normal_build.outcome == 'success' }}
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Retain original native build for repair and resumption
         if: always()

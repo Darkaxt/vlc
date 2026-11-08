@@ -118,6 +118,14 @@ copies. Preserve the legacy enabled-cache route. The new upstream AOM3.15.3 buil
 must use and verify Release/O3/g0/NDEBUG before compilation; retain unchanged old
 dependency objects and the independently verified1.1.11 recovery binding.
 
+Normal Mac DMG verification again exposes an intermittent SIGBUS10 with the
+VideoToolbox decoder active. A later successful debugger launch does not repair
+or qualify that failure. Capture the original failing process's stack rather
+than infer a cause from its last log line; preserve the failed launch and normal
+package identity. Diagnostic traced launches do not replace final untraced
+playback verification. Independent implemented player checks may collect their
+own evidence after this package failure, without clearing the failed criterion.
+
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master
 by normal merge history within M15 before the final architecture/package matrix

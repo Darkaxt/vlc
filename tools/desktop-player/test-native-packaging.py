@@ -23,6 +23,23 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_traced_mac_launch_cannot_pass_a_target_fault_with_debugger_exit_zero(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        with patch.object(verifier.subprocess, 'run', return_value=SimpleNamespace(returncode=0)), \
+                patch.object(Path, 'open', MagicMock()), patch.object(Path, 'write_text') as save, \
+                patch.object(verifier, 'digest', return_value='0' * 64), patch('builtins.print'):
+            fault = 'stop reason = EXC_BAD_ACCESS (code=1)\nProcess 42 exited with status = 0 (0x00000000)\n'
+            with patch.object(Path, 'read_text', return_value=fault):
+                with self.assertRaisesRegex(RuntimeError, 'Original traced Mac launch failed'):
+                    verifier.trace_launch(['vlc'], {}, Path('case'), Path('app'))
+            self.assertTrue(json.loads(save.call_args.args[0])['target_faulted'])
+            normal = 'EOF reached\nProcess 42 exited with status = 0 (0x00000000)\n'
+            with patch.object(Path, 'read_text', return_value=normal):
+                self.assertEqual(verifier.trace_launch(['vlc'], {}, Path('case'), Path('app')), normal)
+            self.assertFalse(json.loads(save.call_args.args[0])['target_faulted'])
+
     def test_native_windows_upstream_pipeline_does_not_touch_absent_copy_mounts(self):
         spec = importlib.util.spec_from_file_location('windows_pipeline',
             HERE.parent / 'windows-player/compilation-pipeline.py')
@@ -390,11 +407,12 @@ class NativePackagingTest(unittest.TestCase):
         self.assertTrue(reuse.test_only(['tools/desktop-player/verify-native-player.py',
                                         'tools/desktop-player/verify-linux-packages.py',
                                         'tools/desktop-player/run-linux-review.py',
+                                        'tools/windows-player/build-upstream-codecs.py',
+                                        'tools/windows-player/compilation-pipeline.py',
                                         'doc/redesign/PLAN.md']))
         for path in ['modules/gui/qt/maininterface/player_diagnostics.hpp',
                      'modules/gui/qt/player/qml/PlayerView.qml', 'configure.ac',
-                     'tools/desktop-player/build-native.py', 'tools/desktop-player/package-native.py',
-                     'tools/desktop-player/install-ci-dependencies.sh']:
+                     'tools/desktop-player/build-native.py', 'tools/desktop-player/package-native.py']:
             self.assertFalse(reuse.test_only([path]), path)
         workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
         evidence_lines = ('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n',
@@ -408,6 +426,13 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual(reuse.workflow_build_contract(previous), reuse.workflow_build_contract(workflow))
         self.assertNotEqual(reuse.workflow_build_contract(workflow.replace("PYTHONDONTWRITEBYTECODE: '1'",
             "PYTHONDONTWRITEBYTECODE: '0'")), reuse.workflow_build_contract(workflow))
+        setup = (HERE / 'install-ci-dependencies.sh').read_text()
+        self.assertEqual(reuse.mac_dependency_setup(setup),
+                         reuse.mac_dependency_setup(setup.replace('qml6-module-qtqml-models ', '')))
+        self.assertNotEqual(reuse.mac_dependency_setup(setup),
+                            reuse.mac_dependency_setup(setup.replace('brew install', 'brew upgrade')))
+        self.assertNotEqual(reuse.mac_dependency_setup(setup),
+                            reuse.mac_dependency_setup(setup + 'touch changed-sdk\n'))
 
     def test_native_slider_click_uses_handle_center_at_all_window_sizes(self):
         spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')

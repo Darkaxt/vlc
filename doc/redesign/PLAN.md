@@ -1,6 +1,41 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Current normal Mac generation38831022dd32dccf3951323adea2a002ab8a758f built and
+sealed successfully, but run42467880197/job128691542687 closed1 (watch80448):
+ZIP natural EOF passed; the untraced recovered DMG launch died with SIGBUS10
+after VideoToolbox selected its first frame. The one debugger reproduction exited0;
+no OS crash report was available. This is not a repaired crash, and the new
+paused-seek/SPU pictures were not exercised because the package step failed.
+Original diagnostics are independently retrieved under native-388/crash in the
+active E: evidence root (selected members CRC/SHA verified, not whole artifact).
+Cache ending42467880197 and hosted cleanup completed. Artifact13613130440 is
+2474864281 bytes, GitHub SHA25688113fe96cefe6856e2302e5394982389ca097795f22cc21962ee40200705d6d.
+The diagnostic continuation traces the original normal launch so a fault's stack
+is captured at that occurrence, rejects debugger success after a target fault,
+and never treats traced playback as untraced release clearance. Independent
+player checks may run after a package failure only when the normal build/reuse
+succeeded and the workflow was not cancelled. Production Mac bytes are unchanged;
+the current guarded workflow/setup contracts match the retained388310 generation,
+so recover its signed normal ZIP rather than rebuild/repackage the SDK/source set.
+
+Linux continuation42468285891/job128695304271 closed1 (watch78636). It restored
+the33460305-byte retained cohort, passed raw MPV/libplacebo closure staging and
+reached VLC configure. Configure rejected missing QtQml.Models (Qt6.4.2 itself
+meets upstream's6.2 minimum). Add the required QtQml/Models/QtQuick/QtTest runtime
+modules as one setup correction. No VLC compilation or format/player acceptance
+has occurred. Cache ending42468285891 and hosted cleanup completed. Artifact
+13612796747 is10460883 bytes, GitHub SHA256104c92ec3cf7022a83633344bd83daa9b3d823febe14e6e7204f99836324a0a0.
+
+Fresh read-only Windows gate295/0490d936b34f47769dde8ab37a1eb88f verifies the
+unchanged1.1.11 source/configuration,417 stripped PE/symbol mappings,410 plugins,
+runtime hashes and absent next run0086. It closes0 in2.44s, peak611311616 bytes,
+no OOM, group empty and private mounts released. AOM3.15.3's6632070-byte original
+is retained with upstream SHA512 and SHA25612c01dc731ed7b5a999e28120b45bf58a002ba3435a4ba2cfbc1e084a27c9c04;
+its current build consumer/retirement receipt is scratch-share/upstream-ready-1.1.12/dependency-inputs.json.
+No local compilation or final publication has started. Earlier run checkpoints
+below remain historical evidence and do not override these unmet criteria.
+
 Run42465080818/job128682632633 from02a1e1b0067e301a6a278f16b5d1770c99c3e6db
 closed0 (original watch31298). Inspected native captures now show VLC video in
 the main, floating and restored views; the main display frame is y41 inside its

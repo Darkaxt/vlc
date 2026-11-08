@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import platform
 import plistlib
+import re
 import shutil
 import stat
 import subprocess
@@ -72,10 +73,35 @@ def diagnose_crash(argv, environment, case, app, prior_reports):
         'debugger_returncode': result.returncode, 'reports': reports}, indent=2) + '\n')
 
 
+def trace_launch(argv, environment, case, app):
+    """Stop at the original fault instead of hoping a later launch repeats it."""
+    command = ['xcrun', 'lldb', '--batch', '--no-lldbinit',
+        '-o', 'settings set target.disable-aslr false', '-o', 'run',
+        '-k', 'thread backtrace all', '-k', 'register read', '-k', 'image list',
+        '-k', 'process kill', '--', *map(str, argv)]
+    trace = case / 'launch-lldb.log'
+    with trace.open('wb') as stream:
+        result = subprocess.run(command, cwd=app / 'Contents/MacOS', env=environment,
+                                stdout=stream, stderr=subprocess.STDOUT)
+    text = trace.read_text(errors='replace')
+    exited = re.search(r'Process \d+ exited with status = 0 \(0x0+\)', text) is not None
+    faulted = re.search(r'stop reason\s*=\s*(?:signal|EXC_)', text) is not None
+    (case / 'traced-launch.json').write_text(json.dumps({
+        'debugger_returncode': result.returncode, 'target_natural_exit_zero': exited,
+        'target_faulted': faulted, 'log_sha256': digest(trace),
+        'qualification': 'DIAGNOSTIC; does not clear an earlier untraced launch failure'}, indent=2) + '\n')
+    if result.returncode or not exited or faulted:
+        print(text[-20000:], flush=True)
+        raise RuntimeError('Original traced Mac launch failed; inspect launch-lldb.log')
+    return text
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
     parser.add_argument('--scratch', required=True, type=Path)
+    parser.add_argument('--trace-launch', action='store_true',
+                        help='Capture the original process fault; diagnostic evidence, not untraced release clearance')
     args = parser.parse_args()
     if platform.system() != 'Darwin':
         raise RuntimeError('Mac package verification requires a native Mac')
@@ -114,8 +140,11 @@ def main():
         prior_reports = {path for root in (Path.home(), home)
                          for path in (root / 'Library/Logs/DiagnosticReports').glob('vlc*')}
         try:
-            with (case / 'stdout.log').open('wb') as stdout, (case / 'stderr.log').open('wb') as stderr:
-                run(*argv, env=env, stdout=stdout, stderr=stderr)
+            if args.trace_launch:
+                log = trace_launch(argv, env, case, app)
+            else:
+                with (case / 'stdout.log').open('wb') as stdout, (case / 'stderr.log').open('wb') as stderr:
+                    run(*argv, env=env, stdout=stdout, stderr=stderr)
         except subprocess.CalledProcessError as error:
             print((case / 'stderr.log').read_text(errors='replace')[-10000:], flush=True)
             (case / 'failure.json').write_text(json.dumps({'argv': list(map(str, argv)),
@@ -123,13 +152,16 @@ def main():
             if error.returncode < 0:
                 diagnose_crash(argv, env, case, app, prior_reports)
             raise
-        log = (case / 'stderr.log').read_text(errors='replace')
+        if not args.trace_launch:
+            log = (case / 'stderr.log').read_text(errors='replace')
         if 'EOF reached' not in log:
             raise RuntimeError('Normal packaged player did not report natural media EOF')
         results.append({'format': archive.suffix, 'archive_sha256': digest(archive),
             'source_commit': record['source_commit'], 'normal_bundle_members_identical': len(actual),
             'strict_signature_verified': True, 'normal_qt_playback_natural_eof_exit': 0,
-            'stderr_sha256': digest(case / 'stderr.log')})
+            'launch_traced': args.trace_launch,
+            'qualification': 'DIAGNOSTIC ONLY' if args.trace_launch else 'normal untraced package playback',
+            'stderr_sha256': digest(case / ('launch-lldb.log' if args.trace_launch else 'stderr.log'))})
         (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')
 
     archives = {suffix: sorted(packages.glob('*' + suffix)) for suffix in ('.zip', '.dmg')}

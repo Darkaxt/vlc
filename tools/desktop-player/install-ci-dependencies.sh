@@ -24,6 +24,7 @@ SOURCES
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-declarative-private-dev \
         qt6-svg-dev qt6-tools-dev qt6-tools-dev-tools qt6-shadertools-dev qt6-wayland-dev \
         qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-templates \
+        qml6-module-qtqml qml6-module-qtqml-models qml6-module-qtquick qml6-module-qttest \
         qml6-module-qtqml-workerscript qml6-module-qtquick-window libqt6opengl6-dev \
         libavcodec-dev libavformat-dev libavutil-dev libavfilter-dev libswscale-dev libswresample-dev \
         libass-dev libarchive-dev libpulse-dev libpipewire-0.3-dev libgl-dev libegl-dev \

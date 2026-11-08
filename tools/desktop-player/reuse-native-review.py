@@ -21,13 +21,28 @@ TEST_ONLY = {
     'tools/desktop-player/verify-macos-packages.py',
     'tools/desktop-player/verify-linux-packages.py',
     'tools/desktop-player/run-linux-review.py',
+    'tools/desktop-player/install-ci-dependencies.sh',
     'tools/desktop-player/native-player-client.py',
     'tools/desktop-player/test-native-packaging.py',
+    # This reuse function runs only on Mac. These Windows-only recipes are not
+    # consumed by its native build, packaging or player, and cannot alter it.
+    'tools/windows-player/build-upstream-codecs.py',
+    'tools/windows-player/compilation-pipeline.py',
 }
 
 
 def test_only(paths):
     return all(path in TEST_ONLY or path.startswith('doc/redesign/') for path in paths)
+
+
+def mac_dependency_setup(text):
+    # A Linux-only apt repair does not change the Mac SDK. Preserve the entire
+    # Mac branch, its outer condition and every command after the conditional.
+    mac, separator, linux = text.partition('\nelse\n')
+    _, ending, tail = linux.rpartition('\nfi\n')
+    if not separator or not ending:
+        raise RuntimeError('Cannot establish the native dependency setup branches')
+    return mac + separator + ending + tail
 
 
 def workflow_build_contract(text):
@@ -38,6 +53,13 @@ def workflow_build_contract(text):
         '        id: review_reuse\n'
         '        run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build"\n', '')
     text = text.replace("        if: steps.review_reuse.outputs.reuse != 'true'\n", '')
+    text = text.replace('        id: normal_build\n', '')
+    text = text.replace(' --scratch "$RUNNER_TEMP/native-package-checks" --trace-launch\n',
+                        ' --scratch "$RUNNER_TEMP/native-package-checks"\n')
+    text = text.replace("        if: ${{ !cancelled() && runner.os == 'macOS' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}\n",
+                        "        if: runner.os == 'macOS'\n")
+    text = text.replace("        if: ${{ !cancelled() && runner.os == 'Linux' && steps.normal_build.outcome == 'success' }}\n",
+                        "        if: runner.os == 'Linux'\n")
     text = text.replace('            .desktop-build/review-reuse.json\n', '')
     text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n', '')
     text = text.replace('            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n', '')
@@ -79,6 +101,10 @@ def reusable(work):
                                       cwd=ROOT, text=True).split('\0')
     changed = [path for path in changed if path]
     if not test_only(changed):
+        return None
+    setup = 'tools/desktop-player/install-ci-dependencies.sh'
+    old_setup = subprocess.check_output(['git', 'show', base + ':' + setup], cwd=ROOT, text=True)
+    if mac_dependency_setup(old_setup) != mac_dependency_setup((ROOT / setup).read_text()):
         return None
     workflow = '.github/workflows/desktop-packages.yml'
     old_workflow = subprocess.check_output(['git', 'show', base + ':' + workflow], cwd=ROOT, text=True)
