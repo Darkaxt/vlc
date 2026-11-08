@@ -134,6 +134,9 @@ jobs:
             ${{ runner.temp }}/native-package-checks/*-runtime/*log
             ${{ runner.temp }}/native-package-checks/*-runtime/*json
             ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**
+            ${{ runner.temp }}/native-package-checks/*-runtime/*/*.log
+            ${{ runner.temp }}/native-package-checks/*-runtime/*/*.json
+            ${{ runner.temp }}/native-package-checks/*-runtime/*/crashes/**
             ${{ runner.temp }}/native-package-checks/installer-exit.json
             ${{ runner.temp }}/native-package-checks/*/*-stdout.log
             ${{ runner.temp }}/native-package-checks/*/*-stderr.log

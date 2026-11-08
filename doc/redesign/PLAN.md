@@ -24,6 +24,12 @@ gate idle, and its stale connection launcher is retired;0x80070002 did not indic
 a missing player. M15 stays ACTIVE, M16 NOT STARTED,1.1.12 unpublished.
 
 Earlier553 implementation checkpoint:
+Normal Mac ZIP/DMG checks at553 cover VLC only; instrumented MPV workflow and
+actual pictures are separate evidence. Extend each recovered normal format to
+its own VLC and MPV profile/finite-clip EOF check, requiring MPV's own EOF marker.
+This is a verifier correction; do not claim the new normal-MPV check passed
+from the existing VLC-only result. Final native qualification still owns it.
+
 Trace42524609550 captured the same deadlock twice: the GUI waits in
 QRasterPaintEngine::fillRect/QQuickIconImage while pooled SVG readers wait in
 the ImageHelper plugin's blocking GUI invocation and static initializer guard.

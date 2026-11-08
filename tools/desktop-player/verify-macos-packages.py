@@ -4,7 +4,7 @@
 These are normal packages, without test hooks. Exact app identity binds both
 formats to the normal app used to prepare the instrumented review. Its composed
 picture/workflow evidence remains separate; each recovered normal app also runs
-Qt playback through natural media EOF.
+both VLC and MPV through natural media EOF.
 """
 import argparse
 import hashlib
@@ -130,39 +130,42 @@ def main():
                                if actual.get(key) != expected.get(key))
             raise RuntimeError('Recovered app differs from its normal package: ' + str(different))
         run('codesign', '--verify', '--deep', '--strict', app)
-        home = case / 'home'; home.mkdir()
-        env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
-            XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
-            QML_DISK_CACHE_PATH=str(case / 'qml-cache'), QT_FORCE_STDERR_LOGGING='1', QSG_INFO='1')
-        argv = [app / 'Contents/MacOS/vlc', '--intf=qt', '--no-qt-privacy-ask',
-                '--no-metadata-network-access', '--restore-playback-pos=0',
-                '--qt-playback-engine=vlc', '--play-and-exit', '--verbose=2', fixture]
-        prior_reports = {path for root in (Path.home(), home)
-                         for path in (root / 'Library/Logs/DiagnosticReports').glob('vlc*')}
-        try:
-            if args.trace_launch:
-                log = trace_launch(argv, env, case, app)
-            else:
-                with (case / 'stdout.log').open('wb') as stdout, (case / 'stderr.log').open('wb') as stderr:
-                    run(*argv, env=env, stdout=stdout, stderr=stderr)
-        except subprocess.CalledProcessError as error:
-            print((case / 'stderr.log').read_text(errors='replace')[-10000:], flush=True)
-            (case / 'failure.json').write_text(json.dumps({'argv': list(map(str, argv)),
-                'normal_returncode': error.returncode, 'archive_sha256': digest(archive)}, indent=2) + '\n')
-            if error.returncode < 0:
-                diagnose_crash(argv, env, case, app, prior_reports)
-            raise
-        if not args.trace_launch:
-            log = (case / 'stderr.log').read_text(errors='replace')
-        if 'EOF reached' not in log:
-            raise RuntimeError('Normal packaged player did not report natural media EOF')
-        results.append({'format': archive.suffix, 'archive_sha256': digest(archive),
-            'source_commit': record['source_commit'], 'normal_bundle_members_identical': len(actual),
-            'strict_signature_verified': True, 'normal_qt_playback_natural_eof_exit': 0,
-            'launch_traced': args.trace_launch,
-            'qualification': 'DIAGNOSTIC ONLY' if args.trace_launch else 'normal untraced package playback',
-            'stderr_sha256': digest(case / ('launch-lldb.log' if args.trace_launch else 'stderr.log'))})
-        (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')
+        for engine in ('vlc', 'mpv'):
+            engine_case = case / engine; engine_case.mkdir()
+            home = engine_case / 'home'; home.mkdir()
+            env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
+                XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
+                QML_DISK_CACHE_PATH=str(engine_case / 'qml-cache'), QT_FORCE_STDERR_LOGGING='1', QSG_INFO='1')
+            argv = [app / 'Contents/MacOS/vlc', '--intf=qt', '--no-qt-privacy-ask',
+                    '--no-metadata-network-access', '--restore-playback-pos=0',
+                    '--qt-playback-engine=' + engine, '--play-and-exit', '--verbose=2', fixture]
+            prior_reports = {path for root in (Path.home(), home)
+                             for path in (root / 'Library/Logs/DiagnosticReports').glob('vlc*')}
+            try:
+                if args.trace_launch:
+                    log = trace_launch(argv, env, engine_case, app)
+                else:
+                    with (engine_case / 'stdout.log').open('wb') as stdout, (engine_case / 'stderr.log').open('wb') as stderr:
+                        run(*argv, env=env, stdout=stdout, stderr=stderr)
+            except subprocess.CalledProcessError as error:
+                print((engine_case / 'stderr.log').read_text(errors='replace')[-10000:], flush=True)
+                (engine_case / 'failure.json').write_text(json.dumps({'argv': list(map(str, argv)),
+                    'normal_returncode': error.returncode, 'archive_sha256': digest(archive)}, indent=2) + '\n')
+                if error.returncode < 0:
+                    diagnose_crash(argv, env, engine_case, app, prior_reports)
+                raise
+            if not args.trace_launch:
+                log = (engine_case / 'stderr.log').read_text(errors='replace')
+            marker = 'MPV natural EOF reached' if engine == 'mpv' else 'EOF reached'
+            if marker not in log:
+                raise RuntimeError('Normal packaged player did not report natural media EOF: ' + engine)
+            results.append({'format': archive.suffix, 'engine': engine, 'archive_sha256': digest(archive),
+                'source_commit': record['source_commit'], 'normal_bundle_members_identical': len(actual),
+                'strict_signature_verified': True, 'normal_qt_playback_natural_eof_exit': 0,
+                'launch_traced': args.trace_launch,
+                'qualification': 'DIAGNOSTIC ONLY' if args.trace_launch else 'normal untraced package playback',
+                'stderr_sha256': digest(engine_case / ('launch-lldb.log' if args.trace_launch else 'stderr.log'))})
+            (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')
 
     archives = {suffix: sorted(packages.glob('*' + suffix)) for suffix in ('.zip', '.dmg')}
     archives['.zip'] = [path for path in archives['.zip']

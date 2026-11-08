@@ -469,6 +469,51 @@ class NativePackagingTest(unittest.TestCase):
                 self.assertEqual(verifier.trace_launch(['vlc'], {}, Path('case'), Path('app')), normal)
             self.assertFalse(json.loads(save.call_args.args[0])['target_faulted'])
 
+    def test_normal_mac_formats_require_each_engines_own_eof(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        for wrong_mpv_marker in (False, True):
+            root = Path(sys.argv_scratch) / ('mac-normal-' + uuid.uuid4().hex)
+            work = root / 'work'
+            packages = work / 'packages' / ('a' * 40)
+            packages.mkdir(parents=True)
+            (work / 'package-output.json').write_text(json.dumps({
+                'source_commit': 'a' * 40, 'directory': str(packages.resolve())}))
+            for suffix in ('.zip', '.dmg'):
+                (packages / ('Modern-VLC-Fork-1.1.12-macos-arm64' + suffix)).write_bytes(b'normal asset')
+            scratch = root / 'acceptance'
+            launches = []
+
+            def run(*argv, **kwargs):
+                if argv[0] == 'hdiutil' and argv[1] == 'attach':
+                    return SimpleNamespace(stdout=verifier.plistlib.dumps({'system-entities': [{
+                        'mount-point': str(scratch / 'dmg-mounted'), 'dev-entry': '/dev/owned-test'}]}))
+                if Path(argv[0]).name == 'vlc':
+                    engine = next(value.split('=', 1)[1] for value in argv
+                                  if str(value).startswith('--qt-playback-engine='))
+                    launches.append(engine)
+                    marker = ('MPV natural EOF reached' if engine == 'mpv' and not wrong_mpv_marker
+                              else 'EOF reached')
+                    kwargs['stderr'].write((marker + '\n').encode())
+                return SimpleNamespace(stdout=b'')
+
+            with patch.object(verifier.platform, 'system', return_value='Darwin'), \
+                    patch.object(verifier, 'run', side_effect=run), \
+                    patch.object(verifier, 'app_identity', return_value={'vlc': 'identical normal bytes'}), \
+                    patch.object(sys, 'argv', ['verify-macos-packages.py', '--work', str(work), '--scratch', str(scratch)]):
+                if wrong_mpv_marker:
+                    with self.assertRaisesRegex(RuntimeError, 'natural media EOF: mpv'):
+                        verifier.main()
+                    self.assertEqual(launches, ['vlc', 'mpv'])
+                else:
+                    verifier.main()
+                    self.assertEqual(launches, ['vlc', 'mpv', 'vlc', 'mpv'])
+                    receipt = json.loads((scratch / 'verification.json').read_text())
+                    self.assertEqual([(row['format'], row['engine']) for row in receipt],
+                                     [('.zip', 'vlc'), ('.zip', 'mpv'), ('.dmg', 'vlc'), ('.dmg', 'mpv')])
+                    self.assertTrue(all(row['qualification'] == 'normal untraced package playback' for row in receipt))
+
     def test_native_windows_upstream_pipeline_does_not_touch_absent_copy_mounts(self):
         spec = importlib.util.spec_from_file_location('windows_pipeline',
             HERE.parent / 'windows-player/compilation-pipeline.py')
@@ -1047,6 +1092,9 @@ class NativePackagingTest(unittest.TestCase):
         workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
         evidence_lines = ('            ${{ runner.temp }}/native-package-checks/*-runtime/*json\n',
                           '            ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**\n',
+                          '            ${{ runner.temp }}/native-package-checks/*-runtime/*/*.log\n',
+                          '            ${{ runner.temp }}/native-package-checks/*-runtime/*/*.json\n',
+                          '            ${{ runner.temp }}/native-package-checks/*-runtime/*/crashes/**\n',
                           '            ${{ runner.temp }}/native-package-checks/installer-exit.json\n',
                           '            ${{ runner.temp }}/native-package-checks/*/*-stdout.log\n',
                           '            ${{ runner.temp }}/native-package-checks/*/*-stderr.log\n')
