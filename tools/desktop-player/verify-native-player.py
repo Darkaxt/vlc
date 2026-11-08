@@ -43,11 +43,31 @@ def inspect_result(result):
     return result
 
 
+def seed_upstream_profile(home):
+    # These are synthetic upstream VLC profiles, not the runner's real data.
+    # The fork's own bundle/XDG namespace must leave every one untouched.
+    roots = ([home / 'Library' / category / 'org.videolan.vlc' for category in
+              ('Preferences', 'Application Support', 'Caches')] if platform.system() == 'Darwin'
+             else [home / category / 'vlc' for category in ('config', 'data', 'cache')])
+    for directory in roots:
+        directory.mkdir(parents=True)
+        (directory / 'preservation-marker').write_bytes(b'Existing upstream VLC data\n')
+    (roots[0] / 'vlcrc').write_text('### Synthetic existing VLC preferences\nvolume=0.31\n')
+    return roots
+
+
+def profile_hashes(home, roots):
+    return {path.relative_to(home).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for root in roots for path in root.rglob('*') if path.is_file()}
+
+
 def check_engine(executable, root, fixture, engine):
     case = root / engine
     case.mkdir()
     evidence = case / 'evidence'; evidence.mkdir()
     home = case / 'home'; home.mkdir()
+    upstream_roots = seed_upstream_profile(home)
+    before_upstream = profile_hashes(home, upstream_roots)
     token = uuid.uuid4().hex + uuid.uuid4().hex
     env = os.environ.copy()
     env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
@@ -148,6 +168,31 @@ def check_engine(executable, root, fixture, engine):
             (evidence / 'exit.json').write_text(json.dumps({'exit_code': exit_code}) + '\n')
             if exit_code:
                 raise RuntimeError('Owned native player exited with ' + str(exit_code))
+    # The live handover above saved the other engine. Reopen the same profile
+    # without a command-line engine override to verify actual persistence.
+    reopen = case / 'reopen'; reopen.mkdir()
+    env['VLC_PLAYER_DIAGNOSTICS_DIR'] = str(reopen)
+    reopened_argv = [argument for argument in argv if not argument.startswith('--qt-playback-engine=')]
+    with (reopen / 'stdout.log').open('wb') as stdout, (reopen / 'stderr.log').open('wb') as stderr:
+        player = subprocess.Popen(reopened_argv, cwd=executable.parent, env=env, stdout=stdout, stderr=stderr)
+        client = client_module.NativePlayerClient(player, reopen, token)
+        try:
+            reopened = inspect_result(client.await_core('state', 3))
+            assert reopened['core']['engine'] == other.lower(), reopened['core']
+            (reopen / 'engine-persistence.json').write_text(json.dumps({
+                'state': 'PASSED', 'expected_engine': other.lower(), 'core': reopened['core']}, indent=2) + '\n')
+        finally:
+            if player.poll() is None:
+                client.request('quit')
+            exit_code = player.wait()
+            client.close()
+            if exit_code:
+                raise RuntimeError('Reopened native player exited with ' + str(exit_code))
+    after_upstream = profile_hashes(home, upstream_roots)
+    (evidence / 'upstream-profile-preservation.json').write_text(json.dumps({
+        'state': 'PASSED' if after_upstream == before_upstream else 'FAILED',
+        'before': before_upstream, 'after': after_upstream}, indent=2) + '\n')
+    assert after_upstream == before_upstream, 'The fork modified the synthetic upstream VLC profile'
 
 
 def main():

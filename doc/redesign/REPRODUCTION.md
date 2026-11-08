@@ -43,7 +43,8 @@ on a new runner checkout. The initial cache needs its explicitly recorded,
 input-verified bootstrap reconstruction once.
 
 `prepare-native-review.py` copies the normal Mac app into `$RUNNER_TEMP`, builds
-only the existing test-only `mainui` diagnostics, relocates that plugin against
+only the existing native diagnostic translation units and controller MOC metadata,
+relocates that plugin against
 the normal app's dependency map and restores normal objects/library hashes and
 mtimes in `finally`. `verify-native-player.py` uses owned filesystem/process
 events, isolated profiles and synthetic media; it requests both Qt-only and
@@ -111,6 +112,19 @@ The next macdeployqt invocation includes all native Contents/MacOS helpers as
 explicit executable inputs; discovering .dylib plugins alone does not cover the
 separate startup probe. Watch11254 closed1 with cache ending42435184969 and
 artifact13598853311 retained. Signing and native player acceptance remain pending.
+
+Run42436046775/job128595024471 (e76fa9e34fb4b13f14f0408a3fba55b479b031a1)
+passed app ZIP/DMG generation, the complete native dependency/architecture audit,
+strict signature verification and the immutable MPV runtime check. Its review
+plugin failed linking mpvHistoryReady because only mainui had been rebuilt with
+diagnostic flags. The review driver now regenerates player_controller.moc.cpp
+using the existing qt-regenerate-player-moc target and forces only the actual
+native diagnostic source objects. Its recovery set includes all affected objects,
+dependency records and generated MOC; finally restores exact bytes and mtimes.
+Watch52016 closed1 after cache ending42436046775 and artifact13599688685 were
+preserved. The next native review includes same-profile engine restart and
+synthetic original VLC profile preservation. These prepared checks and package
+success do not establish actual native playback or complete M15 acceptance.
 
 ## Current1.1.11 stabilization diagnostics
 

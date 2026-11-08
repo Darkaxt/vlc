@@ -20,6 +20,16 @@ spec = importlib.util.spec_from_file_location('native_package', Path(__file__).w
 package = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(package)
 
+# These translation units contain the native diagnostic conditionals. Changing
+# make's CPPFLAGS alone does not invalidate their existing normal objects.
+REVIEW_SOURCES = (
+    'qt.cpp', 'maininterface/mainui.cpp', 'menus/menus.cpp',
+    'dialogs/help/help.cpp', 'dialogs/preferences/preferences.cpp',
+    'player/player_controller.cpp', 'player/player_controller_mpv.cpp',
+    'player/mpv_playback.cpp',
+)
+REVIEW_MOC = 'player/player_controller.moc.cpp'
+
 
 def digest(path):
     with path.open('rb') as stream:
@@ -37,10 +47,12 @@ def main():
     qt = work / 'vlc-build/modules/gui/qt'
     recovery = review / 'normal-object-recovery'
     recovery.mkdir()
-    paths = [qt / 'maininterface/libqt_plugin_la-mainui.lo',
-             qt / 'maininterface/.libs/libqt_plugin_la-mainui.o',
-             qt / 'maininterface/.deps/libqt_plugin_la-mainui.Plo',
-             qt / 'libqt_plugin.la']
+    paths = [qt / 'libqt_plugin.la', qt / REVIEW_MOC]
+    for source in (*REVIEW_SOURCES, REVIEW_MOC):
+        relative = Path(source)
+        stem = 'libqt_plugin_la-' + relative.stem
+        paths.extend(qt / relative.parent / member for member in
+                     (stem + '.lo', '.libs/' + stem + '.o', '.deps/' + stem + '.Plo'))
     paths.extend(path for path in (qt / '.libs').glob('libqt_plugin*')
                  if path.is_file() and not path.is_symlink())
     if any(not path.is_file() for path in paths):
@@ -82,9 +94,17 @@ def main():
     packaged_plugin = payload / plugin_relative
     previous_dependencies = package.dependencies(packaged_plugin) if mac else []
     try:
-        subprocess.run(['make', '-j1', '-W', str(ROOT / 'modules/gui/qt/maininterface/mainui.cpp'),
-            'libqt_plugin.la', 'PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY',
-            'PLAYER_DIAGNOSTICS_CPPFLAGS=-DVLC_PLAYER_DIAGNOSTICS'], cwd=qt, check=True)
+        flags = ['PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY',
+                 'PLAYER_DIAGNOSTICS_CPPFLAGS=-DVLC_PLAYER_DIAGNOSTICS']
+        # The existing generator uses this configured Qt SDK and selected flags.
+        # Do not touch the widely included header and rebuild the whole frontend.
+        subprocess.run(['make', '-j1', '-f', 'Makefile', '-f',
+            str(ROOT / 'tools/windows-player/qt-objects.mk'),
+            *flags, 'qt-regenerate-player-moc'], cwd=qt, check=True)
+        forced = [argument for source in REVIEW_SOURCES
+                  for argument in ('-W', str(ROOT / 'modules/gui/qt' / source))]
+        forced.extend(('-W', str(qt / REVIEW_MOC)))
+        subprocess.run(['make', '-j1', *forced, 'libqt_plugin.la', *flags], cwd=qt, check=True)
         source_plugin = qt / '.libs' / packaged_plugin.name
         packaged_plugin.chmod(packaged_plugin.stat().st_mode | 0o200)
         shutil.copy2(source_plugin, packaged_plugin)

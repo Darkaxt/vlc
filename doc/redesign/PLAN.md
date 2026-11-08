@@ -106,6 +106,19 @@ include all shipped native helper executables in that same relocation pass.
 The original watch11254 closed1 after retaining cache ending42435184969 and
 artifact13598853311 (SHA256ae03159eab323569fbf481142d9e6bb924692df060ee197b1e4efc7045249006).
 Signing, native launch and playback remain unverified; no stage or release closes.
+Run42436046775/job128595024471 frome76fa9e34fb4b13f14f0408a3fba55b479b031a1
+passed complete macOS ARM app/ZIP/DMG generation, native dependency/architecture
+audit, strict code-signature verification and immutable MPV runtime checks.
+The review plugin then failed linking mpvHistoryReady: its driver rebuilt only
+mainui, omitting diagnostic controller implementations and Qt MOC metadata.
+The corrected review driver uses the existing configured MOC recipe and rebuilds
+only the native diagnostic translation units, preserving/restoring every affected
+normal object, dependency record, generated metadata and library with exact hashes
+and mtimes. Native verification also checks same-profile engine persistence and
+synthetic upstream-profile preservation. These runtime criteria remain pending.
+Watch52016 closed1 after cache ending42436046775 and artifact13599688685
+(SHA256829a992f886b46b76348459c0b0d094c1a6712cd7cb289d660030eb5c9fbc597)
+were retained. M15 remains ACTIVE; no release is qualified by the package pass.
 Temporary fixtures underE:/Temp/vlc-native-desktop-20261108/package-checks were
 retired after their test consumer exited (57members/10,985bytes, no residuals).
 The Intel job128558356606 found libplacebo7.360.1 on its native image, below
