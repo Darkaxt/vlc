@@ -2,6 +2,17 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+For installer/verifier-only Linux repairs, dispatch `desktop-packages.yml` on the
+maintained branch with `target=linux-x86_64` (or `linux-aarch64`),
+`package_artifact=<exact artifact ID>` and `package_source=<its exact source SHA>`.
+The `package-checks` job installs only review dependencies, verifies the downloaded
+artifact's published SHA256/source/architecture, restores all five immutable normal
+packages and executable modes, and runs their installer/playback checks on an
+owned X/audio session. No compiler, SDK setup, source substitution or publication
+runs in this mode. Its receipt keeps original package and verifier revisions
+separate. Empty package inputs preserve the normal build matrix. Keep the original
+failed checks and use this mode to repair them before another normal matrix.
+
 Windows upstream acceptance currently binds normal run89 at5fcb86e9 and the
 diagnostic-only run91 at8063ad93. Run91 completed with group-empty/private-mount
 release and reused the normal non-Qt runtime images. Integrated handover,

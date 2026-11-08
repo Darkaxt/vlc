@@ -1,6 +1,28 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Windows run98/gate3197ef9899de04b4627b951c21c229c8983 closed0, zeroOOM,
+empty Linux group and released private mounts. Player step524.8s/517.2CPU seconds;
+configuration hash/mtime unchanged;2147 of3345 prior object records retained.
+Source9452636271d756938501ea4fe25b4e66aa3046dc normal export is1559080960B,
+SHA25663f96ea5a7f4248e77644a60f4ebd6bd61b2bfd208ee90fca0e97ab1d849b6c6.
+Recovered normal runtime and all417 matching stripped PE/symbol records pass;
+actual Windows ABI probe0b873c19 exits0 for zlib1.4/png1.6.59/64-bit offsets
+and compression roundtrip. New actual player/package qualification remains open.
+Linux42499690300 closed1 after compilation/all five formats/source closure passed.
+Artifact13626594448 is2089441469B, SHA256a066a3a078b6bfdf46528403364b7b4fac69b8042bf615f0d82d9ee5def36ae4.
+TAR/AppImage/DEB/RPM/Snap extraction and both normal engines' EOF pass; actual
+DEB install/playback/removal also pass. Fedora RPM installation preserves the
+payload but playback rejects an unknown Qt option; collect its loader/registry
+before changing production behavior. Snap seed wait fails access-denied and now
+uses required root access on the disposable runner. The945 matrix42504650937 was
+cancelled before native compilation to avoid repeating those installer failures;
+original watch52457 closed1/all owned hosted jobs completed cancelled.
+Add a compiler-free mode to the existing workflow: recover the exact prior
+artifact with whole-download SHA256/source binding, restore native modes from
+its normal TAR, and rerun only installed-package checks. This is diagnostic
+evidence for the old generation, not final common-revision release acceptance.
+Spent synthetic fixtures270cf0342ad41f3af6518b11e97b50b7 APPLIED205/47660B.
 Original Intel42495424689/watch88464 closed0. Artifact13624983673 is2555619623B,
 SHA25657960d76dd6ff0bcf46e6a029786001ee52c275487391b991d28babc0c7c64f9.
 Selected-member CRC/SHA retrieval is not whole-artifact verification. The full

@@ -196,6 +196,12 @@ object invalidation to effective compiler flags/config.h content rather than
 incidental configure timestamps. Reuse a verified configuration when its actual
 source inputs are unchanged; configuration regeneration must not accumulate
 SDK include/link additions or reorder arbitrary static library arguments.
+Installer/verifier-only repairs must be exercisable against an exact already
+built Linux artifact without invoking the compiler or replacing its payload.
+Bind that recovery to its published whole-artifact digest, exact source SHA and
+architecture, retain the distinct verifier revision, and preserve native file
+modes/symlinks from the original normal TAR. Prior-generation diagnostic evidence
+does not replace final integrated common-revision package/release qualification.
 The integrated Windows observer must subscribe to the native MPV events whose
 properties it reads, including idle-active after Stop. Controller STOPPED alone
 can precede that native event; preserve the failed observation and prove the

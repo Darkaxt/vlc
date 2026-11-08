@@ -10,6 +10,7 @@ from pathlib import Path
 import subprocess
 import sys
 import uuid
+import zipfile
 import tarfile
 import unittest
 from types import SimpleNamespace
@@ -23,6 +24,48 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_package_only_recovery_selects_one_exact_normal_generation(self):
+        spec = importlib.util.spec_from_file_location('linux_recovery', HERE / 'recover-linux-packages.py')
+        recovery = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(recovery)
+        source = 'a' * 40
+        name = 'Modern-VLC-Fork-1.1.12-linux-x86_64'
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, 'w') as archive:
+            for kind in ('tar.xz', 'AppImage', 'deb', 'rpm', 'snap'):
+                archive.writestr('.desktop-build/packages/' + source + '/' + name + '.' + kind, b'package')
+            archive.writestr('.desktop-build/packages/' + source + '/symbols.zip', b'symbols')
+        with zipfile.ZipFile(data) as archive:
+            actual, entries = recovery.package_entries(archive, source, 'linux-x86_64')
+            self.assertEqual(actual, name)
+            self.assertEqual(set(entries), {'tar.xz', 'AppImage', 'deb', 'rpm', 'snap'})
+            with self.assertRaisesRegex(RuntimeError, 'source-bound normal Linux TAR'):
+                recovery.package_entries(archive, 'b' * 40, 'linux-x86_64')
+            with self.assertRaisesRegex(RuntimeError, 'exact source revision'):
+                recovery.package_entries(archive, '../escape', 'linux-x86_64')
+
+    def test_snap_seed_wait_uses_required_installer_privilege(self):
+        spec = importlib.util.spec_from_file_location('linux_packages', HERE / 'verify-linux-packages.py')
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        case = Path(sys.argv_scratch) / ('snap-command-' + uuid.uuid4().hex)
+        case.mkdir(parents=True)
+        def command(*argv, **kwargs):
+            if argv == ('snap', 'debug', 'confinement'):
+                kwargs['stdout'].write('strict\n')
+            return SimpleNamespace(returncode=0)
+        verify = MagicMock()
+        with patch.object(verifier.shutil, 'which', return_value='/usr/bin/snap'), \
+                patch.object(verifier.subprocess, 'run', return_value=SimpleNamespace(returncode=1)), \
+                patch.object(verifier, 'run', side_effect=command) as invoked, \
+                patch.object(Path, 'exists', return_value=False):
+            verifier.verify_snap_installation(Path('owned.snap'), case, verify)
+        self.assertIn((('sudo', '-n', 'snap', 'wait', 'system', 'seed.loaded'), {}),
+                      [(call.args, call.kwargs) for call in invoked.call_args_list])
+        self.assertIn((('sudo', '-n', 'snap', 'remove', '--purge', 'modern-vlc-fork'), {}),
+                      [(call.args, call.kwargs) for call in invoked.call_args_list])
+        verify.assert_called_once()
+
     def test_windows_image_sources_stage_exact_archives_without_overwriting_tampering(self):
         spec = importlib.util.spec_from_file_location('codec_builder', HERE.parent / 'windows-player/build-upstream-codecs.py')
         codecs = importlib.util.module_from_spec(spec)

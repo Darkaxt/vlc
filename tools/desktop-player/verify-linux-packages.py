@@ -100,7 +100,7 @@ def verify_snap_installation(archive, case, verify):
     if not shutil.which('snap'):
         run('sudo', '-n', 'apt-get', 'install', '-y', 'snapd')
     run('sudo', '-n', 'systemctl', 'start', 'snapd.socket')
-    run('snap', 'wait', 'system', 'seed.loaded')
+    run('sudo', '-n', 'snap', 'wait', 'system', 'seed.loaded')
     prior = subprocess.run(['snap', 'list', 'modern-vlc-fork'],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if prior.returncode == 0 or Path('/snap/modern-vlc-fork').exists():

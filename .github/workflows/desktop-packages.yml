@@ -9,13 +9,23 @@ on:
         type: choice
         options: [macos-arm64, macos-intel, linux-x86_64, linux-aarch64, all]
         default: macos-arm64
+      package_artifact:
+        description: Optional existing Linux artifact ID for compiler-free package checks
+        type: string
+        default: ''
+      package_source:
+        description: Exact source SHA of that artifact (required in package-check mode)
+        type: string
+        default: ''
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: desktop-packages-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   matrix:
+    if: ${{ inputs.package_artifact == '' }}
     runs-on: ubuntu-24.04
     outputs:
       targets: ${{ steps.select.outputs.targets }}
@@ -122,3 +132,39 @@ jobs:
             ${{ runner.temp }}/native-package-checks/*-installed/*txt
             ${{ runner.temp }}/native-package-checks/*-installed/container.log
             ${{ runner.temp }}/native-command-cancellation.json
+  package-checks:
+    if: ${{ inputs.package_artifact != '' }}
+    runs-on: ${{ inputs.target == 'linux-aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      GH_TOKEN: ${{ github.token }}
+      PACKAGE_ARTIFACT: ${{ inputs.package_artifact }}
+      PACKAGE_SOURCE: ${{ inputs.package_source }}
+      PACKAGE_TARGET: ${{ inputs.target }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Install only package review dependencies
+        run: bash tools/desktop-player/install-linux-review-dependencies.sh
+      - name: Recover exact published build artifact without compiling
+        run: python3 tools/desktop-player/recover-linux-packages.py --artifact "$PACKAGE_ARTIFACT" --source "$PACKAGE_SOURCE" --target "$PACKAGE_TARGET" --work "$GITHUB_WORKSPACE/.package-review/work" --scratch "$RUNNER_TEMP/package-artifact-input"
+      - name: Verify real Linux package installations and playback
+        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --packages-only --work "$GITHUB_WORKSPACE/.package-review/work" --review-root "$RUNNER_TEMP/recovered-player-review"
+      - name: Preserve package qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: package-checks-${{ inputs.target }}-${{ inputs.package_artifact }}-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          include-hidden-files: true
+          path: |
+            .package-review/work/package-recovery.json
+            ${{ runner.temp }}/recovered-player-review-session/*json
+            ${{ runner.temp }}/recovered-player-review-session/*txt
+            ${{ runner.temp }}/recovered-player-review-session/*log
+            ${{ runner.temp }}/native-package-checks/*json
+            ${{ runner.temp }}/native-package-checks/*-installed/*json
+            ${{ runner.temp }}/native-package-checks/*-installed/*txt
+            ${{ runner.temp }}/native-package-checks/*-installed/*log
+            ${{ runner.temp }}/native-package-checks/*/*-stdout.log
+            ${{ runner.temp }}/native-package-checks/*/*-stderr.log

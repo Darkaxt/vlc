@@ -45,6 +45,19 @@ def main():
                 LP_NUM_THREADS='1', QT_FORCE_STDERR_LOGGING='1')
             (home / 'runtime').mkdir(mode=0o700)
             os.chown(home / 'runtime', args.uid, args.gid)
+            if engine == 'vlc':
+                # Option registration requires loading the Qt module before
+                # ordinary CLI errors can enable verbose logging. Record the
+                # loader and registry without launching another player UI.
+                plugin = Path('/opt/modern-vlc/lib/vlc/plugins/gui/libqt_plugin.so')
+                with (case / 'qt-loader.txt').open('w') as stream:
+                    result = subprocess.run(['ldd', '-r', str(plugin)], env=env,
+                        stdout=stream, stderr=subprocess.STDOUT, text=True)
+                    stream.write('\nloader_exit=' + str(result.returncode) + '\n')
+                with (case / 'module-registry.txt').open('wb') as stream:
+                    subprocess.run(['/usr/bin/modern-vlc', '--list', '--verbose=2'],
+                        env=env, user=args.uid, group=args.gid, extra_groups=[],
+                        stdout=stream, stderr=subprocess.STDOUT, check=True)
             with (case / (engine + '-stdout.log')).open('wb') as out, \
                     (case / (engine + '-stderr.log')).open('wb') as err:
                 subprocess.run(['/usr/bin/modern-vlc', '--no-qt-privacy-ask',

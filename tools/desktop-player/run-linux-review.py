@@ -44,6 +44,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
     parser.add_argument('--review-root', required=True, type=Path)
+    parser.add_argument('--packages-only', action='store_true',
+        help='Verify recovered immutable packages without building a diagnostic Qt module')
     args = parser.parse_args()
     session = args.review_root.with_name(args.review_root.name + '-session')
     session.mkdir(parents=True, exist_ok=False)
@@ -112,8 +114,9 @@ def main():
             subprocess.run(['pactl', 'info'], env=env, stdout=stream, check=True)
         subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
                         '--scratch', args.review_root.with_name('native-package-checks')], env=env, check=True)
-        subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
-                        '--review-root', args.review_root], env=env, check=True)
+        if not args.packages_only:
+            subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
+                            '--review-root', args.review_root], env=env, check=True)
     finally:
         try:
             if pulse_fd is not None:
