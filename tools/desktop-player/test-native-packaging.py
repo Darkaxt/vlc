@@ -23,24 +23,24 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
-    def test_mpv_library_only_migration_retains_objects_and_rejects_other_changes(self):
+    def test_mpv_cocoa_restore_retains_objects_and_rejects_other_changes(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
         build = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(build)
         src, prefix, work = Path('/owned/mpv-source'), Path('/owned/prefix'), Path('/owned/build')
         options = ['-Dlibmpv=true', '-Dcplayer=false']
-        old = dict(source=str(src), prefix=str(prefix), options=options, compiler='', pkgconfig='')
+        old = dict(source=str(src), prefix=str(prefix), options=options + ['-Dswift-build=disabled'], compiler='', pkgconfig='')
         with patch.object(Path, 'exists', return_value=True), \
                 patch.object(Path, 'read_text', return_value=json.dumps(old)), \
                 patch.object(Path, 'write_text'), patch.object(build.platform, 'system', return_value='Darwin'), \
                 patch.object(build, 'run') as run:
-            build.meson(work, 'mpv', src, prefix, options + ['-Dswift-build=disabled'], {})
+            build.meson(work, 'mpv', src, prefix, options, {})
             self.assertEqual(run.call_args_list[0].args,
-                ('meson', 'configure', work / 'build-mpv', '-Dswift-build=disabled'))
+                ('meson', 'configure', work / 'build-mpv', '-Dswift-build=auto'))
             self.assertEqual([call.args[0] for call in run.call_args_list], ['meson', 'ninja', 'ninja'])
             run.reset_mock()
             with self.assertRaisesRegex(RuntimeError, 'configuration differs'):
-                build.meson(work, 'mpv', src, prefix, options + ['-Dswift-build=disabled'], {'CC': 'different'})
+                build.meson(work, 'mpv', src, prefix, options, {'CC': 'different'})
             run.assert_not_called()
 
     def test_windows_configure_reads_current_codec_versions(self):
@@ -223,6 +223,18 @@ class NativePackagingTest(unittest.TestCase):
                 '0x1 (NEEDED) Shared library: [libexpat.so.1]',
                 'libexpat.so.1 => /lib/libexpat.so.1 (0x2)']):
             self.assertEqual(package.dependencies('fontconfig.so'), ['/lib/libexpat.so.1'])
+
+    def test_linux_declared_interpreter_resolves_without_soname_arrow(self):
+        with patch.object(package, 'MAC', False), patch.object(package, 'output', side_effect=[
+                '0x1 (NEEDED) Shared library: [ld-linux-x86-64.so.2]',
+                ' /lib64/ld-linux-x86-64.so.2 (0x1234)']):
+            self.assertEqual(package.dependencies('libvlccore.so'),
+                             ['/lib64/ld-linux-x86-64.so.2'])
+        with patch.object(package, 'MAC', False), patch.object(package, 'output', side_effect=[
+                '0x1 (NEEDED) Shared library: [missing.so]',
+                ' /lib64/ld-linux-x86-64.so.2 (0x1234)']):
+            with self.assertRaisesRegex(RuntimeError, 'omitted declared entries'):
+                package.dependencies('libvlccore.so')
 
     def test_native_picture_rejects_decoded_video_outside_its_cocoa_parent(self):
         spec = importlib.util.spec_from_file_location('native_verify', HERE / 'verify-native-player.py')

@@ -99,7 +99,7 @@ normal executable for changed production code. Native runtime diagnosis still
 needs actual pixels/seek/handover in both engines; software decoding reproduced
 the same paused598s failure and is not an automatic CI or packaged workaround.
 
-The new backend uses stock upstream MPV0.42.0, commit
+The new backend uses pinned upstream MPV0.42.0, commit
 `b0841e8c4d156b8403dc1876c4cbd9011eb583f3`, on Cocoa and X11/XWayland, with a
 Qt-owned OpenGL render context. It does not require the Windows DV patch. The
 Windows D3D11/WASAPI implementation and `player/mpv/source.json` retain their
@@ -108,6 +108,15 @@ separate source/runtime binding. `source-portable.json` and
 binds upstream macOS contrib `e0baa29690f97c5d746643d59358fd6055eda8f6` after
 checking that the intervening contrib delta is confined to the recorded Windows
 Qt/UPnP files. Do not construct a VideoLAN artifact URL from a fork-only commit.
+
+On macOS, apply the source-portable.json identity-bound optional-Metal guard
+before building MPV. Its Swift View must reference MetalLayer only when
+HAVE_VULKAN includes that class. Keep Swift auto: Cocoa clipboard integration
+requires its generated header. The exact earlier Swift-disable cache binding can
+be restored in place; other configuration differences are rejected. Preserve
+the old runtime and use the separate mpv-runtime-cocoa-guard staging cohort.
+The native-build record retains patch/source hashes, and corresponding source
+includes the original MPV archive plus the patch in application.tar.gz.
 
 Initial run42424025878 from41d03952a9381115b067382209d57ab417c364b2 compiled
 stock MPV on Apple Silicon, then failed to resolve Brotli's LC_RPATH during

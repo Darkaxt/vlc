@@ -2,7 +2,14 @@
   "repository": "https://github.com/mpv-player/mpv",
   "version": "0.42.0",
   "commit": "b0841e8c4d156b8403dc1876c4cbd9011eb583f3",
-  "patches": [],
+  "patches": [{
+    "file": "tools/desktop-player/patches/mpv-cocoa-metal-layer.patch",
+    "sha256": "b895232c0a491ce3fa69f84f0938d508c8ab532b38ea13f528ab594dde7132c9",
+    "target": "video/out/mac/view.swift",
+    "before_sha256": "e2c158fe3e48b06394a0e47f1cdf9fd35eaf1a8533c759c548e6c257ae776e57",
+    "after_sha256": "40bd7090a5490cee3421db68b017bd5f07b92730b6019a229e33053d234a560d",
+    "scope": "macOS build compatibility: reference optional MetalLayer only when its Vulkan source is compiled; no playback or Dolby Vision change"
+  }],
   "headers": {"render_gl.h": "aa2719d5c4ebfa1ecaee469b563d138e10b1df4e"},
   "header_license": "ISC; original notice retained unchanged",
   "render_api": "OpenGL on Cocoa and X11/XWayland",

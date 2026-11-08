@@ -8,14 +8,19 @@ inspected native captures show picture/subtitles in VLC and MPV main, floating
 and restored views. Artifact13614759942 is2498797852 bytes, GitHub SHA256
 77c653287a5fb37abf87e8dcc00683283f79431eba565944678248ffefa1b98a.
 Selected members pass CRC/SHA; whole-artifact independent verification remains.
-MacIntel42475641510/job128717184286 (watch51084) is active at5fcb86e9.
-Linux42473774480/job128715854678 closed1 after compile/install; the final audit
-rejects libpipewiresrc_plugin.so -> libvlc_pipewire.so.0 because relocation
-omitted VLC's pkglibdir (lib/vlc). Preserve that in each packaged binary's RPATH
-alongside lib and lib/native; do not copy helpers out of their owned layout or
-relax the strict portable dependency audit. Cache and hosted cleanup completed.
-Artifact13615900062 is247601326 bytes, GitHub SHA256
-e57209a949ac7dc1e9bb999aab71898b2e95734446ccc1ddd4b67cfdecd126a9.
+MacIntel42475641510/job128717184286 closed1: MPV's Swift View references
+MetalLayer while its Vulkan-conditional implementation is absent. The subsequent
+Swift-disable attempt42476757091/job128719904911 also closed1: Cocoa clipboard
+glue requires the generated Swift header. Preserve both failures and objects.
+Replace that failed configuration with the exact source-pinned HAVE_VULKAN
+guard in view.swift, preserving Cocoa and all normal libmpv functionality.
+Patch/source before/after hashes are recorded in source-portable.json and native
+build provenance. The original MPV archive and patch/application source are
+retained in corresponding source. Only the exact failed Swift-disable binding
+may return to auto; unrelated cache changes remain rejected. A distinct immutable
+mpv-runtime-cocoa-guard cohort preserves earlier normal Mac runtime consumers.
+Actual patch application, repeat stability, changed-source rejection and narrow
+Meson restoration diagnostics pass; native Intel qualification remains required.
 Windows original state now continues in run89/gate301
 (12ae967adf144be8a5e9c455f6f3cbb4, session16997), after a fresh symbol generation
 resolved raw MPV prefix bytes versus prior stripped mappings. AOM3.15.3,
@@ -25,33 +30,27 @@ No Windows native acceptance or new release is claimed.
 Current remaining acceptance: Intel Mac and both Linux architecture packages,
 matching installer execution, Windows normal compilation/native VLC+MPV/DV
 regression, and final one-revision qualification. M16 publication remains NOT
-STARTED. Linux continuation42476051222/job128718743422 (watch28845) is active at
-abdf01564bc; the scoped pkglibdir RPATH correction requires its actual audit.
-MacIntel42475641510 closed1 before VLC compilation: pinned unpatched MPV's
-unused Swift window sources reference MetalLayer when that class is unavailable.
-The supported library-only configuration disables Swift while keeping libmpv,
-plain OpenGL, native audio and Qt-owned windows. An identity-bound Meson
-reconfiguration preserves unaffected objects and rejects unrelated cache changes;
-its focused contract diagnostic passes, but actual native verification is pending.
+STARTED. Linux42476051222/job128718743422 closed1 (watch28845); the pkglibdir
+RPATH correction passed. Its final audit exposed flattened ldd output treating
+OS graphics-driver children as application edges. The next run42477240335/
+job128721307412 at3ce692b7 also closed1 (watch49697): the loader resolves by
+absolute path, while libvlccore names it by basename in DT_NEEDED. Resolve both
+identities of that same ldd entry, retaining strict missing/outside-app checks.
+Focused direct-edge, owned-prefix and interpreter/missing-entry diagnostics pass;
+actual Linux qualification remains required. All three hosted caches, artifacts
+and cleanup steps completed; reuse their objects rather than cold SDK setup.
 The matching RPM probe now installs/runs both engines in an official Fedora
 container bound to an inspected image ID; Snap qualification attempts real
 snapd/core24 installation with strict interfaces and no devmode/classic fallback.
 These new installer paths are implemented and await the Linux workflow; extraction
 alone remains insufficient. Preserve each failure, container/process exit and
 owned installation retirement evidence.
-Linux42476051222/job128718743422 closed1 (watch28845); cache/artifact/hosted
-cleanup completed. Artifact13616145027 is247635699 bytes, GitHub SHA256
+Artifact13616145027 is247635699 bytes, GitHub SHA256
 4d213778bf5babb1dcfa023dc6f098fb1eb13f85b45441beb6c8566cb0cbfd15.
-The pkglibdir correction passed; the final audit now exposes a flattened ldd
-graph treating OS graphics-driver children (libexpat) as application edges.
-Resolve actual DT_NEEDED edges and recurse through every shipped ELF; retain
-strict missing-edge and outside-app checks for those application dependencies.
-Focused graph/prefix diagnostics pass; actual Linux qualification is pending.
-The Mac library-only configuration selects a separate immutable MPV staging
-cohort, preserving the earlier Swift-enabled runtime and its normal-package
-consumers. MacIntel continuation42476757091/job128719904911 (watch32496) is active
-at4708c0d6ad7. No second pending workflow is submitted until its existing identity
-and the next Linux continuation are recorded.
+The successful d8 MacARM picture proof predates the optional-Metal source guard;
+final delivery must requalify its new runtime cohort at the selected final revision.
+Only one pending hosted workflow may be submitted; retain each original identity
+through cache/artifact/cleanup completion.
 
 **Earlier M15 investigation checkpoints (historical; current status above).**
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)

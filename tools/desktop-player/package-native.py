@@ -74,6 +74,9 @@ def dependencies(path, search_paths=()):
             resolved[match.group(1)] = match.group(2)
         elif match := re.match(r'\s*(/\S+)\s+\(', line):
             resolved[match.group(1)] = match.group(1)
+            # The ELF interpreter is printed as an absolute path without
+            # "soname =>" even when DT_NEEDED names it by basename.
+            resolved.setdefault(Path(match.group(1)).name, match.group(1))
     missing = set(needed) - resolved.keys()
     if missing:
         raise RuntimeError(f'ELF dependency resolution omitted declared entries: {path}: {sorted(missing)}')
@@ -365,10 +368,10 @@ def split_symbols(path, relative, work):
 
 
 def mpv_runtime_directory(work):
-    # The Mac library-only configuration is a new immutable runtime cohort.
-    # Keep the prior Swift-enabled runtime intact for its retained normal app;
+    # The exact Mac optional-Metal guard is a new immutable runtime cohort.
+    # Keep the prior runtime intact for its retained normal app;
     # Windows and Linux retain their existing, unchanged runtime binding.
-    return work / ('mpv-runtime-embedded' if MAC else 'mpv-runtime')
+    return work / ('mpv-runtime-cocoa-guard' if MAC else 'mpv-runtime')
 
 
 def stage_mpv(work, prefix):

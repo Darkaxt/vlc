@@ -34,6 +34,10 @@ assumptions outside the existing Windows backend. Ordinary MPV is sufficient on
 macOS/Linux; do not promise the Windows Dolby Vision patch or native DV display
 signaling there. Keep engine choice, separate accents, subtitles, seeking,
 volume, image handling, live handover and floating-player behavior integrated.
+The pinned ordinary MPV source may receive the narrow macOS build-compatibility
+guard for its optional Vulkan MetalLayer reference. Preserve Cocoa support and
+record the patch, original archive and before/after source identities; this is
+not a Dolby Vision port or permission to change playback behavior.
 Packaging an upstream Cocoa interface or launching a separate mpv application
 does not satisfy this requirement. Platform capability differences must be
 truthful and recorded, without silently removing existing Windows capabilities.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the native Qt redesign and unpatched libmpv on a hosted native runner.
+"""Build the native Qt redesign and source-pinned libmpv on a hosted native runner.
 
 Builds have one compiler job. Retained inputs are content-bound; a failed build
 keeps its outputs for diagnosis/resumption and never triggers a blind clean build.
@@ -183,19 +183,19 @@ def meson(work, name, src, prefix, options, env):
         if not binding.exists() or binding.read_text() != signature:
             old = json.loads(binding.read_text()) if binding.exists() else None
             new = json.loads(signature)
-            # This exact library-only repair removes mpv's unused standalone
-            # Swift window code, which references an unavailable MetalLayer on
-            # the Intel runner. Meson can retain all unaffected C/ObjC objects.
+            # Undo only the recorded, insufficient Swift-disable attempt.
+            # Cocoa's clipboard glue requires Swift; the source-bound optional
+            # Metal guard below preserves the normal Cocoa configuration.
             permitted = (name == 'mpv' and platform.system() == 'Darwin' and old
                 and {key: value for key, value in old.items() if key != 'options'} ==
                     {key: value for key, value in new.items() if key != 'options'}
-                and new['options'] == old['options'] + ['-Dswift-build=disabled'])
+                and old['options'] == new['options'] + ['-Dswift-build=disabled'])
             if not permitted:
                 raise RuntimeError(f'{name}: configuration differs from retained build; use a distinct build directory')
-            run('meson', 'configure', build, '-Dswift-build=disabled', env=env)
+            run('meson', 'configure', build, '-Dswift-build=auto', env=env)
             (build / 'modern-vlc-library-only-migration.json').write_text(json.dumps({
                 'previous': old, 'current': new,
-                'reason': 'Qt owns the native window; libmpv uses the embedded OpenGL render API'}, indent=2) + '\n')
+                'reason': 'Restore Cocoa Swift integration; guard its optional MetalLayer reference in source'}, indent=2) + '\n')
             binding.write_text(signature)
     else:
         run('meson', 'setup', build, src, '--prefix=' + str(prefix), '--libdir=lib',
@@ -221,6 +221,28 @@ def bind_source_mtimes(work):
         current[relative] = {'sha256': digest, 'mtime_ns': path.stat().st_mtime_ns}
     manifest.write_text(json.dumps(current, sort_keys=True))
     return previous
+
+
+def prepare_mpv_cocoa_guard(source, pin):
+    """Apply the exact optional-Metal source repair, preserving cached inputs."""
+    applied = []
+    for record in pin['patches']:
+        if record['target'] != 'video/out/mac/view.swift':
+            raise RuntimeError('Unexpected native MPV patch target')
+        patch = ROOT / record['file']
+        target = source / record['target']
+        if sha(patch) != record['sha256']:
+            raise RuntimeError('MPV Cocoa guard patch identity changed')
+        actual = sha(target)
+        if actual == record['before_sha256']:
+            run('git', 'apply', '--check', patch, cwd=source)
+            run('git', 'apply', patch, cwd=source)
+        elif actual != record['after_sha256']:
+            raise RuntimeError('Cached MPV Cocoa source has unexpected local changes')
+        if sha(target) != record['after_sha256']:
+            raise RuntimeError('Applied MPV Cocoa guard does not match its recorded source')
+        applied.append(record)
+    return applied
 
 
 def bootstrap_inputs(tracked):
@@ -485,11 +507,11 @@ def main():
     pin = json.loads((ROOT / 'modules/gui/qt/player/mpv/source-portable.json').read_text())
     mpv, record = source(work, 'mpv-' + pin['commit'],
         'https://codeload.github.com/mpv-player/mpv/tar.gz/' + pin['commit'])
+    if native_mac:
+        record['patches'] = prepare_mpv_cocoa_guard(mpv, pin)
     sources.append(record)
     mpv_options = ['-Dlibmpv=true', '-Dcplayer=false', '-Dbuild-date=false',
         '-Dplain-gl=enabled', '-Dmanpage-build=disabled', '-Dhtml-build=disabled', '-Dtests=false']
-    if native_mac:
-        mpv_options.append('-Dswift-build=disabled')
     meson(work, 'mpv', mpv, prefix, mpv_options, env)
 
     # VLC's required medialibrary ABI is newer than Ubuntu's packaged ABI.
