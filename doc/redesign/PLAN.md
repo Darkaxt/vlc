@@ -1,6 +1,18 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+The four-commit978212a4 delta is now integrated by normal merge history after
+Linux44b811 source closure passed and DEB assembly began. Resolve Record's two
+overlaps by retaining the fork's existing colorized action and uppercase SVG
+placeholder unchanged: upstream's helper deliberately omits macOS icons, while
+the fork already applies the same colorization on every platform. The listener
+lifetime/nonmovability fix and new png/zlib recipes are retained. Native dependency
+bindings and final common-source acceptance remain required; this merge is not
+delivery. The optional Figma asset test could not start because its separately
+staged fflate dependency is absent from the checkout; no icon artwork changed.
+Linux42495369060/job128776496648 (watch5792) and queued Intel42495424689
+(watch88464) remain fixed at44b811c8768519510fac886b168423fa72b9bd23;
+do not replace these operations with the newer merge.
 Fresh upstream inspection at14:43UTC resolves master to
 978212a42d569a8d13fd83eae205e1bff4c7096d: four commits beyond the already merged
 97-commit2cb78ca89c016df5b15b4f421d8b11e3253cb1a7 snapshot. Their bounded delta is
