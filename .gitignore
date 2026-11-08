@@ -60,6 +60,7 @@ contrib-*
 install-*
 xcodeproj/
 static-lib/
+.desktop-sources/
 !buildsystem/
 !build.rs
 !extras/package/apple/build.sh

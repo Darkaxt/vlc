@@ -235,7 +235,10 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
         // QML drag/resize acts on the top-level native window, not its
         // transparent Quick overlay child. It still uses the same controllers.
         view->rootObject()->setProperty("nativeWindow", QVariant::fromValue(root));
-        connect(view->rootObject(), &QQuickItem::implicitHeightChanged, this, &CompositorPlatform::constrainFloatingPlayer);
+        // implicitHeight can be notifying from inside queueHeight's binding.
+        // Read the completed layout in the next GUI event, not reentrantly.
+        connect(view->rootObject(), &QQuickItem::implicitHeightChanged, this,
+                &CompositorPlatform::constrainFloatingPlayer, Qt::QueuedConnection);
         connect(root, &QWindow::screenChanged, this, &CompositorPlatform::constrainFloatingPlayer);
         connect(root, &QWindow::xChanged, this, &CompositorPlatform::constrainFloatingPlayer);
         connect(root, &QWindow::yChanged, this, &CompositorPlatform::constrainFloatingPlayer);

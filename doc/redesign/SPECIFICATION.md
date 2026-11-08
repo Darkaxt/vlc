@@ -68,6 +68,13 @@ classification while paused, and retain backwards-PCR and resumed-gap detection.
 Verify the existing input-clock test with assertions enabled and real paused
 seeking in both engines; the reproduced failure remains historical evidence.
 
+Native floating Queue expansion must not reenter an evaluating QML layout
+binding through synchronous height notifications. Apply geometry after the
+binding completes. Native MPV must attach its OpenGL child to the actual
+Qt-owned video window, preserving visibility/exposure and ownership across
+initial paused loading, seeking, floating reparenting and restoration. Verify
+real composed pictures in these states, not only decoded output properties.
+
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master
 by normal merge history within M15 before the final architecture/package matrix

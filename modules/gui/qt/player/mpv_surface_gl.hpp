@@ -52,6 +52,7 @@ public:
     GlView(std::shared_ptr<Api> api, mpv_handle *player,
            std::function<void(QString)> report)
         : api(std::move(api)), player(player), report(std::move(report)) {
+        setObjectName(QStringLiteral("mpvOpenGLVideo"));
         setSurfaceType(QSurface::OpenGLSurface);
         QSurfaceFormat format;
         format.setRenderableType(QSurfaceFormat::OpenGL);
@@ -105,7 +106,6 @@ class Surface final : public QObject {
     QObject *owner;
     std::function<void(QString)> ready;
     vlc_window_t *window = nullptr;
-    QPointer<QWindow> foreign;
     QPointer<GlView> view;
     bool enabled = false, closing = false;
 
@@ -169,10 +169,18 @@ public:
         }
         enabled = true;
         QMetaObject::invokeMethod(owner, [this, handle] {
-            foreign = QWindow::fromWinId(handle);
-            if (!foreign) { report(tr("Qt could not attach the native MPV video view.")); return; }
+            // The qt window provider already owns this QWindow. Wrapping its
+            // NSView/XID as a second foreign QWindow loses its Qt visibility
+            // and exposure hierarchy, leaving the initial paused frame hidden.
+            QWindow *parent = nullptr;
+            for (auto candidate : QGuiApplication::allWindows())
+                if (candidate->handle() && candidate->winId() == handle) {
+                    parent = candidate;
+                    break;
+                }
+            if (!parent) { report(tr("Qt could not attach the native MPV video view.")); return; }
             view = new GlView(api, player, [this](const QString &error) { report(error); });
-            view->setParent(foreign);
+            view->setParent(parent);
             view->resize(640, 360);
             view->initializeRenderContext();
             view->show();
@@ -192,7 +200,6 @@ public:
         closing = true;
         QMetaObject::invokeMethod(owner, [this] {
             if (view) { view->releaseRenderContext(); delete view; }
-            delete foreign;
         }, Qt::BlockingQueuedConnection);
         if (enabled) { vlc_window_Disable(window); enabled = false; }
         if (window) { vlc_window_Delete(window); window = nullptr; }

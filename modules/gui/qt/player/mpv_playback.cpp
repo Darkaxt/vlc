@@ -41,6 +41,7 @@
 #include <wrl/client.h>
 #else
 #include "mpv/render_gl.h"
+#include <QGuiApplication>
 #include <QLibrary>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>

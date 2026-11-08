@@ -1,6 +1,30 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42451628822/job128641931387 reused the hash-verified signed2f99ff77
+normal app and skipped its build/package steps. Both recovered ZIP and DMG
+players reached natural EOF/exit0; the earlier SIGBUS did not reproduce and is
+not diagnosed or claimed fixed. Crash-triggered LLDB/report capture remains in
+the verifier. The instrumented MPV workflow passed paused6s/60s seeking,
+subtitle selection, volume/mute and playback progression. Its floating picture
+contains the real color pattern and selected subtitle; initial paused main
+captures are blank. Expanding Queue exposed synchronous implicit-height
+reentry (queueHeight binding loop). The native OpenGL view also wraps the
+already Qt-owned video window as a foreign QWindow, losing its exposure
+hierarchy. Corrections use queued layout notification and the actual Qt parent;
+native regression/picture acceptance remains required. Watch45604 closed1
+after cache ending42451628822 (4844634063 bytes), artifact13605589562
+(780852279 bytes, SHA256
+d07ee09d87ce1905ad6a1a98089add40e1759aa7836cf1701e1d52663211c3ff)
+and hosted cleanup. No normal release/master update is qualified.
+Native source/notices assembly is merged from localc54c25d3be2. It follows
+actual installed Homebrew source/patch SBOMs and dpkg source versions, including
+Qt's additional dynamic-library graph and original contrib recipes. Focused
+metadata/notice checks pass; real collection, package closure and AppImage's
+static runtime source closure remain unverified. Source diagnostic transaction
+3c95bcc4e1e2619762cc7f8a176a4a3e removed all265 members (68326 bytes),
+without residuals. M15 remains the only ACTIVE stage.
+
 Run42449524457/job128635581535 from2f99ff77 passed the real Mac cancellation
 probe, integrated compilation and the assertion-enabled input-clock test.
 Normal ZIP/DMG generation, strict signatures and identical recovered bytes passed;
@@ -11,12 +35,8 @@ Original watch80778 closed1 after cache ending42449524457 (4844695640 bytes),
 artifact13605473314 (768130626 bytes, SHA256
 8f96a97e64e47f5639e8cbb8a7d3c69cc7fca1d3f38745367e33ae15cf1e4789)
 and hosted orphan cleanup without listed surviving processes. Preserve this
-cohort; the next verification-only continuation must reuse its normal app and
-capture actual crash stacks/reports rather than rebuild or guess at a fix.
-Prepared native source/notices work is preserved locally on
-codex/native-source-closure atc54c25d3be2, pending native execution and closure
-qualification. It is not published or discarded while this runtime failure is
-diagnosed. M15 remains the only ACTIVE stage; no release/master update is ready.
+cohort and actual failure evidence; the subsequent verification-only result
+above does not establish its cause.
 
 Run42449059397/job128634188279 stopped before compilation at the new native
 cancellation check: select.kqueue has no context-manager protocol. The owned

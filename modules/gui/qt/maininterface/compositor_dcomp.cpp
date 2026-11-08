@@ -650,7 +650,7 @@ bool CompositorDirectComposition::showFloatingPlayer(Qt::WindowStates previousSt
             m_floatingView->resize(m_floatingView->width(), qCeil(m_floatingView->rootObject()->implicitHeight()));
             m_floatingView->setY(bottom - m_floatingView->height());
             constrainFloatingPlayer();
-        });
+        }, Qt::QueuedConnection);
     }
     const auto area = m_quickView->screen()->availableGeometry();
     m_floatingView->setScreen(m_quickView->screen());

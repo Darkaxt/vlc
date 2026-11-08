@@ -572,6 +572,8 @@ private:
                 }
             windows.append(QJsonObject{{QStringLiteral("type"), QString::fromLatin1(candidate->metaObject()->className())},
                 {QStringLiteral("name"),candidate->objectName()},
+                {QStringLiteral("exposed"),candidate->isExposed()},
+                {QStringLiteral("parent_name"),candidate->parent() ? candidate->parent()->objectName() : QString()},
                 {QStringLiteral("x"),candidate->x()}, {QStringLiteral("y"),candidate->y()},
                 {QStringLiteral("native_id_hex"),candidate->isVisible()?QString::number(qulonglong(candidate->winId()),16):QString()},
                 {QStringLiteral("composition_ready"),candidate->property("floatingVideoCompositionReady").toBool()},

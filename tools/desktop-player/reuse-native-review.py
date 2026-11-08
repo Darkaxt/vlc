@@ -46,7 +46,8 @@ def recover_signed_app(directory, scratch):
     # actions/cache's tar does not preserve extended code signatures on data
     # (Lua, JAR and plugins.dat). The normal ditto ZIP explicitly does. Recover
     # from the already hash-verified archive, never re-sign changed cache bytes.
-    archives = [path for path in directory.glob('*.zip') if '-symbols' not in path.name]
+    archives = [path for path in directory.glob('*.zip')
+                if '-symbols' not in path.name and '-corresponding-source-' not in path.name]
     if len(archives) != 1:
         raise RuntimeError('Expected one normal Mac ZIP for signature-preserving recovery')
     scratch.mkdir(parents=True, exist_ok=False)
