@@ -74,6 +74,11 @@ binding completes. Native MPV must attach its OpenGL child to the actual
 Qt-owned video window, preserving visibility/exposure and ownership across
 initial paused loading, seeking, floating reparenting and restoration. Verify
 real composed pictures in these states, not only decoded output properties.
+The native MPV main-window capture also exposes plain text subtitles placed in
+the letterbox margin beneath the control bar, while the same selected cue is
+visible in the floating video. Keep native MPV text subtitles within the video
+area and verify actual main/floating/restored subtitle pixels. Preserve Windows
+rendering and authored ASS placement.
 
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master

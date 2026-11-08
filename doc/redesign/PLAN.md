@@ -1,6 +1,35 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42458288499/job128661924782 is the original managed continuation from
+53a6eeb1a7b9afd35c182f739ddcf76a1cd31264 (watch85565). It carries the
+isolated original contrib fetch and verified source-input retention. Actual
+original rav1e vendoring, full corresponding-source assembly and normal signed
+ZIP/DMG generation pass. Recovered ZIP/DMG strict signatures, byte identity and
+natural EOF/exit0 pass. MPV paused6s/60s seeking, selected subtitle, volume/mute,
+playback progression, floating queue, restore and dismiss state checks passed.
+The workflow then rejected a clipped engine button before dispatch: accessibility
+focus did not reveal it in the small viewport. Actual pictures and navigation
+diagnosis remain required; VLC workflow/handover have not passed. Original
+watch85565 closed1 after cache ending42458288499, artifact13608927064
+(2488969500 bytes, SHA2569d4df2ad12be8a70fc44c228e14e433d317ea7f5d4d733b7dc910846fdcec8ad)
+and hosted cleanup. Preserve/reuse the signed normal package for test-only
+navigation repair after inspecting the captures. All97 upstream commits through2cb78ca89c01 are
+already integrated by merge a488ffd10bbd and pushed on codex/native-desktop;
+master/release remain the verified1.1.11 until final qualification.
+Inspected MPV native captures now show actual initial, floating queue and restored
+video. The main plain-text subtitles are hidden by the overlaid controls because
+MPV uses letterbox margins; native initialization now confines them to the video.
+The handover verifier scrolls the real settings viewport and requires actual
+movement before clicking, instead of assuming accessibility focus reveals it.
+The saved cache is9273370301 bytes. After complete replacement package hashes
+pass, the hosted cache retires only obsolete ancestor-generation output and the
+superseded original contrib working trees; SDK/compiler/source inputs remain.
+Focused navigation and retention regressions pass. Fresh native pixels,
+handover and VLC workflow remain required before advancing.
+Spent navigation/cache fixtures were retired through transaction
+5eda3f05c881dc39ca0f6ca4ddbea5df (206 members,36169 bytes, no residuals).
+
 Run42456233198/job128655775062 from47c3bac9caa passed both Qt ownership repairs
 and collected all44 Homebrew source graphs/notices, including pinned x264.
 Original contrib fetch then failed when Cargo inherited the application's

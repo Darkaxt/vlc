@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import select
 import shlex
 import shutil
@@ -328,6 +329,70 @@ def native_make_flags(work, env):
     return flags
 
 
+def retire_prior_package_generations(work):
+    """Bound this hosted native cache after a replacement package is complete.
+
+    This is the native CI cache's lifecycle policy, never host Windows cleanup.
+    Compiler trees, SDKs, source downloads and the current package stay retained.
+    """
+    if os.environ.get('GITHUB_ACTIONS') != 'true' or platform.system() not in ('Darwin', 'Linux'):
+        return
+    if (Path(os.environ['GITHUB_WORKSPACE']).resolve() != ROOT.resolve()
+            or work.resolve() != (ROOT / '.desktop-build').resolve()):
+        raise RuntimeError('Native cache retirement requires its exact hosted build root')
+    current = json.loads((work / 'package-output.json').read_text())
+    generation = current['source_commit']
+    directory = work / 'packages' / generation
+    if Path(current['directory']).resolve() != directory.resolve():
+        raise RuntimeError('Current native package escaped its generation')
+    status = json.loads((directory / 'PACKAGE-STATUS.json').read_text())
+    if status['source_commit'] != generation or not status['assets']:
+        raise RuntimeError('Replacement package is incomplete; preserve recovery generations')
+    for row in status['assets']:
+        asset = directory / row['name']
+        if asset.parent != directory or sha(asset) != row['sha256']:
+            raise RuntimeError('Replacement package changed; preserve recovery generations')
+    targets = []
+    for name in ('packages', 'plugin-deployment', 'qml-deployment'):
+        parent = work / name
+        if not parent.is_dir():
+            continue
+        for candidate in sorted(parent.iterdir()):
+            if candidate.name == generation or not re.fullmatch('[0-9a-f]{40}', candidate.name):
+                continue
+            if candidate.is_symlink() or candidate.resolve().parent != parent.resolve():
+                raise RuntimeError('Native generation retirement found a redirected target')
+            if not candidate.is_dir():
+                continue
+            ancestry = subprocess.run(['git', 'merge-base', '--is-ancestor', candidate.name, generation], cwd=ROOT)
+            if ancestry.returncode == 1:
+                continue
+            if ancestry.returncode:
+                raise RuntimeError('Cannot establish generated package ancestry')
+            targets.append(candidate)
+    # The original contrib fetch now uses RUNNER_TEMP. Its old extracted work
+    # trees are reproducible from recipes.tar.gz and cached original tarballs.
+    if platform.system() == 'Darwin':
+        pin = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['macos_contrib_commit']
+        original = work / 'corresponding-contrib' / pin
+        for name in ('source', 'selection'):
+            candidate = original / name
+            if candidate.exists():
+                if candidate.is_symlink() or candidate.resolve().parent != original.resolve():
+                    raise RuntimeError('Original contrib recovery tree was redirected')
+                targets.append(candidate)
+    receipt = {'source_commit': generation, 'state': 'retiring',
+               'targets': [path.relative_to(work).as_posix() for path in targets], 'retired': []}
+    record = work / 'generation-retention.json'
+    record.write_text(json.dumps(receipt, indent=2) + '\n')
+    for target in targets:
+        shutil.rmtree(target)
+        receipt['retired'].append(target.relative_to(work).as_posix())
+        record.write_text(json.dumps(receipt, indent=2) + '\n')
+    receipt['state'] = 'complete'
+    record.write_text(json.dumps(receipt, indent=2) + '\n')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
@@ -539,6 +604,7 @@ def main():
         'sources': sources, 'configuration': json.loads(config),
         'qualification': 'NOT RUN; build/packaging is not playback acceptance'}, indent=2) + '\n')
     run('python3', ROOT / 'tools/desktop-player/package-native.py', 'packages', '--work', work, '--prefix', prefix)
+    retire_prior_package_generations(work)
 
 
 if __name__ == '__main__':

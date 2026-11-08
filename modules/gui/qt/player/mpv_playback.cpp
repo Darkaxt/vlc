@@ -584,7 +584,10 @@ MpvPlayback::MpvPlayback(qt_intf_t *intf, QObject *parent) : QObject(parent), d(
 #else
         // Stock libmpv owns native audio and color conversion. Copy-back also
         // permits Qt's OpenGL context to move with the floating video view.
-        {"hwdec", "auto-copy"}, {"gpu-shader-cache", "no"}
+        {"hwdec", "auto-copy"}, {"gpu-shader-cache", "no"},
+        // The native compositor overlays controls in the letterbox margins.
+        // Keep plain text subtitles in the video instead of behind that UI.
+        {"sub-use-margins", "no"}
 #endif
     };
     int code = 0;

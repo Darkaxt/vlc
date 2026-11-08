@@ -48,6 +48,25 @@ def inspect_result(result):
     return result
 
 
+def reveal_setting(client, name):
+    """Scroll the actual settings viewport before dispatching a visible click."""
+    while True:
+        state = client.snapshot()
+        body = next(row for row in state['tree']
+                    if row['node'] == client.target(state, 'mediaSettingsBody'))
+        button = next(row for row in state['tree']
+                      if row['node'] == client.target(state, name=name))
+        if body['y'] <= button['y'] and button['y'] + button['height'] <= body['y'] + body['height']:
+            return
+        direction = 1 if button['y'] < body['y'] else -1
+        before = body['contentY']
+        client.action('scroll', target='mediaSettingsBody', delta=direction * 120)
+        settled = client.await_property('mediaSettingsBody', 'moving', False)
+        after = next(row['contentY'] for row in settled['tree'] if row['id'] == 'mediaSettingsBody')
+        if direction * (after - before) >= 0:
+            raise RuntimeError('Native settings wheel did not advance toward ' + name)
+
+
 def seed_upstream_profile(home):
     # These are synthetic upstream VLC profiles, not the runner's real data.
     # The fork's own bundle/XDG namespace must leave every one untouched.
@@ -129,6 +148,7 @@ def check_engine(executable, root, fixture, engine, software_decoding=False):
             save('close-subtitle-menu', client.action('key', key=0x1000000))
             save('subtitle-position', client.slider('progressSlider', 0.01))
             save('subtitle-seek-committed', client.await_core('time_seconds', 6, tolerance=2))
+            save('leave-seek-preview', client.action('move', target='playButton'))
             subtitle = save('subtitle-picture', client.snapshot(capture=True, capture_native=True))
             assert any(track.get('selected') for track in subtitle['core']['subtitle_tracks']), subtitle['core']
             save('seek', client.slider('progressSlider', 0.1))
@@ -166,7 +186,8 @@ def check_engine(executable, root, fixture, engine, software_decoding=False):
             save('restore-background', client.action('restore'))
             save('settings', client.action('click', target='toolsButton'))
             other = 'MPV' if engine == 'vlc' else 'VLC'
-            save('engine-focus', client.action('focus', name=other))
+            reveal_setting(client, other)
+            save('engine-revealed', client.snapshot())
             save('handover', client.action('click', name=other))
             save('handover-engine', client.await_core('engine', other.lower()))
             save('handover-settled', client.await_core('engine_switching', False))

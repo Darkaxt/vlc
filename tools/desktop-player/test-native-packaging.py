@@ -23,6 +23,81 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_hosted_cache_retirement_requires_complete_replacement_and_preserves_inputs(self):
+        spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        root = Path(sys.argv_scratch) / ('cache-retention-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'
+        generation, previous, unrelated = 'b' * 40, 'a' * 40, 'c' * 40
+        current = work / 'packages' / generation
+        current.mkdir(parents=True)
+        asset = current / 'normal.zip'; asset.write_bytes(b'new normal package')
+        status = {'source_commit': generation,
+                  'assets': [{'name': asset.name, 'sha256': build.sha(asset)}]}
+        (current / 'PACKAGE-STATUS.json').write_text(json.dumps(status))
+        (work / 'package-output.json').write_text(json.dumps({
+            'source_commit': generation, 'directory': str(current)}))
+        inputs = root / 'tools/desktop-player/native-inputs.json'
+        inputs.parent.mkdir(parents=True)
+        inputs.write_text(json.dumps({'macos_contrib_commit': 'd' * 40}))
+        original = work / 'corresponding-contrib' / ('d' * 40)
+        retired = [work / 'packages' / previous, work / 'plugin-deployment' / previous,
+                   original / 'source', original / 'selection']
+        retained = [work / 'packages' / unrelated, work / 'plugin-deployment' / generation,
+                    work / 'deps', work / 'vlc-build', original / 'tarballs']
+        for path in retired + retained:
+            path.mkdir(parents=True)
+            (path / 'retained.bin').write_bytes(b'owned fixture')
+        with patch.object(build, 'ROOT', root), patch.object(build.platform, 'system', return_value='Darwin'), \
+                patch.dict(os.environ, {'GITHUB_ACTIONS': 'true', 'GITHUB_WORKSPACE': str(root)}), \
+                patch.object(build.subprocess, 'run', side_effect=lambda args, **kwargs:
+                             SimpleNamespace(returncode=1 if args[-2] == unrelated else 0)), \
+                patch.object(build.shutil, 'rmtree') as remove:
+            asset.write_bytes(b'changed')
+            with self.assertRaisesRegex(RuntimeError, 'Replacement package changed'):
+                build.retire_prior_package_generations(work)
+            remove.assert_not_called()
+            asset.write_bytes(b'new normal package')
+            build.retire_prior_package_generations(work)
+        self.assertEqual({call.args[0] for call in remove.call_args_list}, set(retired))
+        receipt = json.loads((work / 'generation-retention.json').read_text())
+        self.assertEqual(receipt['state'], 'complete')
+        self.assertEqual(len(receipt['retired']), len(retired))
+        self.assertTrue(all((path / 'retained.bin').is_file() for path in retained))
+
+    def test_native_handover_reveals_clipped_control_by_real_scroll_and_rejects_no_progress(self):
+        spec = importlib.util.spec_from_file_location('native_verify', HERE / 'verify-native-player.py')
+        verify = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verify)
+        client = MagicMock()
+        client.target.side_effect = lambda state, identifier=None, name=None: 1 if identifier else 2
+        scroll = {'value': 0, 'advance': True}
+
+        def snapshot():
+            return {'tree': [dict(node=1, id='mediaSettingsBody', y=83, height=281,
+                                  contentY=scroll['value']),
+                             dict(node=2, id='', name='VLC', y=465-scroll['value'], height=24)]}
+
+        def wheel(operation, **fields):
+            self.assertEqual((operation, fields),
+                             ('scroll', {'target': 'mediaSettingsBody', 'delta': -120}))
+            if scroll['advance']:
+                scroll['value'] = min(205, scroll['value'] + 100)
+
+        client.snapshot.side_effect = snapshot
+        client.action.side_effect = wheel
+        client.await_property.side_effect = lambda *args: snapshot()
+        verify.reveal_setting(client, 'VLC')
+        self.assertEqual(client.action.call_count, 2)
+        client.await_property.assert_called_with('mediaSettingsBody', 'moving', False)
+        client.action.reset_mock()
+        verify.reveal_setting(client, 'VLC')
+        client.action.assert_not_called()
+        scroll.update(value=0, advance=False)
+        with self.assertRaisesRegex(RuntimeError, 'wheel did not advance'):
+            verify.reveal_setting(client, 'VLC')
+
     def test_source_staging_reuses_verified_downloads_and_rejects_modified_cache(self):
         spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
         sources = importlib.util.module_from_spec(spec)

@@ -13,6 +13,14 @@ Do not place that working directory back inside the repository: Cargo otherwise
 rejects its generated vendor package as an undeclared workspace member.
 Partial source manifests are explicitly `collecting`; only `complete` assembly
 may produce release source assets. Preserve native failure/cache receipts.
+The hosted native cache reached9273370301 bytes after the first complete source
+assembly. After a replacement package's asset hashes pass, its lifecycle policy
+retires only older ancestor generations from packages/plugin-deployment/QML
+staging and the superseded original contrib source/selection trees. It records
+exact retired paths in generation-retention.json. Current package, compiler
+objects, SDKs, pinned source archives and contrib tarballs stay retained.
+This policy is restricted to the exact hosted POSIX build root; Windows cleanup
+continues to use the installed transactional helper.
 
 `appimage-sources.json` binds the static AppImage runtime to original build
 39320578745, its exact Alpine image, the two architecture jobs and their linked

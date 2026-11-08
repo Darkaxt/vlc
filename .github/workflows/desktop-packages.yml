@@ -91,6 +91,7 @@ jobs:
           path: |
             .desktop-build/packages/${{ steps.review_reuse.outputs.normal_generation || github.sha }}/**
             .desktop-build/native-build.json
+            .desktop-build/generation-retention.json
             .desktop-build/package-output.json
             .desktop-build/review-reuse.json
             .desktop-build/qml-deployment/${{ steps.review_reuse.outputs.normal_generation || github.sha }}.json
