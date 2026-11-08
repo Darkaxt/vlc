@@ -118,6 +118,21 @@ Use the original installed Cellar/.brew recipe through the permitted keg loader,
 requiring its SHA256 to match the retained receipt-bound copy. Do not relocate a
 formula, disable Homebrew's path policy, create a tap or use the current API recipe.
 Native continuation/qualification remain required. No release published.
+Linux479f continuation42487990886/job128758220196 closed1 at the next source
+ownership edge: the older/lib readline alias has .usr-is-merged diversion metadata.
+The exact8.2-4build1 DEB's ordinary/usr/lib file matches the actual runtime SHA256
+0a079f958147699f7bb5bf228406a5d878dc2387fe9cdc5cce6f3e35e20380fc.
+Prefer the physical pathname's unique ordinary owner; query verified aliases only
+when that pathname is unregistered. Diversions/multiple-owner rows remain rejected.
+Artifact13620823495 is247609923B, SHA256338c6d8b93218a9ea39923659dcadd5aab319c7be8b03fa8bc45eef1f094a35d.
+Intel42489527647 at614f745eadb84c8206248f7e424ab8b2007c9316 is active; preserve its
+original session and pending source-closure/normal playback qualification.
+Guest41/fb97567652744293a592e92e380d9bd2 lifecycle-only diagnostics exited0 and
+released the guest: rejection/install/upgrade/two-install namespace/uninstall and
+profile/extra-file preservation all pass. Overall passed and playback_qualified
+remain false, as required. Spent archive copies were transactionally retired:
+6ab7598ac8defc19ef5278b00cf41439 APPLIED,5470 members/742093750B, no errors;
+original archives, profiles and the inactive MPV picture limitation are preserved.
 Windows supplementary formats: the installed7z executable is available at
 C:/Users/darka/scoop/shims/7z.exe. The maintained package helper can produce7z
 from exactly the same stripped, empty-profile portable tree, with one compressor

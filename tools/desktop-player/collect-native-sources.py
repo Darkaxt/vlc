@@ -348,8 +348,12 @@ def dpkg_owner(path):
                 candidate = alias / physical.relative_to(root)
                 if candidate.resolve(strict=True) == physical:
                     candidates.add(candidate)
-    owners, registered = set(), set()
-    for candidate in sorted(candidates):
+    # Prefer the physical file's own database entry. Historical alias spellings
+    # can have migration diversions (e.g. readline's .usr-is-merged placeholder)
+    # unrelated to the bytes at the registered canonical path. Query aliases
+    # only when that exact physical pathname has no registered owner.
+    ordered = [physical, *sorted(candidates - {physical})]
+    for candidate in ordered:
         result = subprocess.run(['dpkg-query', '-S', str(candidate)], text=True,
             capture_output=True, env=dict(os.environ, LC_ALL='C'))
         if result.returncode:
@@ -357,17 +361,21 @@ def dpkg_owner(path):
                     and result.stderr.startswith('dpkg-query: no path found matching pattern ')):
                 continue
             raise RuntimeError('Installed dpkg ownership query failed: ' + result.stderr)
+        owners, registered = set(), set()
         for line in result.stdout.splitlines():
             package, separator, original = line.partition(': ')
             if (not separator or original != str(candidate)
                     or Path(original).resolve(strict=True) != physical):
                 raise RuntimeError('Ambiguous installed dpkg owner: ' + line)
+            if not re.fullmatch(r'[a-z0-9][a-z0-9+.-]*(?::[a-z0-9][a-z0-9-]*)?', package):
+                raise RuntimeError('Ambiguous installed dpkg owner: ' + line)
             owners.add(package)
             registered.add(original)
-    if len(owners) != 1:
-        raise RuntimeError('No unique installed dpkg owner: ' + str(path))
-    return {'package': owners.pop(), 'source_path': str(path), 'resolved_path': str(physical),
-            'registered_paths': sorted(registered)}
+        if len(owners) != 1:
+            raise RuntimeError('No unique installed dpkg owner: ' + str(path))
+        return {'package': owners.pop(), 'source_path': str(path), 'resolved_path': str(physical),
+                'registered_paths': sorted(registered)}
+    raise RuntimeError('No unique installed dpkg owner: ' + str(path))
 
 
 def collect_linux(work, app, destination):
