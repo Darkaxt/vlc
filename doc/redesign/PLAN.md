@@ -1,6 +1,26 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+MacARM42473153325/job128709928646 closed0 (watch45548); cache, artifact and
+hosted cleanup completed. Normal untraced ZIP/DMG playback/signature/identical
+member checks pass. Actual Qt diagnostics select Metal (graphics_api6), and
+inspected native captures show picture/subtitles in VLC and MPV main, floating
+and restored views. Artifact13614759942 is2498797852 bytes, GitHub SHA256
+77c653287a5fb37abf87e8dcc00683283f79431eba565944678248ffefa1b98a.
+Selected members pass CRC/SHA; whole-artifact independent verification remains.
+MacIntel42475641510/job128717184286 (watch51084) is active at5fcb86e9.
+Linux42473774480/job128715854678 closed1 after compile/install; the final audit
+rejects libpipewiresrc_plugin.so -> libvlc_pipewire.so.0 because relocation
+omitted VLC's pkglibdir (lib/vlc). Preserve that in each packaged binary's RPATH
+alongside lib and lib/native; do not copy helpers out of their owned layout or
+relax the strict portable dependency audit. Cache and hosted cleanup completed.
+Artifact13615900062 is247601326 bytes, GitHub SHA256
+e57209a949ac7dc1e9bb999aab71898b2e95734446ccc1ddd4b67cfdecd126a9.
+Windows original state now continues in run89/gate301
+(12ae967adf144be8a5e9c455f6f3cbb4, session16997), after a fresh symbol generation
+resolved raw MPV prefix bytes versus prior stripped mappings. AOM3.15.3,
+candidate notices and corrected configure passed; player compilation is active.
+No Windows native acceptance or new release is claimed.
 Windows continuation87/gate299 (6700f8f9f8204c8fafde642dcb47218a)
 successfully created the fresh candidate and staged MPV, then began AOM3.15.3.
 The owner stopped only that group before configure after finding its remaining

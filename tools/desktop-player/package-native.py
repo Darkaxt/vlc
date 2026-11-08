@@ -582,7 +582,11 @@ def package_linux(work, installed, out, version, arch):
         split_symbols(path, path.relative_to(app), work)
         run('strip', '--strip-debug', path)
         relative = os.path.relpath(app / 'lib', path.parent)
-        run('patchelf', '--set-rpath', '$ORIGIN/' + relative + ':$ORIGIN/' + relative + '/native', path)
+        # VLC installs shared module helpers (PipeWire, XCB, ...) in pkglibdir,
+        # alongside its plugins directory. They remain there in the copied
+        # payload; preserving only lib/ loses their original install RPATH.
+        run('patchelf', '--set-rpath', '$ORIGIN/' + relative + ':$ORIGIN/' + relative + '/vlc:'
+            + '$ORIGIN/' + relative + '/native', path)
     write_executable(app / 'modern-vlc', '''#!/bin/sh
 set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
