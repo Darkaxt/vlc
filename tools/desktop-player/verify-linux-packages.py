@@ -217,7 +217,10 @@ def main():
         elif kind == 'rpm':
             with subprocess.Popen(['rpm2cpio', str(archive)], stdout=subprocess.PIPE) as source:
                 try:
-                    run('cpio', '--extract', '--make-directories', '--no-absolute-filenames',
+                    # The plugin index binds both bytes and modification times.
+                    # cpio defaults to extraction time unless explicitly told
+                    # to retain the RPM payload's recorded timestamps.
+                    run('cpio', '--extract', '--make-directories', '--preserve-modification-time', '--no-absolute-filenames',
                         cwd=extracted, stdin=source.stdout, stdout=subprocess.DEVNULL)
                 finally:
                     source.stdout.close()

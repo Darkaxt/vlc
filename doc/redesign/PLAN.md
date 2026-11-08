@@ -1,6 +1,22 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Normal664f7f65 workflow42509190883 closed with packaging success and runtime
+verification failure. Build/package step ran18:19:34–18:36:55 UTC; cache generation
+was already reached18:21:55, so the whole interval is not compilation time.
+TAR/AppImage/extracted DEB ran VLC and MPV to natural EOF. RPM payload hashes
+match, but its checker used cpio without preserving modification times and thus
+invalidated the correct shipped plugin index. Add the timestamp-preservation
+option and repeat this artifact through the compiler-free path. Artifact13629128616
+is2088275785B, SHA2568fe2d36968b61cc42a17ce1e1e3d484e682d2777aed0b64b36c251af734fe411.
+RPM/Snap installation and full native UI acceptance remain unmet.
+Windows continuation99/641d79f1d35a40579837f9f9f812b150 is supervised in its
+original managed session. Including configure-player unnecessarily compared
+against the older configured-source checkpoint and triggered object invalidation;
+do not replay completed work. The prior exported94526362 normal runtime remains
+intact. No SDK/dependency reset or stable-release mutation occurred.
+Spent graphics fixtures transaction56fc56bc6d570e94c40f7c0a956bf373 APPLIED391/
+178383B with no exclusions or residuals.
 Compiler-free2910611b workflow42506771420 closed1/watch87067; original artifact
 SHA256 recovery passed again without compiler/build jobs. Correct review host
 libOpenGL makes all portable formats and DEB work on the clean runner. Fedora's

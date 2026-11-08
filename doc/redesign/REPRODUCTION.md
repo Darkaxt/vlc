@@ -26,6 +26,12 @@ tested provider/base revisions. This follows Canonical's content-interface
 contract: https://github.com/canonical/gpu-snap/tree/84e56217ec137c3f8d7a0e773bb7c39c8fc40f28.
 No provider script is vendored; the fork owns its small connection/exec wrapper.
 
+RPM extraction must preserve archive modification times with cpio's
+`--preserve-modification-time`. Byte-identical plugins extracted with cpio's
+default current timestamps invalidate VLC's size/mtime-bound index. Keep the
+normal relocated-cache check enabled; compiler-free workflow verification is
+the real regression check for this extraction repair.
+
 Windows upstream acceptance currently binds normal run89 at5fcb86e9 and the
 diagnostic-only run91 at8063ad93. Run91 completed with group-empty/private-mount
 release and reused the normal non-Qt runtime images. Integrated handover,
