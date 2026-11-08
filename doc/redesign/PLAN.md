@@ -1,6 +1,14 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Compiler-free trace42524059935 recovered the exact original artifact, then its
+GDB exec-interrupt acknowledged without a stopped event. bin/vlc.c blocks SIGINT
+before interface startup and does not sigwait until afterward; this is a probe
+limitation, not the explanation of the Qt stall. Preserve that cancelled trace.
+Use a pidfd bound to GDB's actual inferior and SIGSTOP for each observation,
+consume it through GDB's nopass policy, resume after the first stack and verify
+inferior plus debugger-group exit after diagnosis. Production remains unchanged.
+
 Qualification42519018892 was cancelled for normal Linux playback diagnosis,
 not a compiler failure: its one-second VLC input never reached interface/input
 readiness. Original cache retention and artifact upload completed. Linux21f1

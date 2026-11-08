@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import select
 import selectors
 import signal
 import subprocess
@@ -64,6 +65,7 @@ def main():
     interrupted = False
     running = False
     theme_announcements = 0
+    inferior_fd = None
     buffer = b''
     started = time.monotonic()
 
@@ -78,6 +80,7 @@ def main():
         for command in ('-gdb-set pagination off', '-gdb-set confirm off', '-gdb-set mi-async on',
                 '-interpreter-exec console "set debuginfod enabled off"',
                 '-interpreter-exec console "set print thread-events off"',
+                '-interpreter-exec console "handle SIGSTOP stop print nopass"',
                 '-file-exec-and-symbols "/bin/sh"',
                 '-exec-arguments ' + ' '.join(json.dumps(arg) for arg in argv)):
             send(command)
@@ -91,7 +94,13 @@ def main():
                 if not readable:
                     # This timer collects an observation; expiry does not judge or
                     # cancel the application, and the first observation resumes it.
-                    send('-exec-interrupt --all')
+                    if inferior_fd is None:
+                        raise RuntimeError('No bound inferior process for the debug observation')
+                    # VLC blocks SIGINT until interface startup completes, so
+                    # MI exec-interrupt can acknowledge without stopping it.
+                    # A pidfd-bound SIGSTOP is unmaskable; GDB consumes it and
+                    # does not reinject it when the observation resumes.
+                    signal.pidfd_send_signal(inferior_fd, signal.SIGSTOP)
                     interrupted, next_observation = True, None
                     continue
                 chunk = os.read(process.stdout.fileno(), 65536)
@@ -105,6 +114,11 @@ def main():
                     print(line, flush=True)
                     if re.match(r'^\d+\^error', line):
                         raise RuntimeError('GDB command failed: ' + line)
+                    if match := re.match(r'^=thread-group-started,id="i1",pid="(\d+)"', line):
+                        if inferior_fd is not None:
+                            raise RuntimeError('Debugger unexpectedly replaced its inferior process')
+                        result['inferior_pid'] = int(match[1])
+                        inferior_fd = os.pidfd_open(result['inferior_pid'])
                     if 'using qt theme provider module' in line:
                         theme_announcements += 1
                         if theme_announcements >= 2 and running and not interrupted:
@@ -136,6 +150,14 @@ def main():
         result['failure'] = repr(error)
         raise
     finally:
+        for sig in previous:
+            signal.signal(sig, signal.SIG_IGN)
+        if inferior_fd is not None:
+            if not select.select([inferior_fd], [], [], 0)[0]:
+                signal.pidfd_send_signal(inferior_fd, signal.SIGKILL)
+            select.select([inferior_fd], [], [])
+            os.close(inferior_fd)
+            result['owned_inferior_exit_verified'] = True
         # The existing native cancellation helper owns this exact new process
         # group and verifies its exit. Diagnostic completion is not media EOF.
         builder.stop_command(process)
