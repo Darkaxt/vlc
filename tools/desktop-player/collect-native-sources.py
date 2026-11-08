@@ -189,7 +189,14 @@ def collect_brew(work, app, generation, destination):
     qml = json.loads((work / 'qml-deployment' / (generation + '.json')).read_text())
     for item in qml['modules']:
         origin = Path(item['source'])
-        paths.append(origin)
+        # A merged Homebrew module directory has no single keg owner. Bind
+        # every copied file to its resolved installed source instead, including
+        # QML/assets whose owner is independent of the module's native plugin.
+        for source_file in item['source_files']:
+            source = Path(source_file['source'])
+            if sha(source) != source_file['sha256']:
+                raise RuntimeError('QML resource source changed: ' + str(source))
+            paths.append(source)
         module = Path(*item['name'].split('.'))
         for binding in item['native_bindings']:
             source = origin / Path(binding['file']).relative_to(module)

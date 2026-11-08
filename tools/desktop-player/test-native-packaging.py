@@ -298,6 +298,13 @@ class NativePackagingTest(unittest.TestCase):
         self.assertFalse((destination / 'QtQuick/Scene3D').exists())
         self.assertEqual({row['name'] for row in rows}, {row['name'] for row in graph})
         self.assertTrue((installed / 'Scene3D/qmldir').is_file())
+        sources = {item['source']: item['sha256'] for row in rows for item in row['source_files']}
+        expected = [installed / relative for relative in
+                    ('qmldir', 'assets/required.png', 'Controls/qmldir', 'Controls/Basic/qmldir')]
+        self.assertEqual(sources, {str(path.resolve(strict=True)): package.sha(path) for path in expected})
+        # Source ownership follows copied files, never a merged module directory
+        # or an unrequested sibling. Native and pure-QML inputs are both bound.
+        self.assertNotIn(str(installed.resolve()), sources)
 
     def test_python_sources_parse(self):
         for path in HERE.glob('*.py'):
@@ -320,11 +327,13 @@ class NativePackagingTest(unittest.TestCase):
         with patch.object(package, 'MAC', True), patch.object(package, 'output',
                 return_value='Load command 1\n cmd LC_RPATH\n cmdsize 64\n path @loader_path/../../lib (offset 12)'), \
                 patch.object(package, 'run', side_effect=record):
-            package.stage_qml_modules([{'type': 'module', 'name': 'QtQuick', 'path': str(installed)}], destination)
+            rows = package.stage_qml_modules([{'type': 'module', 'name': 'QtQuick', 'path': str(installed)}], destination)
         self.assertEqual(commands, [('install_name_tool', '-rpath', '@loader_path/../../lib',
             str(installed / '../../lib'), destination / 'QtQuick/libquickplugin.dylib')])
         self.assertEqual(plugin.read_bytes(), b'\xcf\xfa\xed\xfe' + b'source plugin')
         self.assertFalse(plugin.stat().st_mode & stat.S_IWUSR)
+        self.assertEqual(rows[0]['source_files'], [{'source': str(plugin.resolve()),
+                                                  'sha256': package.sha(plugin)}])
 
     def test_native_ncurses_link_uses_consumer_sdk_and_preserves_libraries(self):
         spec = importlib.util.spec_from_file_location('native_build', HERE / 'build-native.py')

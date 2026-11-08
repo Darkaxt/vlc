@@ -1,0 +1,228 @@
+{
+  "artifact": 13607581767,
+  "source_commit": "91c29975de226027e0efcc5d608dcf4052a6ef05",
+  "scope": "Installed runtime/deployment source metadata parsing only; no native acceptance",
+  "results": [
+    {
+      "formula": "brotli",
+      "version": "1.2.1",
+      "source_records": 1
+    },
+    {
+      "formula": "dav1d",
+      "version": "1.5.4",
+      "source_records": 1
+    },
+    {
+      "formula": "dbus",
+      "version": "1.16.2_1",
+      "source_records": 1
+    },
+    {
+      "formula": "double-conversion",
+      "version": "3.4.0",
+      "source_records": 1
+    },
+    {
+      "formula": "ffmpeg",
+      "version": "9.0.2_1",
+      "source_records": 1
+    },
+    {
+      "formula": "freetype",
+      "version": "2.15.0",
+      "source_records": 1
+    },
+    {
+      "formula": "fribidi",
+      "version": "1.0.18",
+      "source_records": 1
+    },
+    {
+      "formula": "gettext",
+      "version": "1.0",
+      "source_records": 1
+    },
+    {
+      "formula": "glib",
+      "version": "2.90.1",
+      "source_records": 1
+    },
+    {
+      "formula": "graphite2",
+      "version": "1.3.15",
+      "source_records": 1
+    },
+    {
+      "formula": "harfbuzz",
+      "version": "15.0.0_1",
+      "source_records": 1
+    },
+    {
+      "formula": "icu4c@79",
+      "version": "79.1",
+      "source_records": 1
+    },
+    {
+      "formula": "jpeg-turbo",
+      "version": "3.2.1",
+      "source_records": 1
+    },
+    {
+      "formula": "lame",
+      "version": "4.0",
+      "source_records": 1
+    },
+    {
+      "formula": "libarchive",
+      "version": "3.8.11",
+      "source_records": 1
+    },
+    {
+      "formula": "libass",
+      "version": "0.17.5_1",
+      "source_records": 1
+    },
+    {
+      "formula": "libb2",
+      "version": "0.98.1",
+      "source_records": 1
+    },
+    {
+      "formula": "libplacebo",
+      "version": "7.387.0",
+      "source_records": 1
+    },
+    {
+      "formula": "libpng",
+      "version": "1.6.59",
+      "source_records": 1
+    },
+    {
+      "formula": "libtiff",
+      "version": "4.7.2",
+      "source_records": 1
+    },
+    {
+      "formula": "libunibreak",
+      "version": "8.0",
+      "source_records": 1
+    },
+    {
+      "formula": "libvmaf",
+      "version": "3.2.1",
+      "source_records": 1
+    },
+    {
+      "formula": "libvpx",
+      "version": "1.17.0",
+      "source_records": 1
+    },
+    {
+      "formula": "little-cms2",
+      "version": "2.19.1",
+      "source_records": 1
+    },
+    {
+      "formula": "lz4",
+      "version": "1.10.0",
+      "source_records": 1
+    },
+    {
+      "formula": "md4c",
+      "version": "0.6.0",
+      "source_records": 1
+    },
+    {
+      "formula": "mpg123",
+      "version": "1.33.7",
+      "source_records": 1
+    },
+    {
+      "formula": "openssl@4",
+      "version": "4.1.0",
+      "source_records": 1
+    },
+    {
+      "formula": "opus",
+      "version": "1.6.1",
+      "source_records": 1
+    },
+    {
+      "formula": "pcre2",
+      "version": "10.49",
+      "source_records": 1
+    },
+    {
+      "formula": "qtbase",
+      "version": "6.12.0_2",
+      "source_records": 3
+    },
+    {
+      "formula": "qtdeclarative",
+      "version": "6.12.0_1",
+      "source_records": 1
+    },
+    {
+      "formula": "qtimageformats",
+      "version": "6.12.0",
+      "source_records": 1
+    },
+    {
+      "formula": "qtsvg",
+      "version": "6.12.0_1",
+      "source_records": 1
+    },
+    {
+      "formula": "qtvirtualkeyboard",
+      "version": "6.12.0_1",
+      "source_records": 1
+    },
+    {
+      "formula": "qtwebengine",
+      "version": "6.11.2_1",
+      "source_records": 2
+    },
+    {
+      "formula": "shaderc",
+      "version": "2026.4",
+      "source_records": 1
+    },
+    {
+      "formula": "svt-av1",
+      "version": "4.3.0",
+      "source_records": 1
+    },
+    {
+      "formula": "vulkan-loader",
+      "version": "1.4.363.0",
+      "source_records": 1
+    },
+    {
+      "formula": "webp",
+      "version": "1.6.0",
+      "source_records": 1
+    },
+    {
+      "formula": "x264",
+      "version": "r3222",
+      "source_records": 1
+    },
+    {
+      "formula": "x265",
+      "version": "4.3",
+      "source_records": 1
+    },
+    {
+      "formula": "xz",
+      "version": "5.8.4",
+      "source_records": 1
+    },
+    {
+      "formula": "zstd",
+      "version": "1.5.7_1",
+      "source_records": 1
+    }
+  ],
+  "missing_formulas": []
+}

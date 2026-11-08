@@ -99,15 +99,17 @@ def stage_qml_modules(imports, destination):
         raise RuntimeError('Qt import scanner found no resolved Qt modules')
     records = []
 
-    def copy_contents(origin, target, native_bindings):
+    def copy_contents(origin, target, native_bindings, source_files):
         target.mkdir(parents=True, exist_ok=True)
         for child in sorted(origin.iterdir()):
             copied = target / child.name
             if child.is_dir():
                 if not (child / 'qmldir').is_file():
-                    copy_contents(child, copied, native_bindings)
+                    copy_contents(child, copied, native_bindings, source_files)
             elif child.is_file():
                 shutil.copy2(child, copied)
+                source_files.append({'source': str(child.resolve(strict=True)),
+                                     'sha256': sha(child)})
                 if MAC and native(copied):
                     # Resolve LC_RPATH in the source location before Qt moves
                     # the plugin. Relative source paths otherwise point into
@@ -121,9 +123,10 @@ def stage_qml_modules(imports, destination):
                         'source_sha256': sha(child), 'runpaths': bindings})
 
     for name, origin in sorted(modules.items(), key=lambda item: (item[0].count('.'), item[0])):
-        bindings = []
-        copy_contents(origin, destination.joinpath(*name.split('.')), bindings)
-        records.append({'name': name, 'source': str(origin), 'native_bindings': bindings})
+        bindings, source_files = [], []
+        copy_contents(origin, destination.joinpath(*name.split('.')), bindings, source_files)
+        records.append({'name': name, 'source': str(origin), 'native_bindings': bindings,
+                        'source_files': source_files})
     return records
 
 

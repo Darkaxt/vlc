@@ -1,6 +1,28 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Run42454511503/job128650595764 from91c29975de2 passed framework alias ownership,
+then stopped at the merged QML directory QtQuick/Controls/impl: the shared
+Homebrew directory itself is outside all installed kegs. QML staging now binds
+every copied native/QML/resource file to its resolved source and digest; source
+collection consumes these leaves rather than assigning a directory owner.
+Focused provenance checks pass. Native acceptance did not run. Original
+watch71322 closed1 after cache ending42454511503 (5235242199 bytes),
+artifact13607581767 (414883512 bytes, SHA256
+3e70ea4baffde9cef702cf532c1e66519e5ef8805f09879c7cf4dc80370c4101)
+and hosted cleanup. Inspect source metadata before resuming this cohort.
+The actual toolchain binding still matches; preserve its incremental objects.
+Independent parsing of this run's exact installed metadata passes for all44
+runtime/deployment formulae, including checksummed Qt patches and pinned x264
+Git source. See [metadata preflight](resources/native-source-metadata-preflight-20261108.json).
+It verifies metadata coverage/parsing, not downloaded archives or native playback.
+Focused source-owner regression also verifies alias coalescing and rejection
+of missing/distinct sources.
+Its spent synthetic fixtures were retired by transaction
+51656537d5c65715ca658cfc1b7c8d6c (133 members,34308 bytes, no residuals).
+QML provenance fixtures/receipt normalizer were retired by transaction
+123e9a6f9548b8499461b23bb2eca13b (134 members,34733 bytes, no residuals).
+
 Run42452935265/job128645862846 from4fd004ec32b resumed cache ending42451628822
 (4844634063 bytes). Changed normal Qt sources compiled/linked, the input-clock
 test and real cancellation probe passed. Source assembly stopped before its

@@ -1,4 +1,5 @@
 {
+  "verification_scope": "Independent source retrieval on Windows; native Linux package and runtime acceptance remains pending",
   "runtime_sha256": "617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46",
   "original_build": {
     "run": "https://github.com/AppImage/type2-runtime/actions/runs/39320578745",
