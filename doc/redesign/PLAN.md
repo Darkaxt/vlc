@@ -1,6 +1,22 @@
 # VLC redesign stages and reconciliation
 
-**8 November native desktop delivery: M15 — ACTIVE (R111/R112).**
+**8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Current recovery: run42441032772/job128610153859 from141857949d23ae925ad0a267ec90e03a944d3dfd
+passed normal Mac packaging and restored the normal objects after preparing its
+review app. Its embedded subtitle selection passed. The 600px player has an85px
+seekbar: a raw1%-of-widget click falls before its handle center and requests zero,
+not the expected six seconds. Requestb035536c986c4389a7e56b8bf6f12696 therefore
+could not meet its predicate. The exact run was cancelled for that diagnosed
+test defect; original watch12051 exited1 after cache42441032772, artifact13602410234
+(SHA25668c5b895be4d4c5b7c2e5998a34c4f9a474959cfbe343e010c461a1b0c7b0d6a)
+and post-job cleanup completed. Qt now creates its4.1 Core context and the
+local-only launch starts no Bonjour/UPnP/SAP discovery. The inspected native
+capture still has a blank video area; this is not picture acceptance. A later
+snapshot reports598s while paused after the zero seek, so decoder/presentation
+and seek behavior remain unresolved. Corrected test clicks invert Qt's actual
+padding/handle geometry. Read-only health snapshots report an unmet predicate
+without cancelling, replaying or imposing a completion deadline.
+
 Implement native macOS/Linux plain MPV integration and the desktop build/package
 matrix while preserving the verified Windows backend and Figma interface.
 Native workflow `.github/workflows/desktop-packages.yml` is on the isolated
@@ -173,15 +189,20 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; macOS ARM VLC/MPV/Qt build/install and app ZIP/DMG generation, dependency/architecture, strict signing and immutable MPV checks pass. Separate review plugin links/signs/restores normal objects exactly. Actual Qt UI and paused/seekable VLC state observed. | R111 remaining architectures, format installation and complete source/licenses; R112 unobscured actual video/audio/subtitle/seek/handover/miniplayer/profile workflows. | LAN permission prompt and Cocoa 3.0 Core probe failure traced; corrections prepared, native verification pending. Remaining criteria are internal blockers; no deferrals. |
-| M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | After M15, merge current upstream master; reconcile and qualify the integrated revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
+| M15 Native desktop engines and packages | ACTIVE | Existing Windows1.1.11 preserved; macOS ARM VLC/MPV/Qt build/install and app ZIP/DMG generation, dependency/architecture, strict signing and immutable MPV checks pass. Review plugin links/signs/restores normal objects. Actual Qt UI, embedded subtitle selection and paused/seekable VLC state observed; supported Core context and no unsolicited LAN discovery verified. | R111 remaining architectures, recovered-format installation and complete source/licenses; R112 actual video/audio/subtitle/seek/handover/miniplayer/profile workflows; R113 upstream merge after base pipeline works, before final matrix qualification. | Native video picture remains blank in the inspected capture. Compact-slider test coordinate defect corrected; native seek/picture verification required. Internal blockers, no deferrals. |
+| M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Read-only
 fetch verifies origin Darkaxt/vlc, upstream videolan/vlc and upstream default
 master. Pinned comparison: fork a23f477c866fb2fd45a207fd6fb07b1a1bf142c9,
 upstream2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, 97 commits absent from both
 the working branch and master. No upstream integration or second stage started.
-M16 must refresh this comparison before its normal merge and final verification.
+M15 must refresh this comparison once its base deployment workflow works, before
+the normal merge and final architecture/package qualification. This keeps one
+ACTIVE stage and avoids qualifying every platform immediately before the merge.
+The pinned delta includes AOM3.15.3 and Qt rendering/model changes: preserve
+unchanged caches, update only affected dependency bindings and repeat affected
+acceptance against the final integrated revision.
 
 The prepared Homebrew provenance collector retains each installed keg's actual
 recipe, install receipt and SBOM with hashes, separately from the unchanged

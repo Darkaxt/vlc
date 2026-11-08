@@ -28,10 +28,19 @@ through authenticated GitHub redirect plus credential-free signed range reads;
 it checks selected CRC/digests and reports that the whole archive is unverified.
 Whole-package retrieval/digest checks remain required at delivery.
 
-The user requests upstream synchronization after this pipeline works. M16 owns
-the normal merge and integrated release qualification. Current read-only fetch:
+Native review slider actions use the observed padding, available width and handle
+width, rather than treating widget width as the draggable track. Qt6.12's
+`QQuickSliderPrivate::positionAt` subtracts the left padding and half the handle,
+then divides by availableWidth-handleWidth. This matters for six seconds of a
+600-second fixture in the compact85px seekbar. Thirty-second diagnostic health
+observations report the original request's current core state only; they neither
+cancel that request nor retry its action or classify slow execution as failure.
+
+The user requests upstream synchronization after this pipeline works. M15 owns
+the normal merge after its base workflow passes, before final matrix qualification;
+M16 owns publication. Current read-only fetch:
 upstream master2cb78ca89c016df5b15b4f421d8b11e3253cb1a7, 97 absent commits;
-refresh the exact revision at that boundary rather than integrating during M15.
+refresh the exact revision at that boundary, preserving the single ACTIVE stage.
 
 The new backend uses stock upstream MPV0.42.0, commit
 `b0841e8c4d156b8403dc1876c4cbd9011eb583f3`, on Cocoa and X11/XWayland, with a

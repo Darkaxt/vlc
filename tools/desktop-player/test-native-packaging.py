@@ -19,6 +19,27 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_native_slider_click_uses_handle_center_at_all_window_sizes(self):
+        spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
+        client = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(client)
+        # The former 1%-of-widget click lands before the handle center on a
+        # compact seekbar, mapping to zero rather than six seconds of 600.
+        for width, padding, handle in [(80, 2, 8), (170, 2, 8), (340, 4, 16)]:
+            for mirrored in (False, True):
+                geometry = dict(width=width, left_padding=padding, right_padding=padding,
+                                available_width=width - padding * 2, handle_width=handle,
+                                mirrored=mirrored)
+                for position in (0, 0.01, 0.1, 0.4, 1):
+                    fraction = client.NativePlayerClient.slider_fraction(
+                        {'slider_geometry': geometry}, position)
+                    x = fraction * width
+                    offset = width - x - padding if mirrored else x - padding
+                    observed = (offset - handle / 2) / (width - padding * 2 - handle)
+                    self.assertAlmostEqual(observed, position)
+                    self.assertGreaterEqual(fraction, 0)
+                    self.assertLessEqual(fraction, 1)
+
     def test_installed_homebrew_metadata_preserves_the_exact_recipe_and_sdk(self):
         spec = importlib.util.spec_from_file_location('toolchain', HERE / 'bind-ci-toolchain.py')
         toolchain = importlib.util.module_from_spec(spec)

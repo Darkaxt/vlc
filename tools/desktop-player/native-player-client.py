@@ -15,6 +15,19 @@ import uuid
 
 
 class NativePlayerClient:
+    @staticmethod
+    def slider_fraction(node, position):
+        """Invert Qt's handle-center mapping using this rendered slider's geometry."""
+        geometry = node['slider_geometry']
+        width = geometry['width']
+        extent = geometry['available_width'] - geometry['handle_width']
+        if width <= 0 or extent <= 0 or not 0 <= position <= 1:
+            raise ValueError('Slider has no usable track or position is out of range')
+        offset = geometry['handle_width'] / 2 + position * extent
+        x = (width - geometry['right_padding'] - offset if geometry['mirrored']
+             else geometry['left_padding'] + offset)
+        return x / width
+
     def __init__(self, process, directory, token):
         self.process = process
         self.directory = Path(directory).resolve()
@@ -66,9 +79,12 @@ class NativePlayerClient:
 
     def _wait(self):
         if self.queue:
-            return any(event.filter == select.KQ_FILTER_PROC
-                       for event in self.queue.control(None, 8, None))
-        events = self.selector.select()
+            events = self.queue.control(None, 8, 30)
+            return ('observe' if not events else
+                    any(event.filter == select.KQ_FILTER_PROC for event in events))
+        events = self.selector.select(timeout=30)
+        if not events:
+            return 'observe'
         exited = False
         for key, _ in events:
             if key.data == 'process':
@@ -86,10 +102,26 @@ class NativePlayerClient:
         pending.write_text(json.dumps(command) + '\n')
         pending.replace(self.directory / ('request-' + request_id + '.json'))
         ready = self.directory / (request_id + '.ready')
+        observer = None
         while not ready.exists():
             if self.process.poll() is not None:
                 raise RuntimeError('Owned player exited before response ' + request_id)
-            if self._wait() and not ready.exists():
+            # A health interval only reports the current state. It never ends,
+            # retries or changes the original pending operation. The test build
+            # supports a read-only snapshot while a predicate is pending.
+            if observer and (self.directory / (observer + '.ready')).exists():
+                observation = json.loads((self.directory / (observer + '.json')).read_text())
+                print('NATIVE WAIT', request_id, json.dumps({
+                    key: observation.get(key) for key in ('status', 'error', 'core', 'main_window')
+                }), flush=True)
+                observer = None
+            event = self._wait()
+            if event == 'observe' and not observer:
+                observer = uuid.uuid4().hex
+                probe = self.directory / ('pending-' + observer + '.json')
+                probe.write_text(json.dumps(dict(id=observer, token=self.token, op='snapshot')) + '\n')
+                probe.replace(self.directory / ('request-' + observer + '.json'))
+            elif event is True and not ready.exists():
                 raise RuntimeError('Owned player exited before response ' + request_id)
         result = json.loads((self.directory / (request_id + '.json')).read_text())
         if result.get('id') != request_id or result.get('status') == 'failed':
@@ -124,6 +156,14 @@ class NativePlayerClient:
         if key in ('position', 'time_seconds') or key.startswith('mpv_audio_'):
             fields['await_media_url'] = before.get('core', {}).get('url', '')
         return self.snapshot(**fields)
+
+    def slider(self, target, position):
+        before = self.snapshot()
+        index = self.target(before, target)
+        node = next(row for row in before['tree'] if row['node'] == index)
+        return self.request('click', revision=before['revision'], node=index,
+                            fraction_x=self.slider_fraction(node, position),
+                            fraction_y=0.5, button='left')
 
     def await_property(self, target, key, value, tolerance=0):
         before = self.snapshot()

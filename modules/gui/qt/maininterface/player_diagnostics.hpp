@@ -264,6 +264,17 @@ private:
             const QVariant value = item->property(property);
             if (value.isValid()) node.insert(QString::fromLatin1(property), QJsonValue::fromVariant(value));
         }
+        if (item->property("from").isValid() && item->property("to").isValid()
+            && item->property("availableWidth").isValid()) {
+            auto *handle = item->property("handle").value<QQuickItem *>();
+            node.insert(QStringLiteral("slider_geometry"), QJsonObject{
+                {QStringLiteral("width"), item->width()},
+                {QStringLiteral("left_padding"), item->property("leftPadding").toDouble()},
+                {QStringLiteral("right_padding"), item->property("rightPadding").toDouble()},
+                {QStringLiteral("available_width"), item->property("availableWidth").toDouble()},
+                {QStringLiteral("handle_width"), handle ? handle->width() : 0.},
+                {QStringLiteral("mirrored"), item->property("mirrored").toBool()}});
+        }
         if (auto accessible = QAccessible::queryAccessibleInterface(item)) {
             node.insert(QStringLiteral("name"), accessible->text(QAccessible::Name));
             node.insert(QStringLiteral("role"), int(accessible->role()));

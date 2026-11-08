@@ -58,9 +58,10 @@ system permission prompt as a way to pass local playback verification. Correct
 the Cocoa OpenGL probe to request its supported 3.2 Core profile rather than
 falling back to Qt's shader-less software renderer after a 3.0 Core request.
 
-**8 November upstream synchronization, already authorized:** after M15's native
-deployment pipeline is working, integrate the then-current upstream master by
-normal merge history in M16 before final qualification/publication. Preserve the
+**8 November upstream synchronization, R113, already authorized:** once M15's
+base native deployment workflow works, integrate the then-current upstream master
+by normal merge history within M15 before the final architecture/package matrix
+qualification and M16 publication. Preserve the
 fork's interface, Windows MPV/DV runtime, native port and existing data. Refresh
 and record exact revisions at integration; a reported backlog count is not a pin.
 

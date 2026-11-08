@@ -125,16 +125,16 @@ def check_engine(executable, root, fixture, engine):
             assert len(tracks) == 1, tracks
             save('select-subtitle', client.action('click', name=tracks[0]['name']))
             save('close-subtitle-menu', client.action('key', key=0x1000000))
-            save('subtitle-position', client.action('click', target='progressSlider', fraction_x=0.01))
+            save('subtitle-position', client.slider('progressSlider', 0.01))
             save('subtitle-seek-committed', client.await_core('time_seconds', 6, tolerance=2))
             subtitle = save('subtitle-picture', client.snapshot(capture=True, capture_native=True))
             assert any(track.get('selected') for track in subtitle['core']['subtitle_tracks']), subtitle['core']
-            save('seek', client.action('click', target='progressSlider', fraction_x=0.1))
+            save('seek', client.slider('progressSlider', 0.1))
             save('seek-committed', client.await_core('time_seconds', 60, tolerance=2))
             controls = client.snapshot()
             volume = next(node for node in controls['tree'] if node['id'] == 'volumeSlider' and node['visible'])
             requested = float(volume['to']) * 0.4
-            save('volume', client.action('click', target='volumeSlider', fraction_x=0.4))
+            save('volume', client.slider('volumeSlider', 0.4))
             save('volume-committed', client.await_core('mpv_audio_volume' if engine == 'mpv' else 'audio_session_volume',
                 requested ** 3 * 100 if engine == 'mpv' else requested,
                 tolerance=3 if engine == 'mpv' else 0.026))
