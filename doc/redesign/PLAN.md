@@ -1,6 +1,17 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+Windows attempt86/gate296 (37b7521de9b24cd290c7f5c65b39e75b) stopped
+before compilation: its fresh-runtime helper was incorrectly given the retained
+1.1.11 assembly. That runtime remains unchanged. The source binding reached
+5a04d500, the Linux group is empty, private mounts are released and no OOM
+occurred. Resume the same failed pipeline state using a fresh1.1.12 candidate
+and explicit candidate-specific dependency notices; preserve the immutable
+generation check and all SDK/codec/player objects. Package codec versions and
+SHA512 identities now follow the delivered source recipes, including AOM3.15.3,
+instead of a stale3.15.2 literal. Focused dispatch/provenance diagnostics pass;
+normal Windows compilation and native acceptance remain outstanding.
+Linux42473774480 (watch36719) is queued at5a04d500; preserve that pending run.
 Linux42471682713/job128706586154 closed1 (watch2279), after the full Qt/player
 and plugin graph compiled and installed. Raw package closure failed on VLC's
 libpl_scale_plugin.so -> libplacebo.so.387, which is present in the owned deps

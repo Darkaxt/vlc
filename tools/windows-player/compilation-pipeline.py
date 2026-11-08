@@ -32,6 +32,9 @@ def main():
     parser.add_argument('--source', type=Path, default=Path('/work/src'))
     parser.add_argument('--build', type=Path, default=Path('/work/build/win64'))
     parser.add_argument('--runtime', type=Path, default=Path('/scratch/runtime'))
+    parser.add_argument('--dependency-notices', type=Path,
+        default=Path('/scratch/dependency-notices-upstream-1.1.1'),
+        help='Candidate-specific source/license inventory for the full upstream route')
     parser.add_argument('--state', type=Path, default=Path('/scratch/compilation/state.json'))
     parser.add_argument('--mode', choices=['diagnostics-mpv', 'normal-mpv', 'diagnostics-mpv-full', 'normal-mpv-full', 'diagnostics-mpv-current', 'normal-mpv-current'], default='diagnostics-mpv',
         help='Use the same pipeline for integrated acceptance or the final normal player')
@@ -48,7 +51,7 @@ def main():
     assert not args.mode.startswith('normal-') or args.release_symbols, 'A normal release requires separate symbol output'
     full = args.mode.endswith('-full')
     current = args.mode.endswith('-current')
-    notices = Path('/scratch/dependency-notices-upstream-1.1.1')
+    notices = args.dependency_notices
     cgroup = Path('/proc/self/cgroup').read_text().split('::', 1)[1].strip()
     assert cgroup.startswith('/llm-coordinator/'), 'Use the installed WSL gate'
     tools = args.source / 'tools/windows-player'
@@ -152,6 +155,7 @@ def main():
         'player_compile_cache_reason': os.environ.get('VLC_PLAYER_COMPILE_CACHE_REASON'),
         'replace_mpv_buildinfo_sha256': args.replace_mpv_buildinfo_sha256,
         'release_symbols': str(args.release_symbols) if args.release_symbols else None,
+        'runtime': str(args.runtime), 'dependency_notices': str(notices),
         'started_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'cgroup': cgroup,
         'source_head': subprocess.check_output(['git', '-C', str(args.source), 'rev-parse', 'HEAD'], text=True).strip(),
         'steps': {}}

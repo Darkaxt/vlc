@@ -23,6 +23,40 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_windows_release_codec_versions_follow_the_delivered_revision(self):
+        path = HERE.parent / 'windows-player/package-release.py'
+        tree = ast.parse(path.read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                        and node.name == 'verify_codec_sources')
+        import re
+        scope = {'re': re, 'subprocess': subprocess}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), str(path), 'exec'), scope)
+        libraries, overrides, archives = [], [], []
+        for component in ('mpg123', 'zvbi', 'mad', 'aom'):
+            folder = HERE.parents[1] / 'contrib/src' / component
+            version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
+                                (folder / 'rules.mak').read_text(), re.M).group(1)
+            filename, checksum = next((line.split()[1], line.split()[0])
+                for line in (folder / 'SHA512SUMS').read_text().splitlines()
+                if '-' + version + '.tar.' in line)
+            libraries.append(dict(library=component, version=version, archive=filename,
+                                  sha512=checksum, archive_sha256='a' * 64))
+            overrides.append(dict(library=component, version=version, archive=filename,
+                                  upstream_sha512=checksum, sha256='a' * 64))
+            archives.append(dict(archive=filename, sha256='a' * 64,
+                notices=[dict(archive_path='libaom-' + version + '/PATENTS', file='patent')]))
+        inventory = dict(vlc_dependency_overrides=overrides, archives=archives)
+        def committed_source(argv, **kwargs):
+            self.assertEqual(argv[:4], ['git', '-C', str(HERE.parents[1]), 'show'])
+            self.assertTrue(argv[4].startswith('delivered:'))
+            return (HERE.parents[1] / argv[4].split(':', 1)[1]).read_text()
+        with patch.object(subprocess, 'check_output', side_effect=committed_source):
+            self.assertEqual(scope['verify_codec_sources'](HERE.parents[1], 'delivered',
+                libraries, inventory)['file'], 'patent')
+            libraries[-1]['version'] = '0.0.0'
+            with self.assertRaises(AssertionError):
+                scope['verify_codec_sources'](HERE.parents[1], 'delivered', libraries, inventory)
+
     def test_normal_reuse_checks_bytes_outside_the_diagnostic_guard(self):
         spec = importlib.util.spec_from_file_location('native_reuse', HERE / 'reuse-native-review.py')
         reuse = importlib.util.module_from_spec(spec)
@@ -88,6 +122,7 @@ class NativePackagingTest(unittest.TestCase):
             return child
         arguments = ['pipeline', '--source', str(HERE.parents[1]),
             '--state', '/owned/state.json', '--runtime', '/owned/runtime',
+            '--dependency-notices', '/owned/new-notices',
             '--release-symbols', '/owned/symbols', '--mode', 'normal-mpv-full',
             '--from-step', 'upstream-medialibrary']
         with patch.dict(os.environ, {'VLC_PLAYER_COMPILE_CACHE': '0',
@@ -110,6 +145,13 @@ class NativePackagingTest(unittest.TestCase):
         self.assertFalse(any('cache-toolchain.py' in str(command) for command in commands))
         self.assertIn('build-upstream-codecs.py', str(commands))
         self.assertIn('build-player.sh', str(commands))
+        for command in commands:
+            if any(name in str(command) for name in
+                    ('prepare-upstream-runtime.py', 'prepare-upstream-codec-notices.py')):
+                self.assertEqual(command[command.index('--notices') + 1], str(Path('/owned/new-notices')))
+        attempt = json.loads(save.call_args.args[0])
+        self.assertEqual(attempt['dependency_notices'], str(Path('/owned/new-notices')))
+        self.assertEqual(attempt['runtime'], str(Path('/owned/runtime')))
         self.assertEqual(json.loads(save.call_args.args[0])['status'], 'complete')
 
     def test_linux_raw_dependency_discovery_uses_only_its_owned_prefix(self):

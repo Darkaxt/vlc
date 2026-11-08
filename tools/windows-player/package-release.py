@@ -23,6 +23,31 @@ def sha256(path):
         return hashlib.file_digest(source, 'sha256').hexdigest()
 
 
+def verify_codec_sources(repo, commit, libraries, inventory):
+    """Bind selected codec versions and archives to the delivered source revision."""
+    assert {item['library'] for item in libraries} == {'mpg123', 'zvbi', 'mad', 'aom'}
+    overrides = {item['library']: item for item in inventory['vlc_dependency_overrides']}
+    for item in libraries:
+        component = item['library']
+        def source(name):
+            return subprocess.check_output(['git', '-C', str(repo), 'show',
+                commit + ':contrib/src/' + component + '/' + name], text=True)
+        version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
+            source('rules.mak'), re.M).group(1)
+        assert item['version'] == version, component
+        override = overrides[component]
+        sums = {line.split()[1]: line.split()[0] for line in source('SHA512SUMS').splitlines() if line.strip()}
+        assert override['version'] == version and override['archive'] == item['archive']
+        assert override['upstream_sha512'] == item['sha512'] == sums[item['archive']]
+        assert override['sha256'] == item['archive_sha256']
+        archive = next(row for row in inventory['archives'] if row['archive'] == item['archive'])
+        assert archive['sha256'] == item['archive_sha256']
+    aom = next(item for item in libraries if item['library'] == 'aom')
+    archive = next(item for item in inventory['archives'] if item['archive'] == aom['archive'])
+    return next(item for item in archive['notices']
+        if item['archive_path'] == 'libaom-' + aom['version'] + '/PATENTS')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', type=Path, required=True)
@@ -128,16 +153,11 @@ def main():
         shutil.copy2(coherent, package / coherent.name)
         codecs = json.loads((runtime / 'VLC-CODEC-BUILDINFO.json').read_text())
         assert codecs['schema'] == 'vlc_redesign.upstream_codec_linkage.v1'
-        expected_codecs = {'mpg123': '1.33.7', 'zvbi': '0.2.46', 'mad': '0.16.5', 'aom': '3.15.2'}
-        assert {item['library']: item['version'] for item in codecs['libraries']} == expected_codecs
-        overrides = {item['library']: item for item in dependency_inventory['vlc_dependency_overrides']}
+        patent = verify_codec_sources(repo, args.source_commit, codecs['libraries'], dependency_inventory)
         for item in codecs['libraries']:
-            assert overrides[item['library']]['sha256'] == item['archive_sha256']
             linked = next(plugin for plugin in provenance['plugins']
                 if Path(plugin['file']).name == 'lib' + item['library'] + '_plugin.dll')
             assert linked['unstripped_sha256'] == item['unstripped_plugin_sha256']
-        aom_source = next(item for item in dependency_inventory['archives'] if item['archive'] == 'libaom-3.15.2.tar.gz')
-        patent = next(item for item in aom_source['notices'] if item['archive_path'] == 'libaom-3.15.2/PATENTS')
         assert sha256(args.dependency_notices / patent['file']) == patent['sha256']
         shutil.copy2(runtime / 'VLC-CODEC-BUILDINFO.json', package / 'VLC-CODEC-BUILDINFO.json')
     for folder in ('plugins', 'lua', 'skins', 'hrtfs', 'locale'):
