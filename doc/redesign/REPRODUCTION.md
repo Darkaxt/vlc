@@ -2,6 +2,26 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+Windows upstream acceptance currently binds normal run89 at5fcb86e9 and the
+diagnostic-only run91 at8063ad93. Run91 completed with group-empty/private-mount
+release and reused the normal non-Qt runtime images. Integrated handover,
+Stop/idle-switch/restart, real backend/library changes, subtitle cues and floating
+playback pass. Final normal assembly still needs the selected single delivery
+revision and matching split-symbol mappings; these are not published packages.
+Private DV pixel evidence at D:/Temp/vlc-s8-desktop-1.1.12-20261108/dv-pixels-*
+includes original failures plus retained-frame verification for P5/P8.1 and a
+direct passed P8.4 result. Reference mapping must use reported_video_surface's
+aspect-fit target before the native GetClientRect crop; the1922/1920 CSD
+difference is not a color failure. Keep the strict channel mean error below3;
+the mapping-disabled eightfold negative is meaningful for P5, whereas P8 has a
+compatible base layer. Do not publish these private clips or frames. Verify each
+fresh placement on its owned desktop with observe-normal-window.py before an
+input-desktop offscreen capture. A caller on another desktop cannot establish
+visibility through IsWindowVisible. Current receipts bind the exact417 PE hashes,
+input/capture identities, no activation, normal process exit and unchanged input
+desktop. Spent runtime copies use transactional cleanup with portable test profiles
+preserved independently; runtime bases and native objects have continuing consumers.
+
 Native corresponding-source inputs now reuse verified originals from
 `.desktop-build/corresponding-source-inputs` and the original contrib revision's
 `tarballs` directory. These are continuing build inputs; extracted notices and

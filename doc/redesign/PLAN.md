@@ -45,10 +45,34 @@ no QML error; the original pending observation was explicitly cancelled and the
 owned player exited0/QApp finished. Preserve the failed observation. Repair the
 bridge's native event subscription and reverify stop/idle-switch/restart; this is
 a diagnostic-only correction, not an established production playback failure.
+That correction is now verified in run91/gate303 at8063ad93: Qt45.3s elapsed,
+40.7s CPU, zero OOM, empty Linux group and released mounts. Its diagnostic
+assembly explicitly retains the normal416 non-Qt PE images; the two relinked
+core DLL metadata changes remain documented separately. Integrated paused and
+playing handover, Stop/idle-engine switch/restart, seeking, native backend
+controls and real Unicode library edits pass with normal shutdown. The MPV-only
+statistics control is disabled; its inactive-desktop hover tooltip was not
+observed and is not claimed as verified.
+Floating playback passes VLC/MPV at100/150/200 percent, including seek, queue,
+restore, close-while-minimized and EOF replay. Selected embedded and external
+subtitle cues/timing/navigation pass in both engines. Protected profiles remain
+unchanged. Actual offscreen WGC P5/P8.1/P8.4 pictures match independent pinned
+software references: maximum channel mean errors2.006/2.001/1.952 on0..255,
+below the unchanged3 threshold. P5's mapping-disabled negative exceeds eight
+times the positive error; P8's compatible base is not a discriminating negative.
+The original failed geometry assertion is preserved: Qt's1922-wide target has
+a1-pixel aspect-fit letterbox before the1920-wide native client crop. Correct
+that observer geometry, not playback. The earlier inactive-desktop visibility
+assertion used a caller on a different desktop; a same-desktop native observer
+now proves offscreen/no-activation placement before each actual capture.
+Receipts remain private under D:/Temp/vlc-s8-desktop-1.1.12-20261108; DV clips
+and frames must never enter release assets. Transactionef058dab799f6433128c47bfb8ad88bc
+retired fourteen spent runtime copies (5180085784 logical bytes) with profiles
+and evidence preserved; zero residuals/errors. Current consumers remain retained.
 The final source-rebind guard also proves the shared Windows AOM policy unchanged
 when accepting the reviewed hosted Cocoa build-helper changes. The normal
-runtime/symbols remain immutable. Handover, seeking/subtitles, miniplayer, actual
-native visual inspection and final one-revision delivery remain required.
+runtime/symbols remain immutable. Final normal source binding, remaining native
+visual/package inspection and final one-revision delivery remain required.
 
 Current remaining acceptance: Intel Mac and both Linux architecture packages,
 matching installer execution, Windows normal compilation/native VLC+MPV/DV
@@ -720,7 +744,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. MacARM d8 normal ZIP/DMG and actual Metal VLC/MPV main/floating/restored pictures/subtitles pass. Windows full upstream normal build, all417 PE/symbol mappings, VLC+ML EOF/release, real WASAPI normal/start-paused/resume and MPV SDR/P5/P8.1/P8.4 actual presentation/EOF/release pass. SDK/objects retained. | R111 remaining architectures/formats and final package/source/license qualification; R112 new Mac Cocoa runtime cohort and final matrix; R113 Windows handover/seek/subtitle/miniplayer/picture inspection and final one-revision qualification. | Intel optional MetalLayer guard and Linux direct ELF/interpreter resolution await actual workflows; remaining integrated Windows diagnostic Qt acceptance is active. Internal acceptance blockers; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. MacARM d8 normal ZIP/DMG and actual Metal VLC/MPV main/floating/restored pictures/subtitles pass. Windows full upstream normal build, all417 PE/symbol mappings, VLC+ML EOF/release, real WASAPI, MPV SDR/DV presentation and P5/P8.1/P8.4 reference pixels pass. Integrated handover/stop/restart, backend/library controls, embedded/external subtitle timing and floating workflows pass; protected profiles unchanged. SDK/objects retained. | R111 remaining architectures/formats and final package/source/license qualification; R112 new Mac Cocoa runtime cohort and final matrix; R113 final normal one-revision binding and remaining native visual/package inspection. | Intel optional MetalLayer guard and Linux direct ELF/interpreter resolution await actual workflows. Internal acceptance blockers; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch

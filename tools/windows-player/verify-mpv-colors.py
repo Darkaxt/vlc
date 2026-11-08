@@ -28,6 +28,23 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def reference_for_surface(image, surface, client_size, dpr, aspect):
+    """Map the independent reference through the actual MPV target rectangle."""
+    width, height = (round(surface[key] * dpr) for key in ('width', 'height'))
+    assert width > 0 and height > 0 and aspect > 0
+    # MPV fits the source aspect into its reported swapchain target. Native CSD
+    # may leave a wider Qt surface than GetClientRect; scaling directly to the
+    # client loses that real letterbox offset (1922 versus1920 in the repro).
+    picture_width = min(width, round(height * aspect))
+    picture_height = min(height, round(width / aspect))
+    target = Image.new('RGB', (width, height))
+    target.paste(image.convert('RGB').resize((picture_width, picture_height), Image.Resampling.BILINEAR),
+        ((width - picture_width) // 2, (height - picture_height) // 2))
+    expected = Image.new('RGB', client_size)
+    expected.paste(target, (round(surface['x'] * dpr), round(surface['y'] * dpr)))
+    return expected
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime', required=True, type=Path)
@@ -82,7 +99,7 @@ def main():
         VLC_PLAYER_DIAGNOSTICS_DIR=str(evidence), VLC_PLAYER_DIAGNOSTICS_TOKEN=token,
         VLC_PLAYER_DIAGNOSTICS_OFFSCREEN='1',
         VLC_PLAYER_DIAGNOSTICS_BUILD=digest(plugin))
-    command = [str(runtime / 'vlc.exe'), '--language=en', '--intf=qt', '--no-one-instance',
+    command = [str(runtime / 'vlc.exe'), '--language=en', '--intf=qt', '--no-one-instance', '--qt-passive',
         '--qt-playback-engine=mpv', '--start-paused', '--no-media-library', '--no-plugins-cache',
         '--restore-playback-pos=0', '--no-save-recentplay', '--no-qt-privacy-ask',
         '--no-qt-updates-notif', '--no-metadata-network-access', '--no-qt-video-autoresize',
@@ -170,12 +187,14 @@ def main():
             with Image.open(composed) as image:
                 image = image.convert('RGB')
                 assert image.size == (frame.right - frame.left, frame.bottom - frame.top), (image.size, result['native_capture_geometry'])
-                assert (width, height) == tuple(round(snapshot['window'][key] * snapshot['window']['dpr']) for key in ('width', 'height'))
+                assert (width, height) == tuple(round(snapshot['window'][key] * snapshot['window']['dpr']) for key in ('frame_width', 'frame_height'))
                 assert abs(width / height - 16 / 9) < 0.005, snapshot['window']
                 assert 0 <= inset_x <= image.width - width and 0 <= inset_y <= image.height - height
                 client = image.crop((inset_x, inset_y, inset_x + width, inset_y + height))
             with Image.open(reference) as expected:
-                expected = expected.convert('RGB').resize(client.size, Image.Resampling.BILINEAR)
+                expected = reference_for_surface(expected, snapshot['reported_video_surface'], client.size,
+                    snapshot['window']['dpr'], core['video-out-params']['aspect'])
+            result['reference_surface_geometry'] = snapshot['reported_video_surface']
             # Exclude the designed title/control chrome and native borders.
             interior = (80, 140, client.width - 80, client.height - 160)
             actual = client.crop(interior)
@@ -185,7 +204,8 @@ def main():
             if args.negative:
                 negative = args.negative.resolve(strict=True)
                 with Image.open(negative) as rejected:
-                    rejected = rejected.convert('RGB').resize(client.size, Image.Resampling.BILINEAR).crop(interior)
+                    rejected = reference_for_surface(rejected, snapshot['reported_video_surface'], client.size,
+                        snapshot['window']['dpr'], core['video-out-params']['aspect']).crop(interior)
                 negative_error = ImageStat.Stat(ImageChops.difference(actual, rejected)).mean
                 result['mapping_disabled_rgb_error_0_255'] = negative_error
                 assert sum(negative_error) > 8 * max(sum(error), 1.), (error, negative_error)
