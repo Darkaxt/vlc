@@ -22,6 +22,9 @@
 # include "config.h"
 #endif
 
+/* This test must exercise its assertions in release-configuration builds. */
+#undef NDEBUG
+
 #include <vlc_common.h>
 #include <vlc_modules.h>
 #include <vlc_messages.h>
@@ -79,6 +82,66 @@ static void test_clock_update(void)
     /* Reset drift */
     input_clock_Reset(clock);
     input_clock_Delete(clock);
+}
+
+struct input_clock_updates {
+    unsigned updates;
+    unsigned discontinuities;
+};
+
+static vlc_tick_t input_clock_update(void *opaque, vlc_tick_t system,
+        vlc_tick_t stream, double rate, bool discontinuity)
+{
+    (void)system; (void)stream; (void)rate;
+    struct input_clock_updates *updates = opaque;
+    updates->updates++;
+    updates->discontinuities += discontinuity;
+    return 0;
+}
+
+static const struct vlc_input_clock_cbs input_clock_ops = {
+    .update = input_clock_update,
+};
+
+static void test_paused_pcr_updates(void)
+{
+    /* A paused seek/next-frame can feed PCRs spaced farther apart than the
+     * normal 300ms gap threshold while the system date remains frozen. */
+    for (unsigned paced = 0; paced < 2; paced++)
+    {
+        struct input_clock_updates updates = { 0 };
+        input_clock_t *clock = input_clock_New(&logger, 1.f);
+        assert(clock != NULL);
+        input_clock_AttachListener(clock, &input_clock_ops, &updates);
+        const vlc_tick_t paused_at = VLC_TICK_0 + VLC_TICK_FROM_SEC(10);
+        input_clock_ChangePause(clock, true, paused_at);
+        input_clock_Update(clock, paced, true, false,
+                           VLC_TICK_0 + VLC_TICK_FROM_SEC(6), paused_at);
+        for (unsigned second = 7; second <= 9; second++)
+            input_clock_Update(clock, paced, false, false,
+                               VLC_TICK_0 + VLC_TICK_FROM_SEC(second), paused_at);
+        assert(updates.updates == 4);
+        assert(updates.discontinuities == 0);
+
+        /* Backwards PCRs still reset the clock, even while paused. */
+        input_clock_Update(clock, paced, false, false,
+                           VLC_TICK_0 + VLC_TICK_FROM_SEC(8), paused_at);
+        assert(updates.discontinuities == 1);
+
+        /* Resume shifts system dates by the real pause duration. Ordinary
+         * equal progression is valid; a later forward jump remains a gap. */
+        const vlc_tick_t resumed_at = paused_at + VLC_TICK_FROM_SEC(20);
+        input_clock_ChangePause(clock, false, resumed_at);
+        input_clock_Update(clock, paced, false, false,
+                           VLC_TICK_0 + VLC_TICK_FROM_SEC(9),
+                           resumed_at + VLC_TICK_FROM_SEC(1));
+        assert(updates.discontinuities == 1);
+        input_clock_Update(clock, paced, false, false,
+                           VLC_TICK_0 + VLC_TICK_FROM_SEC(20),
+                           resumed_at + VLC_TICK_FROM_SEC(2));
+        assert(updates.discontinuities == 2);
+        input_clock_Delete(clock);
+    }
 }
 
 static void clock_update_abort(
@@ -147,5 +210,7 @@ int main(void)
 {
     fprintf(stderr, "test_clock_update:\n");
     test_clock_update();
+    fprintf(stderr, "test_paused_pcr_updates:\n");
+    test_paused_pcr_updates();
     return 0;
 }

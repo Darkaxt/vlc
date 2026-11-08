@@ -445,6 +445,8 @@ def main():
     try:
         make_flags = native_make_flags(work, env)
         run('make', '-j1', *make_flags, cwd=build, env=env)
+        run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
+        run(build / 'src/test_input_clock', cwd=build, env=env)
         run('make', '-j1', 'install', *make_flags, cwd=build, env=env)
     finally:
         retain_bootstrap_sources(work, tracked_sources)

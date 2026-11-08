@@ -60,6 +60,14 @@ system permission prompt as a way to pass local playback verification. Correct
 the Cocoa OpenGL probe to request its supported 3.2 Core profile rather than
 falling back to Qt's shader-less software renderer after a 3.0 Core request.
 
+Native paused-seek acceptance also exposes repeated false input-clock gaps:
+PCR advances during buffering/frame stepping while the paused system date is
+frozen, resetting the reference until the input reaches EOF. Preserve the
+existing paused-date lateness correction, suppress forward wall-clock gap
+classification while paused, and retain backwards-PCR and resumed-gap detection.
+Verify the existing input-clock test with assertions enabled and real paused
+seeking in both engines; the reproduced failure remains historical evidence.
+
 **8 November upstream synchronization, R113, already authorized:** once M15's
 base native deployment workflow works, integrate the then-current upstream master
 by normal merge history within M15 before the final architecture/package matrix

@@ -251,8 +251,12 @@ vlc_tick_t input_clock_Update( input_clock_t *cl,
 
         /* A discontinuity happen if stream timings increase much more than
          * system timings or if the stream is going backward.
-         * Don't compare system timings if the origin has just been changed */
-        if ((!cl->b_origin_changed && diff > CR_MAX_GAP) || stream_diff < 0)
+         * Don't compare system timings if the origin has just been changed
+         * or the clock is paused: paused seeks/frame steps feed advancing
+         * PCRs against a deliberately frozen system date. Backwards PCRs
+         * still indicate a discontinuity in either state. */
+        if ((!cl->b_origin_changed && !cl->b_paused && diff > CR_MAX_GAP)
+            || stream_diff < 0)
         {
             /* Stream discontinuity, for which we haven't received a
              * warning from the stream control facilities (dd-edited

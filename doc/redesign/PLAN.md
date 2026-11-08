@@ -1,6 +1,15 @@
 # VLC redesign stages and reconciliation
 
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
+The paused-PCR discontinuity is reproduced by compiling the existing clock
+test with the actual input_clock.c/clock_internal.c on native Windows GCC,
+using the read-only1.1.11 core only for logging. Before correction it reports
+three false gaps and fails the no-discontinuity assertion. After correction
+it exits0 for paced/unpaced clocks, frozen paused progression, backwards PCRs
+and valid resumed progression followed by a real forward gap. Production
+pause-date/lateness behavior is preserved. The existing test now keeps its
+assertions enabled in Release builds and runs before native installation.
+Real native seeking/picture and Windows integrated regressions remain required.
 Run42447292266/job128628834386 built and installed AOM3.15.3 as Release,
 then rejected its cache because the verification required literal equality.
 AOM's verified source appends supported warning/language flags to those cache
