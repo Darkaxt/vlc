@@ -512,13 +512,13 @@ class NativePackagingTest(unittest.TestCase):
         with patch.object(Path, 'resolve', resolve), \
                 patch.object(Path, 'is_symlink', lambda path: path == Path('/lib')), \
                 patch.object(sources.subprocess, 'run', return_value=SimpleNamespace(returncode=0,
-                    stdout='liblzo2-2:amd64: ' + str(canonical) + '\n', stderr='')) as query:
+                    stdout='liblzo2-2:amd64: ' + str(canonical) + '\n', stderr='')) as canonical_query:
             self.assertEqual(sources.dpkg_owner(registered)['registered_paths'], [str(canonical)])
-            query.assert_called_once()
-            self.assertEqual(query.call_args.args[0][-1], str(canonical))
+            canonical_query.assert_called_once()
+            self.assertEqual(canonical_query.call_args.args[0][-1], str(canonical))
             # Do not inspect the historical alias after the physical file is
             # bound, and never accept a multiple-owner row as a package name.
-            query.return_value.stdout = 'liba:amd64, libb:amd64: ' + str(canonical) + '\n'
+            canonical_query.return_value.stdout = 'liba:amd64, libb:amd64: ' + str(canonical) + '\n'
             with self.assertRaisesRegex(RuntimeError, 'Ambiguous installed dpkg owner'):
                 sources.dpkg_owner(registered)
         with patch.object(Path, 'resolve', resolve), patch.object(Path, 'is_symlink', return_value=False), \
