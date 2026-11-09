@@ -81,6 +81,9 @@ def workflow_build_contract(text):
     if not separator or not end:
         raise RuntimeError('Native workflow normal build boundaries changed')
     text = (global_environment[0] if global_environment else '') + build
+    # Cache-retirement API authority does not participate in compilation.
+    text = re.sub(r'^    permissions:\n(?:      [^\n]*\n)*', '', text, flags=re.MULTILINE)
+    text = text.replace(" ${{ inputs.native_ui_only && '--require-reuse' || '' }}", '')
     text = text.replace('      - name: Check unchanged normal package for test-only repair\n'
         '        id: review_reuse\n'
         '        run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build"\n', '')
@@ -226,8 +229,12 @@ def reusable(work):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
+    parser.add_argument('--require-reuse', action='store_true',
+        help='Reject an unavailable unchanged runtime instead of allowing a normal rebuild')
     args = parser.parse_args()
     receipt = reusable(args.work.resolve())
+    if args.require_reuse and receipt is None:
+        raise RuntimeError('Requested UI-only observation has no verified reusable normal runtime; no rebuild allowed')
     (args.work / 'review-reuse.json').write_text(json.dumps(receipt, indent=2) + '\n')
     with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as stream:
         stream.write('reuse=' + ('true' if receipt else 'false') + '\n')

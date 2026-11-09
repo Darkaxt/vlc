@@ -1,6 +1,20 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+UI diagnostic42558981914/06949b69 was scoped-cancelled (watch29272 exit1)
+after its reuse guard incorrectly classified the cache-management job permission
+as a compiler input and started normal installation/packaging. No UI acceptance
+occurred. Artifact13648359094 retains incomplete-build evidence; no new cache
+was saved, and remote retirement correctly refused to remove predecessors.
+The workflow comparison now excludes job API permissions, preserving every
+actual compiler/setup input. Explicit UI-only requests require verified reuse
+and fail before normal compilation if unavailable. Focused regression first
+reproduced the false binding mismatch, then passed the correction; required
+reuse rejection and production/configuration rejection are also exercised.
+Use the original e2 normal payload for the next UI fault observation. The
+separate source-only medialibrary join correction remains unverified and is
+excluded from that diagnostic revision until the floating crash is understood.
+
 Normal Linux42554480926/e2d83e02 closed1; original watch71579 exit1.
 The HTTPS source closure and all five package formats assembled successfully.
 TAR/AppImage both-engine checks progressed; DEB MPV then segfaulted after

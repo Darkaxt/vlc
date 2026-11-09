@@ -1402,12 +1402,25 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual(base, reuse.workflow_build_contract(workflow.replace(
             'run: python3 tools/desktop-player/compact-native-cache.py',
             'run: python3 tools/desktop-player/other-retention.py')))
+        self.assertEqual(base, reuse.workflow_build_contract(workflow.replace(
+            '    permissions:\n      contents: read\n      actions: write\n', '')))
         for changed in (workflow.replace('run: python3 tools/desktop-player/build-native.py',
                                          'run: python3 tools/desktop-player/build-native.py --changed'),
                         workflow.replace('\njobs:\n', '\nenv:\n  CXXFLAGS: -O0\njobs:\n'),
                         workflow.replace('run: bash tools/desktop-player/install-ci-dependencies.sh',
                                          'run: bash tools/desktop-player/different-sdk.sh')):
             self.assertNotEqual(base, reuse.workflow_build_contract(changed))
+
+    def test_required_review_reuse_rejects_absent_runtime(self):
+        spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec); spec.loader.exec_module(reuse)
+        work = Path(sys.argv_scratch) / ('missing-runtime-' + uuid.uuid4().hex)
+        work.mkdir()
+        with patch.object(reuse, 'reusable', return_value=None), \
+             patch.object(sys, 'argv', ['reuse-native-review.py', '--work', str(work), '--require-reuse']):
+            with self.assertRaisesRegex(RuntimeError, 'no rebuild allowed'):
+                reuse.main()
+        self.assertFalse((work / 'review-reuse.json').exists())
 
     def test_linux_fault_capture_preserves_failure_and_excludes_credentials(self):
         spec = importlib.util.spec_from_file_location('linux_packages', HERE / 'verify-linux-packages.py')
