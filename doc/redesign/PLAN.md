@@ -6,7 +6,11 @@ architectures pass normal VLC ZIP/DMG checks and full native workflows. Their
 actual VLC/MPV main, floating and restored pictures were separately inspected:
 full-size color patterns and selected subtitles render correctly. Original
 42525634221 is closed (Intel success; overall failure from Linux). Corrected
-Linux x86 run42529791764 at32a9544c is running under its original identity.
+Linux x86 run42529791764 at32a9544c closed1 after normal compilation and
+TAR/AppImage playback passed. The identical DEB MPV payload reached natural EOF,
+released MPV and exited Qt, then crashed while removing the medialibrary module.
+Its full UI acceptance never ran; collect the actual shutdown stack from this
+exact artifact13640326180 without compilation before changing production code.
 Both original Linux architectures fail the fuller
 UI check because AccessibleCompat discards its assigned ID before Qt6.8; the
 visible Subtitles button cannot be addressed. Retain the compatibility property
@@ -37,7 +41,10 @@ scratch after the artifact upload, preserving all SDK/compiler objects, mtimes,
 configuration and normal ZIP/DMG/TAR/AppImage/DEB/RPM/Snap archives. Keep the
 existing cache path/version so migration can reuse current objects. Focused
 retention/tamper/compacted-runtime tests pass. The bounded compiler-free cache
-migration and subsequent actual restoration/size measurement remain unverified.
+Intel migration42537219723 closed0: logical retained bytes fell from7,468,937,760
+to4,610,656,737, preserving compiler/dependency trees and ZIP/DMG hashes. Saved
+cache10208101233 is2,285,653,880 bytes versus original4,846,167,616; an actual
+subsequent restoration remains required.
 Do not call this pipeline repair accepted until those native receipts pass.
 
 Earlier553 implementation checkpoint:

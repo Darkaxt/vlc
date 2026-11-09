@@ -21,6 +21,11 @@ on:
         description: Collect normal Linux startup thread stacks from the recovered artifact; not acceptance
         type: boolean
         default: false
+      trace_engine:
+        description: Engine for the compiler-free diagnostic (MPV follows EOF through exit or crash)
+        type: choice
+        options: [vlc, mpv]
+        default: vlc
       cache_compaction:
         description: Optional exact existing cache/artifact/source JSON for compiler-free retention migration
         type: string
@@ -201,7 +206,7 @@ jobs:
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --packages-only --work "$GITHUB_WORKSPACE/.package-review/work" --review-root "$RUNNER_TEMP/recovered-player-review"
       - name: Diagnose recovered normal Linux startup without compiling
         if: ${{ inputs.startup_trace }}
-        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --startup-trace --work "$GITHUB_WORKSPACE/.package-review/work" --review-root "$RUNNER_TEMP/recovered-player-review"
+        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --startup-trace --trace-engine "${{ inputs.trace_engine }}" --work "$GITHUB_WORKSPACE/.package-review/work" --review-root "$RUNNER_TEMP/recovered-player-review"
       - name: Preserve package qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

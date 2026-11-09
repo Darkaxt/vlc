@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Capture two live thread observations of a recovered normal Linux player.
+"""Capture live thread observations of a recovered normal Linux player.
 
 Diagnostic only: no compiler, runtime substitution or package acceptance. The
 five-second observation cadence requests stacks; it is not a playback deadline.
 After the requested observations, retire only this owned debugger/process group.
+MPV mode instead follows the finite clip through its actual exit or crash.
 """
 import argparse
 import importlib.util
@@ -28,6 +29,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
     parser.add_argument('--scratch', required=True, type=Path)
+    parser.add_argument('--engine', choices=('vlc', 'mpv'), default='vlc')
     args = parser.parse_args()
     if platform.system() != 'Linux' or os.environ.get('GITHUB_ACTIONS') != 'true':
         raise RuntimeError('Startup tracing requires the disposable hosted Linux runner')
@@ -51,8 +53,10 @@ def main():
         XDG_CACHE_HOME=str(args.scratch / 'cache'))
     Path(env['HOME']).mkdir()
     argv = [str(app / 'modern-vlc'), '--no-qt-privacy-ask', '--no-metadata-network-access',
-        '--restore-playback-pos=0', '--qt-playback-engine=vlc', '--play-and-exit', '--verbose=2', str(fixture)]
-    result = {'purpose': 'Known normal startup stall: thread-stack diagnosis, not acceptance',
+        '--restore-playback-pos=0', '--qt-playback-engine=' + args.engine,
+        '--play-and-exit', '--verbose=2', str(fixture)]
+    result = {'purpose': ('Known normal startup stall' if args.engine == 'vlc' else
+                         'Normal MPV EOF shutdown crash') + ': thread-stack diagnosis, not acceptance',
         'normal_source_commit': record['source_commit'], 'verifier_commit': os.environ['GITHUB_SHA'],
         'artifact_sha256_verified': recovery['artifact_sha256_verified'], 'compiler_invoked': False,
         'launcher_sha256': builder.sha(app / 'modern-vlc'), 'executable_sha256': builder.sha(app / 'bin/vlc'),
@@ -121,11 +125,11 @@ def main():
                         inferior_fd = os.pidfd_open(result['inferior_pid'])
                     if 'using qt theme provider module' in line:
                         theme_announcements += 1
-                        if theme_announcements >= 2 and running and not interrupted:
+                        if args.engine == 'vlc' and theme_announcements >= 2 and running and not interrupted:
                             next_observation = time.monotonic() + 5
                     if line.startswith('*running'):
                         running = True
-                        if theme_announcements >= 2 and next_observation is None and not interrupted:
+                        if args.engine == 'vlc' and theme_announcements >= 2 and next_observation is None and not interrupted:
                             next_observation = time.monotonic() + 5
                     if line.startswith('*stopped'):
                         running = False
