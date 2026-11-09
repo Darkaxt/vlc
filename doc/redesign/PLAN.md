@@ -1,6 +1,20 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal42552305798 at9ce189dd closed1; original watch7320 exit1 observed.
+Compilation passed and the HTTPS collector verified/cached ordinary sources
+through libopenmpt-modplug, including the previously failing cjson closure.
+The next source connection failed with Network is unreachable before player
+acceptance. Artifact13646496531 is247660805B, SHA256c0f5e6f319367467a0f361f0737ddd6134d54ae4132e60820fd97dc6fa151b10.
+The original compiler objects and549133863B of source inputs were retained;
+cache saving and job cleanup passed. The transport exception omitted its URL,
+so retain exact source ID/URL at the existing fetch boundary and propagate the
+original failure, without retry, timeout, publisher/version substitution or
+runtime changes. Source ready for the retained normal continuation: the complete
+renderer correction and package/source wiring remain integrated; only source
+transport context changes. Require actual package assembly, both-engine picture
+and lifecycle evidence before final common-revision qualification/publication.
+
 Normal42550258850 at80a67f13 closed1 (original watch91098 exit1). Compilation
 passed; source collection failed when archive.ubuntu.com:80 stopped responding
 for cjson1.7.17-1 DSC/original/patch. No actual player acceptance was reached.

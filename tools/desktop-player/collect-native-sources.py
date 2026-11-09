@@ -188,7 +188,12 @@ def fetch_source(record, directory):
         archive = directory / (expected[:16] + '-' + name)
         if not archive.exists():
             temporary = archive.with_name(archive.name + '.download')
-            urllib.request.urlretrieve(record['url'], temporary)
+            print('SOURCE FETCH ' + json.dumps({'id': record['id'], 'url': record['url']}), flush=True)
+            try:
+                urllib.request.urlretrieve(record['url'], temporary)
+            except OSError as error:
+                raise RuntimeError('Source transport failed: ' + record['id'] + ' at '
+                                   + record['url'] + ': ' + str(error)) from error
             if digest(temporary) != expected:
                 raise RuntimeError('Downloaded source checksum differs: ' + record['id'])
             temporary.replace(archive)
