@@ -10,7 +10,7 @@ else
     sudo install -m 644 /dev/null /etc/apt/sources.list.d/modern-vlc-build.sources
     sudo tee /etc/apt/sources.list.d/modern-vlc-build.sources >/dev/null <<'SOURCES'
 Types: deb-src
-URIs: http://archive.ubuntu.com/ubuntu/
+URIs: https://archive.ubuntu.com/ubuntu/
 Suites: noble noble-updates
 Components: main universe restricted multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg

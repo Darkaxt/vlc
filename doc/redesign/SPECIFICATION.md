@@ -18,6 +18,10 @@ The original HTTP source fetch for cjson1.7.17-1 failed on port80 in42550258850.
 Resolve the actual APT-selected source URIs and use the same public publisher's
 HTTPS path with the signed-index SHA256 closure. Preserve source versions and
 do not add transport retries, alternate publishers or skipped source obligations.
+Apply that same HTTPS transport to the hosted runner's source-index setup,
+retaining its Ubuntu archive/ports publisher, suites and signed archive key.
+The HTTP index connection timed out before cache restoration in42554226977;
+this must not be misreported as a compiler failure or trigger a toolchain reset.
 
 9 November R112 recovery evidence: preserve full ancestry when the Linux
 media-library root repeats an ancestor name. The0.14.1 splitter currently

@@ -1,6 +1,16 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Continuation42554226977 atf6284c38 closed1; original watch10660 exit1.
+Runner setup's hardcoded HTTP Ubuntu source index timed out on91.189.90.12:80
+(IPv6 also unreachable), leaving no deb-src indexes. No cache restoration,
+compilation or runtime checks occurred; the previous retained cohort is intact.
+Use HTTPS for that exact archive/ports source index, with unchanged suites,
+signing key and package graph. Its HTTPS InRelease returns200 in the host probe.
+The cohesive source-index/download context correction is source ready for the
+retained normal Linux continuation; actual hosted setup/assembly and complete
+renderer/picture/lifecycle qualification remain outstanding.
+
 Normal42552305798 at9ce189dd closed1; original watch7320 exit1 observed.
 Compilation passed and the HTTPS collector verified/cached ordinary sources
 through libopenmpt-modplug, including the previously failing cjson closure.
