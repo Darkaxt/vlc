@@ -1,6 +1,18 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+CPU-frame42563654151/a288d7da closed1 (original watch22431 exit1), with normal
+build/package generation skipped and owned display/audio/cache retirement passed.
+Artifact13650382491 is888975255B, SHA256da2ca8aa637af74eb1ef509e9ac1a4e1a644e75d613135bdd92a039a5d12bf4c.
+The actual saved caller is libgallium base plus866a39. Exact Ubuntu25.2.8-0ubuntu0.24.04.4
+ELF build ID198701d4b61dc1afd1949464114e27c1e90498a2 and matching debuginfod
+symbols resolve lp_rast_shade_quads_mask_sample, lp_rast.c:473. GDB frame view
+prints that caller but bt still starts at the physical JIT frame. Capture a
+separately labelled stack from the saved call boundary in GDB's postmortem
+register view, preserving the original registers/stacks and unmodified core file.
+The native rendering owner above rasterization is still required; do not infer
+a driver defect or change the renderer from this single caller alone.
+
 Caller observation42562949898/d4d97b1f closed1 (original watch2191 exit1).
 Normal build and packaging remained skipped; owned managers/audio exited and
 the original normal objects/cache were retained. Artifact13650412546 is888971785B,
