@@ -11,7 +11,11 @@ failure and logs. Capture the fault through the existing LLDB diagnostic mode
 using required unchanged-package reuse, without normal rebuilding or accepting
 a debugger-only pass. If debugger attachment suppresses reproduction, observe
 an untraced original child using its own bounded core resource limit and the
-existing OS core path. Do not change host OS core settings or relaunch a failed
+existing OS core facility. The disposable hosted CI runner alone may redirect
+its core destination into owned job scratch, with original settings restored
+and read back in finally; remove CI credentials from the child environment and
+keep raw cores private, uploading only stack/identity evidence. Do not change
+the user's host OS core settings or relaunch a failed
 child to invent original stack evidence. Preserve its failure even if core
 collection fails. Repair only an evidenced cause and requalify affected
 normal packages before M15 closure; Windows and other architectures retain

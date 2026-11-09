@@ -7,8 +7,12 @@ LLDB launches exit0 without capturing the original fault. These are diagnostic
 results, not repair or normal package acceptance. Preserve artifact13667725080
 and logs. The next Intel-only continuation uses required unchanged-package reuse
 and an untraced original child with a bounded child-only core limit. Read the
-existing OS core capability without changing it; retain and inspect only that
-child's original fault core. No new normal build, SDK or production mutation.
+existing OS core capability;55c's diagnostic preflight stopped before launch
+because the default destination is unavailable. Scope the core destination to
+owned scratch on the disposable hosted runner, restore/read back its original
+settings in finally, strip child CI credentials and keep raw cores private.
+Retain and inspect only that child's original fault core. No user-host changes,
+new normal build, SDK or production mutation.
 
 Coordinated normal run42597474062/source1346af0b is closed: Apple Silicon,
 Linuxx86 and LinuxARM jobs succeeded; Intel failed as above. Mac ZIP/DMG normal

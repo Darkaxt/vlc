@@ -827,16 +827,38 @@ class NativePackagingTest(unittest.TestCase):
         with patch.object(verifier, 'signal', signals), \
                 patch.object(verifier, 'threading', threads), \
                 patch.object(verifier.subprocess, 'Popen', return_value=child) as launch, \
-                patch.object(verifier, 'core_observation', return_value={'pattern':'/cores/core.%P'}) as prepare, \
+                patch.object(verifier, 'core_observation', return_value={'pattern':'/cores/core.%P','original_settings':{}}) as prepare, \
+                patch.object(verifier, 'configure_core_observation') as configure, \
                 patch.object(verifier, 'capture_native_core') as capture, patch('builtins.print'):
             with self.assertRaises(subprocess.CalledProcessError) as failure:
-                verifier.observe_launch(['vlc', '--play-and-exit'], {}, case, capture_core=True)
+                verifier.observe_launch(['vlc', '--play-and-exit'],
+                    {'GH_TOKEN':'test-secret', 'LANG':'en_US.UTF-8'}, case, capture_core=True)
             self.assertEqual(failure.exception.returncode, -4)
             prepare.assert_called_once_with(case)
             capture.assert_called_once_with(711, ['vlc', '--play-and-exit'], case,
-                                            {'pattern':'/cores/core.%P'})
+                                            {'pattern':'/cores/core.%P','original_settings':{}})
+            self.assertEqual(configure.call_args_list[-1].kwargs, {'restore':True})
             self.assertEqual(launch.call_args.args[0], ['vlc', '--play-and-exit'])
+            self.assertEqual(launch.call_args.kwargs['env'], {'LANG':'en_US.UTF-8'})
             child.wait.assert_called_once_with()
+
+    def test_mac_core_setup_and_restoration_use_exact_readback(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        observed = {'pattern':'/owned/job/core.%P', 'modified':[],
+                    'original_settings':{'kern.corefile':'/cores/core.%P', 'kern.coredump':'0'}}
+        with patch.object(verifier, 'run') as change, \
+                patch.object(verifier.subprocess, 'check_output',
+                    side_effect=['/owned/job/core.%P\n','1\n','0\n','/cores/core.%P\n']) as read:
+            verifier.configure_core_observation(observed)
+            verifier.configure_core_observation(observed, restore=True)
+        self.assertEqual([c.args[-1] for c in change.call_args_list], [
+            'kern.corefile=/owned/job/core.%P','kern.coredump=1','kern.coredump=0','kern.corefile=/cores/core.%P'])
+        self.assertEqual(read.call_count, 4)
+        with patch.object(verifier, 'run'), \
+                patch.object(verifier.subprocess, 'check_output', return_value='different\n'):
+            with self.assertRaisesRegex(RuntimeError, 'readback differs'):
+                verifier.configure_core_observation(observed, restore=True)
 
     def test_normal_mac_formats_require_each_engines_own_eof(self):
         spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')

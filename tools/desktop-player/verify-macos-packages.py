@@ -101,22 +101,43 @@ def trace_launch(argv, environment, case, app):
 
 
 def core_observation(case):
-    """Read native capability; change only the subsequently launched child's limit."""
+    """Bind private core storage only on the disposable hosted Mac runner."""
     import resource
+    root = os.environ.get('RUNNER_TEMP')
+    if os.environ.get('GITHUB_ACTIONS') != 'true' or not root \
+            or not case.resolve().is_relative_to(Path(root).resolve()):
+        raise RuntimeError('Private core setup requires owned disposable hosted-runner scratch')
     pattern = subprocess.check_output(['/usr/sbin/sysctl', '-n', 'kern.corefile'], text=True).strip()
     enabled = subprocess.check_output(['/usr/sbin/sysctl', '-n', 'kern.coredump'], text=True).strip()
-    parent = Path(pattern).parent
-    if enabled != '1' or not Path(pattern).is_absolute() or pattern.count('%P') != 1 \
-            or '%' in pattern.replace('%P', '') or '%' in str(parent) or not os.access(parent, os.W_OK):
-        raise RuntimeError('Native core capture unavailable without changing OS settings: ' + pattern)
+    if enabled not in ('0', '1'):
+        raise RuntimeError('Unexpected native core capability: ' + enabled)
     soft, hard = resource.getrlimit(resource.RLIMIT_CORE)
     limit = 4 * 1024 ** 3 if hard == resource.RLIM_INFINITY else min(hard, 4 * 1024 ** 3)
     if limit <= 0:
         raise RuntimeError('Native core hard limit forbids child-only capture')
-    result = {'pattern': pattern, 'original_soft_limit': soft, 'hard_limit': hard,
-              'child_soft_limit': limit, 'started_ns': time.time_ns(), 'os_settings_changed': False}
+    result = {'pattern': str(case.resolve() / 'core.%P'),
+              'original_settings': {'kern.corefile': pattern, 'kern.coredump': enabled},
+              'modified': [], 'original_soft_limit': soft, 'hard_limit': hard,
+              'child_soft_limit': limit, 'started_ns': time.time_ns(), 'user_host_settings_changed': False}
     (case / 'core-observer.json').write_text(json.dumps(result, indent=2) + '\n')
     return result
+
+
+def configure_core_observation(observation, restore=False):
+    if restore:
+        changes = [(key, observation['original_settings'][key])
+                   for key in reversed(observation['modified'])]
+    else:
+        changes = [('kern.corefile', observation['pattern'])]
+        if observation['original_settings']['kern.coredump'] != '1':
+            changes.append(('kern.coredump', '1'))
+    for key, value in changes:
+        run('sudo', '-n', '/usr/sbin/sysctl', key + '=' + value, stdout=subprocess.DEVNULL)
+        if not restore:
+            observation['modified'].append(key)
+        actual = subprocess.check_output(['/usr/sbin/sysctl', '-n', key], text=True).strip()
+        if actual != value:
+            raise RuntimeError('Hosted native core setting readback differs: ' + key)
 
 
 def capture_native_core(pid, argv, case, observation):
@@ -124,8 +145,7 @@ def capture_native_core(pid, argv, case, observation):
     core = Path(observation['pattern'].replace('%P', str(pid)))
     result = dict(pid=pid, path=str(core), captured=False)
     if core.is_file() and not core.is_symlink() and core.stat().st_mtime_ns >= observation['started_ns']:
-        retained = case / 'original-process.core'
-        shutil.copyfile(core, retained)
+        retained = core
         result.update(captured=True, bytes=retained.stat().st_size, sha256=digest(retained))
         with (case / 'original-core-lldb.log').open('wb') as stream:
             diagnostic = subprocess.run(['xcrun', 'lldb', '--batch', '--no-lldbinit',
@@ -169,8 +189,13 @@ def observe_launch(argv, environment, case, capture_core=False):
         signal.pthread_sigmask(signal.SIG_SETMASK, mask)
 
     try:
+        if core:
+            configure_core_observation(core)
         print('+ DIAGNOSTIC', ' '.join(map(str, argv)), flush=True)
-        process = subprocess.Popen(list(map(str, argv)), env=environment, start_new_session=True,
+        clean_environment = {key: value for key, value in environment.items()
+            if not capture_core or not any(word in key.upper()
+                for word in ('TOKEN', 'SECRET', 'PASSWORD', 'CREDENTIAL'))}
+        process = subprocess.Popen(list(map(str, argv)), env=clean_environment, start_new_session=True,
             preexec_fn=child_setup,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, errors='replace', bufsize=1)
         observer = threading.Thread(target=sample, name='mac-native-stack-observation')
@@ -217,6 +242,10 @@ def observe_launch(argv, environment, case, capture_core=False):
         for sig, handler in previous.items():
             signal.signal(sig, handler)
         signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+        if core:
+            configure_core_observation(core, restore=True)
+            (case / 'core-settings-restored.json').write_text(json.dumps({
+                'restored': True, 'original_settings':core['original_settings']}, indent=2) + '\n')
     return (case / 'stderr.log').read_text(errors='replace')
 
 
@@ -285,7 +314,7 @@ def main():
                 print((engine_case / 'stderr.log').read_text(errors='replace')[-10000:], flush=True)
                 (engine_case / 'failure.json').write_text(json.dumps({'argv': list(map(str, argv)),
                     'normal_returncode': error.returncode, 'archive_sha256': digest(archive)}, indent=2) + '\n')
-                if error.returncode < 0:
+                if error.returncode < 0 and not args.capture_core:
                     diagnose_crash(argv, env, engine_case, app, prior_reports)
                 raise
             if not args.trace_launch:
