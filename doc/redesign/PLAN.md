@@ -1,6 +1,26 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal80a67f13/42550258850 compiles successfully and is assembling packages;
+retain original watch91098 and continue its actual picture/lifecycle checks.
+Live packaging evidence shows repeated apt-get source downloads into each
+generation's .desktop-sources tree. Ordinary Debian originals bypass the retained
+corresponding-source-inputs cache used by archived pins. Correct that current
+R111 pipeline gap with package/version and APT/DSC SHA256-bound cache reuse,
+including corruption/incomplete-closure regressions. The original renderer
+qualification remains applicable to its unchanged production source; this
+collector repair needs its own real source/package assembly evidence before
+the final common-revision matrix. No stage advancement or publication yet.
+The integrated collector now stages exact original DSC/archive/patch members
+from corresponding-source-inputs/debian/<package>/<encoded-version>. First
+acquisition is bound to the signed APT source index's complete SHA256 list;
+subsequent reuse checks the retained package/version, every byte/size/hash and
+the DSC identity/closure before copying. The binding is atomically committed
+only after verification. Focused fixtures pass fresh acquisition, no-download
+reuse, epoch paths, archived-source compatibility, changed/missing originals,
+wrong identities and a source index missing a declared patch. This source is
+ready for real packaging validation alongside the unchanged renderer; no new
+normal build is dispatched while42550258850 is still completing.
 Control42548876491 at5e2f9f99 closed0; original watch88037 exit0 observed.
 The X11 control's actual native and display-rectangle pictures both show the
 full test pattern (5f4f525d83fd45db829ce947f1e0f2d4, SHA256da496e604b424f9132c22d7e69a7511fa1b76e8b5e30e0c0d715acfd412d1d95).

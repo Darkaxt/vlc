@@ -415,6 +415,72 @@ def debian_source_path(name, version):
     return Path(name) / urllib.parse.quote(version, safe='.+~-')
 
 
+def debian_sha256_members(text):
+    section = re.search(r'^Checksums-Sha256:\n((?:[ \t].*(?:\n|$))+)', text, re.M)
+    if not section:
+        raise RuntimeError('Debian source metadata has no SHA256 closure')
+    members = {}
+    for line in section[1].splitlines():
+        fields = line.split()
+        if len(fields) != 3:
+            raise RuntimeError('Invalid Debian source checksum row')
+        digest, size, name = fields
+        if (name in members or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9+._~%-]*', name)
+                or not re.fullmatch('[0-9a-f]{64}', digest) or not size.isdecimal()):
+            raise RuntimeError('Invalid Debian source member')
+        members[name] = {'sha256': digest, 'bytes': int(size)}
+    return members
+
+
+def collect_debian_source(name, version, directory, cache):
+    """Keep authenticated originals across package generations, never staging."""
+    cache.mkdir(parents=True, exist_ok=True)
+    binding_path = cache / 'source-binding.json'
+    cached = binding_path.exists()
+    if cached:
+        binding = json.loads(binding_path.read_text(encoding='utf-8'))
+        if binding.get('source_package') != name or binding.get('version') != version:
+            raise RuntimeError('Cached Debian source identity differs')
+        members = binding['members']
+    else:
+        indexes = output('apt-cache', 'showsrc', '--only-source', name)
+        matches = [debian_sha256_members(block) for block in indexes.split('\n\n')
+                   if re.search(r'^Package: ' + re.escape(name) + r'$', block, re.M)
+                   and re.search(r'^Version: ' + re.escape(version) + r'$', block, re.M)]
+        if not matches or any(row != matches[0] for row in matches):
+            raise RuntimeError('No unique installed Debian source version in authenticated APT metadata')
+        members = matches[0]
+        run('apt-get', 'source', '--download-only', '--only-source', name + '=' + version, cwd=cache)
+        binding = {'source_package': name, 'version': version, 'members': members}
+    if not members:
+        raise RuntimeError('Empty cached Debian source closure')
+    for filename, expected in members.items():
+        if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9+._~%-]*', filename):
+            raise RuntimeError('Invalid cached Debian source filename')
+        path = cache / filename
+        if (path.is_symlink() or not path.is_file() or path.stat().st_size != expected['bytes']
+                or sha(path) != expected['sha256']):
+            raise RuntimeError('Changed or incomplete cached Debian source: ' + filename)
+    descriptors = [filename for filename in members if filename.endswith('.dsc')]
+    if len(descriptors) != 1:
+        raise RuntimeError('Debian source closure has no unique descriptor')
+    descriptor = descriptors[0]
+    text = (cache / descriptor).read_text(encoding='utf-8')
+    if (not re.search(r'^Source: ' + re.escape(name) + r'$', text, re.M)
+            or not re.search(r'^Version: ' + re.escape(version) + r'$', text, re.M)):
+        raise RuntimeError('Debian source descriptor identity differs')
+    if debian_sha256_members(text) != {key: value for key, value in members.items() if key != descriptor}:
+        raise RuntimeError('Debian source descriptor closure differs from authenticated APT metadata')
+    if not cached:
+        temporary = binding_path.with_suffix('.json.tmp')
+        temporary.write_text(json.dumps(binding, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+        temporary.replace(binding_path)
+    for filename in sorted(members):
+        shutil.copy2(cache / filename, directory / filename)
+    print('SOURCE CACHE ' + json.dumps({'package': name, 'version': version,
+          'reused': cached, 'members': len(members)}), flush=True)
+
+
 def collect_linux(work, app, destination):
     paths = []
     for filename in (app / 'NATIVE-DEPENDENCIES.json', app / 'lib/mpv/runtime.json'):
@@ -448,7 +514,8 @@ def collect_linux(work, app, destination):
             collect_archived_debian_source(pins[0], directory,
                 work / 'corresponding-source-inputs/debian' / relative)
         else:
-            run('apt-get', 'source', '--download-only', '--only-source', name + '=' + version, cwd=directory)
+            collect_debian_source(name, version, directory,
+                work / 'corresponding-source-inputs/debian' / relative)
         for package in binaries:
             copyright_file = Path('/usr/share/doc') / package.split(':')[0] / 'copyright'
             if not copyright_file.is_file():

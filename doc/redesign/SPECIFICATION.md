@@ -4,6 +4,17 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+R111 pipeline cache reconciliation, 9 November: normal80a67f13 compilation
+completes before the source collector repeatedly downloads ordinary Debian
+sources into generation-specific staging. Preserve exact ordinary source
+archives in the already retained corresponding-source-inputs cache, alongside
+archived source pins. Bind them to the installed source package/version and
+authenticated APT SHA256 closure; verify every cached member before reuse or
+staging. A corrupt or incomplete binding must fail explicitly, never silently
+convey mismatched sources. Keep original DSC names, patches, notices, complete
+source delivery and the normal runtime unchanged. This serves the existing
+reusable-dependency pipeline requirement and does not open another stage.
+
 9 November R112 recovery evidence: preserve full ancestry when the Linux
 media-library root repeats an ancestor name. The0.14.1 splitter currently
 misdirects `/home/runner/.../home/data/...` to `/home/data/...`; EACCES is observed

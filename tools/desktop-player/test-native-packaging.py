@@ -1,5 +1,6 @@
 """Focused diagnostics for native package closure and immutable MPV staging."""
 import ast
+import hashlib
 import importlib.util
 import json
 import io
@@ -485,6 +486,53 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual(group['ranges']['pts'], [0, 1000000])
         self.assertEqual(group['last'], rows[-1])
         self.assertEqual(report['input_clock_gap_warnings'], 1)
+
+    def test_debian_source_cache_reuses_exact_originals_and_rejects_damage(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        root = Path(sys.argv_scratch) / ('debian-cache-' + uuid.uuid4().hex)
+        root.mkdir()
+        contents = {'pcre2.orig.tar.gz': b'original source', 'pcre2.debian.tar.xz': b'distribution patches'}
+        rows = lambda: ''.join(f' {hashlib.sha256(value).hexdigest()} {len(value)} {name}\n'
+                              for name, value in contents.items())
+        contents['pcre2.dsc'] = ('Source: pcre2\nVersion: 10.42-4ubuntu2.1\nChecksums-Sha256:\n'
+                                 + rows() + 'Files:\n').encode()
+        index = 'Package: pcre2\nVersion: 10.42-4ubuntu2.1\nChecksums-Sha256:\n' + rows() + 'Directory: pool/main/p/pcre2\n'
+        cache = root / 'cache'
+
+        def download(*args, cwd):
+            self.assertEqual(args, ('apt-get', 'source', '--download-only', '--only-source',
+                                    'pcre2=10.42-4ubuntu2.1'))
+            for name, value in contents.items():
+                (cwd / name).write_bytes(value)
+
+        with patch.object(sources, 'output', return_value=index) as metadata, \
+                patch.object(sources, 'run', side_effect=download) as acquire:
+            first = root / 'first'; first.mkdir()
+            sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', first, cache)
+            second = root / 'second'; second.mkdir()
+            sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, cache)
+            self.assertEqual({path.name: path.read_bytes() for path in second.iterdir()}, contents)
+            self.assertEqual(acquire.call_count, 1)
+            self.assertEqual(metadata.call_count, 1)
+            (cache / 'pcre2.orig.tar.gz').write_bytes(b'changed source')
+            with self.assertRaisesRegex(RuntimeError, 'cached Debian source'):
+                sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, cache)
+            (cache / 'pcre2.orig.tar.gz').write_bytes(contents['pcre2.orig.tar.gz'])
+            (cache / 'pcre2.debian.tar.xz').unlink()
+            with self.assertRaisesRegex(RuntimeError, 'cached Debian source'):
+                sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, cache)
+            with self.assertRaisesRegex(RuntimeError, 'source identity'):
+                sources.collect_debian_source('pcre2', 'different', second, cache)
+            self.assertEqual(acquire.call_count, 1)
+        patch_bytes = contents['pcre2.debian.tar.xz']
+        patch_row = f' {hashlib.sha256(patch_bytes).hexdigest()} {len(patch_bytes)} pcre2.debian.tar.xz\n'
+        with patch.object(sources, 'output', return_value=index.replace(patch_row, '')), \
+                patch.object(sources, 'run', side_effect=download):
+            with self.assertRaisesRegex(RuntimeError, 'descriptor closure differs'):
+                sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, root / 'incomplete-index')
+        self.assertFalse((root / 'incomplete-index/source-binding.json').exists())
 
     def test_archived_debian_sources_preserve_descriptor_identity_and_patches(self):
         spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
