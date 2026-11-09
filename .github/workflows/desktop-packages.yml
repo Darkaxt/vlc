@@ -18,11 +18,11 @@ on:
         type: string
         default: ''
       startup_trace:
-        description: Collect normal Linux startup thread stacks from the recovered artifact; not acceptance
+        description: Diagnose a normal native launch (Linux recovered artifact or Mac retained ZIP); not acceptance
         type: boolean
         default: false
       trace_engine:
-        description: Engine for the compiler-free diagnostic (MPV follows EOF through exit or crash)
+        description: Engine for the compiler-free native launch diagnostic
         type: choice
         options: [vlc, mpv]
         default: vlc
@@ -106,10 +106,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
       - name: Verify recovered normal macOS ZIP and DMG applications
-        if: runner.os == 'macOS'
+        if: ${{ runner.os == 'macOS' && !inputs.startup_trace }}
         run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks"
+      - name: Observe the original normal macOS launch without a playback deadline
+        if: ${{ runner.os == 'macOS' && inputs.startup_trace }}
+        run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --observe-launch "${{ inputs.trace_engine }}"
       - name: Exercise the actual native player
-        if: ${{ !cancelled() && runner.os == 'macOS' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
+        if: ${{ !cancelled() && runner.os == 'macOS' && !inputs.startup_trace && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Install Linux crash observer
         if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
@@ -157,6 +160,7 @@ jobs:
             ${{ runner.temp }}/native-package-checks/*-runtime/crashes/**
             ${{ runner.temp }}/native-package-checks/*-runtime/*/*.log
             ${{ runner.temp }}/native-package-checks/*-runtime/*/*.json
+            ${{ runner.temp }}/native-package-checks/*-runtime/*/*.txt
             ${{ runner.temp }}/native-package-checks/*-runtime/*/crashes/**
             ${{ runner.temp }}/native-package-checks/installer-exit.json
             ${{ runner.temp }}/native-package-checks/*/*-stdout.log

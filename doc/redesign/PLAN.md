@@ -12,7 +12,12 @@ geometry and pixel counts under the picture lock, without creating a new source
 picture, requesting a redraw or changing production code. Verify normal bytes
 outside all three diagnostic headers before reusing the exact789 normal package.
 MacARM generated ZIP/DMG/source and passed normal VLC EOF; its normal MPV process
-has not returned. Intel Mac is still compiling Qt. Original watch75616 and owned
+has not returned. Its stderr remains redirected until exit, preventing live stack
+diagnosis. Prepare the existing startup_trace/trace_engine route for one normal
+Mac ZIP observation: stream its durable log and sample the exact unreaped child
+after a diagnostic cadence; never kill it on a timer or count this as acceptance.
+Reuse its exact normal package and retain explicit cancellation/group supervision.
+Intel Mac is still compiling Qt. Original watch75616 and owned
 guest73951 remain active; Windows installed-picture/EOF/uninstall awaits a logged-in
 owned guest. No new matrix, cold build, release or second ACTIVE stage.
 Server-fence921 run42583173295 closed1/watch67467 exit1 in6m55s; exact9ab

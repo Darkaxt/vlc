@@ -776,6 +776,42 @@ class NativePackagingTest(unittest.TestCase):
                 self.assertEqual(verifier.trace_launch(['vlc'], {}, Path('case'), Path('app')), normal)
             self.assertFalse(json.loads(save.call_args.args[0])['target_faulted'])
 
+    def test_mac_observation_streams_logs_samples_exact_pid_and_preserves_failure(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        for code in (0, 7):
+            case = Path(sys.argv_scratch) / ('mac-observation-' + uuid.uuid4().hex)
+            case.mkdir()
+            child = MagicMock(pid=710)
+            child.stdout = io.StringIO('MPV started\nMPV natural EOF reached\n')
+            child.poll.return_value = None
+            child.wait.return_value = code
+            event = MagicMock()
+            event.wait.return_value = False
+            signals = SimpleNamespace(SIGINT=2, SIGTERM=15, SIG_BLOCK=0, SIG_SETMASK=1,
+                SIG_IGN=None, pthread_sigmask=MagicMock(return_value=[]), signal=MagicMock())
+
+            def sample(argv, **kwargs):
+                self.assertEqual(argv[:4], ['/usr/bin/sample', '710', '1', '1'])
+                Path(argv[-1]).write_text('Thread 0: observed native stack\n')
+                return SimpleNamespace(returncode=0, stdout='sample complete')
+
+            threading = SimpleNamespace(Event=lambda: event, Thread=verifier.threading.Thread)
+            with patch.object(verifier, 'signal', signals), patch.object(verifier, 'threading', threading), \
+                    patch.object(verifier.subprocess, 'Popen', return_value=child) as launch, \
+                    patch.object(verifier.subprocess, 'run', side_effect=sample) as observe, patch('builtins.print'):
+                if code:
+                    with self.assertRaises(subprocess.CalledProcessError) as failure:
+                        verifier.observe_launch(['vlc', '--play-and-exit'], {}, case)
+                    self.assertEqual(failure.exception.returncode, code)
+                else:
+                    self.assertIn('MPV natural EOF reached', verifier.observe_launch(['vlc', '--play-and-exit'], {}, case))
+                self.assertEqual(observe.call_count, 1)
+                self.assertNotIn('timeout', launch.call_args.kwargs)
+                child.wait.assert_called_once_with()
+                child.kill.assert_not_called(); child.terminate.assert_not_called()
+            self.assertEqual((case / 'stderr.log').read_text(), 'MPV started\nMPV natural EOF reached\n')
+
     def test_normal_mac_formats_require_each_engines_own_eof(self):
         spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
         verifier = importlib.util.module_from_spec(spec)

@@ -8,6 +8,7 @@ both VLC and MPV through natural media EOF.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -15,8 +16,10 @@ import platform
 import plistlib
 import re
 import shutil
+import signal
 import stat
 import subprocess
+import threading
 
 
 def digest(path):
@@ -96,13 +99,87 @@ def trace_launch(argv, environment, case, app):
     return text
 
 
+def observe_launch(argv, environment, case):
+    """Stream one diagnostic launch and sample it; never impose an exit deadline."""
+    spec = importlib.util.spec_from_file_location('owned_native_build', Path(__file__).with_name('build-native.py'))
+    owner = importlib.util.module_from_spec(spec); spec.loader.exec_module(owner)
+    completed = threading.Event()
+    signals = (signal.SIGINT, signal.SIGTERM)
+    mask = signal.pthread_sigmask(signal.SIG_BLOCK, signals)
+    previous = {sig: signal.signal(sig, owner.cancel_build) for sig in signals}
+    process = None
+    observer = None
+    observer_started = False
+    reaped = False
+
+    def sample():
+        # This cadence only requests a read-only stack observation. It neither
+        # classifies playback nor stops, retries or changes the player.
+        if completed.wait(5) or process.poll() is not None:
+            return
+        trace = case / 'running-process-sample.txt'
+        result = subprocess.run(['/usr/bin/sample', str(process.pid), '1', '1', '-file', str(trace)],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        print('MAC NATIVE SAMPLE', process.pid, 'exit', result.returncode, result.stdout, flush=True)
+        if trace.is_file():
+            print(trace.read_text(errors='replace'), flush=True)
+
+    try:
+        print('+ DIAGNOSTIC', ' '.join(map(str, argv)), flush=True)
+        process = subprocess.Popen(list(map(str, argv)), env=environment, start_new_session=True,
+            preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, mask),
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, errors='replace', bufsize=1)
+        observer = threading.Thread(target=sample, name='mac-native-stack-observation')
+        observer.start()
+        observer_started = True
+        signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+        with (case / 'stderr.log').open('w', encoding='utf-8') as stream:
+            for line in process.stdout:
+                stream.write(line); stream.flush()
+                print(line, end='', flush=True)
+        # Keep the child PID reserved until the observer has finished sampling it.
+        completed.set(); observer.join()
+        code = process.wait()
+        reaped = True
+        if code:
+            raise subprocess.CalledProcessError(code, list(map(str, argv)))
+    except owner.NativeBuildCancelled:
+        for sig in previous:
+            signal.signal(sig, signal.SIG_IGN)
+        completed.set()
+        if observer_started:
+            observer.join()
+        if process is not None:
+            owner.stop_command(process)
+        raise
+    except BaseException:
+        completed.set()
+        if observer_started:
+            observer.join()
+        if process is not None and not reaped:
+            owner.stop_command(process)
+        raise
+    finally:
+        completed.set()
+        if observer_started:
+            observer.join()
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+        signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+    return (case / 'stderr.log').read_text(errors='replace')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
     parser.add_argument('--scratch', required=True, type=Path)
     parser.add_argument('--trace-launch', action='store_true',
                         help='Capture the original process fault; diagnostic evidence, not untraced release clearance')
+    parser.add_argument('--observe-launch', choices=('vlc', 'mpv'),
+                        help='Diagnostic only: stream one ZIP launch and sample its running native threads')
     args = parser.parse_args()
+    if args.observe_launch and args.trace_launch:
+        parser.error('Select one diagnostic launch mechanism')
     if platform.system() != 'Darwin':
         raise RuntimeError('Mac package verification requires a native Mac')
     record = json.loads((args.work / 'package-output.json').read_text())
@@ -130,7 +207,7 @@ def main():
                                if actual.get(key) != expected.get(key))
             raise RuntimeError('Recovered app differs from its normal package: ' + str(different))
         run('codesign', '--verify', '--deep', '--strict', app)
-        for engine in ('vlc', 'mpv'):
+        for engine in ((args.observe_launch,) if args.observe_launch else ('vlc', 'mpv')):
             engine_case = case / engine; engine_case.mkdir()
             home = engine_case / 'home'; home.mkdir()
             env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
@@ -144,6 +221,8 @@ def main():
             try:
                 if args.trace_launch:
                     log = trace_launch(argv, env, engine_case, app)
+                elif args.observe_launch:
+                    log = observe_launch(argv, env, engine_case)
                 else:
                     with (engine_case / 'stdout.log').open('wb') as stdout, (engine_case / 'stderr.log').open('wb') as stderr:
                         run(*argv, env=env, stdout=stdout, stderr=stderr)
@@ -163,7 +242,8 @@ def main():
                 'source_commit': record['source_commit'], 'normal_bundle_members_identical': len(actual),
                 'strict_signature_verified': True, 'normal_qt_playback_natural_eof_exit': 0,
                 'launch_traced': args.trace_launch,
-                'qualification': 'DIAGNOSTIC ONLY' if args.trace_launch else 'normal untraced package playback',
+                'launch_observed': bool(args.observe_launch),
+                'qualification': 'DIAGNOSTIC ONLY' if args.trace_launch or args.observe_launch else 'normal untraced package playback',
                 'stderr_sha256': digest(engine_case / ('launch-lldb.log' if args.trace_launch else 'stderr.log'))})
             (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')
 
@@ -176,6 +256,8 @@ def main():
     unpacked = args.scratch / 'zip-extracted'
     run('ditto', '-x', '-k', archive, unpacked)
     verify(unpacked / 'Modern VLC.app', args.scratch / 'zip-runtime', archive)
+    if args.observe_launch:
+        return
     archive = archives['.dmg'][0]
     mount = args.scratch / 'dmg-mounted'; mount.mkdir()
     attached = run('hdiutil', 'attach', archive, '-readonly', '-nobrowse', '-noautoopen',

@@ -4,6 +4,17 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 Mac launch diagnosis: the current normal MacARM MPV package
+check has not returned on its one-second EOF fixture, while normal VLC passed.
+Its redirected logs are not visible until exit. Use the existing diagnostic
+startup_trace/trace_engine selection for one recovered normal Mac ZIP launch,
+streaming durable output and sampling only that exact owned child. A diagnostic
+cadence may request stacks, never stop playback, retry or classify acceptance.
+Preserve exact-child cancellation and whole-group exit checks. This observation
+is labelled diagnostic-only and cannot qualify either normal ZIP/DMG acceptance
+or the separate real native picture workflows. Do not modify production behavior
+before actual logs/stacks identify the cause.
+
 9 November R112 image-source observation: current789 reproduces the immediate
 VLC restore failure on both Linux architectures. ARM's render task is active,
 visible and embedded with a valid drawing-picture identity and600x420 extents;
