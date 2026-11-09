@@ -10,7 +10,27 @@ Do not disable raster threading, change artwork or add startup retries.
 The old observer cleanup stalled because ptrace exit had to be handled by GDB
 before the inferior pidfd could signal exit. The repaired observer quits and
 drains/reaps GDB first, then verifies the original pidfd and empty owned group.
-Current correction and observer lifecycle still need actual native execution.
+The553 normal Linux startup/EOF checks and compiler-free observer lifecycle
+passed. Its later Qt6.4 control-ID failure is separate from that startup fix.
+
+Current32 normal package regression: the DEB MPV process reaches natural EOF,
+releases MPV and exits Qt, then faults during final teardown. Artifact13640326180
+has SHA2569f035fe8a32f4e1aa3358c7cbe3649a6c753d163e423e5fa2897dd29f3b8cd82.
+The compiler-free GDB run42538150472 recovers that exact artifact but exits0,
+so it does not explain or repair the original failure. `startup_trace=true`,
+`trace_engine=mpv` now runs an untraced diagnostic census in independent fresh
+profiles, stopping on the first failure. Private cores stay outside artifact
+paths; CI credentials are removed from the player's environment. GDB reads only
+the resulting core for thread stacks, then exits. The owned hosted runner's
+original core destination is restored in finally. No host Windows configuration,
+compiler, package acceptance or publication is involved.
+
+Continuation cache migration retains compiler/dependency trees, configuration,
+mtimes and normal installable archives. Intel42537219723 restored the exact old
+cache and preserved ZIP/DMG/source-index hashes while moving uploaded duplicates
+to runner scratch. Its measured saved cache is2,285,653,880 bytes instead of
+4,846,167,616. The normal next-run restoration remains an acceptance criterion;
+do not silently substitute a fresh SDK or raise paid storage limits.
 
 Earlier reproduction:
 Linux21f1 normal VLC startup stalls before interface/input readiness on the

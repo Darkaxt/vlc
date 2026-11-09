@@ -34,6 +34,34 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def normal_playback(argv, env, app, case, engine, stdout, stderr):
+    # The session wrapper owns the temporary kernel destination. Only this
+    # normal child gets unlimited core size, with CI credentials removed.
+    directory = os.environ.get('VLC_NATIVE_CI_CORE_DIRECTORY')
+    clean_env = {key: value for key, value in env.items() if not any(word in key.upper()
+                 for word in ('TOKEN', 'SECRET', 'PASSWORD', 'CREDENTIAL'))}
+    def core_limit():
+        import resource
+        resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+    with stdout.open('wb') as out, stderr.open('wb') as err:
+        player = subprocess.Popen(list(map(str, argv)), env=clean_env, stdout=out, stderr=err,
+                                  preexec_fn=core_limit if directory else None)
+        code = player.wait()
+    if code:
+        core = Path(directory) / ('core.' + str(player.pid)) if directory else None
+        fault = {'pid': player.pid, 'exit_code': code, 'engine': engine,
+                 'private_core_exists': core is not None and core.is_file(), 'raw_core_uploaded': False}
+        if fault['private_core_exists']:
+            with (case / (engine + '-crash-stacks.txt')).open('wb') as output:
+                debugger = subprocess.run(['gdb', '--quiet', '--nx', '--batch',
+                    '-ex', 'set debuginfod enabled off', '-ex', 'set print frame-arguments none',
+                    '-ex', 'thread apply all bt', str(app / 'bin/vlc'), str(core)],
+                    env=clean_env, stdout=output, stderr=subprocess.STDOUT)
+            fault['debugger_exit'] = debugger.returncode
+        (case / (engine + '-fault.json')).write_text(json.dumps(fault, indent=2) + '\n')
+        raise subprocess.CalledProcessError(code, argv)
+
+
 def verify_rpm_installation(archive, fixture, expected, case):
     """Use a matching disposable distribution, preserving the host package DB."""
     if not shutil.which('docker'):
@@ -154,7 +182,13 @@ def main():
     packages = Path(record['directory']).resolve()
     if packages != work / 'packages' / record['source_commit']:
         raise RuntimeError('Linux package pointer escaped its source generation')
-    normal = [path for path in packages.glob('Modern-VLC-Fork-*-linux-*') if path.is_dir()]
+    reuse_file = work / 'review-reuse.json'
+    reuse = json.loads(reuse_file.read_text()) if reuse_file.exists() else None
+    normal = ([Path(reuse['normal_application'])] if reuse else
+              [path for path in packages.glob('Modern-VLC-Fork-*-linux-*') if path.is_dir()])
+    if reuse and (reuse['normal_source_commit'] != record['source_commit'] or
+                  not reuse['normal_archive_hashes_verified']):
+        raise RuntimeError('Recovered normal Linux payload lost its source/hash binding')
     if len(normal) != 1:
         raise RuntimeError('Expected one normal Linux payload')
     normal = normal[0]
@@ -189,10 +223,9 @@ def main():
                 if 'stale plugins cache' in (case / 'module-registry.txt').read_text(errors='replace'):
                     raise RuntimeError('Shipped Linux plugin index does not match final module sizes/mtimes: ' + kind)
             stdout, stderr = case / (engine + '-stdout.log'), case / (engine + '-stderr.log')
-            with stdout.open('wb') as out, stderr.open('wb') as err:
-                run(launcher or app / 'modern-vlc', '--no-qt-privacy-ask', '--no-metadata-network-access',
+            normal_playback([launcher or app / 'modern-vlc', '--no-qt-privacy-ask', '--no-metadata-network-access',
                     '--restore-playback-pos=0', '--qt-playback-engine=' + engine,
-                    '--play-and-exit', '--verbose=2', fixture, env=env, stdout=out, stderr=err)
+                    '--play-and-exit', '--verbose=2', fixture], env, app, case, engine, stdout, stderr)
             if 'EOF reached' not in stderr.read_text(errors='replace'):
                 raise RuntimeError('Normal Linux player did not report natural media EOF: ' + kind + '/' + engine)
             engines.append({'engine': engine, 'natural_eof_exit': 0, 'stderr_sha256': digest(stderr)})

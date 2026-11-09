@@ -27,6 +27,8 @@ TEST_ONLY = {
     'tools/desktop-player/install-ci-dependencies.sh',
     'tools/desktop-player/native-player-client.py',
     'tools/desktop-player/test-native-packaging.py',
+    'tools/desktop-player/compact-native-cache.py',
+    'tools/desktop-player/diagnose-linux-startup.py',
     # These Windows-only recipes are not consumed by the native Mac/Linux
     # build, packaging or player, and cannot alter their normal packages.
     'tools/windows-player/build-upstream-codecs.py',
@@ -67,9 +69,18 @@ def mac_dependency_setup(text):
 
 
 def workflow_build_contract(text):
-    # Only the added reuse check, build condition and evidence pointer may
-    # differ. Other workflow changes (including environment/commands) need a
-    # normal build, even when the compiler package binding remains identical.
+    # Bind the complete normal build job through its package-generation command.
+    # Diagnostic-only jobs and post-upload retention cannot change its bytes.
+    # A global environment change still invalidates this binding.
+    head, separator, jobs = text.partition('\njobs:\n')
+    if not separator:
+        raise RuntimeError('Native workflow has no explicit jobs mapping')
+    global_environment = re.search(r'^env:\n(?:(?:[ \t].*|)\n)*', head, re.MULTILINE)
+    _, separator, build = jobs.partition('  build:\n')
+    build, end, _ = build.partition('      - name: Verify recovered normal macOS ZIP and DMG applications\n')
+    if not separator or not end:
+        raise RuntimeError('Native workflow normal build boundaries changed')
+    text = (global_environment[0] if global_environment else '') + build
     text = text.replace('      - name: Check unchanged normal package for test-only repair\n'
         '        id: review_reuse\n'
         '        run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build"\n', '')

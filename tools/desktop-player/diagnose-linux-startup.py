@@ -4,7 +4,8 @@
 Diagnostic only: no compiler, runtime substitution or package acceptance. The
 five-second observation cadence requests stacks; it is not a playback deadline.
 After the requested observations, retire only this owned debugger/process group.
-MPV mode instead follows the finite clip through its actual exit or crash.
+MPV mode observes an untraced fresh-profile census through actual exit or crash;
+only a resulting private core is examined by GDB.
 """
 import argparse
 import importlib.util

@@ -17,6 +17,16 @@ acceptance. Observe fresh untraced profiles in the owned hosted runner, stopping
 at the first failure and inspecting its private core; never upload raw cores or
 CI credentials. Preserve the original lifecycle result and restore the runner's
 prior core destination after diagnosis.
+The untraced42538733629 census closed0: twelve fresh profiles reached EOF,
+released MPV and exited Qt normally; no crash was reproduced and no repair is
+claimed. The next original native qualification must preserve a failed process's
+private core/stack without rerunning that failed launch, and finish independent
+UI observations even if package checks fail. Overall qualification stays failed
+when either path fails. Test-only reuse binds the complete normal build job and
+global environment, not unrelated diagnostic/retention jobs, and must restore
+the compact cache's exact runtime archives before the current native UI review.
+Linux compaction42538798839 closed0: compiler trees preserved, logical bytes
+5,537,147,563 to1,546,590,051; saved cache10208419776 is1,076,498,003 bytes.
 Both original Linux architectures fail the fuller
 UI check because AccessibleCompat discards its assigned ID before Qt6.8; the
 visible Subtitles button cannot be addressed. Retain the compatibility property

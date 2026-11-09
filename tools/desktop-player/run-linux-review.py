@@ -5,6 +5,7 @@ Invoke through xvfb-run on a disposable native runner, never on a user's
 desktop. Manager-selection events establish readiness without timing guesses.
 """
 import argparse
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -17,6 +18,32 @@ import sys
 from Xlib import X, display
 
 HERE = Path(__file__).resolve().parent
+
+
+@contextmanager
+def private_crash_destination(session):
+    """Keep untraced faults diagnosable on this sole disposable CI runner."""
+    path = Path('/proc/sys/kernel/core_pattern')
+    original = path.read_text()
+    private = session.with_name(session.name + '-private-cores')
+    private.mkdir(mode=0o700)
+    if '%' in str(private) or '\n' in str(private):
+        raise RuntimeError('Private core path contains kernel substitutions')
+    pattern = str(private / 'core.%p') + '\n'
+    try:
+        subprocess.run(['sudo', '-n', 'tee', str(path)], input=pattern, text=True,
+                       stdout=subprocess.DEVNULL, check=True)
+        if path.read_text() != pattern:
+            raise RuntimeError('Private hosted core destination did not apply')
+        yield private
+    finally:
+        subprocess.run(['sudo', '-n', 'tee', str(path)], input=original, text=True,
+                       stdout=subprocess.DEVNULL, check=True)
+        restored = path.read_text() == original
+        (session / 'core-destination-restored.json').write_text(json.dumps({
+            'restored': restored, 'raw_cores_uploaded': False}) + '\n')
+        if not restored:
+            raise RuntimeError('Hosted core destination did not restore')
 
 
 def wait_for_managers(connection, atoms, events, observe):
@@ -119,11 +146,23 @@ def main():
             subprocess.run([sys.executable, HERE / 'diagnose-linux-startup.py', '--work', args.work,
                             '--scratch', args.review_root, '--engine', args.trace_engine], env=env, check=True)
         else:
-            subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
-                            '--scratch', args.review_root.with_name('native-package-checks')], env=env, check=True)
-        if not args.packages_only and not args.startup_trace:
-            subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
-                            '--review-root', args.review_root], env=env, check=True)
+            failures = []
+            with private_crash_destination(session) as cores:
+                env['VLC_NATIVE_CI_CORE_DIRECTORY'] = str(cores)
+                package_check = subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
+                    '--scratch', args.review_root.with_name('native-package-checks')], env=env)
+                if package_check.returncode:
+                    failures.append({'check': 'normal packages', 'exit_code': package_check.returncode})
+                # A package failure remains a failed qualification. Still finish
+                # the independent required UI observation in this original run.
+                if not args.packages_only:
+                    ui_check = subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
+                        '--review-root', args.review_root], env=env)
+                    if ui_check.returncode:
+                        failures.append({'check': 'native UI', 'exit_code': ui_check.returncode})
+            (session / 'checks.json').write_text(json.dumps({'failures': failures}, indent=2) + '\n')
+            if failures:
+                raise RuntimeError('Native Linux qualification failed: ' + json.dumps(failures))
     finally:
         try:
             if pulse_fd is not None:

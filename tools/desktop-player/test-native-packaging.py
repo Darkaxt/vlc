@@ -1225,6 +1225,43 @@ class NativePackagingTest(unittest.TestCase):
         self.assertNotEqual(reuse.mac_dependency_setup(setup),
                             reuse.mac_dependency_setup(setup + 'touch changed-sdk\n'))
 
+    def test_review_build_binding_ignores_retention_but_rejects_compiler_inputs(self):
+        spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')
+        reuse = importlib.util.module_from_spec(spec); spec.loader.exec_module(reuse)
+        workflow = (HERE.parents[1] / '.github/workflows/desktop-packages.yml').read_text()
+        base = reuse.workflow_build_contract(workflow)
+        self.assertEqual(base, reuse.workflow_build_contract(workflow.replace(
+            'run: python3 tools/desktop-player/compact-native-cache.py',
+            'run: python3 tools/desktop-player/other-retention.py')))
+        for changed in (workflow.replace('run: python3 tools/desktop-player/build-native.py',
+                                         'run: python3 tools/desktop-player/build-native.py --changed'),
+                        workflow.replace('\njobs:\n', '\nenv:\n  CXXFLAGS: -O0\njobs:\n'),
+                        workflow.replace('run: bash tools/desktop-player/install-ci-dependencies.sh',
+                                         'run: bash tools/desktop-player/different-sdk.sh')):
+            self.assertNotEqual(base, reuse.workflow_build_contract(changed))
+
+    def test_linux_fault_capture_preserves_failure_and_excludes_credentials(self):
+        spec = importlib.util.spec_from_file_location('linux_packages', HERE / 'verify-linux-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        case = Path(sys.argv_scratch) / ('fault-record-' + uuid.uuid4().hex)
+        case.mkdir(parents=True)
+        private = case / 'private'; private.mkdir()
+        (private / 'core.123').write_bytes(b'synthetic core for observer test')
+        child = MagicMock(pid=123); child.wait.return_value = -11
+        argv = ['/owned/player/modern-vlc', '--qt-playback-engine=mpv']
+        with patch.dict(os.environ, {'VLC_NATIVE_CI_CORE_DIRECTORY': str(private)}), \
+             patch.object(verifier.subprocess, 'Popen', return_value=child) as launch, \
+             patch.object(verifier.subprocess, 'run', return_value=SimpleNamespace(returncode=0)):
+            with self.assertRaises(subprocess.CalledProcessError) as failure:
+                verifier.normal_playback(argv, {'GH_TOKEN': 'synthetic-secret', 'HOME': '/owned/home'},
+                    Path('/owned/player'), case, 'mpv', case / 'stdout.log', case / 'stderr.log')
+        self.assertEqual(failure.exception.returncode, -11)
+        self.assertNotIn('GH_TOKEN', launch.call_args.kwargs['env'])
+        fault = json.loads((case / 'mpv-fault.json').read_text())
+        self.assertTrue(fault['private_core_exists'])
+        self.assertFalse(fault['raw_core_uploaded'])
+        self.assertEqual(fault['exit_code'], -11)
+
     def test_native_observation_reports_terminal_loader_failure(self):
         spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
         client = importlib.util.module_from_spec(spec)
