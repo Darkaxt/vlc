@@ -1368,8 +1368,9 @@ private:
                         }
                         const auto renderWindow = qobject_cast<vlc::CompositorX11RenderWindow *>(output);
                         const auto connection = renderWindow->diagnosticConnection();
+                        const auto task = renderWindow->diagnosticTask();
                         const QPointer<PlayerDiagnostics> owner(this);
-                        const bool queued = QMetaObject::invokeMethod(threads.front()->eventDispatcher(), [owner, finish, extra, connection] {
+                        const bool queued = QMetaObject::invokeMethod(threads.front()->eventDispatcher(), [owner, finish, extra, connection, task] {
                             // A thread FIFO fence alone does not establish that
                             // the X server has executed flushed drawing requests.
                             // Observe a reply on that exact connection before
@@ -1378,10 +1379,12 @@ private:
                                 xcb_get_input_focus(connection), nullptr);
                             const bool serverObserved = reply != nullptr;
                             free(reply);
-                            if (owner) QMetaObject::invokeMethod(owner.data(), [finish, extra, serverObserved] {
+                            const auto renderState = QJsonObject::fromVariantMap(task->diagnosticState());
+                            if (owner) QMetaObject::invokeMethod(owner.data(), [finish, extra, serverObserved, renderState] {
                                 auto observed = extra;
                                 observed.insert(QStringLiteral("native_composition_fenced"), true);
                                 observed.insert(QStringLiteral("native_composition_server_fenced"), serverObserved);
+                                observed.insert(QStringLiteral("native_render_state"), renderState);
                                 finish(observed);
                             }, Qt::QueuedConnection);
                         }, Qt::QueuedConnection);

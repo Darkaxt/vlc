@@ -27,6 +27,9 @@
 #include <QObject>
 #include <QMutex>
 #include <QWindow>
+#ifdef VLC_PLAYER_DIAGNOSTICS
+#include <QVariantMap>
+#endif
 
 #include <xcb/xcb.h>
 #include <xcb/render.h>
@@ -66,6 +69,22 @@ public:
                         QMutex& pictureLock,
                         QObject* parent = nullptr);
     ~RenderTask();
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    QVariantMap diagnosticState() const {
+        return {{QStringLiteral("visible"), m_visible},
+                {QStringLiteral("request_id"), m_refreshRequestId},
+                {QStringLiteral("window_id"), m_wid},
+                {QStringLiteral("drawing_picture"), m_drawingarea.get()},
+                {QStringLiteral("resize_pending"), m_resizeRequested},
+                {QStringLiteral("video_embedded"), m_videoEmbed},
+                {QStringLiteral("video_client"), m_videoClient != nullptr},
+                {QStringLiteral("interface_client"), m_interfaceClient != nullptr},
+                {QStringLiteral("render_width"), m_renderSize.width()},
+                {QStringLiteral("render_height"), m_renderSize.height()},
+                {QStringLiteral("interface_width"), m_interfaceSize.width()},
+                {QStringLiteral("interface_height"), m_interfaceSize.height()}};
+    }
+#endif
 
 public slots:
     void render(unsigned int requestId);
@@ -185,6 +204,7 @@ public:
 #ifdef VLC_PLAYER_DIAGNOSTICS
     // Read-only observation of this output's X server request stream.
     xcb_connection_t* diagnosticConnection() const { return m_conn; }
+    RenderTask* diagnosticTask() const { return m_renderTask; }
 #endif
 
 signals:

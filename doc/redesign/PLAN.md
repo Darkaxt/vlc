@@ -1,6 +1,19 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Server-fence921 run42583173295 closed1/watch67467 exit1 in6m55s; exact9ab
+normal package was reused and normal compilation/packaging skipped. The new
+server-completion assertion passes, but restored-picture still has0 chromatic
+pixels. Thus a missing server wait does not explain the failure. Preserve that
+evidence (artifact13658224492,898955128B) and observe existing render task state
+at the same read-only fence: visibility, completed request counter, drawing
+picture, client/embedding presence and extents. No further renderer mutation.
+The known CI source-transport repair is now integrated. Qualify it normally on
+the four retained architecture cohorts; source-packaging changes cannot use
+the UI-only package-reuse route. Existing SDK/configuration/object reuse stays
+required. The added render-state getters remain diagnostic-only and normal
+header bytes are verified identical to9ab. Native picture acceptance stays open.
+
 Matrix42579644174 closed1; original watch69046 exited1. MacARM and LinuxARM
 compiled their players but source packaging failed on GitHub release HTTP504
 (libass0.17.5/libfuse3.15.0); both saved compiler caches. GitHub release-client

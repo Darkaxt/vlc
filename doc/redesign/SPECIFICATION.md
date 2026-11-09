@@ -4,6 +4,14 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 observation continuation:921's same-connection server reply
+succeeds, while the original restored-picture remains blank. Do not attribute
+that result to request completion or mark restoration repaired. Observe existing
+render-task state at this boundary without a new redraw or production mutation.
+The integrated source-transport correction requires normal packaging acceptance
+on retained architecture cohorts; diagnostic-only runtime reuse does not qualify
+changed source collection or replace complete corresponding source delivery.
+
 9 November M15 source-transport repair: matrix42579644174 MacIntel image
 dependency retrieval, MacARM libass source closure and LinuxARM libfuse source
 closure failed HTTP504 on GitHub release URLs. The same libass/libfuse assets
