@@ -4,6 +4,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November continued R112 acceptance: normal57c3d56e verifies both-engine EOF
+and teardown across all five Linux formats and actual DEB/RPM/strict-Snap installs.
+Its full UI run instead loses the X11 drawable at miniplayer entry, preceding
+QML library/image lifecycle warnings; the original player exits0. Preserve this
+separate failure and the valid package/shutdown evidence. Observe native platform
+surface create/destroy and parent identities without forcing handle creation or
+changing the transition, then correct the evidenced ownership cause. Full actual
+floating/expanded/restored pictures remain required; clean shutdown alone is not
+floating-player acceptance.
+
 9 November R112 crash observation: normal run42554480926 reproduces MPV
 shutdown failure during medialibrary teardown and an independent instrumented
 MPV failure during floating-player entry. Preserve both acceptance failures.

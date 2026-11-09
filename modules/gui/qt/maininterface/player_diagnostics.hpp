@@ -42,6 +42,7 @@
 #include <QtGui/private/qhighdpiscaling_p.h>
 #endif
 #include <QPointer>
+#include <QPlatformSurfaceEvent>
 #include <QPixmap>
 #include <QQuickItemGrabResult>
 #include <QQuickRenderControl>
@@ -296,6 +297,34 @@ private:
 
     bool eventFilter(QObject *object,QEvent *event) override
     {
+#ifdef QT_HAS_X11_COMPOSITOR
+        // Observe native ownership without creating a handle or changing the
+        // transfer. GLX BadDrawable follows a missing native window in Linux
+        // qualification; preserve the actual create/destroy ordering.
+        if (auto window = qobject_cast<QWindow *>(object); window &&
+            (event->type() == QEvent::PlatformSurface || event->type() == QEvent::Show ||
+             event->type() == QEvent::Hide || event->type() == QEvent::WindowStateChange)) {
+            const auto nativeId = window->handle() ? window->winId() : WId(0);
+            const auto parent = window->parent();
+            QJsonObject row{{QStringLiteral("elapsed_ms"), m_clock.elapsed()},
+                {QStringLiteral("event"), int(event->type())},
+                {QStringLiteral("object"), QString::number(quintptr(window), 16)},
+                {QStringLiteral("class"), QString::fromLatin1(window->metaObject()->className())},
+                {QStringLiteral("name"), window->objectName()},
+                {QStringLiteral("native_id"), QString::number(qulonglong(nativeId), 16)},
+                {QStringLiteral("parent_object"), QString::number(quintptr(parent), 16)},
+                {QStringLiteral("parent_native_id"), parent && parent->handle()
+                    ? QString::number(qulonglong(parent->winId()), 16) : QString()},
+                {QStringLiteral("width"), window->width()}, {QStringLiteral("height"), window->height()},
+                {QStringLiteral("visible"), window->isVisible()}};
+            if (event->type() == QEvent::PlatformSurface)
+                row.insert(QStringLiteral("surface_event"),
+                    int(static_cast<QPlatformSurfaceEvent *>(event)->surfaceEventType()));
+            QFile journal(QDir(m_directory).filePath(QStringLiteral("native-window-lifecycle.jsonl")));
+            if (journal.open(QIODevice::WriteOnly | QIODevice::Append))
+                journal.write(QJsonDocument(row).toJson(QJsonDocument::Compact) + '\n');
+        }
+#endif
         bool changed=false;
         if(qobject_cast<QWindow *>(object) && event->type()==QEvent::DynamicPropertyChange) {
             const auto name=static_cast<QDynamicPropertyChangeEvent *>(event)->propertyName();

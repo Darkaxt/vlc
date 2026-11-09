@@ -1,6 +1,21 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal57c3d56e run42566914724 closed1 (original watch48229 exit1): all five
+Linux formats built, both engines reached EOF/exit0 in each extracted format,
+and real dpkg/Fedora-RPM/strict-Snap installations passed both engines and
+removed their owned installations. The worker-held ThreadRunner regression
+passes both thread configurations. Source retention compaction, replacement
+cache save and exact superseded-cohort retirement passed. Artifact13652880994
+is2102840034B, SHA256d056f0a17581cd82d6912d2e587cbd3a0c4be539534443f4059d6a88fbdd847d.
+Current cache10217273827 retains1969779381B. Required full UI qualification still
+fails at miniplayer entry: missing X11 drawable/makeCurrent errors precede QML
+library/image lifecycle warnings; the instrumented player exits0, not SIGSEGV.
+Do not claim floating recovery from that result. Observe native window platform
+create/destroy and parent identities through the existing diagnostic-only header
+on the identical normal runtime, without recompiling/repackaging production.
+The preceding read-only browser77078 closed0 (close26 ack, end27 release/native0).
+
 The read-only unwinder42565557922/8833ff67 closed1 (original watch28033 exit1).
 Actual full stack identifies MPV timer_pool_start/pass_upload_image calling
 Mesa BeginQuery -> lp_setup_begin_query -> set_scene_state -> queued rasterization.
