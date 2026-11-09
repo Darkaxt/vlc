@@ -344,11 +344,17 @@ void X11DamageObserver::onEvent()
 //// CompositorX11RenderWindow
 
 CompositorX11RenderWindow::CompositorX11RenderWindow(qt_intf_t* p_intf, xcb_connection_t* conn,
-                                                     QWindow* parent, bool initiallyVisible)
+                                                     QWindow* parent, bool initiallyVisible,
+                                                     Qt::WindowFlags initialFlags)
     : DummyRenderWindow(parent)
     , m_intf(p_intf)
     , m_conn(conn)
 {
+    // XCB recreates a top-level window on show if its stays-on-top flag
+    // changed after native creation. Configure it before caching the XID
+    // or creating redirected children and their rendering contexts.
+    if (initialFlags)
+        setFlags(initialFlags);
     winId();
     setVisible(initiallyVisible);
 

@@ -1,6 +1,25 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Window-lifecycle observation42570074351/bf2b9391 closed1 (watch39510 exit1).
+It reused the exact57 normal runtime without normal compilation/packages.
+The floating root changes XID800049 to80004d during first show, without Qt
+platform-surface notifications; cached compositor/redirected child IDs become
+invalid. Qt6.4.2 QXcbWindow::setWindowFlags marks stays-on-top changes for
+native recreation in show(). Configure floating flags before the compositor
+constructor's first winId(), preserving other callers' default flags and Cocoa.
+The complete bounded correction is source ready for validation: constructor
+initialFlags, floating caller and platform guards are integrated; existing
+native main/floating/expanded/restored actual-picture flow plus lifecycle
+journal must prove stable XID and clean both-engine transfer/exit. No new unit
+surrogate replaces that workflow. Run the retained normal Linux continuation
+with unchanged one-worker/toolchain/package graph; a production delta requires
+normal packaging. Final shared-source matrix still follows only after this passes.
+Diagnostic artifact13652299385 is888903605B, SHA256
+e9ad914ea78a5bd5150e9b6a7ba7ff5de796f1472557cb89382fcb5dd6ac69b9.
+Managers/audio exited; cache10217627668 retains1969670232B and supersedes57's
+cohort. Original selected journal/stderr/exit evidence is retained separately.
+
 Normal57c3d56e run42566914724 closed1 (original watch48229 exit1): all five
 Linux formats built, both engines reached EOF/exit0 in each extracted format,
 and real dpkg/Fedora-RPM/strict-Snap installations passed both engines and

@@ -245,15 +245,16 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
 #ifdef QT_HAS_X11_COMPOSITOR
         m_x11Floating.reset(xcb_connect(nullptr, nullptr));
         if (xcb_connection_has_error(m_x11Floating.get())) return false;
-        auto output = std::make_unique<CompositorX11RenderWindow>(m_intf, m_x11Floating.get(), nullptr, false);
+        auto output = std::make_unique<CompositorX11RenderWindow>(m_intf, m_x11Floating.get(), nullptr, false,
+            Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         if (!output->init()) return false;
         m_floatingRoot = std::move(output);
 #else
         m_floatingRoot = std::make_unique<QWindow>();
+        m_floatingRoot->setFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 #endif
         auto root = m_floatingRoot.get();
         root->setObjectName(QStringLiteral("floatingPlayerWindow"));
-        root->setFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         root->setProperty("_q_showWithoutActivating", true);
         m_floatingView = new QQuickView(m_quickWindow->engine(), root);
         auto view = m_floatingView.get();

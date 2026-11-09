@@ -4,6 +4,17 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 native-identity correction: the first floating-root show replaces
+its XID800049 with80004d while the compositor keeps the old drawable. Exact
+Qt6.4.2 XCB source sets a recreation reason when stays-on-top changes after
+creation, then recreates in show without QWindow platform-surface notification.
+Set the floating flags before the compositor first creates/caches its native
+handle and before redirected children/GL contexts exist. Preserve main-window
+defaults, Cocoa behavior and the X11 GL transfer ownership barrier. Require the
+native journal to retain one floating-root identity across first show, with actual
+main/floating/expanded/restored pictures and clean both-engine lifecycle; earlier
+package EOF checks remain applicable only to unchanged behavior.
+
 9 November continued R112 acceptance: normal57c3d56e verifies both-engine EOF
 and teardown across all five Linux formats and actual DEB/RPM/strict-Snap installs.
 Its full UI run instead loses the X11 drawable at miniplayer entry, preceding
