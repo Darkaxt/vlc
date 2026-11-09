@@ -1,6 +1,18 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+X11 diagnostic control42547501609 ate163596c reached its first picture but
+the verifier closed the offscreen Quick scene, not its native X11 output.
+Its original watch73154 closed1 after scoped cancellation; evidence artifact
+13644352051 is905579430B, SHA256b30be38a4f1c0e654a9417cbef44c712ec244894e82e6de2a81eca1d2ebafdd9.
+Evidence preservation, compiler continuation retention and job cleanup passed.
+This is a diagnostic window-identity defect, not evidence of a player shutdown
+deadlock. Resolve render-controlled scenes through QQuickRenderControl's
+renderWindowFor before following native parents. This test-only correction is
+source ready for the existing UI-only continuation; normal runtime and package
+hashes remain unchanged. Require actual native picture and clean control exit
+before using the comparison to select the production composition correction.
+
 Normal42543991006 atddda550e closed0; original watch85238 exit0 observed.
 All normal Linux formats, real DEB/RPM/strict-Snap both-engine workflows and
 the complete instrumented workflows pass; owned managers/audio exited. Artifact

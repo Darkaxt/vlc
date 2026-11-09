@@ -44,6 +44,7 @@
 #include <QPointer>
 #include <QPixmap>
 #include <QQuickItemGrabResult>
+#include <QQuickRenderControl>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 #include <QQmlContext>
@@ -515,6 +516,11 @@ private:
 
     static QWindow *nativeTopLevel(QWindow *window)
     {
+        // A render-controlled Quick scene has no native parent: its actual
+        // output window is supplied by the compositor's render control.
+        if (auto quick = qobject_cast<QQuickWindow *>(window))
+            if (auto output = QQuickRenderControl::renderWindowFor(quick))
+                window = output;
         while (window && window->parent()) window = window->parent();
         return window;
     }
