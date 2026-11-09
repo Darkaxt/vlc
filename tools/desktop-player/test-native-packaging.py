@@ -501,21 +501,27 @@ class NativePackagingTest(unittest.TestCase):
         index = 'Package: pcre2\nVersion: 10.42-4ubuntu2.1\nChecksums-Sha256:\n' + rows() + 'Directory: pool/main/p/pcre2\n'
         cache = root / 'cache'
 
-        def download(*args, cwd):
-            self.assertEqual(args, ('apt-get', 'source', '--download-only', '--only-source',
-                                    'pcre2=10.42-4ubuntu2.1'))
-            for name, value in contents.items():
-                (cwd / name).write_bytes(value)
+        uris = ''.join(f"'http://archive.ubuntu.com/ubuntu/pool/main/p/pcre2/{name}' {name} {len(value)} MD5Sum:unused\n"
+                       for name, value in contents.items())
 
-        with patch.object(sources, 'output', return_value=index) as metadata, \
-                patch.object(sources, 'run', side_effect=download) as acquire:
+        def download(record, directory):
+            name = record['url'].rsplit('/', 1)[1]
+            self.assertTrue(record['url'].startswith('https://archive.ubuntu.com/ubuntu/'))
+            self.assertEqual(record['sha256'], hashlib.sha256(contents[name]).hexdigest())
+            path = directory / (record['sha256'][:16] + '-' + name)
+            path.write_bytes(contents[name])
+            return path
+
+        with patch.object(sources, 'output', side_effect=AssertionError('Unexpected per-package APT query')) as indexes, \
+                patch.object(sources, 'fetch_source', side_effect=download) as acquire:
             first = root / 'first'; first.mkdir()
-            sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', first, cache)
+            sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', first, cache,
+                (index + '\nPackage: unrelated\nVersion: 1\n', uris + "'http://archive.ubuntu.com/other.tar.gz' other.tar.gz 1 MD5Sum:unused\n"))
             second = root / 'second'; second.mkdir()
             sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, cache)
             self.assertEqual({path.name: path.read_bytes() for path in second.iterdir()}, contents)
-            self.assertEqual(acquire.call_count, 1)
-            self.assertEqual(metadata.call_count, 1)
+            self.assertEqual(acquire.call_count, 3)
+            self.assertEqual(indexes.call_count, 0)
             (cache / 'pcre2.orig.tar.gz').write_bytes(b'changed source')
             with self.assertRaisesRegex(RuntimeError, 'cached Debian source'):
                 sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, cache)
@@ -525,13 +531,13 @@ class NativePackagingTest(unittest.TestCase):
                 sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, cache)
             with self.assertRaisesRegex(RuntimeError, 'source identity'):
                 sources.collect_debian_source('pcre2', 'different', second, cache)
-            self.assertEqual(acquire.call_count, 1)
+            self.assertEqual(acquire.call_count, 3)
         patch_bytes = contents['pcre2.debian.tar.xz']
         patch_row = f' {hashlib.sha256(patch_bytes).hexdigest()} {len(patch_bytes)} pcre2.debian.tar.xz\n'
-        with patch.object(sources, 'output', return_value=index.replace(patch_row, '')), \
-                patch.object(sources, 'run', side_effect=download):
+        with patch.object(sources, 'fetch_source', side_effect=download):
             with self.assertRaisesRegex(RuntimeError, 'descriptor closure differs'):
-                sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, root / 'incomplete-index')
+                sources.collect_debian_source('pcre2', '10.42-4ubuntu2.1', second, root / 'incomplete-index',
+                    (index.replace(patch_row, ''), uris))
         self.assertFalse((root / 'incomplete-index/source-binding.json').exists())
 
     def test_archived_debian_sources_preserve_descriptor_identity_and_patches(self):

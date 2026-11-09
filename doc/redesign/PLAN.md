@@ -1,14 +1,35 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
-Normal80a67f13/42550258850 compiles successfully and is assembling packages;
-retain original watch91098 and continue its actual picture/lifecycle checks.
+Normal42550258850 at80a67f13 closed1 (original watch91098 exit1). Compilation
+passed; source collection failed when archive.ubuntu.com:80 stopped responding
+for cjson1.7.17-1 DSC/original/patch. No actual player acceptance was reached.
+Artifact13646040836 is247660808B, SHA2564fde8775bf2ca62743fdfbedd3f09fe046fd23d0913607a2b1e40423e6f44c7f.
+Original compiler objects and incomplete package generation were retained in
+cache ending42550258850 (1300453680B); no SDK reset or failed-player claim.
+Resolve APT's exact source URIs without downloading, upgrade the same public
+publisher/path to HTTPS, then fetch through the existing checksum-bound source
+helper into the retained cache. Verify the APT/DSC closure before staging and
+do not retry failing HTTP or substitute another source version.
+The collector now resolves the complete missing source set in two APT metadata
+queries, instead of reparsing indexes separately for every source package (the
+failed cjson query spent32s before downloading). Downloads use APT-selected
+HTTPS URIs through the existing hash-verified fetch helper. The matching cjson
+HTTPS DSC endpoint returns200 in a read-only host check; hosted transport and
+complete assembly still require execution. Focused cache/transport regression
+passes cold acquisition, no-query warm reuse, HTTPS selection, original filenames,
+hash/closure rejection and unrelated entries in the metadata batch. This coherent
+pipeline patch is source ready for one retained normal Linux continuation; its
+production renderer is unchanged from successfully compiled80a67f13.
+
+During80a67f13/42550258850, compilation succeeded before source packaging;
+original watch91098 is now closed1 and actual picture/lifecycle checks remain.
 Live packaging evidence shows repeated apt-get source downloads into each
 generation's .desktop-sources tree. Ordinary Debian originals bypass the retained
 corresponding-source-inputs cache used by archived pins. Correct that current
 R111 pipeline gap with package/version and APT/DSC SHA256-bound cache reuse,
 including corruption/incomplete-closure regressions. The original renderer
-qualification remains applicable to its unchanged production source; this
+compilation remains applicable to its unchanged production source; this
 collector repair needs its own real source/package assembly evidence before
 the final common-revision matrix. No stage advancement or publication yet.
 The integrated collector now stages exact original DSC/archive/patch members

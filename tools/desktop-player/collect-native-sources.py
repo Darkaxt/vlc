@@ -432,7 +432,7 @@ def debian_sha256_members(text):
     return members
 
 
-def collect_debian_source(name, version, directory, cache):
+def collect_debian_source(name, version, directory, cache, apt_metadata=None):
     """Keep authenticated originals across package generations, never staging."""
     cache.mkdir(parents=True, exist_ok=True)
     binding_path = cache / 'source-binding.json'
@@ -443,14 +443,38 @@ def collect_debian_source(name, version, directory, cache):
             raise RuntimeError('Cached Debian source identity differs')
         members = binding['members']
     else:
-        indexes = output('apt-cache', 'showsrc', '--only-source', name)
+        if apt_metadata is None:
+            raise RuntimeError('Uncached Debian sources require the batched APT metadata')
+        indexes, uri_output = apt_metadata
         matches = [debian_sha256_members(block) for block in indexes.split('\n\n')
                    if re.search(r'^Package: ' + re.escape(name) + r'$', block, re.M)
                    and re.search(r'^Version: ' + re.escape(version) + r'$', block, re.M)]
         if not matches or any(row != matches[0] for row in matches):
             raise RuntimeError('No unique installed Debian source version in authenticated APT metadata')
         members = matches[0]
-        run('apt-get', 'source', '--download-only', '--only-source', name + '=' + version, cwd=cache)
+        uris = {}
+        for uri, filename, size, _ in re.findall(r"^'([^']+)'\s+(\S+)\s+(\d+)\s+(\S+)$", uri_output, re.M):
+            if filename not in members:
+                continue  # Another requested source in this same metadata batch.
+            url = urllib.parse.urlsplit(uri)
+            if (filename in uris or int(size) != members[filename]['bytes']
+                    or urllib.parse.unquote(PurePosixPath(url.path).name) != filename):
+                raise RuntimeError('Debian source URI closure differs from authenticated APT metadata')
+            # Retain APT's selected publisher/path; use its HTTPS endpoint
+            # instead of the observed failing unencrypted HTTP transport.
+            if url.scheme == 'http':
+                url = url._replace(scheme='https')
+            if url.scheme != 'https' or not url.hostname or url.username or url.password:
+                raise RuntimeError('Debian source URI requires public HTTPS')
+            uris[filename] = url.geturl()
+        if set(uris) != set(members):
+            raise RuntimeError('Debian source URI closure differs from authenticated APT metadata')
+        for filename, uri in sorted(uris.items()):
+            target = cache / filename
+            if not target.exists() and not target.is_symlink():
+                original = fetch_source({'id': name + '=' + version + '/' + filename,
+                    'url': uri, 'sha256': members[filename]['sha256']}, cache)
+                original.rename(target)
         binding = {'source_package': name, 'version': version, 'members': members}
     if not members:
         raise RuntimeError('Empty cached Debian source closure')
@@ -503,6 +527,17 @@ def collect_linux(work, app, destination):
     result = []
     archived = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text()).get(
         'linux_archived_sources', [])
+    missing = [(name, version) for name, version in sorted(sources)
+               if not any((pin['source_package'], pin['version']) == (name, version) for pin in archived)
+               and not (work / 'corresponding-source-inputs/debian' /
+                        debian_source_path(name, version) / 'source-binding.json').is_file()]
+    apt_metadata = None
+    if missing:
+        # APT reparses the source indexes for each invocation. Resolve the
+        # complete missing set once, then fetch its hash-bound HTTPS members.
+        apt_metadata = (output('apt-cache', 'showsrc', '--only-source', *sorted({name for name, _ in missing})),
+                        output('apt-get', 'source', '--print-uris', '--only-source',
+                               *(name + '=' + version for name, version in missing)))
     for (name, version), binaries in sorted(sources.items()):
         relative = debian_source_path(name, version)
         directory = destination / 'debian' / relative
@@ -515,7 +550,7 @@ def collect_linux(work, app, destination):
                 work / 'corresponding-source-inputs/debian' / relative)
         else:
             collect_debian_source(name, version, directory,
-                work / 'corresponding-source-inputs/debian' / relative)
+                work / 'corresponding-source-inputs/debian' / relative, apt_metadata)
         for package in binaries:
             copyright_file = Path('/usr/share/doc') / package.split(':')[0] / 'copyright'
             if not copyright_file.is_file():

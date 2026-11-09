@@ -14,6 +14,10 @@ staging. A corrupt or incomplete binding must fail explicitly, never silently
 convey mismatched sources. Keep original DSC names, patches, notices, complete
 source delivery and the normal runtime unchanged. This serves the existing
 reusable-dependency pipeline requirement and does not open another stage.
+The original HTTP source fetch for cjson1.7.17-1 failed on port80 in42550258850.
+Resolve the actual APT-selected source URIs and use the same public publisher's
+HTTPS path with the signed-index SHA256 closure. Preserve source versions and
+do not add transport retries, alternate publishers or skipped source obligations.
 
 9 November R112 recovery evidence: preserve full ancestry when the Linux
 media-library root repeats an ancestor name. The0.14.1 splitter currently
