@@ -22,6 +22,9 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('package_identity', HERE / 'verify-macos-packages.py')
 identity = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(identity)
+spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
+client_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(client_module)
 
 
 def run(*argv, **kwargs):
@@ -40,25 +43,12 @@ def normal_playback(argv, env, app, case, engine, stdout, stderr):
     directory = os.environ.get('VLC_NATIVE_CI_CORE_DIRECTORY')
     clean_env = {key: value for key, value in env.items() if not any(word in key.upper()
                  for word in ('TOKEN', 'SECRET', 'PASSWORD', 'CREDENTIAL'))}
-    def core_limit():
-        import resource
-        resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
     with stdout.open('wb') as out, stderr.open('wb') as err:
         player = subprocess.Popen(list(map(str, argv)), env=clean_env, stdout=out, stderr=err,
-                                  preexec_fn=core_limit if directory else None)
+                                  preexec_fn=client_module.linux_core_limit if directory else None)
         code = player.wait()
     if code:
-        core = Path(directory) / ('core.' + str(player.pid)) if directory else None
-        fault = {'pid': player.pid, 'exit_code': code, 'engine': engine,
-                 'private_core_exists': core is not None and core.is_file(), 'raw_core_uploaded': False}
-        if fault['private_core_exists']:
-            with (case / (engine + '-crash-stacks.txt')).open('wb') as output:
-                debugger = subprocess.run(['gdb', '--quiet', '--nx', '--batch',
-                    '-ex', 'set debuginfod enabled off', '-ex', 'set print frame-arguments none',
-                    '-ex', 'thread apply all bt', str(app / 'bin/vlc'), str(core)],
-                    env=clean_env, stdout=output, stderr=subprocess.STDOUT)
-            fault['debugger_exit'] = debugger.returncode
-        (case / (engine + '-fault.json')).write_text(json.dumps(fault, indent=2) + '\n')
+        client_module.record_linux_fault(player.pid, code, app / 'bin/vlc', case, engine, clean_env)
         raise subprocess.CalledProcessError(code, argv)
 
 

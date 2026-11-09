@@ -1431,6 +1431,31 @@ class NativePackagingTest(unittest.TestCase):
         self.assertFalse(fault['raw_core_uploaded'])
         self.assertEqual(fault['exit_code'], -11)
 
+    def test_linux_fault_capture_keeps_original_failure_when_debugger_cannot_start(self):
+        spec = importlib.util.spec_from_file_location('linux_packages', HERE / 'verify-linux-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        case = Path(sys.argv_scratch) / ('fault-observer-' + uuid.uuid4().hex)
+        case.mkdir(parents=True)
+        private = case / 'private'; private.mkdir()
+        (private / 'core.123').write_bytes(b'synthetic core for observer test')
+        child = MagicMock(pid=123); child.wait.return_value = -11
+        def missing_debugger(*args, **kwargs):
+            # The original fault must already be durable before diagnostics run.
+            fault = json.loads((case / 'mpv-fault.json').read_text())
+            self.assertEqual(fault['exit_code'], -11)
+            raise FileNotFoundError(2, 'No such file or directory', 'gdb')
+        with patch.dict(os.environ, {'VLC_NATIVE_CI_CORE_DIRECTORY': str(private)}), \
+             patch.object(verifier.subprocess, 'Popen', return_value=child), \
+             patch.object(verifier.subprocess, 'run', side_effect=missing_debugger):
+            with self.assertRaises(subprocess.CalledProcessError) as failure:
+                verifier.normal_playback(['/owned/player/modern-vlc'], {}, Path('/owned/player'),
+                    case, 'mpv', case / 'stdout.log', case / 'stderr.log')
+        self.assertEqual(failure.exception.returncode, -11)
+        fault = json.loads((case / 'mpv-fault.json').read_text())
+        self.assertEqual(fault['engine'], 'mpv')
+        self.assertEqual(fault['debugger_error']['errno'], 2)
+        self.assertFalse(fault['raw_core_uploaded'])
+
     def test_native_observation_reports_terminal_loader_failure(self):
         spec = importlib.util.spec_from_file_location('native_client', HERE / 'native-player-client.py')
         client = importlib.util.module_from_spec(spec)

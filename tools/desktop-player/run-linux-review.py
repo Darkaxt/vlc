@@ -24,6 +24,8 @@ HERE = Path(__file__).resolve().parent
 @contextmanager
 def private_crash_destination(session):
     """Keep untraced faults diagnosable on this sole disposable CI runner."""
+    if not shutil.which('gdb'):
+        raise RuntimeError('Private Linux crash observation requires installed GDB')
     path = Path('/proc/sys/kernel/core_pattern')
     original = path.read_text()
     private = session.with_name(session.name + '-private-cores')

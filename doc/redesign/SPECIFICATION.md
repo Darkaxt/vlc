@@ -4,6 +4,17 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 crash observation: normal run42554480926 reproduces MPV
+shutdown failure during medialibrary teardown and an independent instrumented
+MPV failure during floating-player entry. Preserve both acceptance failures.
+Install the required GDB observer on normal hosted Linux runners, check its
+availability before opening the private core session, and durably record the
+original child exit/engine before collecting stacks. A debugger launch failure
+must retain its own diagnostic error without replacing the player failure.
+Keep cores private and upload only bounded stack text and fault metadata.
+Use immutable package13648345770 for compiler-free shutdown reproduction;
+passing functional or earlier package checks does not resolve either crash.
+
 R111 pipeline cache reconciliation, 9 November: normal80a67f13 compilation
 completes before the source collector repeatedly downloads ordinary Debian
 sources into generation-specific staging. Preserve exact ordinary source

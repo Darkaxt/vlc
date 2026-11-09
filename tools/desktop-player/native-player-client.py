@@ -10,8 +10,36 @@ import os
 from pathlib import Path
 import select
 import selectors
+import subprocess
 import sys
 import uuid
+
+
+def linux_core_limit():
+    import resource
+    resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+
+
+def record_linux_fault(pid, code, executable, evidence, engine, env):
+    """Record an owned child's fault without uploading its private core."""
+    directory = os.environ.get('VLC_NATIVE_CI_CORE_DIRECTORY')
+    core = Path(directory) / ('core.' + str(pid)) if directory else None
+    fault = {'pid': pid, 'exit_code': code, 'engine': engine,
+             'private_core_exists': core is not None and core.is_file(), 'raw_core_uploaded': False}
+    record = evidence / (engine + '-fault.json')
+    record.write_text(json.dumps(fault, indent=2) + '\n')
+    if fault['private_core_exists']:
+        try:
+            with (evidence / (engine + '-crash-stacks.txt')).open('wb') as output:
+                debugger = subprocess.run(['gdb', '--quiet', '--nx', '--batch',
+                    '-ex', 'set debuginfod enabled off', '-ex', 'set print frame-arguments none',
+                    '-ex', 'thread apply all bt', str(executable), str(core)],
+                    env=env, stdout=output, stderr=subprocess.STDOUT)
+            fault['debugger_exit'] = debugger.returncode
+        except OSError as error:
+            fault['debugger_error'] = {'type': type(error).__name__, 'errno': error.errno,
+                                       'message': str(error)}
+        record.write_text(json.dumps(fault, indent=2) + '\n')
 
 
 class NativePlayerClient:

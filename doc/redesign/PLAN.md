@@ -1,6 +1,41 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal Linux42554480926/e2d83e02 closed1; original watch71579 exit1.
+The HTTPS source closure and all five package formats assembled successfully.
+TAR/AppImage both-engine checks progressed; DEB MPV then segfaulted after
+natural EOF, MPV release and Qt completion while removing medialibrary.
+GDB was absent, so the collector masked that original failure. Independently,
+the instrumented MPV reached actual main/subtitle pictures, then segfaulted
+entering the floating player. Main composed picture909209e7 is inspected and
+shows the full test pattern; no floating or complete workflow pass is claimed.
+Managers/audio exited and normal diagnostic objects were restored. Artifact
+13648345770 is2102551086B, SHA2568c4b796949873b17e350e2f49df0c25af60dd457997115bcbd1a96b4434e5b3d.
+Compiler-free package continuation42558309172 closed1 (original watch85471
+exit1). It independently recovered and hash-verified that exact artifact without
+a compiler. MPV reproduced the shutdown fault in the extracted Snap payload.
+Artifact13648014534 is116905B, SHA2564442dad53b74cd9eba0a8a914e91645c4dc52d0487ab24ffb321ab3fcd9f3800.
+Its inspected stack shows sqlite3_finalize/FlushStatementCache/Connection
+destruction on the main thread while a Qt worker throws DatabaseCorrupt from
+UPDATE Media last_position. Managers/audio exited. The ThreadRunner destroy
+path cancels queued tasks but returns while running library work continues;
+trace and repair that owner lifetime before claiming shutdown recovery.
+The cohesive observer correction records the original failure before GDB,
+retains a debugger launch error, and captures private UI faults through the
+existing native client as well. CI installs GDB only after normal assembly,
+outside its compiler/cache binding. Focused regression reproduces the lost
+fault record and passes the correction, including credential exclusion. This
+test-only source is ready for the retained UI diagnostic continuation; actual
+floating-entry stacks, both root-cause repairs and final common-source acceptance remain.
+
+Windows e33d3fc5 run104 completed through owned gate342, group empty and mounts
+released; actual compilation67.3s,409 plugin reuse and417 stripped PE/symbol
+mappings pass. Current ZIP147147218B,7z82865698B, matching symbols351152780B and
+complete source884148378B are assembled. Independently extracted ZIP's native
+VLC check passes actual picture, fresh medialibrary, natural EOF, input release,
+Qt completion and exit0 on an inactive owned desktop. Final MPV/DV presentation,
+installer and common-revision delivery qualification remain outstanding.
+
 Current R111 retention reconciliation: GitHub lists ten snapshots of the same
 Linux cohort and no Intel/ARM Mac cache. The latest Linux9ce snapshot is
 10212805824/2057376187B; the normal e2 continuation restored it. Earlier Mac

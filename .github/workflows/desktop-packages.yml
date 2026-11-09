@@ -104,6 +104,9 @@ jobs:
       - name: Exercise the actual native player
         if: ${{ !cancelled() && runner.os == 'macOS' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
+      - name: Install Linux crash observer
+        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
+        run: sudo -n apt-get install -y --no-upgrade --no-install-recommends gdb
       - name: Exercise the actual Linux player on its owned display
         if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py ${{ inputs.native_ui_only && '--ui-only' || '' }} --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
@@ -242,5 +245,6 @@ jobs:
             ${{ runner.temp }}/native-package-checks/*-installed/*txt
             ${{ runner.temp }}/native-package-checks/*-installed/*log
             ${{ runner.temp }}/native-package-checks/*/*txt
+            ${{ runner.temp }}/native-package-checks/*/*-fault.json
             ${{ runner.temp }}/native-package-checks/*/*-stdout.log
             ${{ runner.temp }}/native-package-checks/*/*-stderr.log

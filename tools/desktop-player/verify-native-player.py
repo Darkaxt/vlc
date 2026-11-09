@@ -221,7 +221,8 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         settings.parent.mkdir(parents=True)
         settings.write_text('[MainWindow]\ncolor-scheme-index=2\n')
     token = uuid.uuid4().hex + uuid.uuid4().hex
-    env = os.environ.copy()
+    env = {key: value for key, value in os.environ.items() if not any(word in key.upper()
+           for word in ('TOKEN', 'SECRET', 'PASSWORD', 'CREDENTIAL'))}
     env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
         XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
         VLC_PLAYER_DIAGNOSTICS_DIR=str(evidence), VLC_PLAYER_DIAGNOSTICS_TOKEN=token,
@@ -255,7 +256,9 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         return result
 
     with (evidence / 'stdout.log').open('wb') as stdout, (evidence / 'stderr.log').open('wb') as stderr:
-        player = subprocess.Popen(argv, cwd=executable.parent, env=env, stdout=stdout, stderr=stderr)
+        player = subprocess.Popen(argv, cwd=executable.parent, env=env, stdout=stdout, stderr=stderr,
+            preexec_fn=client_module.linux_core_limit if platform.system() == 'Linux' and
+                       env.get('VLC_NATIVE_CI_CORE_DIRECTORY') else None)
         client = client_module.NativePlayerClient(player, evidence, token)
         try:
             save('view-mounted', client.await_property('viewLoader', 'status', 1))
@@ -378,6 +381,9 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
                     'euid': os.geteuid(), 'egid': os.getegid(), 'directories': directories}, indent=2) + '\n')
             (evidence / 'exit.json').write_text(json.dumps({'exit_code': exit_code}) + '\n')
             if exit_code:
+                if platform.system() == 'Linux':
+                    client_module.record_linux_fault(player.pid, exit_code,
+                        executable.parent / 'bin/vlc', evidence, engine, env)
                 print((evidence / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)
                 raise RuntimeError('Owned native player exited with ' + str(exit_code))
     stderr_text = (evidence / 'stderr.log').read_text(errors='replace')
@@ -395,7 +401,9 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         ('--qt-playback-engine=', '--json-tracer-file='))]
     reopened_argv[1:1] = ['--json-tracer-file=' + str(reopen / 'native-timing.jsonl')]
     with (reopen / 'stdout.log').open('wb') as stdout, (reopen / 'stderr.log').open('wb') as stderr:
-        player = subprocess.Popen(reopened_argv, cwd=executable.parent, env=env, stdout=stdout, stderr=stderr)
+        player = subprocess.Popen(reopened_argv, cwd=executable.parent, env=env, stdout=stdout, stderr=stderr,
+            preexec_fn=client_module.linux_core_limit if platform.system() == 'Linux' and
+                       env.get('VLC_NATIVE_CI_CORE_DIRECTORY') else None)
         client = client_module.NativePlayerClient(player, reopen, token)
         try:
             reopened = inspect_result(client.await_core('state', 3))
@@ -408,6 +416,9 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
             exit_code = player.wait()
             client.close()
             if exit_code:
+                if platform.system() == 'Linux':
+                    client_module.record_linux_fault(player.pid, exit_code,
+                        executable.parent / 'bin/vlc', reopen, other.lower(), env)
                 print((reopen / 'stderr.log').read_text(errors='replace')[-8000:], flush=True)
                 raise RuntimeError('Reopened native player exited with ' + str(exit_code))
     after_upstream = profile_hashes(home, upstream_roots)
