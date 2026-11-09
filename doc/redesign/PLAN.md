@@ -1,6 +1,15 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Caller-stack42564599618/c6d660e4 closed1 (original watch6130 exit1), with normal
+build/package generation skipped and owned managers/audio/cache retirement passed.
+Artifact13651415631 is888974488B, SHA256386b6d3da06073a43e2158f070d4a47da45a1037990f779d9e5c9254d5061465.
+GDB core targets reject register writes; the labelled reconstruction produced
+three "without a process" errors, so it did not recover a stack or repair the
+player. Replace that diagnostic with GDB's supported read-only Python unwinder
+for the exact observed x86 PC/RBP boundary. Preserve original automatic stacks
+and core bytes; do not infer success from the debugger's exit0 alone.
+
 CPU-frame42563654151/a288d7da closed1 (original watch22431 exit1), with normal
 build/package generation skipped and owned display/audio/cache retirement passed.
 Artifact13650382491 is888975255B, SHA256da2ca8aa637af74eb1ef509e9ac1a4e1a644e75d613135bdd92a039a5d12bf4c.

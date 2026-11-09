@@ -38,6 +38,7 @@ def record_linux_fault(pid, code, executable, evidence, engine, env):
                     # mapped object identities before the private core expires.
                     '-ex', 'p $_siginfo', '-ex', 'info threads', '-ex', 'info registers',
                     '-ex', 'set $jit_rbp = $rbp',
+                    '-ex', 'set $jit_pc = $pc',
                     '-ex', 'x/12i $pc', '-ex', 'x/24gx $sp',
                     '-ex', 'info proc mappings', '-ex', 'thread apply all bt',
                     # The observed x86 JIT epilogue uses a frame pointer, but
@@ -52,15 +53,10 @@ def record_linux_fault(pid, code, executable, evidence, engine, env):
                     '-ex', 'info symbol *(void**)($jit_rbp+8)',
                     '-ex', 'frame view $jit_rbp+16 *(void**)($jit_rbp+8)',
                     '-ex', 'info frame', '-ex', 'bt',
-                    # "bt" still starts at the innermost physical frame,
-                    # even after "frame view". Restore only the saved x86
-                    # call boundary in GDB's postmortem register view. The
-                    # original registers/stacks above and core file survive.
-                    '-ex', 'echo Reconstructed caller stack (saved x86 call boundary):\\n',
-                    '-ex', 'set $pc = *(void**)($jit_rbp+8)',
-                    '-ex', 'set $sp = $jit_rbp+16',
-                    '-ex', 'set $rbp = *(void**)$jit_rbp',
-                    '-ex', 'bt',
+                    # Core targets cannot change register state. GDB's
+                    # supported unwinder describes this saved call boundary
+                    # without modifying the target or its private core file.
+                    '-ex', 'source ' + str(Path(__file__).with_name('native-jit-unwinder.py')),
                     str(executable), str(core)],
                     env=env, stdout=output, stderr=subprocess.STDOUT)
             fault['debugger_exit'] = debugger.returncode
