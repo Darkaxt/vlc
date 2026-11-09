@@ -259,11 +259,15 @@ def main():
                         help='Diagnostic only: stream one ZIP launch and sample its running native threads')
     parser.add_argument('--capture-core', action='store_true',
                         help='Observe without attaching; retain the original child core on a native fault')
+    parser.add_argument('--observe-count', type=int, choices=range(1, 13), default=1,
+                        help='Bounded fresh-profile teardown census; stop at the first original fault')
     args = parser.parse_args()
     if args.observe_launch and args.trace_launch:
         parser.error('Select one diagnostic launch mechanism')
     if args.capture_core and not args.observe_launch:
         parser.error('Core capture requires the diagnostic observation path')
+    if args.observe_count != 1 and not args.observe_launch:
+        parser.error('A launch census requires the diagnostic observation path')
     if platform.system() != 'Darwin':
         raise RuntimeError('Mac package verification requires a native Mac')
     record = json.loads((args.work / 'package-output.json').read_text())
@@ -291,8 +295,10 @@ def main():
                                if actual.get(key) != expected.get(key))
             raise RuntimeError('Recovered app differs from its normal package: ' + str(different))
         run('codesign', '--verify', '--deep', '--strict', app)
-        for engine in ((args.observe_launch,) if args.observe_launch else ('vlc', 'mpv')):
-            engine_case = case / engine; engine_case.mkdir()
+        engines = (args.observe_launch,) if args.observe_launch else ('vlc', 'mpv')
+        for engine, attempt in ((engine, attempt) for engine in engines for attempt in range(args.observe_count)):
+            name = engine if args.observe_count == 1 else engine + '-' + str(attempt + 1)
+            engine_case = case / name; engine_case.mkdir()
             home = engine_case / 'home'; home.mkdir()
             env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / 'config'),
                 XDG_DATA_HOME=str(home / 'data'), XDG_CACHE_HOME=str(home / 'cache'),
@@ -327,6 +333,7 @@ def main():
                 'strict_signature_verified': True, 'normal_qt_playback_natural_eof_exit': 0,
                 'launch_traced': args.trace_launch,
                 'launch_observed': bool(args.observe_launch),
+                'fresh_profile_attempt': attempt + 1,
                 'qualification': 'DIAGNOSTIC ONLY' if args.trace_launch or args.observe_launch else 'normal untraced package playback',
                 'stderr_sha256': digest(engine_case / ('launch-lldb.log' if args.trace_launch else 'stderr.log'))})
             (args.scratch / 'verification.json').write_text(json.dumps(results, indent=2) + '\n')

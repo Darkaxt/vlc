@@ -905,6 +905,38 @@ class NativePackagingTest(unittest.TestCase):
                                      [('.zip', 'vlc'), ('.zip', 'mpv'), ('.dmg', 'vlc'), ('.dmg', 'mpv')])
                     self.assertTrue(all(row['qualification'] == 'normal untraced package playback' for row in receipt))
 
+    def test_mac_shutdown_census_stops_at_first_fault_without_replay(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        root = Path(sys.argv_scratch) / ('mac-census-' + uuid.uuid4().hex)
+        work = root / 'work'; packages = work / 'packages' / ('a' * 40)
+        packages.mkdir(parents=True)
+        (work / 'package-output.json').write_text(json.dumps({
+            'source_commit':'a' * 40,'directory':str(packages.resolve())}))
+        for suffix in ('.zip','.dmg'):
+            (packages / ('normal' + suffix)).write_bytes(b'normal asset')
+        homes = []
+        def observed(argv, env, case, **kwargs):
+            homes.append(env['HOME'])
+            (case / 'stderr.log').write_text('EOF reached\n')
+            if len(homes) == 2:
+                raise subprocess.CalledProcessError(-4, list(map(str, argv)))
+            return 'EOF reached\n'
+        scratch = root / 'acceptance'
+        with patch.object(verifier.platform, 'system', return_value='Darwin'), \
+                patch.object(verifier, 'run'), patch.object(verifier, 'observe_launch', side_effect=observed), \
+                patch.object(verifier, 'diagnose_crash') as replay, \
+                patch.object(verifier, 'app_identity', return_value={'vlc':'original bytes'}), \
+                patch.object(sys, 'argv', ['verify-macos-packages.py','--work',str(work),'--scratch',str(scratch),
+                    '--observe-launch','vlc','--observe-count','12','--capture-core']), patch('builtins.print'):
+            with self.assertRaises(subprocess.CalledProcessError) as failure:
+                verifier.main()
+            self.assertEqual(failure.exception.returncode, -4)
+            replay.assert_not_called()
+        self.assertEqual(len(set(homes)), 2)
+        self.assertEqual(len(json.loads((scratch / 'verification.json').read_text())), 1)
+        self.assertEqual(json.loads((scratch / 'zip-runtime/vlc-2/failure.json').read_text())['normal_returncode'], -4)
+
     def test_native_windows_upstream_pipeline_does_not_touch_absent_copy_mounts(self):
         spec = importlib.util.spec_from_file_location('windows_pipeline',
             HERE.parent / 'windows-player/compilation-pipeline.py')

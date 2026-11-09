@@ -13,6 +13,11 @@ owned scratch on the disposable hosted runner, restore/read back its original
 settings in finally, strip child CI credentials and keep raw cores private.
 Retain and inspect only that child's original fault core. No user-host changes,
 new normal build, SDK or production mutation.
+Private-core continuation42608676926 closed0: one untraced fresh-profile VLC
+ZIP launch reached EOF/Qt shutdown; core settings restored/read back. No fault
+or repair demonstrated. Run a bounded12 fresh-profile census against that same
+archive, stopping at the first failure with its original private core; this is
+diagnosis of an intermittent shutdown, not retry acceptance or a normal rebuild.
 
 Coordinated normal run42597474062/source1346af0b is closed: Apple Silicon,
 Linuxx86 and LinuxARM jobs succeeded; Intel failed as above. Mac ZIP/DMG normal
