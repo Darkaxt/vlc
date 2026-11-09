@@ -52,6 +52,10 @@ public:
 
     void createPicture();
     xcb_render_picture_t getPicture();
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    xcb_pixmap_t diagnosticPixmap() const { return m_pixmap.get(); }
+    xcb_render_picture_t diagnosticPicture() const { return m_picture.get(); }
+#endif
 
 public slots:
     void resetPixmap();

@@ -1,6 +1,20 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Matrix42585461970/source789: both Linux architectures built their packages and
+saved compiler caches, then failed the original immediate VLC restored-picture
+assertion. Linuxx86 artifact13660625498 is2112978083B; ARM artifact13660190912
+is2043659077B. ARM's failed render state is visible, embedded,600x420 with
+drawing picture10485763 and completed request120; the successful clock followup
+has the same identities/extents and request145. Server completion passes in both
+observations. Next inspect the existing cached interface/video pixmap identities,
+geometry and pixel counts under the picture lock, without creating a new source
+picture, requesting a redraw or changing production code. Verify normal bytes
+outside all three diagnostic headers before reusing the exact789 normal package.
+MacARM generated ZIP/DMG/source and passed normal VLC EOF; its normal MPV process
+has not returned. Intel Mac is still compiling Qt. Original watch75616 and owned
+guest73951 remain active; Windows installed-picture/EOF/uninstall awaits a logged-in
+owned guest. No new matrix, cold build, release or second ACTIVE stage.
 Server-fence921 run42583173295 closed1/watch67467 exit1 in6m55s; exact9ab
 normal package was reused and normal compilation/packaging skipped. The new
 server-completion assertion passes, but restored-picture still has0 chromatic
@@ -19,7 +33,7 @@ compiled their players but source packaging failed on GitHub release HTTP504
 (libass0.17.5/libfuse3.15.0); both saved compiler caches. GitHub release-client
 retrieval of both exact assets succeeds, and libass published checksum matches.
 Apply the narrow CI source-transport correction with unchanged pinned checksums
-and read-only token, then resume those retained cohorts. Linux diagnostic921
+and existing token used only for release reads, then resume those retained cohorts. Linux diagnostic921
 run42583173295/watch67467 is running with exact normal9ab reuse required;
 observe it before selecting any further renderer correction.
 

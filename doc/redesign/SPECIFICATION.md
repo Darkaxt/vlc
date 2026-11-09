@@ -4,6 +4,15 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 image-source observation: current789 reproduces the immediate
+VLC restore failure on both Linux architectures. ARM's render task is active,
+visible and embedded with a valid drawing-picture identity and600x420 extents;
+the same server-fenced state later presents correctly. Observe the existing
+cached interface/video pixmaps and their pixels under the existing picture lock.
+Do not recreate their pictures, force a redraw, delay acceptance or change normal
+rendering from these observations. Diagnostic-only additions in the render-client
+header require the same outside-guard byte comparison as the other two headers.
+
 9 November R112 observation continuation:921's same-connection server reply
 succeeds, while the original restored-picture remains blank. Do not attribute
 that result to request completion or mark restoration repaired. Observe existing
@@ -18,7 +27,7 @@ closure failed HTTP504 on GitHub release URLs. The same libass/libfuse assets
 were retrieved successfully through the installed GitHub release client; libass
 matches published SHA2562dca25c0e0c837ddf00b52011b3f82cac1e4ddd3ad018227806b0c2288864acc.
 Use that supported client for exact GitHub release tag/name downloads in native
-CI, with the job's existing read-only token and all original caller checksum,
+CI, with the job's existing token used for release reads and all original caller checksum,
 source-owner and retention checks. Other URLs/local build transport are unchanged.
 Do not add automatic retries, alternate source versions or incomplete-source
 release exceptions. Resume retained compiler cohorts and verify complete normal

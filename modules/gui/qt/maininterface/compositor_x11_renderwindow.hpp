@@ -29,6 +29,9 @@
 #include <QWindow>
 #ifdef VLC_PLAYER_DIAGNOSTICS
 #include <QVariantMap>
+#include <QImage>
+#include <QSysInfo>
+#include "compositor_x11_renderclient.hpp"
 #endif
 
 #include <xcb/xcb.h>
@@ -70,7 +73,61 @@ public:
                         QObject* parent = nullptr);
     ~RenderTask();
 #ifdef VLC_PLAYER_DIAGNOSTICS
+    QVariantMap diagnosticClient(const CompositorX11RenderClient* client) const {
+        if (!client) return {};
+        QVariantMap result{{QStringLiteral("window"), client->getWindowXid()},
+                           {QStringLiteral("pixmap"), client->diagnosticPixmap()},
+                           {QStringLiteral("picture"), client->diagnosticPicture()}};
+        const auto pixmap = client->diagnosticPixmap();
+        if (!pixmap) return result;
+        xcb_generic_error_t* error = nullptr;
+        auto geometry = xcb_get_geometry_reply(m_conn, xcb_get_geometry(m_conn, pixmap), &error);
+        if (!geometry || error) {
+            result.insert(QStringLiteral("geometry_error"), error ? error->error_code : -1);
+            free(error); free(geometry);
+            return result;
+        }
+        const int width = geometry->width, height = geometry->height, depth = geometry->depth;
+        result.insert(QStringLiteral("width"), width);
+        result.insert(QStringLiteral("height"), height);
+        result.insert(QStringLiteral("depth"), depth);
+        free(geometry);
+        const auto setup = xcb_get_setup(m_conn);
+        const auto nativeOrder = QSysInfo::ByteOrder == QSysInfo::LittleEndian
+            ? XCB_IMAGE_ORDER_LSB_FIRST : XCB_IMAGE_ORDER_MSB_FIRST;
+        bool rgb32 = false;
+        for (auto formats = xcb_setup_pixmap_formats_iterator(setup); formats.rem; xcb_format_next(&formats))
+            if (formats.data->depth == depth && formats.data->bits_per_pixel == 32) rgb32 = true;
+        if (!rgb32 || setup->image_byte_order != nativeOrder || width <= 0 || height <= 0
+            || width > 4096 || height > 4096) {
+            result.insert(QStringLiteral("pixels_not_read"), QStringLiteral("unsupported image layout or extent"));
+            return result;
+        }
+        auto image = xcb_get_image_reply(m_conn,
+            xcb_get_image(m_conn, XCB_IMAGE_FORMAT_Z_PIXMAP, pixmap, 0, 0, width, height, ~uint32_t(0)), &error);
+        if (!image || error || xcb_get_image_data_length(image) != width * height * 4) {
+            result.insert(QStringLiteral("image_error"), error ? error->error_code : -1);
+            free(error); free(image);
+            return result;
+        }
+        const QImage pixels(xcb_get_image_data(image), width, height, width * 4, QImage::Format_RGB32);
+        int nonblack = 0, chromatic = 0;
+        for (int y = 0; y < height; ++y) {
+            const auto row = reinterpret_cast<const QRgb*>(pixels.constScanLine(y));
+            for (int x = 0; x < width; ++x) {
+                const int high = qMax(qRed(row[x]), qMax(qGreen(row[x]), qBlue(row[x])));
+                const int low = qMin(qRed(row[x]), qMin(qGreen(row[x]), qBlue(row[x])));
+                if (high) ++nonblack;
+                if (high >= 100 && high - low >= 80) ++chromatic;
+            }
+        }
+        result.insert(QStringLiteral("nonblack_pixels"), nonblack);
+        result.insert(QStringLiteral("chromatic_pixels"), chromatic);
+        free(image);
+        return result;
+    }
     QVariantMap diagnosticState() const {
+        QMutexLocker lock(&m_pictureLock);
         return {{QStringLiteral("visible"), m_visible},
                 {QStringLiteral("request_id"), m_refreshRequestId},
                 {QStringLiteral("window_id"), m_wid},
@@ -79,6 +136,12 @@ public:
                 {QStringLiteral("video_embedded"), m_videoEmbed},
                 {QStringLiteral("video_client"), m_videoClient != nullptr},
                 {QStringLiteral("interface_client"), m_interfaceClient != nullptr},
+                {QStringLiteral("video_source"), diagnosticClient(m_videoClient)},
+                {QStringLiteral("interface_source"), diagnosticClient(m_interfaceClient)},
+                {QStringLiteral("video_x"), m_videoPosition.x()},
+                {QStringLiteral("video_y"), m_videoPosition.y()},
+                {QStringLiteral("video_width"), m_videoPosition.width()},
+                {QStringLiteral("video_height"), m_videoPosition.height()},
                 {QStringLiteral("render_width"), m_renderSize.width()},
                 {QStringLiteral("render_height"), m_renderSize.height()},
                 {QStringLiteral("interface_width"), m_interfaceSize.width()},

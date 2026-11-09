@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 TEST_ONLY = {
     'modules/gui/qt/maininterface/player_diagnostics.hpp',
     'modules/gui/qt/maininterface/compositor_x11_renderwindow.hpp',
+    'modules/gui/qt/maininterface/compositor_x11_renderclient.hpp',
     '.github/workflows/desktop-packages.yml',
     'tools/desktop-player/reuse-native-review.py',
     'tools/desktop-player/prepare-native-review.py',
@@ -167,7 +168,8 @@ def reusable(work):
     if not test_only(changed):
         return None
     for diagnostic_header in ('modules/gui/qt/maininterface/player_diagnostics.hpp',
-                              'modules/gui/qt/maininterface/compositor_x11_renderwindow.hpp'):
+                              'modules/gui/qt/maininterface/compositor_x11_renderwindow.hpp',
+                              'modules/gui/qt/maininterface/compositor_x11_renderclient.hpp'):
         if diagnostic_header in changed:
             original = subprocess.check_output(['git', 'show', base + ':' + diagnostic_header], cwd=ROOT, text=True)
             if normal_diagnostic_header(original) != normal_diagnostic_header((ROOT / diagnostic_header).read_text()):
