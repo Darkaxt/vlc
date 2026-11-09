@@ -1,6 +1,17 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Synchronous Mesa control42562145851/0e2ca02d closed1 (watch41460 exit1).
+Actual renderer-control.json proves zero workers with unchanged normal runtime.
+Floating entry still faults, now on the GUI thread: a generated blend routine
+loads from rcx plus an invalid signed stride, with SIGSEGV ACCERR at7f9e8a0b5200.
+Thus background-worker concurrency does not explain the defect. Its epilogue
+uses rbp, but absent JIT unwind metadata hides the native caller. Record saved
+frame bytes and a separately labelled GDB caller view before modifying rendering.
+Artifact13649224329 is888974321B, SHA2563eaf038f17b8ac9c15293753c0909c4895ae750bdf76ee129dc90a7ea9fcc936.
+Owned managers/audio exited; normal objects restored; replacement cache and
+retirement passed. No normal compilation, product repair or acceptance is claimed.
+
 UI-only42560992544/c2f69e8a closed1 (original watch72731 exit1). No normal
 compilation or packaging ran. Floating entry reproduced the invalid generated
 code load (`vmovdqa (%rcx),%xmm9`, rcx7f585fbfe800) while the GUI thread was

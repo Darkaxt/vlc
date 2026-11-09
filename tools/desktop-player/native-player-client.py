@@ -39,6 +39,14 @@ def record_linux_fault(pid, code, executable, evidence, engine, env):
                     '-ex', 'p $_siginfo', '-ex', 'info threads', '-ex', 'info registers',
                     '-ex', 'x/12i $pc', '-ex', 'x/24gx $sp',
                     '-ex', 'info proc mappings', '-ex', 'thread apply all bt',
+                    # The observed x86 JIT epilogue uses a frame pointer, but
+                    # has no unwind metadata. Keep the saved frame bytes and
+                    # label this explicit caller view separately from the
+                    # original fault stacks; the core itself is not modified.
+                    '-ex', 'echo Saved JIT frame and explicit caller view:\\n',
+                    '-ex', 'x/16gx $fp',
+                    '-ex', 'frame view $fp+16 *(void**)($fp+8)',
+                    '-ex', 'info frame', '-ex', 'bt',
                     str(executable), str(core)],
                     env=env, stdout=output, stderr=subprocess.STDOUT)
             fault['debugger_exit'] = debugger.returncode
