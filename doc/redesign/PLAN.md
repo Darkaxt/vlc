@@ -1,6 +1,21 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Matrix42579644174 Linuxx86 still fails the original immediate restored-picture:
+mapped/exposed windows,0 chromatic pixels; separately labelled clock followup
+190644 with inspected correct picture. The Expose correction did not resolve
+this boundary. Before another production change, strengthen the diagnostic
+fence with a read-only reply on the renderer's exact XCB connection: Qt's thread
+FIFO and xcb_flush do not prove server completion before QScreen's separate
+connection captures. This is not a redraw, retry or relaxed picture assertion.
+The connection accessor is compiled only under VLC_PLAYER_DIAGNOSTICS; reuse
+compares all bytes outside that guard in both affected headers. Reuse the exact
+9ab normal runtime; the next test-only run must skip normal compilation/packages.
+Intel's dependency retrieval failed HTTP504; both pinned URLs now answer200 and
+its compiled cache was saved. Parent matrix ARM Linux/mac jobs remain running;
+do not duplicate them. Windows9ab packages/installer and portable native+DV pass;
+final installed-picture qualification awaits connection of owned guest49.
+
 The complete candidate now includes7f787a0a's X11 Expose dispatch correction.
 Run one coordinated normal four-architecture hosted acceptance matrix from this
 identified revision, rather than a separate Linux qualification followed by a

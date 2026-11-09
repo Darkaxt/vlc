@@ -724,6 +724,13 @@ class NativePackagingTest(unittest.TestCase):
             reuse.normal_diagnostic_header(changed.replace('#define HEADER', '#define OTHER')))
         with self.assertRaisesRegex(RuntimeError, 'production alternate'):
             reuse.normal_diagnostic_header(original.replace('int test;', '#else\nint production;'))
+        production = 'class Output {\npublic:\nvoid render();\n};\n'
+        observed = production.replace('void render();', 'void render();\n#ifdef VLC_PLAYER_DIAGNOSTICS\nint connection() const;\n#endif')
+        self.assertEqual(reuse.normal_diagnostic_header(production), reuse.normal_diagnostic_header(observed))
+        self.assertNotEqual(reuse.normal_diagnostic_header(production),
+                            reuse.normal_diagnostic_header(observed.replace('void render();', 'void changed();')))
+        with self.assertRaisesRegex(RuntimeError, 'Unclosed'):
+            reuse.normal_diagnostic_header(observed.replace('#endif\n', ''))
 
     def test_traced_mac_launch_cannot_pass_a_target_fault_with_debugger_exit_zero(self):
         spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')

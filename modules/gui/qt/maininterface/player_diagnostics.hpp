@@ -76,6 +76,7 @@
 #ifdef QT_HAS_X11_COMPOSITOR
 #include <QtGui/qguiapplication_platform.h>
 #include <xcb/xcb.h>
+#include "maininterface/compositor_x11_renderwindow.hpp"
 #endif
 #ifdef UPDATE_CHECK
 #include "dialogs/help/help.hpp"
@@ -1365,11 +1366,22 @@ private:
                             finish(failed);
                             return;
                         }
+                        const auto renderWindow = qobject_cast<vlc::CompositorX11RenderWindow *>(output);
+                        const auto connection = renderWindow->diagnosticConnection();
                         const QPointer<PlayerDiagnostics> owner(this);
-                        const bool queued = QMetaObject::invokeMethod(threads.front()->eventDispatcher(), [owner, finish, extra] {
-                            if (owner) QMetaObject::invokeMethod(owner.data(), [finish, extra] {
+                        const bool queued = QMetaObject::invokeMethod(threads.front()->eventDispatcher(), [owner, finish, extra, connection] {
+                            // A thread FIFO fence alone does not establish that
+                            // the X server has executed flushed drawing requests.
+                            // Observe a reply on that exact connection before
+                            // QScreen reads pixels through Qt's other connection.
+                            auto reply = xcb_get_input_focus_reply(connection,
+                                xcb_get_input_focus(connection), nullptr);
+                            const bool serverObserved = reply != nullptr;
+                            free(reply);
+                            if (owner) QMetaObject::invokeMethod(owner.data(), [finish, extra, serverObserved] {
                                 auto observed = extra;
                                 observed.insert(QStringLiteral("native_composition_fenced"), true);
+                                observed.insert(QStringLiteral("native_composition_server_fenced"), serverObserved);
                                 finish(observed);
                             }, Qt::QueuedConnection);
                         }, Qt::QueuedConnection);

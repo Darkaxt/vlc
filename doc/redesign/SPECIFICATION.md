@@ -4,6 +4,18 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 capture completion: the9ab immediate restored capture still
+fails, although all owned native windows are mapped/exposed and the separately
+labelled clock-transition followup shows the correct picture. The test fence
+must observe server completion on the exact renderer XCB connection before
+QScreen reads through Qt's other connection. A thread FIFO callback plus flush
+does not establish that protocol ordering. Add only a read-only diagnostic
+connection accessor under VLC_PLAYER_DIAGNOSTICS and a server reply at that
+existing capture boundary, with no redraw/sleep/retry or acceptance relaxation.
+Preserve the original failed evidence and exact normal runtime identity; verify
+all bytes outside the diagnostic guard before package reuse. This is diagnostic
+work in ACTIVE M15, not proof that production restoration is fixed.
+
 9 November R112 restore dispatch: the9c native journal records root Expose at
 restore, but DummyRenderWindow::event consumes that event before QWindow can
 call CompositorX11RenderWindow::exposeEvent. Thus its intended redirected-pixmap

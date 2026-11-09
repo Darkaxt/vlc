@@ -249,6 +249,7 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         inspect_result(result)
         if platform.system() == 'Linux' and result.get('native_capture_saved'):
             assert result.get('native_composition_fenced'), 'Native capture raced the X11 render thread'
+            assert result.get('native_composition_server_fenced'), 'Native capture lacks completion on the renderer X11 connection'
             assert result.get('native_capture_chromatic_pixels', 0) > 0, (
                 'The colored native fixture produced a blank/gray capture', label)
         if label in ('main-picture', 'subtitle-picture', 'floating-picture',

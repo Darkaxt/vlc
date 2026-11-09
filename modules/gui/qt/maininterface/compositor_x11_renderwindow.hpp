@@ -182,6 +182,10 @@ public:
     void disableVideoWindow();
 
     QQuickWindow* getOffscreenWindow() const override;
+#ifdef VLC_PLAYER_DIAGNOSTICS
+    // Read-only observation of this output's X server request stream.
+    xcb_connection_t* diagnosticConnection() const { return m_conn; }
+#endif
 
 signals:
     void windowSizeChanged(const QSize& newSize);
