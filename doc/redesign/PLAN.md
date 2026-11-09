@@ -1,6 +1,16 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+The complete candidate now includes7f787a0a's X11 Expose dispatch correction.
+Run one coordinated normal four-architecture hosted acceptance matrix from this
+identified revision, rather than a separate Linux qualification followed by a
+duplicate Linux matrix run. Cocoa and Linux each retain their own SDK/objects;
+the X11-only change does not affect Cocoa or Windows. Normal packages, installed
+workflows, actual composed pictures and clean lifecycle remain required on every
+architecture; this execution-order consolidation waives no criterion. The new
+correction is source-ready, not verified. Keep M15 ACTIVE throughout any repair,
+with final Windows common-revision binding and M16 delivery still pending.
+
 Current9c365815 Linux42575096469 closed1: normal packages/install/EOF passed,
 but the strengthened native check correctly rejects VLC's immediate restored
 blank picture. MPV's integrated workflow passed. A render-thread FIFO fence and
