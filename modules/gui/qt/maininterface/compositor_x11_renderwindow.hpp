@@ -73,15 +73,11 @@ public:
                         QObject* parent = nullptr);
     ~RenderTask();
 #ifdef VLC_PLAYER_DIAGNOSTICS
-    QVariantMap diagnosticClient(const CompositorX11RenderClient* client) const {
-        if (!client) return {};
-        QVariantMap result{{QStringLiteral("window"), client->getWindowXid()},
-                           {QStringLiteral("pixmap"), client->diagnosticPixmap()},
-                           {QStringLiteral("picture"), client->diagnosticPicture()}};
-        const auto pixmap = client->diagnosticPixmap();
-        if (!pixmap) return result;
+    QVariantMap diagnosticDrawable(xcb_drawable_t drawable) const {
+        QVariantMap result{{QStringLiteral("drawable"), drawable}};
+        if (!drawable) return result;
         xcb_generic_error_t* error = nullptr;
-        auto geometry = xcb_get_geometry_reply(m_conn, xcb_get_geometry(m_conn, pixmap), &error);
+        auto geometry = xcb_get_geometry_reply(m_conn, xcb_get_geometry(m_conn, drawable), &error);
         if (!geometry || error) {
             result.insert(QStringLiteral("geometry_error"), error ? error->error_code : -1);
             free(error); free(geometry);
@@ -104,7 +100,7 @@ public:
             return result;
         }
         auto image = xcb_get_image_reply(m_conn,
-            xcb_get_image(m_conn, XCB_IMAGE_FORMAT_Z_PIXMAP, pixmap, 0, 0, width, height, ~uint32_t(0)), &error);
+            xcb_get_image(m_conn, XCB_IMAGE_FORMAT_Z_PIXMAP, drawable, 0, 0, width, height, ~uint32_t(0)), &error);
         if (!image || error || xcb_get_image_data_length(image) != width * height * 4) {
             result.insert(QStringLiteral("image_error"), error ? error->error_code : -1);
             free(error); free(image);
@@ -126,8 +122,20 @@ public:
         free(image);
         return result;
     }
+    QVariantMap diagnosticClient(const CompositorX11RenderClient* client) const {
+        if (!client) return {};
+        auto result = diagnosticDrawable(client->diagnosticPixmap());
+        result.insert(QStringLiteral("window"), client->getWindowXid());
+        result.insert(QStringLiteral("picture"), client->diagnosticPicture());
+        return result;
+    }
     QVariantMap diagnosticState() const {
         QMutexLocker lock(&m_pictureLock);
+        // Observe the output before reading either source. Extra diagnostic
+        // roundtrips must not make a later screenshot stand for this boundary.
+        const auto output = diagnosticDrawable(m_wid);
+        const auto video = diagnosticClient(m_videoClient);
+        const auto interface = diagnosticClient(m_interfaceClient);
         return {{QStringLiteral("visible"), m_visible},
                 {QStringLiteral("request_id"), m_refreshRequestId},
                 {QStringLiteral("window_id"), m_wid},
@@ -136,8 +144,9 @@ public:
                 {QStringLiteral("video_embedded"), m_videoEmbed},
                 {QStringLiteral("video_client"), m_videoClient != nullptr},
                 {QStringLiteral("interface_client"), m_interfaceClient != nullptr},
-                {QStringLiteral("video_source"), diagnosticClient(m_videoClient)},
-                {QStringLiteral("interface_source"), diagnosticClient(m_interfaceClient)},
+                {QStringLiteral("output_before_sources"), output},
+                {QStringLiteral("video_source"), video},
+                {QStringLiteral("interface_source"), interface},
                 {QStringLiteral("video_x"), m_videoPosition.x()},
                 {QStringLiteral("video_y"), m_videoPosition.y()},
                 {QStringLiteral("video_width"), m_videoPosition.width()},

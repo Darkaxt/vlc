@@ -9,7 +9,9 @@ drawing picture10485763 and completed request120; the successful clock followup
 has the same identities/extents and request145. Server completion passes in both
 observations. Next inspect the existing cached interface/video pixmap identities,
 geometry and pixel counts under the picture lock, without creating a new source
-picture, requesting a redraw or changing production code. Verify normal bytes
+picture, requesting a redraw or changing production code. Read the output pixels
+first so additional source-image roundtrips cannot turn a later screenshot into
+evidence for that original boundary. Verify normal bytes
 outside all three diagnostic headers before reusing the exact789 normal package.
 MacARM generated ZIP/DMG/source and passed normal VLC EOF; its normal MPV process
 has not returned. Its stderr remains redirected until exit, preventing live stack
