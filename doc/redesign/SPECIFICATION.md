@@ -9,7 +9,11 @@ input teardown and before Qt shutdown. The single LLDB reproduction exits0;
 it does not explain or clear the original fault. Preserve the normal archive,
 failure and logs. Capture the fault through the existing LLDB diagnostic mode
 using required unchanged-package reuse, without normal rebuilding or accepting
-a debugger-only pass. Repair only an evidenced cause and requalify affected
+a debugger-only pass. If debugger attachment suppresses reproduction, observe
+an untraced original child using its own bounded core resource limit and the
+existing OS core path. Do not change host OS core settings or relaunch a failed
+child to invent original stack evidence. Preserve its failure even if core
+collection fails. Repair only an evidenced cause and requalify affected
 normal packages before M15 closure; Windows and other architectures retain
 applicable unchanged evidence.
 

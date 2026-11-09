@@ -812,6 +812,32 @@ class NativePackagingTest(unittest.TestCase):
                 child.kill.assert_not_called(); child.terminate.assert_not_called()
             self.assertEqual((case / 'stderr.log').read_text(), 'MPV started\nMPV natural EOF reached\n')
 
+    def test_mac_core_observer_keeps_the_original_untraced_fault(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        case = Path(sys.argv_scratch) / ('mac-core-observation-' + uuid.uuid4().hex)
+        case.mkdir()
+        child = MagicMock(pid=711)
+        child.stdout = io.StringIO('EOF reached\n')
+        child.wait.return_value = -4
+        event = MagicMock(); event.wait.return_value = True
+        signals = SimpleNamespace(SIGINT=2, SIGTERM=15, SIG_BLOCK=0, SIG_SETMASK=1,
+            SIG_IGN=None, pthread_sigmask=MagicMock(return_value=[]), signal=MagicMock())
+        threads = SimpleNamespace(Event=lambda: event, Thread=verifier.threading.Thread)
+        with patch.object(verifier, 'signal', signals), \
+                patch.object(verifier, 'threading', threads), \
+                patch.object(verifier.subprocess, 'Popen', return_value=child) as launch, \
+                patch.object(verifier, 'core_observation', return_value={'pattern':'/cores/core.%P'}) as prepare, \
+                patch.object(verifier, 'capture_native_core') as capture, patch('builtins.print'):
+            with self.assertRaises(subprocess.CalledProcessError) as failure:
+                verifier.observe_launch(['vlc', '--play-and-exit'], {}, case, capture_core=True)
+            self.assertEqual(failure.exception.returncode, -4)
+            prepare.assert_called_once_with(case)
+            capture.assert_called_once_with(711, ['vlc', '--play-and-exit'], case,
+                                            {'pattern':'/cores/core.%P'})
+            self.assertEqual(launch.call_args.args[0], ['vlc', '--play-and-exit'])
+            child.wait.assert_called_once_with()
+
     def test_normal_mac_formats_require_each_engines_own_eof(self):
         spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
         verifier = importlib.util.module_from_spec(spec)

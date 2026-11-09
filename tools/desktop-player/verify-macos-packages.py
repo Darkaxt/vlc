@@ -20,6 +20,7 @@ import signal
 import stat
 import subprocess
 import threading
+import time
 
 
 def digest(path):
@@ -99,10 +100,47 @@ def trace_launch(argv, environment, case, app):
     return text
 
 
-def observe_launch(argv, environment, case):
+def core_observation(case):
+    """Read native capability; change only the subsequently launched child's limit."""
+    import resource
+    pattern = subprocess.check_output(['/usr/sbin/sysctl', '-n', 'kern.corefile'], text=True).strip()
+    enabled = subprocess.check_output(['/usr/sbin/sysctl', '-n', 'kern.coredump'], text=True).strip()
+    parent = Path(pattern).parent
+    if enabled != '1' or not Path(pattern).is_absolute() or pattern.count('%P') != 1 \
+            or '%' in pattern.replace('%P', '') or '%' in str(parent) or not os.access(parent, os.W_OK):
+        raise RuntimeError('Native core capture unavailable without changing OS settings: ' + pattern)
+    soft, hard = resource.getrlimit(resource.RLIMIT_CORE)
+    limit = 4 * 1024 ** 3 if hard == resource.RLIM_INFINITY else min(hard, 4 * 1024 ** 3)
+    if limit <= 0:
+        raise RuntimeError('Native core hard limit forbids child-only capture')
+    result = {'pattern': pattern, 'original_soft_limit': soft, 'hard_limit': hard,
+              'child_soft_limit': limit, 'started_ns': time.time_ns(), 'os_settings_changed': False}
+    (case / 'core-observer.json').write_text(json.dumps(result, indent=2) + '\n')
+    return result
+
+
+def capture_native_core(pid, argv, case, observation):
+    """Inspect the original dead child; never rerun it to manufacture a stack."""
+    core = Path(observation['pattern'].replace('%P', str(pid)))
+    result = dict(pid=pid, path=str(core), captured=False)
+    if core.is_file() and not core.is_symlink() and core.stat().st_mtime_ns >= observation['started_ns']:
+        retained = case / 'original-process.core'
+        shutil.copyfile(core, retained)
+        result.update(captured=True, bytes=retained.stat().st_size, sha256=digest(retained))
+        with (case / 'original-core-lldb.log').open('wb') as stream:
+            diagnostic = subprocess.run(['xcrun', 'lldb', '--batch', '--no-lldbinit',
+                '-c', str(retained), '-o', 'thread backtrace all', '-o', 'register read',
+                '-o', 'image list', '--', str(argv[0])], stdout=stream, stderr=subprocess.STDOUT)
+        result['debugger_returncode'] = diagnostic.returncode
+        print((case / 'original-core-lldb.log').read_text(errors='replace')[-24000:], flush=True)
+    (case / 'original-core.json').write_text(json.dumps(result, indent=2) + '\n')
+
+
+def observe_launch(argv, environment, case, capture_core=False):
     """Stream one diagnostic launch and sample it; never impose an exit deadline."""
     spec = importlib.util.spec_from_file_location('owned_native_build', Path(__file__).with_name('build-native.py'))
     owner = importlib.util.module_from_spec(spec); spec.loader.exec_module(owner)
+    core = core_observation(case) if capture_core else None
     completed = threading.Event()
     signals = (signal.SIGINT, signal.SIGTERM)
     mask = signal.pthread_sigmask(signal.SIG_BLOCK, signals)
@@ -115,7 +153,7 @@ def observe_launch(argv, environment, case):
     def sample():
         # This cadence only requests a read-only stack observation. It neither
         # classifies playback nor stops, retries or changes the player.
-        if completed.wait(5) or process.poll() is not None:
+        if capture_core or completed.wait(5) or process.poll() is not None:
             return
         trace = case / 'running-process-sample.txt'
         result = subprocess.run(['/usr/bin/sample', str(process.pid), '1', '1', '-file', str(trace)],
@@ -124,10 +162,16 @@ def observe_launch(argv, environment, case):
         if trace.is_file():
             print(trace.read_text(errors='replace'), flush=True)
 
+    def child_setup():
+        if core:
+            import resource
+            resource.setrlimit(resource.RLIMIT_CORE, (core['child_soft_limit'], core['hard_limit']))
+        signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+
     try:
         print('+ DIAGNOSTIC', ' '.join(map(str, argv)), flush=True)
         process = subprocess.Popen(list(map(str, argv)), env=environment, start_new_session=True,
-            preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, mask),
+            preexec_fn=child_setup,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, errors='replace', bufsize=1)
         observer = threading.Thread(target=sample, name='mac-native-stack-observation')
         observer.start()
@@ -141,6 +185,13 @@ def observe_launch(argv, environment, case):
         completed.set(); observer.join()
         code = process.wait()
         reaped = True
+        if code < 0 and core:
+            try:
+                capture_native_core(process.pid, argv, case, core)
+            except Exception as error:
+                (case / 'core-capture-error.json').write_text(json.dumps({
+                    'pid': process.pid, 'normal_returncode': code,
+                    'diagnostic_error': str(error)}, indent=2) + '\n')
         if code:
             raise subprocess.CalledProcessError(code, list(map(str, argv)))
     except owner.NativeBuildCancelled:
@@ -177,9 +228,13 @@ def main():
                         help='Capture the original process fault; diagnostic evidence, not untraced release clearance')
     parser.add_argument('--observe-launch', choices=('vlc', 'mpv'),
                         help='Diagnostic only: stream one ZIP launch and sample its running native threads')
+    parser.add_argument('--capture-core', action='store_true',
+                        help='Observe without attaching; retain the original child core on a native fault')
     args = parser.parse_args()
     if args.observe_launch and args.trace_launch:
         parser.error('Select one diagnostic launch mechanism')
+    if args.capture_core and not args.observe_launch:
+        parser.error('Core capture requires the diagnostic observation path')
     if platform.system() != 'Darwin':
         raise RuntimeError('Mac package verification requires a native Mac')
     record = json.loads((args.work / 'package-output.json').read_text())
@@ -222,7 +277,7 @@ def main():
                 if args.trace_launch:
                     log = trace_launch(argv, env, engine_case, app)
                 elif args.observe_launch:
-                    log = observe_launch(argv, env, engine_case)
+                    log = observe_launch(argv, env, engine_case, capture_core=args.capture_core)
                 else:
                     with (engine_case / 'stdout.log').open('wb') as stdout, (engine_case / 'stderr.log').open('wb') as stderr:
                         run(*argv, env=env, stdout=stdout, stderr=stderr)
