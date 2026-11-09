@@ -312,7 +312,19 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
             save('expand-queue', client.action('click', target='floatingQueueToggle'))
             save('expanded-picture', client.snapshot(capture=True, capture_native=True))
             save('restore', client.action('click', target='floatingRestore'))
-            restored = save('restored-picture', client.snapshot(capture=True, capture_native=True))
+            restored_result = client.snapshot(capture=True, capture_native=True)
+            if platform.system() == 'Linux' and restored_result.get('native_capture_chromatic_pixels', 0) == 0:
+                # Retain the failing immediate boundary and observe one actual
+                # playback-clock transition. This is diagnostic evidence only:
+                # the original empty capture must still fail acceptance below.
+                target_time = restored_result['core']['time_seconds'] + 1
+                client.await_core('time_seconds', target_time, comparison='at_least')
+                observed = client.snapshot(capture=True, capture_native=True)
+                (evidence / 'restore-followup.json').write_text(json.dumps({
+                    'failed_response_id': restored_result['id'], 'followup_response_id': observed['id'],
+                    'clock_target': target_time, 'original_acceptance_still_failed': True,
+                    'native_capture_chromatic_pixels': observed.get('native_capture_chromatic_pixels')}, indent=2) + '\n')
+            restored = save('restored-picture', restored_result)
             assert restored['main_window']['visibility'] != 3, restored['main_window']
             save('minimize-again', client.action('minimize'))
             save('floating-again', client.await_property('floatingPlayer', 'ready', True))

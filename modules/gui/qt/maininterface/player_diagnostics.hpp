@@ -73,6 +73,10 @@
 #include "player/player_media_tools.hpp"
 #include "player/player_media_analysis.hpp"
 #include "maininterface/mainctx.hpp"
+#ifdef QT_HAS_X11_COMPOSITOR
+#include <QtGui/qguiapplication_platform.h>
+#include <xcb/xcb.h>
+#endif
 #ifdef UPDATE_CHECK
 #include "dialogs/help/help.hpp"
 #endif
@@ -1281,6 +1285,32 @@ private:
                             }
                         }
                         result.insert(QStringLiteral("native_capture_chromatic_pixels"), chromaticPixels);
+#ifdef QT_HAS_X11_COMPOSITOR
+                        QJsonArray nativeStates;
+                        auto connection = qGuiApp->nativeInterface<QNativeInterface::QX11Application>()->connection();
+                        for (auto candidate : QGuiApplication::allWindows()) {
+                            if (!candidate->handle()) continue;
+                            const auto xid = candidate->winId();
+                            auto attributes = xcb_get_window_attributes_reply(connection,
+                                xcb_get_window_attributes(connection, xid), nullptr);
+                            auto geometry = xcb_get_geometry_reply(connection, xcb_get_geometry(connection, xid), nullptr);
+                            auto tree = xcb_query_tree_reply(connection, xcb_query_tree(connection, xid), nullptr);
+                            QJsonObject state{{QStringLiteral("id"), QString::number(qulonglong(xid), 16)},
+                                {QStringLiteral("class"), QString::fromLatin1(candidate->metaObject()->className())},
+                                {QStringLiteral("qt_visible"), candidate->isVisible()},
+                                {QStringLiteral("qt_exposed"), candidate->isExposed()}};
+                            if (attributes) state.insert(QStringLiteral("map_state"), int(attributes->map_state));
+                            if (geometry) {
+                                state.insert(QStringLiteral("width"), geometry->width);
+                                state.insert(QStringLiteral("height"), geometry->height);
+                                state.insert(QStringLiteral("depth"), geometry->depth);
+                            }
+                            if (tree) state.insert(QStringLiteral("parent"), QString::number(qulonglong(tree->parent), 16));
+                            free(attributes); free(geometry); free(tree);
+                            nativeStates.append(state);
+                        }
+                        result.insert(QStringLiteral("native_x11_windows"), nativeStates);
+#endif
                         result.insert(QStringLiteral("native_capture_boundary"), QStringLiteral("QScreen owned top-level window; includes compositor and possible occlusion"));
 #ifndef __APPLE__
                         if (nativeId && nativeWindow->screen()) {

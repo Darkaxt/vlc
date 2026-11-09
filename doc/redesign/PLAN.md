@@ -1,6 +1,19 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Current9c365815 Linux42575096469 closed1: normal packages/install/EOF passed,
+but the strengthened native check correctly rejects VLC's immediate restored
+blank picture. MPV's integrated workflow passed. A render-thread FIFO fence and
+final flush did not resolve VLC restoration; do not stack another production
+hypothesis. On the unchanged normal runtime, retain the failed capture and a
+separately labelled observation after an actual playback-clock transition, plus
+read-only owned-X11 mapping/geometry. The original immediate capture still fails
+acceptance. This test-only continuation must reuse9c normal packages and skip
+normal compilation/packaging. Windows9c run105 closed0/group-empty/mounts released;
+417 split-symbol mappings, actual packaged VLC+library EOF/shutdown and normal
+MPV P5/P8.1/P8.4 presentation/EOF/release pass. Installer qualification remains.
+All-architecture final qualification and publication remain pending.
+
 Normal d1313137 run42571358014 closed0 (watch43942 exit0,24m53s).
 All five formats, both-engine EOF/exit, installed DEB/Fedora-RPM/strict-Snap,
 native integrated workflows, worker-join regression, profile preservation and
