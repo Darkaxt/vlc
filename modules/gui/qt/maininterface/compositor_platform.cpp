@@ -28,6 +28,9 @@
 #include "maininterface/interface_window_handler.hpp"
 #include "mainctx.hpp"
 #include "videosurface.hpp"
+#ifdef QT_HAS_X11_COMPOSITOR
+#include "compositor_x11_renderwindow.hpp"
+#endif
 
 #include <vlc_window.h>
 
@@ -75,8 +78,8 @@ bool CompositorPlatform::init()
 #endif
 
 #ifdef QT_HAS_X11_COMPOSITOR
-    // Use native child windows under X11/XWayland, just as Cocoa does. A
-    // Wayland foreign wl_surface cannot be wrapped by QWindow::fromWinId.
+    // X11 uses the existing explicit video/UI compositor below. A transparent
+    // native Quick sibling alone does not compose the video child correctly.
     if (platformName == QLatin1String("xcb")) return true;
 #endif
 
@@ -87,9 +90,24 @@ bool CompositorPlatform::makeMainInterface(MainCtx *mainCtx, std::function<void 
 {
     m_mainCtx = mainCtx;
 
+#ifdef QT_HAS_X11_COMPOSITOR
+    m_x11Main.reset(xcb_connect(nullptr, nullptr));
+    if (xcb_connection_has_error(m_x11Main.get())) return false;
+    auto output = std::make_unique<CompositorX11RenderWindow>(m_intf, m_x11Main.get(), nullptr, false);
+    if (!output->init()) return false;
+    m_rootWindow = std::move(output);
+#else
     m_rootWindow = std::make_unique<QWindow>();
+#endif
 
     m_videoWindow = new QWindow(m_rootWindow.get());
+#ifdef QT_HAS_X11_COMPOSITOR
+    // Match the established X11 video surface: RGB video is opaque when
+    // copied into the output's ARGB backing pixmap by XRender.
+    auto videoFormat = m_videoWindow->format();
+    videoFormat.setAlphaBufferSize(0);
+    m_videoWindow->setFormat(videoFormat);
+#endif
 
     m_quickWindow = new QQuickView(m_rootWindow.get());
     m_quickWindow->setResizeMode(QQuickView::SizeRootObjectToView);
@@ -110,6 +128,7 @@ bool CompositorPlatform::makeMainInterface(MainCtx *mainCtx, std::function<void 
     m_quickWindow->create();
 
     const bool ret = commonGUICreate(m_rootWindow.get(), m_quickWindow, CompositorVideo::CAN_SHOW_PIP | CompositorVideo::HAS_ACRYLIC);
+    if (!ret) return false;
 
     m_quickWindow->setFlag(Qt::FramelessWindowHint);
     // Qt QPA Bug (qwindows, qdirect2d(?)): to trigger WS_EX_LAYERED set up.
@@ -121,6 +140,14 @@ bool CompositorPlatform::makeMainInterface(MainCtx *mainCtx, std::function<void 
     if (aboutToShowQuickWindowCallback)
         aboutToShowQuickWindowCallback(m_quickWindow);
 
+#ifdef QT_HAS_X11_COMPOSITOR
+    auto renderWindow = static_cast<CompositorX11RenderWindow *>(m_rootWindow.get());
+    renderWindow->setInterfaceWindow(m_quickWindow.get());
+    renderWindow->setVideoWindow(m_videoWindow);
+    renderWindow->setAcrylic(m_mainCtx->hasAcrylicSurface());
+    connect(m_mainCtx, &MainCtx::hasAcrylicSurfaceChanged, renderWindow, &CompositorX11RenderWindow::setAcrylic);
+    if (!renderWindow->startRendering()) return false;
+#endif
     m_rootWindow->setVisible(true);
     m_videoWindow->setVisible(true);
     m_quickWindow->setVisible(true);
@@ -138,6 +165,10 @@ void CompositorPlatform::destroyMainInterface()
 void CompositorPlatform::unloadGUI()
 {
     hideFloatingPlayer();
+#ifdef QT_HAS_X11_COMPOSITOR
+    if (m_floatingRoot) static_cast<CompositorX11RenderWindow *>(m_floatingRoot.get())->stopRendering();
+    static_cast<CompositorX11RenderWindow *>(m_rootWindow.get())->stopRendering();
+#endif
     if (m_floatingView) m_floatingView->setSource(QUrl());
     m_floatingRoot.reset();
     m_rootWindow->removeEventFilter(this);
@@ -211,7 +242,15 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
     if (m_mainCtx->floatingPlayer()) return true;
     m_mainStateBeforeFloating = previousState & ~Qt::WindowMinimized;
     if (!m_floatingRoot) {
+#ifdef QT_HAS_X11_COMPOSITOR
+        m_x11Floating.reset(xcb_connect(nullptr, nullptr));
+        if (xcb_connection_has_error(m_x11Floating.get())) return false;
+        auto output = std::make_unique<CompositorX11RenderWindow>(m_intf, m_x11Floating.get(), nullptr, false);
+        if (!output->init()) return false;
+        m_floatingRoot = std::move(output);
+#else
         m_floatingRoot = std::make_unique<QWindow>();
+#endif
         auto root = m_floatingRoot.get();
         root->setObjectName(QStringLiteral("floatingPlayerWindow"));
         root->setFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -250,6 +289,12 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
         connect(m_rootWindow.get(), &QWindow::windowTitleChanged, view, identity);
         connect(m_mainCtx, &MainCtx::redesignAccentChanged, view, identity);
         identity();
+#ifdef QT_HAS_X11_COMPOSITOR
+        auto renderWindow = static_cast<CompositorX11RenderWindow *>(root);
+        renderWindow->setInterfaceWindow(static_cast<QQuickWindow *>(view));
+        renderWindow->setAcrylic(true);
+        if (!renderWindow->startRendering()) return false;
+#endif
     }
     const auto screen = m_rootWindow->screen();
     const auto area = screen->availableGeometry();
@@ -257,7 +302,15 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
     m_floatingRoot->resize(std::min(360, area.width() - 32), 280);
     m_floatingRoot->setPosition(area.right() + 1 - m_floatingRoot->width() - 16,
                                 area.bottom() + 1 - m_floatingRoot->height() - 16);
+#ifdef QT_HAS_X11_COMPOSITOR
+    static_cast<CompositorX11RenderWindow *>(m_rootWindow.get())->setVideoWindow(nullptr);
+#endif
     m_videoWindow->setParent(m_floatingRoot.get());
+#ifdef QT_HAS_X11_COMPOSITOR
+    auto renderWindow = static_cast<CompositorX11RenderWindow *>(m_floatingRoot.get());
+    renderWindow->setVideoWindow(m_videoWindow);
+    if (m_x11VideoEnabled) renderWindow->enableVideoWindow();
+#endif
     m_mainCtx->setFloatingPlayer(true);
     constrainFloatingPlayer();
     m_floatingRoot->show();
@@ -272,7 +325,15 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
 void CompositorPlatform::hideFloatingPlayer()
 {
     if (!m_floatingRoot || !m_mainCtx || !m_mainCtx->floatingPlayer()) return;
+#ifdef QT_HAS_X11_COMPOSITOR
+    static_cast<CompositorX11RenderWindow *>(m_floatingRoot.get())->setVideoWindow(nullptr);
+#endif
     m_videoWindow->setParent(m_rootWindow.get());
+#ifdef QT_HAS_X11_COMPOSITOR
+    auto renderWindow = static_cast<CompositorX11RenderWindow *>(m_rootWindow.get());
+    renderWindow->setVideoWindow(m_videoWindow);
+    if (m_x11VideoEnabled) renderWindow->enableVideoWindow();
+#endif
     m_mainCtx->setFloatingPlayer(false);
     m_floatingView->rootObject()->setProperty("ready", false);
     m_floatingRoot->hide();
@@ -344,6 +405,15 @@ void CompositorPlatform::commitSurface()
     if (!m_videoWindow)
         return;
 
+#ifdef QT_HAS_X11_COMPOSITOR
+    auto renderWindow = static_cast<CompositorX11RenderWindow *>(m_videoWindow->parent());
+    auto position = m_pendingPosition;
+    if (position) position = (*position * renderWindow->devicePixelRatio());
+    renderWindow->setVideoGeometry(position, m_pendingSize);
+    m_pendingPosition.reset();
+    m_pendingSize.reset();
+    return;
+#endif
     if (m_pendingPosition && m_pendingSize)
     {
         m_videoWindow->setGeometry(m_pendingPosition->x(), m_pendingPosition->y(),
@@ -369,11 +439,19 @@ void CompositorPlatform::commitSurface()
 int CompositorPlatform::windowEnable(const vlc_window_cfg_t *)
 {
     commonWindowEnable();
+#ifdef QT_HAS_X11_COMPOSITOR
+    m_x11VideoEnabled = true;
+    static_cast<CompositorX11RenderWindow *>(m_videoWindow->parent())->enableVideoWindow();
+#endif
     return VLC_SUCCESS;
 }
 
 void CompositorPlatform::windowDisable()
 {
+#ifdef QT_HAS_X11_COMPOSITOR
+    m_x11VideoEnabled = false;
+    static_cast<CompositorX11RenderWindow *>(m_videoWindow->parent())->disableVideoWindow();
+#endif
     commonWindowDisable();
 }
 

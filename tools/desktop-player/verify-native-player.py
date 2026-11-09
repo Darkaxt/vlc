@@ -207,9 +207,8 @@ def profile_hashes(home, roots):
             for root in roots for path in root.rglob('*') if path.is_file()}
 
 
-def check_engine(executable, root, fixture, replacements, engine, software_decoding=False,
-                 compositor=None, picture_only=False):
-    case = root / (engine + '-' + compositor + '-control' if compositor else engine)
+def check_engine(executable, root, fixture, replacements, engine, software_decoding=False):
+    case = root / engine
     case.mkdir()
     evidence = case / 'evidence'; evidence.mkdir()
     home = case / 'home'; home.mkdir()
@@ -237,8 +236,6 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         '--restore-playback-pos=0', '--no-video-title-show', '--start-paused',
         '--qt-playback-engine=' + engine, '--verbose=2', str(fixture)]
     argv[1:1] = ['--tracer=json', '--json-tracer-file=' + str(evidence / 'native-timing.jsonl')]
-    if compositor:
-        argv[1:1] = ['--qt-compositor=' + compositor]
     if software_decoding:
         argv[1:1] = ['--codec=avcodec', '--avcodec-hw=none']
     (evidence / 'launch.json').write_text(json.dumps({'argv': argv, 'platform': platform.platform(),
@@ -271,13 +268,6 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
             assert initial['core']['subtitle_tracks'], initial['core']
             save('seekable', client.await_core('seekable', True))
             save('main-picture', client.snapshot(capture=True, capture_native=True))
-            if picture_only:
-                (evidence / 'composition-control.json').write_text(json.dumps({
-                    'purpose': 'Compare the existing X11 compositor with the platform native-child hierarchy',
-                    'engine': engine, 'compositor': compositor,
-                    'qualification': 'Diagnostic first-picture control only; not feature or package acceptance',
-                }, indent=2) + '\n')
-                return
             save('subtitle-menu', client.action('click', target='subtitleButton'))
             choices = client.snapshot()
             tracks = subtitle_choices(choices)
@@ -441,11 +431,6 @@ def main():
     replacements = prepare_replacements(root)
     for engine in ('mpv', 'vlc') if args.engine == 'both' else (args.engine,):
         check_engine(args.executable.resolve(), root, fixture, replacements, engine, args.vlc_software_decoding)
-    if platform.system() == 'Linux':
-        # Temporary diagnostic control for the evidenced blank platform
-        # hierarchy. Keep the complete default workflows above unchanged.
-        check_engine(args.executable.resolve(), root, fixture, replacements, 'mpv',
-                     compositor='x11', picture_only=True)
 
 
 if __name__ == '__main__':

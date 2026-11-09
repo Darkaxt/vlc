@@ -1,6 +1,35 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Control42548876491 at5e2f9f99 closed0; original watch88037 exit0 observed.
+The X11 control's actual native and display-rectangle pictures both show the
+full test pattern (5f4f525d83fd45db829ce947f1e0f2d4, SHA256da496e604b424f9132c22d7e69a7511fa1b76e8b5e30e0c0d715acfd412d1d95).
+The control exits cleanly; private audio/managers exited and normal objects were
+restored. Artifact13644249506 is905926161B, SHA2569b4af86027afc7162c1c1e20572088352d7d7dece36d7678ed297e2569d40245.
+This isolates the selected native-child composition path, rather than decoding.
+Reuse the existing X11 RenderWindow/RenderTask for the platform compositor's
+main and floating outputs. Redirect each Quick/video surface explicitly, retain
+one event connection per output and transfer video ownership only after the
+old render thread releases it and its redirection is acknowledged. Keep opaque
+RGB video and transparent UI, and remove the unsuccessful MPV alpha-format
+hypothesis and temporary comparison launch. The common Cocoa/Windows paths
+retain their native ownership. Source integration is being reconciled; the
+affected normal Linux build, actual main/floating/restored pictures, handover,
+settings/library preservation and clean exit remain unverified acceptance.
+Source readiness for this affected M15 correction: platform main/floating roots
+bind the existing X11 render task, RGB video and ARGB Quick clients; each root
+owns its connection, each transfer drains old render/damage references and waits
+for the X server to release redirection, and unload joins threads before UI or
+connection destruction. The original X11 offscreen route remains supported.
+Windows/Cocoa platform guards retain their native roots and GL format. The
+temporary comparison is removed from the verifier; its complete two-engine
+workflow remains. Diff/ownership review passes. Run one normal Linux x86_64
+incremental hosted continuation from the commit containing this record, reusing
+the retained compiler/dependency cohort, then inspect actual composed main,
+floating, expanded and restored pictures plus normal package/installed lifecycle
+results. Native compilation and these affected runtime checks are not yet run
+for this patch; final cross-platform/source qualification remains required.
+
 X11 diagnostic control42547501609 ate163596c reached its first picture but
 the verifier closed the offscreen Quick scene, not its native X11 output.
 Its original watch73154 closed1 after scoped cancellation; evidence artifact

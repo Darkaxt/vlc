@@ -343,13 +343,14 @@ void X11DamageObserver::onEvent()
 
 //// CompositorX11RenderWindow
 
-CompositorX11RenderWindow::CompositorX11RenderWindow(qt_intf_t* p_intf, xcb_connection_t* conn, QWindow* parent)
+CompositorX11RenderWindow::CompositorX11RenderWindow(qt_intf_t* p_intf, xcb_connection_t* conn,
+                                                     QWindow* parent, bool initiallyVisible)
     : DummyRenderWindow(parent)
     , m_intf(p_intf)
     , m_conn(conn)
 {
     winId();
-    setVisible(true);
+    setVisible(initiallyVisible);
 
     m_wid = winId();
 
@@ -382,6 +383,19 @@ CompositorX11RenderWindow::~CompositorX11RenderWindow()
 
 bool CompositorX11RenderWindow::init()
 {
+    // Each main/floating output has its own connection. Negotiate the same
+    // protocol versions required by CompositorX11 on that exact connection.
+    const auto composite = wrap_cptr(xcb_composite_query_version_reply(m_conn,
+        xcb_composite_query_version(m_conn, 0, 2), nullptr));
+    const auto render = wrap_cptr(xcb_render_query_version_reply(m_conn,
+        xcb_render_query_version(m_conn, 0, 11), nullptr));
+    const auto damage = wrap_cptr(xcb_damage_query_version_reply(m_conn,
+        xcb_damage_query_version(m_conn, 1, 1), nullptr));
+    if (!composite || (!composite->major_version && composite->minor_version < 2)
+        || !render || (!render->major_version && render->minor_version < 11)
+        || !damage || damage->major_version < 1)
+        return false;
+
     m_damageObserver = new X11DamageObserver(m_intf, m_conn);
     bool ret = m_damageObserver->init();
     if (!ret)
@@ -419,7 +433,7 @@ bool CompositorX11RenderWindow::init()
 
 bool CompositorX11RenderWindow::startRendering()
 {
-    assert(m_interfaceWindow);
+    assert(m_interfaceWindow || m_quickWindow);
 
     //Rendering thread
     m_renderTask = new RenderTask(m_intf, m_conn, m_wid, m_pictureLock);
@@ -428,8 +442,14 @@ bool CompositorX11RenderWindow::startRendering()
     m_renderTask->moveToThread(m_renderThread);
     connect(m_renderThread, &QThread::finished, m_renderTask, &QObject::deleteLater);
 
-    connect(m_interfaceWindow, &CompositorX11UISurface::updated, m_renderTask, &RenderTask::requestRefresh);
-    connect(m_interfaceWindow, &CompositorX11UISurface::sizeChanged, m_renderTask, &RenderTask::onInterfaceSizeChanged);
+    if (m_interfaceWindow)
+    {
+        connect(m_interfaceWindow, &CompositorX11UISurface::updated, m_renderTask, &RenderTask::requestRefresh);
+        connect(m_interfaceWindow, &CompositorX11UISurface::sizeChanged, m_renderTask, &RenderTask::onInterfaceSizeChanged);
+    }
+    else
+        connect(m_quickWindow, &QQuickWindow::frameSwapped, m_renderTask, &RenderTask::requestRefresh);
+    connect(this, &CompositorX11RenderWindow::interfaceSizeChanged, m_renderTask, &RenderTask::onInterfaceSizeChanged);
 
     connect(this, &CompositorX11RenderWindow::windowSizeChanged, m_renderTask, &RenderTask::onWindowSizeChanged);
     connect(this, &CompositorX11RenderWindow::requestUIRefresh, m_renderTask, &RenderTask::requestRefresh);
@@ -442,9 +462,13 @@ bool CompositorX11RenderWindow::startRendering()
     //pass initial values
     m_renderTask->onInterfaceSurfaceChanged(m_interfaceClient.get());
     m_renderTask->onVideoSurfaceChanged(m_videoClient.get());
+    m_renderTask->onVideoPositionChanged(m_videoPosition);
     m_renderTask->onWindowSizeChanged(size() * devicePixelRatio());
     m_renderTask->onAcrylicChanged(m_hasAcrylic);
     m_renderTask->onExtendedFrameChanged(m_hasExtendedFrame);
+    m_renderTask->onVisibilityChanged(isVisible() && visibility() != QWindow::Minimized);
+    if (m_quickWindow)
+        m_renderTask->onInterfaceSizeChanged(m_quickWindow->size() * devicePixelRatio());
 
     //use the same thread as the rendering thread, neither tasks are blocking.
     m_damageObserver->moveToThread(m_renderThread);
@@ -467,11 +491,18 @@ void CompositorX11RenderWindow::stopRendering()
         m_renderThread->wait();
         delete m_renderThread;
         m_renderThread = nullptr;
+        m_damageObserver = nullptr;
+    }
+    else
+    {
+        delete m_damageObserver;
+        m_damageObserver = nullptr;
     }
     m_videoClient.reset();
     m_videoWindow = nullptr;
     m_interfaceClient.reset();
     m_interfaceWindow = nullptr;
+    m_quickWindow = nullptr;
 }
 
 void CompositorX11RenderWindow::resetClientPixmaps()
@@ -487,7 +518,7 @@ void CompositorX11RenderWindow::resetClientPixmaps()
     if (m_videoClient)
     {
         m_videoClient->resetPixmap();
-        m_interfaceClient->getPicture();
+        m_videoClient->getPicture();
     }
 }
 
@@ -577,11 +608,28 @@ void CompositorX11RenderWindow::setAcrylic(bool value)
 
 void CompositorX11RenderWindow::setVideoWindow( QWindow* window)
 {
+    if (window == m_videoWindow)
+        return;
+    // Process removal in the render/damage thread before freeing its client
+    // or transferring the same native window to another output connection.
+    disableVideoWindow();
+    emit videoSurfaceChanged(nullptr);
+    {
+        QMutexLocker lock(&m_pictureLock);
+        m_videoClient.reset();
+        m_videoWindow = nullptr;
+    }
+    if (!window)
+        return;
     //ensure Qt x11 pending operation have been forwarded to the server
     xcb_flush(qGuiApp->nativeInterface<QNativeInterface::QX11Application>()->connection());
     m_videoClient = std::make_unique<CompositorX11RenderClient>(m_intf, m_conn, window->winId());
-    connect(window, &QWindow::widthChanged, m_videoClient.get(), &CompositorX11RenderClient::resetPixmap);
-    connect(window, &QWindow::heightChanged, m_videoClient.get(), &CompositorX11RenderClient::resetPixmap);
+    const auto reset = [this] {
+        QMutexLocker lock(&m_pictureLock);
+        m_videoClient->resetPixmap();
+    };
+    connect(window, &QWindow::widthChanged, m_videoClient.get(), reset);
+    connect(window, &QWindow::heightChanged, m_videoClient.get(), reset);
     m_videoPosition = QRect(0,0,0,0);
     m_videoWindow = window;
     emit videoSurfaceChanged(m_videoClient.get());
@@ -607,6 +655,8 @@ void CompositorX11RenderWindow::disableVideoWindow()
 
 QQuickWindow* CompositorX11RenderWindow::getOffscreenWindow() const
 {
+    if (m_quickWindow)
+        return m_quickWindow;
     if (!m_interfaceWindow)
         return nullptr;
     return m_interfaceWindow->getOffscreenWindow();
@@ -619,6 +669,24 @@ void CompositorX11RenderWindow::setInterfaceWindow(CompositorX11UISurface* windo
     m_interfaceClient = std::make_unique<CompositorX11RenderClient>(m_intf, m_conn, window->winId());
     connect(window, &CompositorX11UISurface::requestPixmapReset, m_interfaceClient.get(), &CompositorX11RenderClient::resetPixmap);
     m_interfaceWindow = window;
+}
+
+void CompositorX11RenderWindow::setInterfaceWindow(QQuickWindow* window)
+{
+    xcb_flush(qGuiApp->nativeInterface<QNativeInterface::QX11Application>()->connection());
+    m_interfaceClient = std::make_unique<CompositorX11RenderClient>(m_intf, m_conn, window->winId());
+    m_quickWindow = window;
+    const auto resized = [this] {
+        {
+            QMutexLocker lock(&m_pictureLock);
+            xcb_flush(qGuiApp->nativeInterface<QNativeInterface::QX11Application>()->connection());
+            m_interfaceClient->resetPixmap();
+        }
+        emit interfaceSizeChanged(m_quickWindow->size() * devicePixelRatio());
+        emit requestUIRefresh();
+    };
+    connect(window, &QWindow::widthChanged, m_interfaceClient.get(), resized);
+    connect(window, &QWindow::heightChanged, m_interfaceClient.get(), resized);
 }
 
 

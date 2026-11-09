@@ -65,6 +65,7 @@ private:
     PicturePtr m_picture;
 
     xcb_render_pictformat_t m_format;
+    bool m_redirected = false;
 };
 
 }

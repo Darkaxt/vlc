@@ -155,7 +155,8 @@ class CompositorX11RenderWindow : public DummyRenderWindow, public AccessibleRen
 
     Q_OBJECT
 public:
-    explicit CompositorX11RenderWindow(qt_intf_t* p_intf, xcb_connection_t* conn, QWindow* parent = nullptr);
+    explicit CompositorX11RenderWindow(qt_intf_t* p_intf, xcb_connection_t* conn,
+                                       QWindow* parent = nullptr, bool initiallyVisible = true);
     ~CompositorX11RenderWindow();
 
     bool init();
@@ -174,6 +175,7 @@ public:
 
     void setVideoWindow(QWindow* window);
     void setInterfaceWindow(CompositorX11UISurface* window);
+    void setInterfaceWindow(QQuickWindow* window);
 
     void enableVideoWindow();
     void disableVideoWindow();
@@ -183,6 +185,7 @@ public:
 signals:
     void windowSizeChanged(const QSize& newSize);
     void requestUIRefresh();
+    void interfaceSizeChanged(const QSize& size);
     void videoPositionChanged(const QRect& position);
     void videoSurfaceChanged(CompositorX11RenderClient*);
     void visiblityChanged(bool visible);
@@ -223,6 +226,7 @@ private:
     QRect m_videoPosition;
 
     CompositorX11UISurface* m_interfaceWindow = nullptr;
+    QQuickWindow* m_quickWindow = nullptr;
     std::unique_ptr<CompositorX11RenderClient> m_interfaceClient;
 
     QWindow::Visibility m_lastVisibility;

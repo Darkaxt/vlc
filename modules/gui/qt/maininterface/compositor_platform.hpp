@@ -24,6 +24,9 @@
 #include <QPointer>
 
 #include <memory>
+#ifdef QT_HAS_X11_COMPOSITOR
+#include <xcb/xcb.h>
+#endif
 
 class QQuickView;
 
@@ -67,6 +70,12 @@ private slots:
 private:
     void hideFloatingPlayer();
     void constrainFloatingPlayer();
+#ifdef QT_HAS_X11_COMPOSITOR
+    // Each output owns its event connection until after its render thread exits.
+    std::unique_ptr<xcb_connection_t, decltype(&xcb_disconnect)> m_x11Main{nullptr, xcb_disconnect};
+    std::unique_ptr<xcb_connection_t, decltype(&xcb_disconnect)> m_x11Floating{nullptr, xcb_disconnect};
+    bool m_x11VideoEnabled = false;
+#endif
     std::unique_ptr<QWindow> m_rootWindow;
     QPointer<QWindow> m_videoWindow;
     QPointer<QQuickView> m_quickWindow;

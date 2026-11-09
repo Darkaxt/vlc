@@ -58,6 +58,7 @@ CompositorX11RenderClient::CompositorX11RenderClient(qt_intf_t* p_intf, xcb_conn
     }
 
     xcb_atom_t _NET_WM_BYPASS_COMPOSITOR = getInternAtom(m_conn, _NET_WM_BYPASS_COMPOSITOR_NAME);
+    m_redirected = true;
     if (_NET_WM_BYPASS_COMPOSITOR != XCB_ATOM_NONE)
     {
         uint32_t val = 1;
@@ -68,8 +69,17 @@ CompositorX11RenderClient::CompositorX11RenderClient(qt_intf_t* p_intf, xcb_conn
 
 CompositorX11RenderClient::~CompositorX11RenderClient()
 {
-    m_pixmap.reset();
     m_picture.reset();
+    m_pixmap.reset();
+    if (m_redirected)
+    {
+        // The video surface can move between the main and floating output.
+        // Release this connection's redirection before its next owner binds it.
+        const auto cookie = xcb_composite_unredirect_window_checked(m_conn, m_wid, XCB_COMPOSITE_REDIRECT_MANUAL);
+        auto error = wrap_cptr(xcb_request_check(m_conn, cookie));
+        if (error && error->error_code != XCB_WINDOW)
+            msg_Warn(m_intf, "can't release X11 surface redirection: %u", error->error_code);
+    }
 }
 
 xcb_drawable_t CompositorX11RenderClient::getWindowXid() const

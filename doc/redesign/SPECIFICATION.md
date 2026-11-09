@@ -19,6 +19,14 @@ Compare the selected platform native-child hierarchy with the existing explicit
 X11 composition path before choosing the renderer correction. Preserve the
 complete default workflows; a first-picture control is diagnostic only and
 does not qualify floating playback, handover, package delivery or clean exit.
+The corrected control42548876491 displays the actual test pattern and exits
+cleanly on the same runtime. The Linux platform route must therefore use explicit
+X11 video/UI composition for both main and floating outputs, preserving the
+same video surface across minimize, restore and handover. Release the old output's
+render/damage references and native redirection before transferring that surface;
+join each render thread before releasing its connection or UI. Requalify actual
+main/floating/restored pictures and the complete two-engine workflows after the
+integrated source correction. Windows/Cocoa output ownership remains unchanged.
 
 **8 November native desktop packages, R111/R112, already authorized:**
 
