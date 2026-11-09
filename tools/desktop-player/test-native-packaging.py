@@ -25,6 +25,33 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_ci_release_sources_use_the_original_asset_without_retry_or_fallback(self):
+        import source_transport as transport
+        target = Path('/owned/exact.download')
+        url = 'https://github.com/libass/libass/releases/download/0.17.5/libass-0.17.5.tar.xz'
+        with patch.dict(transport.os.environ, {'GITHUB_ACTIONS':'true', 'GH_TOKEN':'test-token'}, clear=True), \
+                patch.object(transport.subprocess, 'run') as run, \
+                patch.object(transport.urllib.request, 'urlretrieve') as direct:
+            transport.retrieve(url, target)
+            run.assert_called_once_with(['gh', 'release', 'download', '0.17.5', '--repo',
+                'libass/libass', '--pattern', 'libass-0.17.5.tar.xz', '--output', str(target)], check=True)
+            direct.assert_not_called()
+            run.reset_mock()
+            run.side_effect = subprocess.CalledProcessError(1, ['gh'])
+            with self.assertRaises(subprocess.CalledProcessError):
+                transport.retrieve(url, target)
+            self.assertEqual(run.call_count, 1)
+            direct.assert_not_called()
+        with patch.dict(transport.os.environ, {'GITHUB_ACTIONS':'true'}, clear=True), \
+                patch.object(transport.subprocess, 'run') as run:
+            with self.assertRaisesRegex(RuntimeError, 'read-only GitHub token'):
+                transport.retrieve(url, target)
+            run.assert_not_called()
+        with patch.dict(transport.os.environ, {}, clear=True), \
+                patch.object(transport.urllib.request, 'urlretrieve') as direct:
+            transport.retrieve(url, target)
+            direct.assert_called_once_with(url, target)
+
     def test_incomplete_compaction_preserves_the_valid_retention_receipt(self):
         spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
         cache = importlib.util.module_from_spec(spec); spec.loader.exec_module(cache)

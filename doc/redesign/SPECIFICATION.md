@@ -4,6 +4,18 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November M15 source-transport repair: matrix42579644174 MacIntel image
+dependency retrieval, MacARM libass source closure and LinuxARM libfuse source
+closure failed HTTP504 on GitHub release URLs. The same libass/libfuse assets
+were retrieved successfully through the installed GitHub release client; libass
+matches published SHA2562dca25c0e0c837ddf00b52011b3f82cac1e4ddd3ad018227806b0c2288864acc.
+Use that supported client for exact GitHub release tag/name downloads in native
+CI, with the job's existing read-only token and all original caller checksum,
+source-owner and retention checks. Other URLs/local build transport are unchanged.
+Do not add automatic retries, alternate source versions or incomplete-source
+release exceptions. Resume retained compiler cohorts and verify complete normal
+packages, sources and affected native workflows before M15 closure.
+
 9 November R112 capture completion: the9ab immediate restored capture still
 fails, although all owned native windows are mapped/exposed and the separately
 labelled clock-transition followup shows the correct picture. The test fence

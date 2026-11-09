@@ -102,6 +102,8 @@ jobs:
       - name: Build native redesign and packages
         id: normal_build
         if: steps.review_reuse.outputs.reuse != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
       - name: Verify recovered normal macOS ZIP and DMG applications
         if: runner.os == 'macOS'

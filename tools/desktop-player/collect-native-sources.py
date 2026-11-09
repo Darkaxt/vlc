@@ -19,6 +19,7 @@ import tarfile
 import urllib.parse
 import urllib.request
 import zipfile
+from source_transport import retrieve
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('dependency_notices',
@@ -190,7 +191,7 @@ def fetch_source(record, directory):
             temporary = archive.with_name(archive.name + '.download')
             print('SOURCE FETCH ' + json.dumps({'id': record['id'], 'url': record['url']}), flush=True)
             try:
-                urllib.request.urlretrieve(record['url'], temporary)
+                retrieve(record['url'], temporary)
             except OSError as error:
                 raise RuntimeError('Source transport failed: ' + record['id'] + ' at '
                                    + record['url'] + ': ' + str(error)) from error

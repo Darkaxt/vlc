@@ -8,7 +8,6 @@ import re
 import shlex
 import subprocess
 import tarfile
-import urllib.request
 
 
 def digest(path, algorithm='sha256'):
@@ -155,6 +154,7 @@ def prepare_source(archive, home, source, item, recipe, env):
 
 def build(repo, work, prefix, archives, env, toolchain=None):
     """Native macOS or the existing MinGW cross toolchain; one compiler job."""
+    from source_transport import retrieve
     work.mkdir(parents=True, exist_ok=True)
     archives.mkdir(parents=True, exist_ok=True)
     records = []
@@ -164,9 +164,7 @@ def build(repo, work, prefix, archives, env, toolchain=None):
             pending = archive.with_suffix(archive.suffix + '.pending')
             if pending.exists():
                 raise RuntimeError('Inspect original interrupted image-source retrieval: ' + str(pending))
-            with urllib.request.urlopen(item['url']) as response, pending.open('xb') as stream:
-                while block := response.read(1024 * 1024):
-                    stream.write(block)
+            retrieve(item['url'], pending)
             if digest(pending, 'sha512') != item['sha512']:
                 raise RuntimeError('Image dependency source checksum differs')
             pending.replace(archive)

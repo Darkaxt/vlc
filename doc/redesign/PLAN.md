@@ -1,6 +1,15 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Matrix42579644174 closed1; original watch69046 exited1. MacARM and LinuxARM
+compiled their players but source packaging failed on GitHub release HTTP504
+(libass0.17.5/libfuse3.15.0); both saved compiler caches. GitHub release-client
+retrieval of both exact assets succeeds, and libass published checksum matches.
+Apply the narrow CI source-transport correction with unchanged pinned checksums
+and read-only token, then resume those retained cohorts. Linux diagnostic921
+run42583173295/watch67467 is running with exact normal9ab reuse required;
+observe it before selecting any further renderer correction.
+
 Matrix42579644174 Linuxx86 still fails the original immediate restored-picture:
 mapped/exposed windows,0 chromatic pixels; separately labelled clock followup
 190644 with inspected correct picture. The Expose correction did not resolve
