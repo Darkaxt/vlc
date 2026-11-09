@@ -81,11 +81,13 @@ def main():
         plugin_relative = Path('Contents/Frameworks/plugins/gui/libqt_plugin.dylib')
         executable_relative = Path('Contents/MacOS/vlc')
     else:
-        candidates = sorted(packages.glob('Modern-VLC-Fork-*-linux-*'))
-        candidates = [path for path in candidates if path.is_dir()]
-        if len(candidates) != 1:
-            raise RuntimeError('Expected exactly one normal Linux payload')
-        normal = Path(reuse['normal_application']) if reuse else candidates[0]
+        if reuse:
+            normal = Path(reuse['normal_application'])
+        else:
+            candidates = [path for path in packages.glob('Modern-VLC-Fork-*-linux-*') if path.is_dir()]
+            if len(candidates) != 1:
+                raise RuntimeError('Expected exactly one normal Linux payload')
+            normal = candidates[0]
         payload = review / normal.name
         plugin_relative = Path('lib/vlc/plugins/gui/libqt_plugin.so')
         executable_relative = Path('modern-vlc')

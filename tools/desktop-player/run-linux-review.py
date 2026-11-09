@@ -76,7 +76,17 @@ def main():
     parser.add_argument('--startup-trace', action='store_true',
         help='Diagnose the recovered normal player with GDB; no package acceptance')
     parser.add_argument('--trace-engine', choices=('vlc', 'mpv'), default='vlc')
+    parser.add_argument('--ui-only', action='store_true',
+        help='Observe UI only using a hash-verified reused normal runtime; not package qualification')
     args = parser.parse_args()
+    if args.ui_only:
+        if args.packages_only or args.startup_trace:
+            parser.error('UI-only observation cannot select package-only or startup diagnosis')
+        reuse = json.loads((args.work / 'review-reuse.json').read_text())
+        package = json.loads((args.work / 'package-output.json').read_text())
+        if not reuse or not reuse.get('normal_archive_hashes_verified') or \
+                reuse['normal_source_commit'] != package['source_commit']:
+            raise RuntimeError('UI-only observation requires the verified unchanged normal runtime')
     session = args.review_root.with_name(args.review_root.name + '-session')
     session.mkdir(parents=True, exist_ok=False)
     runtime = session / 'runtime'; runtime.mkdir(mode=0o700)
@@ -149,10 +159,11 @@ def main():
             failures = []
             with private_crash_destination(session) as cores:
                 env['VLC_NATIVE_CI_CORE_DIRECTORY'] = str(cores)
-                package_check = subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
-                    '--scratch', args.review_root.with_name('native-package-checks')], env=env)
-                if package_check.returncode:
-                    failures.append({'check': 'normal packages', 'exit_code': package_check.returncode})
+                if not args.ui_only:
+                    package_check = subprocess.run([sys.executable, HERE / 'verify-linux-packages.py', '--work', args.work,
+                        '--scratch', args.review_root.with_name('native-package-checks')], env=env)
+                    if package_check.returncode:
+                        failures.append({'check': 'normal packages', 'exit_code': package_check.returncode})
                 # A package failure remains a failed qualification. Still finish
                 # the independent required UI observation in this original run.
                 if not args.packages_only:
@@ -160,7 +171,9 @@ def main():
                         '--review-root', args.review_root], env=env)
                     if ui_check.returncode:
                         failures.append({'check': 'native UI', 'exit_code': ui_check.returncode})
-            (session / 'checks.json').write_text(json.dumps({'failures': failures}, indent=2) + '\n')
+            (session / 'checks.json').write_text(json.dumps({'failures': failures,
+                'scope': 'UI observation only; packages not qualified here' if args.ui_only else
+                         'Normal packages and native UI'}, indent=2) + '\n')
             if failures:
                 raise RuntimeError('Native Linux qualification failed: ' + json.dumps(failures))
     finally:

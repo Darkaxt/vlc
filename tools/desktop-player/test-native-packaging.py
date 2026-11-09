@@ -67,6 +67,20 @@ class NativePackagingTest(unittest.TestCase):
             self.assertTrue((destination / 'linux-package-staging/copy').is_file())
             self.assertGreater(result['before_bytes'], result['after_bytes'])
             self.assertEqual(result['retained_runtime_archive'], archive_name)
+            result['uploaded_artifact'] = 123
+            (work / 'native-cache-retention.json').write_text(json.dumps(result))
+            repeated = cache.compact(work, root / 'runner-temp/retired-again')
+            self.assertEqual(repeated['moved'], [])
+            self.assertEqual(repeated['complete_source_artifact'], 123)
+            self.assertIn('source-part.zip', repeated['previously_archived_assets'])
+            repeated['uploaded_artifact'] = 456
+            (work / 'native-cache-retention.json').write_text(json.dumps(repeated))
+            third = cache.compact(work, root / 'runner-temp/retired-third')
+            self.assertEqual(third['complete_source_artifact'], 123)
+            (output / archive_name).write_bytes(b'changed retained runtime')
+            with self.assertRaisesRegex(RuntimeError, 'changed'):
+                cache.compact(work, root / 'runner-temp/tampered')
+            self.assertFalse((root / 'runner-temp/tampered').exists())
 
     def test_native_cache_rejects_changed_package_before_moving_anything(self):
         spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
@@ -75,14 +89,17 @@ class NativePackagingTest(unittest.TestCase):
         root = Path(sys.argv_scratch) / ('cache-reject-' + uuid.uuid4().hex)
         work = root / '.desktop-build'; output = work / 'packages' / ('b' * 40)
         output.mkdir(parents=True)
-        (output / 'normal.zip').write_bytes(b'changed runtime')
+        archive_name = 'Modern-VLC-Fork-1.1.12-macos-arm64.zip'
+        (output / archive_name).write_bytes(b'changed runtime')
+        (output / 'NATIVE-SOURCE-ASSETS.json').write_bytes(b'original source index')
         (output / 'PACKAGE-STATUS.json').write_text(json.dumps({'source_commit': 'b' * 40,
-            'assets': [{'name': 'normal.zip', 'sha256': '0' * 64}]}))
+            'assets': [{'name': archive_name, 'sha256': '0' * 64},
+                       {'name':'NATIVE-SOURCE-ASSETS.json', 'sha256':package.sha(output / 'NATIVE-SOURCE-ASSETS.json')}]}))
         (work / 'package-output.json').write_text(json.dumps({
             'source_commit': 'b' * 40, 'directory': str(output.resolve())}))
         with self.assertRaisesRegex(RuntimeError, 'changed'):
             cache.compact(work, root / 'runner-temp')
-        self.assertTrue((output / 'normal.zip').is_file())
+        self.assertTrue((output / archive_name).is_file())
         self.assertFalse((root / 'runner-temp').exists())
 
     def test_compacted_mac_reuse_requires_both_normal_formats_and_source_index(self):
@@ -1224,6 +1241,36 @@ class NativePackagingTest(unittest.TestCase):
                             reuse.mac_dependency_setup(setup.replace('brew install', 'brew upgrade')))
         self.assertNotEqual(reuse.mac_dependency_setup(setup),
                             reuse.mac_dependency_setup(setup + 'touch changed-sdk\n'))
+
+    def test_linux_review_uses_recovered_payload_without_expanded_cache_copy(self):
+        spec = importlib.util.spec_from_file_location('prepare_review', HERE / 'prepare-native-review.py')
+        review = importlib.util.module_from_spec(spec); spec.loader.exec_module(review)
+        root = Path(sys.argv_scratch) / ('review-recovered-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'; qt = work / 'vlc-build/modules/gui/qt'
+        paths = [qt / 'libqt_plugin.la', qt / review.REVIEW_MOC, qt / '.libs/libqt_plugin.so']
+        for source in (*review.REVIEW_SOURCES, review.REVIEW_MOC):
+            relative = Path(source); stem = 'libqt_plugin_la-' + relative.stem
+            paths.extend(qt / relative.parent / name for name in
+                         (stem + '.lo', '.libs/' + stem + '.o', '.deps/' + stem + '.Plo'))
+        for path in paths:
+            path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(b'normal object')
+        generation = 'a' * 40
+        packages = work / 'packages' / generation; packages.mkdir(parents=True)
+        # There is deliberately no expanded application in the compiler cache.
+        normal = root / 'recovered/Modern-VLC-Fork-1.1.12-linux-x86_64'
+        normal.mkdir(parents=True)
+        (work / 'package-output.json').write_text(json.dumps({
+            'source_commit': generation, 'directory': str(packages.resolve())}))
+        (work / 'review-reuse.json').write_text(json.dumps({
+            'normal_source_commit': generation, 'normal_application': str(normal)}))
+        with patch.object(sys, 'argv', ['prepare-native-review.py', '--work', str(work),
+                                        '--review-root', str(root / 'review')]), \
+             patch.object(review.platform, 'system', return_value='Linux'), \
+             patch.object(review.shutil, 'copytree', side_effect=RuntimeError('observed exact payload selection')) as copy:
+            with self.assertRaisesRegex(RuntimeError, 'observed exact payload selection'):
+                review.main()
+        self.assertEqual(copy.call_args.args, (normal, root / 'review' / normal.name))
+        self.assertTrue(copy.call_args.kwargs['symlinks'])
 
     def test_review_build_binding_ignores_retention_but_rejects_compiler_inputs(self):
         spec = importlib.util.spec_from_file_location('review_reuse', HERE / 'reuse-native-review.py')

@@ -27,6 +27,22 @@ global environment, not unrelated diagnostic/retention jobs, and must restore
 the compact cache's exact runtime archives before the current native UI review.
 Linux compaction42538798839 closed0: compiler trees preserved, logical bytes
 5,537,147,563 to1,546,590,051; saved cache10208419776 is1,076,498,003 bytes.
+Continuation42539593340 atcc2322ec restored that compact cache in13s and
+verified/recovered the original32 runtime in19s; normal build was skipped.
+All five normal formats and the real DEB/Fedora/strict-Snap checks returned0.
+The independent UI preparation then exposed an obsolete precondition: it still
+required an expanded package directory before using the verified recovered
+application. Select that existing recovery path directly when reuse is present;
+preserve the strict single-directory check for ordinary un-compacted builds.
+No player/source behavior changed and no normal recompilation is needed.
+That run's second compaction also rejected source/symbol copies already moved by
+its first verified upload. Re-compaction must validate every retained archive,
+status/source binding and the exact prior move receipt, preserve the original
+complete-source artifact identity, and allow only those recorded absent copies.
+Missing or modified runtime formats still fail before any move. Current focused
+tests cover first/second/third compaction, original-source provenance and tamper
+rejection. Native UI-only continuation reuses the separately passed normal
+package checks; it does not independently qualify packages or a final release.
 Both original Linux architectures fail the fuller
 UI check because AccessibleCompat discards its assigned ID before Qt6.8; the
 visible Subtitles button cannot be addressed. Retain the compatibility property

@@ -26,6 +26,10 @@ on:
         type: choice
         options: [vlc, mpv]
         default: vlc
+      native_ui_only:
+        description: Diagnostic UI pass only; requires a verified unchanged normal runtime and does not qualify packages
+        type: boolean
+        default: false
       cache_compaction:
         description: Optional exact existing cache/artifact/source JSON for compiler-free retention migration
         type: string
@@ -99,7 +103,7 @@ jobs:
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Exercise the actual Linux player on its owned display
         if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
-        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
+        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py ${{ inputs.native_ui_only && '--ui-only' || '' }} --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Preserve package and failure evidence
         id: native_artifacts
         if: always()

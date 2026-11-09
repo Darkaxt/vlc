@@ -63,15 +63,28 @@ def compact(work, destination, expected_generation=None):
         name = row['name']
         if Path(name).name != name or '/' in name or '\\' in name or name in names:
             raise RuntimeError('Invalid or duplicate native package asset')
-        asset = output / name
-        if asset.is_symlink() or not asset.is_file() or sha(asset) != row['sha256']:
-            raise RuntimeError('Uploaded package asset changed: ' + name)
         names.append(name)
     runtimes = [name for name in names if RUNTIME.fullmatch(name)]
     if len(runtimes) != 1 or 'NATIVE-SOURCE-ASSETS.json' not in names:
         raise RuntimeError('Expected one normal runtime archive and source index')
     keep = {name for name in names if NORMAL_FORMAT.fullmatch(name)}
     keep.update(('NATIVE-SOURCE-ASSETS.json', 'PACKAGE-STATUS.json'))
+    retained_hashes = {row['name']: row['sha256'] for row in status['assets'] if row['name'] in keep}
+    prior_path = work / 'native-cache-retention.json'
+    prior = json.loads(prior_path.read_text()) if prior_path.exists() else {}
+    prior_proof = (prior.get('state') == 'compacted' and prior.get('source_commit') == generation
+                   and isinstance(prior.get('uploaded_artifact'), int) and prior['uploaded_artifact'] > 0
+                   and prior.get('retained_asset_hashes') == retained_hashes
+                   and prior.get('package_status_sha256', sha(status_path)) == sha(status_path))
+    for row in status['assets']:
+        name = row['name']; asset = output / name
+        recorded_move = ('packages/' + generation + '/' + name) in prior.get('moved', [])
+        recorded_archive = name in prior.get('previously_archived_assets', [])
+        if (not asset.exists() and name not in keep and prior_proof
+                and (recorded_move or recorded_archive)):
+            continue  # Already uploaded and moved by this generation's retained receipt.
+        if asset.is_symlink() or not asset.is_file() or sha(asset) != row['sha256']:
+            raise RuntimeError('Uploaded package asset changed: ' + name)
     targets = [path for path in sorted(output.iterdir()) if path.name not in keep]
     targets += [work / name for name in ('linux-package-staging', 'corresponding-contrib')
                 if (work / name).exists()]
@@ -92,9 +105,12 @@ def compact(work, destination, expected_generation=None):
     after = census(work)
     result.update(state='compacted', after_bytes=sum(after.values()), after_directories=after,
                   retained_runtime_archive=runtimes[0], source_commit=generation,
-                  retained_asset_hashes={row['name']: row['sha256'] for row in status['assets'] if row['name'] in keep},
+                  retained_asset_hashes=retained_hashes, package_status_sha256=sha(status_path),
+                  previously_archived_assets=[name for name in names if name not in keep],
                   generated_copy_destination=str(destination),
                   retirement='Uploaded package copies; disposable hosted runner owns their final lifecycle')
+    if prior_proof:
+        result['complete_source_artifact'] = prior.get('complete_source_artifact', prior['uploaded_artifact'])
     return result
 
 
@@ -135,6 +151,7 @@ def main():
     scratch = Path(os.environ['RUNNER_TEMP']).resolve() / 'native-cache-retirement'
     result = compact(args.work, scratch, args.normal_source)
     result['uploaded_artifact'] = args.uploaded_artifact
+    result.setdefault('complete_source_artifact', args.uploaded_artifact)
     (args.work / 'native-cache-retention.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2), flush=True)
 
