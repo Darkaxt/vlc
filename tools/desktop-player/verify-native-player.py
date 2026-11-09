@@ -59,6 +59,60 @@ def inspect_result(result):
     return result
 
 
+def subtitle_choices(observation):
+    """Find the rendered track group without assuming a Qt-version role value."""
+    rows = [row for row in observation['tree'] if row['visible'] and row['enabled']]
+    none = [row for row in rows if row.get('name') == 'None'
+            and 'selected' in row and row.get('actions')]
+    if len(none) != 1:
+        raise RuntimeError('Expected one subtitle None choice in the open tracks popup')
+    return [row for row in rows if row.get('parent') == none[0]['parent']
+            and row['node'] != none[0]['node'] and 'selected' in row and row.get('actions')]
+
+
+def retain_x11_surface_observation(evidence, observation):
+    """Read only the owned player's XIDs and backing pixmaps on its CI display."""
+    from Xlib import X, display, error
+    from Xlib.ext import composite
+    connection = display.Display()
+    rows = []
+    try:
+        connection.composite_query_version()
+        for window in observation.get('windows', []):
+            if not window.get('native_id_hex'):
+                continue
+            xid = int(window['native_id_hex'], 16)
+            resource = connection.create_resource_object('window', xid)
+            row = {'xid': xid, 'name': window['name']}
+            try:
+                geometry = resource.get_geometry()
+                attributes = resource.get_attributes()
+                row.update(parent_xid=resource.query_tree().parent.id,
+                    depth=geometry.depth, visual=attributes.visual,
+                    map_state=attributes.map_state, width=geometry.width, height=geometry.height)
+                # Naming existing storage does not redirect/reparent or change
+                # the rendering. The temporary X resource is freed below.
+                failed = error.CatchError()
+                pixmap = resource.composite_name_window_pixmap(onerror=failed)
+                connection.sync()
+                if failed.get_error():
+                    raise RuntimeError(str(failed.get_error()))
+                try:
+                    row['backing_samples'] = [pixmap.get_image(
+                        geometry.width * column // 8, geometry.height // 2,
+                        1, 1, X.ZPixmap, 0xffffffff).data.hex() for column in range(1, 8)]
+                finally:
+                    pixmap.free()
+            except Exception as error:
+                row['observation_error'] = str(error)
+            rows.append(row)
+        connection.sync()
+    finally:
+        connection.close()
+    (evidence / (observation['id'] + '-x11-surfaces.json')).write_text(
+        json.dumps(rows, indent=2) + '\n')
+
+
 def retain_timing_observation(evidence):
     """Summarize all native trace events without loading the trace into RAM."""
     trace = evidence / 'native-timing.jsonl'
@@ -193,6 +247,8 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         if label in ('main-picture', 'subtitle-picture', 'floating-picture',
                      'expanded-picture', 'restored-picture', 'handover-picture', 'replacement-picture'):
             inspect_cocoa_video_placement(result)
+            if platform.system() == 'Linux':
+                retain_x11_surface_observation(evidence, result)
         records.append({'label': label, 'response_id': result['id']})
         (evidence / 'workflow.json').write_text(json.dumps(records, indent=2) + '\n')
         print(f'NATIVE {engine}: {label}', flush=True)
@@ -213,8 +269,7 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
             save('main-picture', client.snapshot(capture=True, capture_native=True))
             save('subtitle-menu', client.action('click', target='subtitleButton'))
             choices = client.snapshot()
-            tracks = [node for node in choices['tree'] if node['visible'] and node['enabled']
-                      and node.get('role') == 45 and node.get('name') != 'None' and node.get('actions')]
+            tracks = subtitle_choices(choices)
             assert len(tracks) == 1, tracks
             save('select-subtitle', client.action('click', name=tracks[0]['name']))
             save('close-subtitle-menu', client.action('key', key=0x1000000))

@@ -1,5 +1,24 @@
 # VLC redesign stages and reconciliation
 
+**9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+UI-only42540568864 (cf65c128, normal32a9544c reused) closed1; watch89948
+observed exit1. Diagnostic Qt compilation and normal-object restoration passed;
+the native UI reached the open subtitle popup. Its actual track row is exposed
+as ListItem34 by Qt6.4 rather than RadioButton45, so the verifier's numeric-role
+filter rejected a present actionable row. Select the rendered sibling group of
+the unique None choice instead, excluding the separate Add-file group and
+rejecting ambiguous groups. The focused regression covers both observed roles.
+The actual MPV GL samples contain all seven fixture colors after nine renders,
+but both native and composed captures remain blank: picture acceptance fails.
+Record the owned XIDs' ancestry, visuals and existing backing-pixmap samples
+without changing redirection, plus mkdir/mkdirat-only tracing of this UI-only
+continuation to identify why its fresh media-library directory is not created.
+No production renderer/path fix is justified yet. Original single shutdown
+SIGSEGV remains unexplained; later successful launches are not a repair claim.
+All normal Linux formats and installed DEB/RPM/strict-Snap both-engine checks
+passed42539593340; do not repeat them for this verifier/observation delta.
+The second native compaction now passed42540568864 after the idempotency repair.
+
 **8 November native desktop delivery: M15 — ACTIVE (R111/R112/R113).**
 Current553 qualification fixes the normal Linux startup/EOF deadlock. Both Mac
 architectures pass normal VLC ZIP/DMG checks and full native workflows. Their

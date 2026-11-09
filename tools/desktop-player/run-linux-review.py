@@ -12,6 +12,7 @@ from pathlib import Path
 import select
 import selectors
 import signal
+import shutil
 import subprocess
 import sys
 
@@ -167,8 +168,18 @@ def main():
                 # A package failure remains a failed qualification. Still finish
                 # the independent required UI observation in this original run.
                 if not args.packages_only:
-                    ui_check = subprocess.run([sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
-                        '--review-root', args.review_root], env=env)
+                    command = [sys.executable, HERE / 'prepare-native-review.py', '--work', args.work,
+                               '--review-root', args.review_root]
+                    if args.ui_only:
+                        # The existing library error omits errno. Observe only
+                        # directory syscalls in this diagnostic continuation;
+                        # never trace file contents, environment or credentials.
+                        if not shutil.which('strace'):
+                            subprocess.run(['sudo', '-n', 'apt-get', 'install', '-y',
+                                            '--no-install-recommends', 'strace'], check=True)
+                        command = ['strace', '-f', '-e', 'trace=mkdir,mkdirat', '-e', 'signal=none',
+                                   '-o', str(session / 'library-mkdir.log'), '--', *command]
+                    ui_check = subprocess.run(command, env=env)
                     if ui_check.returncode:
                         failures.append({'check': 'native UI', 'exit_code': ui_check.returncode})
             (session / 'checks.json').write_text(json.dumps({'failures': failures,

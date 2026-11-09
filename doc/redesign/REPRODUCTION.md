@@ -2,6 +2,21 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+9 November UI-only42540568864 atcf65c128 failed the verifier's exact role45
+filter after opening Subtitles. Evidence13641118071: actual Qt6.4 row705 is an
+enabled actionable ListItem34, sibling of None700; Add-file723 has another parent.
+The corrected verifier selects that unique rendered group and keeps ambiguity
+fatal. GL samples after nine draws are
+`fe0000ff00ff01ffffff00ff1414ffff0000fefffe00fdff00ffffff`, but native/composed
+captures are blank. Do not accept those pictures or change the renderer based
+only on readiness. The next UI-only continuation records existing X11 backing
+storage and directory syscalls. Its syscall tracer supervises the whole review
+command through actual exit; it records only mkdir/mkdirat and no file contents
+or inherited credentials. The normal package runtime is unchanged32a9544c.
+Original watch89948 exited1; private display/audio exited and cache compaction
+passed. The preceding42539593340 normal five-format and real installation checks
+remain applicable and must not be repeated for this UI-only diagnostic delta.
+
 The two normal21f1 thread observations in trace42524609550 show a circular
 wait: GUI icon painting waits for the global pool; its SVG readers wait for
 ImageHelper's lazy plugin initialization on that GUI thread. Constructing the

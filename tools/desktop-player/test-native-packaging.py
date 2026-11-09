@@ -24,6 +24,22 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_subtitle_choice_selection_uses_the_rendered_group_on_each_qt_version(self):
+        spec = importlib.util.spec_from_file_location('native_ui', HERE / 'verify-native-player.py')
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        for role in (34, 45):
+            common = {'visible': True, 'enabled': True, 'selected': False,
+                      'actions': ['Press'], 'role': role}
+            observation = {'tree': [
+                dict(common, node=1, parent=10, name='None'),
+                dict(common, node=2, parent=10, name='eng — subrip'),
+                dict(common, node=3, parent=20, name='Add subtitle file…')]}
+            self.assertEqual([row['node'] for row in verifier.subtitle_choices(observation)], [2])
+        observation['tree'].append(dict(common, node=4, parent=30, name='None'))
+        with self.assertRaisesRegex(RuntimeError, 'Expected one subtitle None choice'):
+            verifier.subtitle_choices(observation)
+
     def test_native_cache_retains_objects_and_runtime_without_package_duplicates(self):
         spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
         cache = importlib.util.module_from_spec(spec)
