@@ -1,6 +1,32 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Intel1346 normal ZIP VLC launch exited with SIGILL(-4) during shutdown, after
+EOF/input teardown but before Qt event-loop exit. Its one LLDB reproduction
+exited0 and captured no original fault; that is not a repair or acceptance.
+Interactive native workflows passed independently. Preserve artifact13667725080
+and original logs; expose the existing LLDB fault-capture verifier through a
+diagnostic-only workflow input. Dispatch only Intel with required normal reuse
+after its original cache closes; no production mutation, SDK setup or normal
+package rebuild. Remaining normal package acceptance stays unresolved.
+
+Coordinated normal run42597474062/source1346af0b: Apple Silicon and Linuxx86
+jobs completed successfully. Mac ZIP/DMG both engines passed normal EOF and
+strict signature/bundle checks; Linux portable formats and dpkg/Fedora RPM/snapd
+strict installed checks passed. Both complete native workflows passed; actual
+composed-picture inspection remains separately required. Linux VLC main,
+subtitles, floating/expanded queue, restored video, handover and replacement
+pictures have been inspected successfully. Intel Mac and LinuxARM original jobs
+remain running; retain watch19140 and their saved build identities.
+Current Windows1346 archives/source/symbol maps, fresh VLC+ML EOF and all six
+P5/P8.1/P8.4 placement/presentation cases pass. NSIS ticket351 closed0 with empty
+Linux group and released mounts. Final source-bound installed acceptance is in
+owned guest50/d893d54b-b571-4a59-9480-4b4448f3bd6f, session35469; its original
+lifecycle request is running. Earlier guest49 was disposed successfully. No
+host installation or publication; remaining installed pictures/lifecycle and
+architecture/source/license reconciliation still block M15 closure.
+
+Prior diagnostic progression (historical; current next actions above):
 Linux004 closed1 in6m47s: exact native read is mapped at813,1067 on1920x1080,
 not the requested/restored660,330 Qt position; its lower407 rows are off-screen.
 GetImage73 returns BadMatch8, then later660,330 gives190644 chromatic pixels.

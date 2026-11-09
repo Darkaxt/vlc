@@ -4,6 +4,15 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 Intel shutdown: normal1346 ZIP VLC exits SIGILL(-4) after
+input teardown and before Qt shutdown. The single LLDB reproduction exits0;
+it does not explain or clear the original fault. Preserve the normal archive,
+failure and logs. Capture the fault through the existing LLDB diagnostic mode
+using required unchanged-package reuse, without normal rebuilding or accepting
+a debugger-only pass. Repair only an evidenced cause and requalify affected
+normal packages before M15 closure; Windows and other architectures retain
+applicable unchanged evidence.
+
 9 November R112 Linux placement boundary:004's failed GetImage is mapped but
 located at813,1067 on a1920x1080 screen, while Qt already reports the restored
 660,330 position. The420-high window is still mostly off-screen; GetImage73
