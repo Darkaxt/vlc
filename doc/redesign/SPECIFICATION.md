@@ -13,6 +13,12 @@ unrelated paths. The Linux MPV output must preserve opaque video pixels through
 the X11 compositor's ARGB backing storage. Colored GL samples or functional UI
 checks do not satisfy actual-picture acceptance while composition is blank.
 These are current M15 recovery criteria, not new stages or relaxed acceptance.
+The ddda normal run verifies fresh-library recovery but fails composed pictures
+in both engines despite an opaque depth32 MPV child containing correct pixels.
+Compare the selected platform native-child hierarchy with the existing explicit
+X11 composition path before choosing the renderer correction. Preserve the
+complete default workflows; a first-picture control is diagnostic only and
+does not qualify floating playback, handover, package delivery or clean exit.
 
 **8 November native desktop packages, R111/R112, already authorized:**
 

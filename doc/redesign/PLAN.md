@@ -1,6 +1,24 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal42543991006 atddda550e closed0; original watch85238 exit0 observed.
+All normal Linux formats, real DEB/RPM/strict-Snap both-engine workflows and
+the complete instrumented workflows pass; owned managers/audio exited. Artifact
+13643053387 is2119491376B, SHA256df43263c35f4ff7a600e31e41ced06f8e8fdb327da0d1777a1e926c456648459.
+Actual fresh media-library initialization and its intended storage path pass.
+Actual composed pictures remain blank in both engines: the MPV child is now
+depth32 with opaque, correct color samples, but the composed root still loses
+the picture. The alpha-format hypothesis did not resolve the defect. This
+Linux route selects CompositorPlatform, which stacks a transparent Quick child
+above native video; upstream's separate X11 compositor instead redirects and
+blends video and UI explicitly. Add one first-picture X11 control after the
+unchanged complete workflows in the UI-only diagnostic continuation. No new
+normal build/package pass is needed for this verifier-only change, and no
+picture or shutdown-crash repair is claimed. Retain the current normal cache,
+source packages and original failure evidence; final common-revision matrix
+and publication remain pending. Spent path fixtures were cleaned through
+3c7dbc4382239ed2175f916d33e15ec9:30 members/8831300B, no errors/exclusions.
+
 The Windows regression fixture originally wrote its extracted UTF-8 copyright
 line using the host locale. That changed the whole-file checksum despite the
 path functions passing. Make all fixture text I/O explicitly UTF-8: the exact
