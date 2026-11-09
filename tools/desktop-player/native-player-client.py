@@ -33,7 +33,13 @@ def record_linux_fault(pid, code, executable, evidence, engine, env):
             with (evidence / (engine + '-crash-stacks.txt')).open('wb') as output:
                 debugger = subprocess.run(['gdb', '--quiet', '--nx', '--batch',
                     '-ex', 'set debuginfod enabled off', '-ex', 'set print frame-arguments none',
-                    '-ex', 'thread apply all bt', str(executable), str(core)],
+                    # JIT-generated Mesa code has no symbolic stack frames.
+                    # Preserve its actual faulting instruction/registers and
+                    # mapped object identities before the private core expires.
+                    '-ex', 'info threads', '-ex', 'info registers',
+                    '-ex', 'x/12i $pc', '-ex', 'x/24gx $sp',
+                    '-ex', 'info proc mappings', '-ex', 'thread apply all bt',
+                    str(executable), str(core)],
                     env=env, stdout=output, stderr=subprocess.STDOUT)
             fault['debugger_exit'] = debugger.returncode
         except OSError as error:

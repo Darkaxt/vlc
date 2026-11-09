@@ -1,6 +1,25 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+UI-only42559436411/a73ca91c closed1 (original watch8107 exit1). Verified normal
+runtime reuse skipped normal compilation and package generation. Actual MPV
+main/subtitle pictures progressed; floating entry faulted SIGSEGV. GDB exited0
+and preserved stacks; private raw cores were not uploaded. The faulting thread
+is in unnamed generated code, while the GUI thread is in Mesa Gallium through
+MPV gl_timer_start/render. This does not establish a native surface-lifetime
+cause: Qt6.4.2 XCB setParent reparents the existing XID without destroying it.
+Collect fault registers/instructions/mappings to identify the invalid access
+before selecting a renderer correction. No speculative renderer patch is made.
+Owned managers/audio exited and the observation browser was released.
+Artifact13648811970 is888949243B, SHA256bae62fc97d3a1e9f367e1148ab52658a985f260a5e637f9d19b863d952a25427.
+Actual cache replacement10214615909 was verified remotely (1969743287B);
+eight superseded same-cohort IDs were retired, leaving that current cohort.
+This closes hosted retention execution, not player qualification. The shutdown
+join and dark Linux reference configuration remain source-only pending native
+verification. Windows final MPV/DV/installer/common-source and both Mac final
+common-source qualifications remain required; no release has been published.
+
+Preceding diagnostic history:
 UI diagnostic42558981914/06949b69 was scoped-cancelled (watch29272 exit1)
 after its reuse guard incorrectly classified the cache-management job permission
 as a compiler input and started normal installation/packaging. No UI acceptance
@@ -11,7 +30,7 @@ actual compiler/setup input. Explicit UI-only requests require verified reuse
 and fail before normal compilation if unavailable. Focused regression first
 reproduced the false binding mismatch, then passed the correction; required
 reuse rejection and production/configuration rejection are also exercised.
-Use the original e2 normal payload for the next UI fault observation. The
+The next UI fault observation used the original e2 normal payload. The
 separate source-only medialibrary join correction remains unverified and is
 excluded from that diagnostic revision until the floating crash is understood.
 
@@ -50,7 +69,7 @@ VLC check passes actual picture, fresh medialibrary, natural EOF, input release,
 Qt completion and exit0 on an inactive owned desktop. Final MPV/DV presentation,
 installer and common-revision delivery qualification remain outstanding.
 
-Current R111 retention reconciliation: GitHub lists ten snapshots of the same
+Preceding R111 retention inventory: GitHub listed ten snapshots of the same
 Linux cohort and no Intel/ARM Mac cache. The latest Linux9ce snapshot is
 10212805824/2057376187B; the normal e2 continuation restored it. Earlier Mac
 compaction remains verified historical evidence, but its subsequent warm reuse
@@ -61,8 +80,8 @@ no other queued/running native workflow. Other cohorts, refs, versions and newer
 cache records survive. Exact ID deletion and remote absence are verified through
 the documented GitHub cache API; no storage/billing limit is changed. Focused
 regression exercises cohort selection, missing/ambiguous replacement rejection,
-supported list/ID-delete calls and busy-owner preservation. Hosted retirement and
-the final architecture matrix still require execution after source reconciliation.
+supported list/ID-delete calls and busy-owner preservation. Hosted retirement
+passed in42559436411 above; the final architecture matrix remains outstanding.
 
 Continuation42554226977 atf6284c38 closed1; original watch10660 exit1.
 Runner setup's hardcoded HTTP Ubuntu source index timed out on91.189.90.12:80

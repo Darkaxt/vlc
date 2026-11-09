@@ -1433,7 +1433,7 @@ class NativePackagingTest(unittest.TestCase):
         argv = ['/owned/player/modern-vlc', '--qt-playback-engine=mpv']
         with patch.dict(os.environ, {'VLC_NATIVE_CI_CORE_DIRECTORY': str(private)}), \
              patch.object(verifier.subprocess, 'Popen', return_value=child) as launch, \
-             patch.object(verifier.subprocess, 'run', return_value=SimpleNamespace(returncode=0)):
+             patch.object(verifier.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as debugger:
             with self.assertRaises(subprocess.CalledProcessError) as failure:
                 verifier.normal_playback(argv, {'GH_TOKEN': 'synthetic-secret', 'HOME': '/owned/home'},
                     Path('/owned/player'), case, 'mpv', case / 'stdout.log', case / 'stderr.log')
@@ -1443,6 +1443,10 @@ class NativePackagingTest(unittest.TestCase):
         self.assertTrue(fault['private_core_exists'])
         self.assertFalse(fault['raw_core_uploaded'])
         self.assertEqual(fault['exit_code'], -11)
+        commands = debugger.call_args.args[0]
+        for observation in ('info threads', 'info registers', 'x/12i $pc',
+                            'x/24gx $sp', 'info proc mappings', 'thread apply all bt'):
+            self.assertIn(observation, commands)
 
     def test_linux_fault_capture_keeps_original_failure_when_debugger_cannot_start(self):
         spec = importlib.util.spec_from_file_location('linux_packages', HERE / 'verify-linux-packages.py')
