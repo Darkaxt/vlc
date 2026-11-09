@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compile the pinned library's actual path functions for the repeated-root regression."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -27,6 +28,7 @@ def main():
     parser.add_argument('--scratch', required=True, type=Path)
     parser.add_argument('--compiler', default='c++')
     parser.add_argument('--patch', type=Path)
+    parser.add_argument('--patch-tool', default='patch')
     parser.add_argument('--expect-original-failure', action='store_true')
     args = parser.parse_args()
     if args.source.is_dir():
@@ -41,8 +43,9 @@ def main():
         target = patched / 'src/utils/Filename.cpp'
         target.parent.mkdir(parents=True)
         target.write_text(source, newline='\n')
-        subprocess.run(['git', 'apply', '--check', str(args.patch.resolve())], cwd=patched, check=True)
-        subprocess.run(['git', 'apply', str(args.patch.resolve())], cwd=patched, check=True)
+        command = [args.patch_tool, '--batch', '--forward', '-p1', '-i', str(args.patch.resolve())]
+        subprocess.run([*command, '--dry-run'], cwd=patched, check=True)
+        subprocess.run(command, cwd=patched, check=True)
         source = target.read_text()
     names = ('directory', 'directoryName', 'parentDirectory', 'fileName', 'firstFolder',
              'toFolderPath', 'splitPath')
@@ -93,6 +96,7 @@ int main() {
                     '-o', str(executable)], check=True)
     result = subprocess.run([str(executable)], text=True, capture_output=True)
     print(json.dumps({'native_exit_code': result.returncode, 'stdout': result.stdout,
+                      'source_sha256': hashlib.sha256(source.encode()).hexdigest(),
                       'expected_original_failure': args.expect_original_failure}, indent=2))
     if result.returncode != (1 if args.expect_original_failure else 0):
         raise RuntimeError('Actual pinned path-function regression has an unexpected result')

@@ -1,6 +1,14 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal42543310594 at6b85bda2 closed1 before Qt compilation: git apply returned0
+but skipped the dependency file because its extracted source is inside VLC's
+ignored work directory. The exact patched-file hash check prevented accepting
+that no-op. Use standard patch with the same dry-run and pinned before/after
+hashes; do not change paths, recreate SDKs or weaken the content check. Original
+watch38923 exit1 observed; the retained compiler cohort and prior normal runtime
+are preserved. The actual integrated fixes remain unqualified.
+
 Continuation42542019055 atb3e391a2 closed0 (watch55945 exit0); full native
 workflows, settings persistence and original normal-object restoration passed
 in both engines, with private managers/audio exited. This is UI-only evidence,
