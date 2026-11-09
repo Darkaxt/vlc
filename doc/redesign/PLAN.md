@@ -11,6 +11,12 @@ TAR/AppImage playback passed. The identical DEB MPV payload reached natural EOF,
 released MPV and exited Qt, then crashed while removing the medialibrary module.
 Its full UI acceptance never ran; collect the actual shutdown stack from this
 exact artifact13640326180 without compilation before changing production code.
+Compiler-free42538150472 closed0 and recovered that artifact's complete hash,
+but its GDB-attached MPV process exited normally. That is not a repair or package
+acceptance. Observe fresh untraced profiles in the owned hosted runner, stopping
+at the first failure and inspecting its private core; never upload raw cores or
+CI credentials. Preserve the original lifecycle result and restore the runner's
+prior core destination after diagnosis.
 Both original Linux architectures fail the fuller
 UI check because AccessibleCompat discards its assigned ID before Qt6.8; the
 visible Subtitles button cannot be addressed. Retain the compatibility property

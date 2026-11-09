@@ -219,6 +219,7 @@ jobs:
             .package-review/work/package-recovery.json
             ${{ runner.temp }}/recovered-player-review/diagnosis.json
             ${{ runner.temp }}/recovered-player-review/gdb-mi.log
+            ${{ runner.temp }}/recovered-player-review/launch-*/*log
             ${{ runner.temp }}/recovered-player-review-session/*json
             ${{ runner.temp }}/recovered-player-review-session/*txt
             ${{ runner.temp }}/recovered-player-review-session/*log

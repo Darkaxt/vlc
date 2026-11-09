@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import resource
 import select
 import selectors
 import signal
@@ -23,6 +24,104 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('native_builder', HERE / 'build-native.py')
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
+
+
+def untraced_shutdown(app, fixture, scratch, env, argv, result):
+    """Observe the intermittent EOF fault without ptrace changing its timing.
+
+    Twelve independent fresh profiles are a diagnostic census, never retries
+    after a failure or package acceptance. Stop at the first failed process.
+    Raw cores stay outside the uploaded evidence and die with this hosted VM.
+    """
+    if not Path('/proc/sys/kernel/core_pattern').is_file():
+        raise RuntimeError('The owned Linux runner has no kernel core-dump interface')
+    pattern_file = Path('/proc/sys/kernel/core_pattern')
+    previous_pattern = pattern_file.read_text()
+    private = scratch.with_name(scratch.name + '-private-cores')
+    private.mkdir(mode=0o700)
+    pattern = str(private / 'core.%p') + '\n'
+    if '%' in str(private) or '\n' in str(private):
+        raise RuntimeError('Private diagnostic core path contains kernel substitutions')
+    result.update(purpose='Untraced normal MPV EOF shutdown crash census; not acceptance',
+                  observations=[], maximum_observations=12, raw_cores_uploaded=False)
+    # The normal player needs no CI credential. Never include a runner token
+    # in its private core, even though that core is never uploaded.
+    env = {key: value for key, value in env.items()
+           if not any(word in key.upper() for word in ('TOKEN', 'SECRET', 'PASSWORD', 'CREDENTIAL'))}
+
+    mask = signal.pthread_sigmask(signal.SIG_BLOCK, (signal.SIGINT, signal.SIGTERM))
+    previous_handlers = {sig: signal.signal(sig, builder.cancel_build)
+                         for sig in (signal.SIGINT, signal.SIGTERM)}
+    signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+
+    def core_limit():
+        signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+        resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+
+    try:
+        subprocess.run(['sudo', '-n', 'tee', str(pattern_file)], input=pattern,
+                       text=True, stdout=subprocess.DEVNULL, check=True)
+        if pattern_file.read_text() != pattern:
+            raise RuntimeError('Private hosted-runner core destination was not applied')
+        for observation in range(result['maximum_observations']):
+            case = scratch / ('launch-' + str(observation + 1))
+            case.mkdir()
+            launch_env = dict(env, HOME=str(case / 'home'), XDG_CONFIG_HOME=str(case / 'config'),
+                XDG_DATA_HOME=str(case / 'data'), XDG_CACHE_HOME=str(case / 'cache'),
+                QML_DISK_CACHE_PATH=str(case / 'qml-cache'))
+            Path(launch_env['HOME']).mkdir()
+            with (case / 'stdout.log').open('wb') as out, (case / 'stderr.log').open('wb') as err:
+                player = None
+                signal.pthread_sigmask(signal.SIG_BLOCK, (signal.SIGINT, signal.SIGTERM))
+                try:
+                    player = subprocess.Popen(argv, cwd=case, env=launch_env, stdout=out, stderr=err,
+                                              start_new_session=True, preexec_fn=core_limit)
+                    signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+                    code = player.wait()
+                except builder.NativeBuildCancelled:
+                    for sig in previous_handlers:
+                        signal.signal(sig, signal.SIG_IGN)
+                    if player is not None:
+                        builder.stop_command(player)
+                    raise
+                finally:
+                    signal.pthread_sigmask(signal.SIG_SETMASK, mask)
+            stderr = (case / 'stderr.log').read_text(errors='replace')
+            row = {'pid': player.pid, 'exit_code': code, 'natural_eof': 'MPV natural EOF reached' in stderr,
+                   'mpv_released': 'MPV native resources released' in stderr,
+                   'qt_exited': 'QApp exec() finished' in stderr,
+                   'stderr_sha256': builder.sha(case / 'stderr.log')}
+            result['observations'].append(row)
+            print('NORMAL SHUTDOWN ' + json.dumps(row), flush=True)
+            if code:
+                core = private / ('core.' + str(player.pid))
+                row['private_core_exists'] = core.is_file()
+                if core.is_file():
+                    builder.run('gdb', '--quiet', '--nx', '--batch',
+                        '-ex', 'set debuginfod enabled off', '-ex', 'set pagination off',
+                        '-ex', 'set logging file ' + str(scratch / 'gdb-mi.log'),
+                        '-ex', 'set logging redirect on', '-ex', 'set logging enabled on',
+                        '-ex', 'set print frame-arguments none', '-ex', 'thread apply all bt',
+                        str(app / 'bin/vlc'), str(core), env=env)
+                    row['debugger_exit'] = 0
+                    result['gdb_log_sha256'] = builder.sha(scratch / 'gdb-mi.log')
+                    result['owned_debugger_group_exited'] = True
+                break
+            if not all(row[key] for key in ('natural_eof', 'mpv_released', 'qt_exited')):
+                raise RuntimeError('Untraced diagnostic exited without the requested EOF lifecycle')
+        result['normal_exit'] = all(row['exit_code'] == 0 for row in result['observations'])
+        result['owned_inferior_exit_verified'] = True
+    finally:
+        for sig in previous_handlers:
+            signal.signal(sig, signal.SIG_IGN)
+        subprocess.run(['sudo', '-n', 'tee', str(pattern_file)], input=previous_pattern,
+                       text=True, stdout=subprocess.DEVNULL, check=True)
+        result['hosted_core_pattern_restored'] = pattern_file.read_text() == previous_pattern
+        (scratch / 'diagnosis.json').write_text(json.dumps(result, indent=2) + '\n')
+        for sig, handler in previous_handlers.items():
+            signal.signal(sig, handler)
+        if not result['hosted_core_pattern_restored']:
+            raise RuntimeError('Hosted-runner core pattern did not restore')
 
 
 def main():
@@ -61,6 +160,9 @@ def main():
         'artifact_sha256_verified': recovery['artifact_sha256_verified'], 'compiler_invoked': False,
         'launcher_sha256': builder.sha(app / 'modern-vlc'), 'executable_sha256': builder.sha(app / 'bin/vlc'),
         'argv': argv, 'stack_observations': [], 'normal_exit': False, 'package_qualified': False}
+    if args.engine == 'mpv':
+        untraced_shutdown(app, fixture, args.scratch, env, argv, result)
+        return
     previous = {sig: signal.signal(sig, builder.cancel_build) for sig in (signal.SIGINT, signal.SIGTERM)}
     process = subprocess.Popen(['gdb', '--quiet', '--nx', '--interpreter=mi2'], env=env,
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)

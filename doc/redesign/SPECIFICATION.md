@@ -69,6 +69,11 @@ load every redesigned library dialog, using compatible geometry for the same
 rounded header. Actual composed video pixels remain required independently of
 decoder/context readiness. A failed first-profile media library must be diagnosed
 and recovered without weakening profile isolation or hiding the initialization error.
+The32 normal Linux MPV package reaches EOF and releases its render resources,
+then intermittently faults during final teardown. Diagnose the actual failing
+thread and repair its ownership before accepting clean exit; a debugger-delayed
+successful launch does not satisfy this regression criterion. Private hosted
+crash dumps must not be uploaded or contain CI credentials.
 The native continuation cache must preserve compiler/dependency objects and
 configuration across all four architectures. The553 Linux cache was restored at
 7.48GB and saved, but only Intel's4.85GB cache remains; the next Linux job starts
