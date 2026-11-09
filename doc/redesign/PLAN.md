@@ -21,7 +21,12 @@ after a diagnostic cadence; never kill it on a timer or count this as acceptance
 Reuse its exact normal package and retain explicit cancellation/group supervision.
 Intel Mac is still compiling Qt. Original watch75616 and owned
 guest73951 remain active; Windows installed-picture/EOF/uninstall awaits a logged-in
-owned guest. No new matrix, cold build, release or second ACTIVE stage.
+owned guest. Normal builds stay serialized. Both Linux jobs have now exited and
+saved immutable caches; a single-target UI-only diagnostic may independently
+reuse that exact normal generation on another hosted runner while Mac continues.
+Required reuse forbids normal compilation/package generation; the existing
+cache-retirement guard preserves predecessors while another run exists.
+No duplicate normal matrix, cold build, release or second ACTIVE stage.
 Server-fence921 run42583173295 closed1/watch67467 exit1 in6m55s; exact9ab
 normal package was reused and normal compilation/packaging skipped. The new
 server-completion assertion passes, but restored-picture still has0 chromatic

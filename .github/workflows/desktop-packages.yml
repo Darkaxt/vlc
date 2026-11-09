@@ -43,7 +43,9 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: ${{ inputs.cache_compaction != '' && format('desktop-cache-{0}-{1}', github.ref, inputs.target) || format('desktop-packages-{0}', github.ref) }}
+  # Diagnostic continuations own separate hosted filesystems and immutable
+  # snapshots; required reuse forbids replacing a normal package generation.
+  group: ${{ inputs.native_ui_only && inputs.target != 'all' && format('desktop-ui-{0}-{1}', github.ref, inputs.target) || inputs.cache_compaction != '' && format('desktop-cache-{0}-{1}', github.ref, inputs.target) || format('desktop-packages-{0}', github.ref) }}
   cancel-in-progress: false
 jobs:
   matrix:

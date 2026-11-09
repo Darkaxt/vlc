@@ -22,6 +22,11 @@ the same server-fenced state later presents correctly. Observe the existing
 cached interface/video pixmaps and their pixels under the existing picture lock.
 Read the output drawable first, before those source-image roundtrips, preserving
 its original pixel observation even if the subsequent GUI capture changes.
+Both Linux jobs have completed and saved immutable compiler snapshots. A strictly
+diagnostic single-target continuation may use its separate hosted filesystem
+concurrently with the remaining Mac jobs, requiring unchanged normal-runtime
+reuse and retaining the existing busy-run cache preservation. Normal build/package
+generations remain serialized; UI-only passes cannot qualify normal packages.
 Do not recreate their pictures, force a redraw, delay acceptance or change normal
 rendering from these observations. Diagnostic-only additions in the render-client
 header require the same outside-guard byte comparison as the other two headers.
