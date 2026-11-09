@@ -1,6 +1,23 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Linux diagnostic42592898343/source2ba0 closed1 in9m37s with strict normal789
+reuse; compilation/packages were skipped. Artifact13662777484 preserves the
+failure. At that boundary the cached video has196175 chromatic pixels and the
+interface1556, but output GetImage returns BadMatch8; later output has190643.
+Thus valid source images and server completion do not prove native presentation.
+Observe map state/root coordinates and the exact GetImage error on the same
+renderer connection, queued immediately before that output read. The later GUI
+map_state2 is not simultaneous evidence. No production change or relaxed check.
+Both Mac normal packages completed and both stopped progressing at the MPV ZIP
+launch. Requested normal cancellation of original42585461970 to recover its
+redirected logs and preserve packages/caches; supervise original75616 through
+actual completion before selecting the prepared exact-package launch observer.
+The connected Windows guest passed both installed-engine EOF/clean shutdown and
+actual full-size video pictures. Final owned uninstall is running in73951;
+guest disposal and receipt inspection remain required. No host installation.
+
+Prior diagnostic progression (retained evidence, superseded next actions):
 Matrix42585461970/source789: both Linux architectures built their packages and
 saved compiler caches, then failed the original immediate VLC restored-picture
 assertion. Linuxx86 artifact13660625498 is2112978083B; ARM artifact13660190912

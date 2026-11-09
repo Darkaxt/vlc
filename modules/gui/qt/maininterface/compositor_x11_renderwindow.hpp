@@ -84,6 +84,7 @@ public:
             return result;
         }
         const int width = geometry->width, height = geometry->height, depth = geometry->depth;
+        const auto root = geometry->root;
         result.insert(QStringLiteral("width"), width);
         result.insert(QStringLiteral("height"), height);
         result.insert(QStringLiteral("depth"), depth);
@@ -99,10 +100,44 @@ public:
             result.insert(QStringLiteral("pixels_not_read"), QStringLiteral("unsupported image layout or extent"));
             return result;
         }
-        auto image = xcb_get_image_reply(m_conn,
-            xcb_get_image(m_conn, XCB_IMAGE_FORMAT_Z_PIXMAP, drawable, 0, 0, width, height, ~uint32_t(0)), &error);
+        // Queue native window facts immediately before GetImage on this same
+        // connection. Later GUI snapshots cannot establish viewability at the
+        // failed protocol boundary. Pixmap sources have no window attributes.
+        xcb_get_window_attributes_cookie_t attributesCookie{};
+        xcb_translate_coordinates_cookie_t coordinatesCookie{};
+        if (drawable == m_wid) {
+            attributesCookie = xcb_get_window_attributes(m_conn, drawable);
+            coordinatesCookie = xcb_translate_coordinates(m_conn, drawable, root, 0, 0);
+        }
+        const auto imageCookie = xcb_get_image(m_conn, XCB_IMAGE_FORMAT_Z_PIXMAP,
+            drawable, 0, 0, width, height, ~uint32_t(0));
+        if (drawable == m_wid) {
+            xcb_generic_error_t* attributesError = nullptr;
+            auto attributes = xcb_get_window_attributes_reply(m_conn, attributesCookie, &attributesError);
+            if (attributes) result.insert(QStringLiteral("map_state_before_image"), attributes->map_state);
+            if (attributesError) result.insert(QStringLiteral("attributes_error"), attributesError->error_code);
+            free(attributes); free(attributesError);
+            auto coordinates = xcb_translate_coordinates_reply(m_conn, coordinatesCookie, nullptr);
+            if (coordinates) {
+                result.insert(QStringLiteral("root_x_before_image"), coordinates->dst_x);
+                result.insert(QStringLiteral("root_y_before_image"), coordinates->dst_y);
+                result.insert(QStringLiteral("same_screen_before_image"), coordinates->same_screen);
+            }
+            free(coordinates);
+            for (auto screens = xcb_setup_roots_iterator(setup); screens.rem; xcb_screen_next(&screens)) {
+                if (screens.data->root != root) continue;
+                result.insert(QStringLiteral("screen_width"), screens.data->width_in_pixels);
+                result.insert(QStringLiteral("screen_height"), screens.data->height_in_pixels);
+            }
+        }
+        auto image = xcb_get_image_reply(m_conn, imageCookie, &error);
         if (!image || error || xcb_get_image_data_length(image) != width * height * 4) {
             result.insert(QStringLiteral("image_error"), error ? error->error_code : -1);
+            if (error) {
+                result.insert(QStringLiteral("image_error_resource"), error->resource_id);
+                result.insert(QStringLiteral("image_error_major"), error->major_code);
+                result.insert(QStringLiteral("image_error_minor"), error->minor_code);
+            }
             free(error); free(image);
             return result;
         }

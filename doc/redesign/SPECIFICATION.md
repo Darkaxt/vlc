@@ -4,6 +4,18 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 native-read boundary: diagnostic2ba0 has valid cached video/UI
+pixels but output GetImage fails BadMatch8 before a later correct picture. Query
+the output window's map state/root coordinates immediately before GetImage on
+that exact connection and retain its full error identity. Later Qt/GUI facts do
+not establish native readiness at the failed request. This is read-only guarded
+instrumentation, with unchanged normal headers verified before reuse; no redraw,
+sleep, acceptance retry or production mutation is authorized by the observation.
+Both normal Mac package builds reached the same MPV ZIP launch boundary. Cancel
+that original verification through its supported path to recover redirected logs
+and save its immutable packages/compiler caches, then diagnose the actual launch
+before modifying production behavior. Preserve the original session and failure.
+
 9 November R112 Mac launch diagnosis: the current normal MacARM MPV package
 check has not returned on its one-second EOF fixture, while normal VLC passed.
 Its redirected logs are not visible until exit. Use the existing diagnostic
