@@ -4,6 +4,28 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 Linux placement boundary:004's failed GetImage is mapped but
+located at813,1067 on a1920x1080 screen, while Qt already reports the restored
+660,330 position. The420-high window is still mostly off-screen; GetImage73
+correctly returns BadMatch8. Later native660,330 capture contains190644 chromatic
+pixels. Observe real XCB Map/Configure/Reparent events until native position and
+extent match the requested Qt top-level geometry, then await the existing Quick
+frame and renderer/server fence before the first accepted picture capture.
+This corrects a premature test boundary; it does not waive actual restored video,
+force another restore, wait on pixels/clock, add a sleep or alter production
+rendering. Retain original failed captures and assert placement readiness in the
+native workflow. Diagnostic event subscriptions end with the original request.
+
+9 November M15 numeric-locale repair: both normal Mac package logs report
+libmpv's "Non-C locale detected" before any MPV playback. Pinned MPV main.c
+check_locale accepts only C/C.UTF-8 and mp_create returns null otherwise; the
+bundled client.h documents this requirement. Establish LC_NUMERIC=C once just
+after QApplication construction on MPV-enabled Unix builds, before creating the
+playback controllers/workers, as Qt's locale guidance requires. Preserve all
+other locale categories and QLocale-based UI localization. Verify normal packaged
+MPV startup, actual playback/EOF/shutdown, both-engine workflows and ZIP/DMG
+identity on both Mac architectures; the old failed logs remain historical.
+
 9 November R112 native-read boundary: diagnostic2ba0 has valid cached video/UI
 pixels but output GetImage fails BadMatch8 before a later correct picture. Query
 the output window's map state/root coordinates immediately before GetImage on

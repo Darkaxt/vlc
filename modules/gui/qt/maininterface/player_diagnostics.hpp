@@ -74,6 +74,7 @@
 #include "player/player_media_analysis.hpp"
 #include "maininterface/mainctx.hpp"
 #ifdef QT_HAS_X11_COMPOSITOR
+#include <QAbstractNativeEventFilter>
 #include <QtGui/qguiapplication_platform.h>
 #include <xcb/xcb.h>
 #include "maininterface/compositor_x11_renderwindow.hpp"
@@ -83,6 +84,9 @@
 #endif
 
 class PlayerDiagnostics final : public QObject
+#ifdef QT_HAS_X11_COMPOSITOR
+    , public QAbstractNativeEventFilter
+#endif
 {
 #ifdef __APPLE__
     // Read only our own Cocoa view/layer graph. AVSampleBufferDisplayLayer
@@ -170,6 +174,9 @@ class PlayerDiagnostics final : public QObject
 public:
     ~PlayerDiagnostics() override {
         qApp->removeEventFilter(this);
+#ifdef QT_HAS_X11_COMPOSITOR
+        qApp->removeNativeEventFilter(this);
+#endif
         stopCoreObservation();
         // A pending QML observation can refer to the member property map.
         // Retire it before member destruction, rather than QObject's later
@@ -205,6 +212,63 @@ private:
     vlc_player_listener_id *m_coreListener = nullptr;
     std::function<void()> m_coreObservationCheck;
     QMetaObject::Connection m_mpvCoreConnection;
+#ifdef QT_HAS_X11_COMPOSITOR
+    std::function<void()> m_nativePlacementCheck;
+    QJsonObject m_nativePlacement;
+
+    bool nativePlacementReady(QWindow *window)
+    {
+        auto connection = qGuiApp->nativeInterface<QNativeInterface::QX11Application>()->connection();
+        const auto xid = window->winId();
+        auto geometry = xcb_get_geometry_reply(connection, xcb_get_geometry(connection, xid), nullptr);
+        auto attributes = xcb_get_window_attributes_reply(connection, xcb_get_window_attributes(connection, xid), nullptr);
+        auto position = geometry ? xcb_translate_coordinates_reply(connection,
+            xcb_translate_coordinates(connection, xid, geometry->root, 0, 0), nullptr) : nullptr;
+#ifdef QT_GUI_PRIVATE
+        const auto expected = QHighDpi::toNativePixels(window->position(), window);
+        const auto size = QHighDpi::toNativePixels(window->size(), window);
+#else
+        const auto expected = window->position() * window->devicePixelRatio();
+        const auto size = window->size() * window->devicePixelRatio();
+#endif
+        bool onScreen = false;
+        if (geometry && position) {
+            for (auto screens = xcb_setup_roots_iterator(xcb_get_setup(connection)); screens.rem; xcb_screen_next(&screens)) {
+                if (screens.data->root != geometry->root) continue;
+                onScreen = position->dst_x >= 0 && position->dst_y >= 0
+                    && position->dst_x + geometry->width <= screens.data->width_in_pixels
+                    && position->dst_y + geometry->height <= screens.data->height_in_pixels;
+            }
+        }
+        const bool ready = geometry && attributes && position && onScreen
+            && attributes->map_state == XCB_MAP_STATE_VIEWABLE && position->same_screen
+            && position->dst_x == expected.x() && position->dst_y == expected.y()
+            && geometry->width == size.width() && geometry->height == size.height();
+        m_nativePlacement = {{QStringLiteral("ready"), ready},
+            {QStringLiteral("fully_on_screen"), onScreen},
+            {QStringLiteral("expected_x"), expected.x()}, {QStringLiteral("expected_y"), expected.y()},
+            {QStringLiteral("observed_ms"), m_clock.elapsed()}};
+        if (position) {
+            m_nativePlacement.insert(QStringLiteral("native_x"), position->dst_x);
+            m_nativePlacement.insert(QStringLiteral("native_y"), position->dst_y);
+        }
+        if (attributes) m_nativePlacement.insert(QStringLiteral("map_state"), attributes->map_state);
+        free(geometry); free(attributes); free(position);
+        return ready;
+    }
+
+    bool nativeEventFilter(const QByteArray &type, void *message, qintptr *) override
+    {
+        if (type != "xcb_generic_event_t" || !m_nativePlacementCheck) return false;
+        const auto event = static_cast<xcb_generic_event_t *>(message)->response_type & ~0x80;
+        if (event == XCB_CONFIGURE_NOTIFY || event == XCB_MAP_NOTIFY || event == XCB_REPARENT_NOTIFY)
+            QMetaObject::invokeMethod(this, [this] {
+                const auto check = m_nativePlacementCheck;
+                if (check) check();
+            }, Qt::QueuedConnection);
+        return false;
+    }
+#endif
 
     void stopCoreObservation()
     {
@@ -269,6 +333,9 @@ private:
         m_clock.start();
         m_nativeBackdrop.insert(QStringLiteral("status"),nativeBackdropState());
         qApp->installEventFilter(this);
+#ifdef QT_HAS_X11_COMPOSITOR
+        qApp->installNativeEventFilter(this);
+#endif
         connect(engine, &QQmlEngine::warnings, this, [this](const QList<QQmlError> &errors) {
             for (const auto &error : errors)
                 if (m_errors.size() < 100) m_errors.append(error.toString());
@@ -352,6 +419,9 @@ private:
         write(id + QStringLiteral(".json"), value);
         write(id + QStringLiteral(".ready"), {{QStringLiteral("id"), id}});
         if (id == m_pendingId) {
+#ifdef QT_HAS_X11_COMPOSITOR
+            m_nativePlacementCheck = {};
+#endif
             stopCoreObservation();
             if (m_waitExpression) m_waitExpression->deleteLater();
             m_waitExpression = nullptr;
@@ -1213,7 +1283,7 @@ private:
                          {QStringLiteral("error"), error}});
             return;
         }
-        const auto render = [this, id, before, error, command] {
+        const auto renderFrame = [this, id, before, error, command] {
             const qint64 predicateObserved = m_clock.elapsed();
             auto window = observationWindow();
             const auto nativeWindow = nativeTopLevel(window);
@@ -1244,6 +1314,9 @@ private:
                     result.insert(QStringLiteral("id"), id);
                     result.insert(QStringLiteral("before_revision"), before);
                     result.insert(QStringLiteral("frame_observed_ms"), frameObserved);
+#ifdef QT_HAS_X11_COMPOSITOR
+                    result.insert(QStringLiteral("native_placement"), m_nativePlacement);
+#endif
                     if (error.isEmpty() && (!command.value(QStringLiteral("await_property")).toString().isEmpty()
                         || !command.value(QStringLiteral("await_core")).toString().isEmpty()))
                         result.insert(QStringLiteral("property_observation"), QJsonObject{
@@ -1413,6 +1486,29 @@ private:
                 finishAfterComposition({});
             }, Qt::ConnectionType(Qt::QueuedConnection | Qt::SingleShotConnection));
             window->update();
+        };
+        const auto render = [this, id, command, renderFrame] {
+#ifdef QT_HAS_X11_COMPOSITOR
+            const QPointer<QWindow> nativeWindow = nativeTopLevel(observationWindow());
+            if (command.value(QStringLiteral("capture_native")).toBool() && nativeWindow
+                && nativeWindow->inherits("vlc::CompositorX11RenderWindow")) {
+                // A Qt restore request and Quick frame can precede the window
+                // manager's native placement. Subscribe before reading state;
+                // resume on real Map/Configure events, with no timer or action
+                // replay. The first frame after placement still needs its
+                // independent renderer/server fence and real picture check.
+                m_nativePlacementCheck = [this, id, nativeWindow, renderFrame] {
+                    if (id != m_pendingId) return;
+                    if (nativeWindow && !nativePlacementReady(nativeWindow)) return;
+                    m_nativePlacementCheck = {};
+                    renderFrame();
+                };
+                const auto check = m_nativePlacementCheck;
+                check();
+                return;
+            }
+#endif
+            renderFrame();
         };
         if (!error.isEmpty() || !observed) {
             // Input events were queued first. Observe rendering after their

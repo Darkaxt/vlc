@@ -36,6 +36,7 @@ QT_END_NAMESPACE
 #define VLC_MODULE_LICENSE VLC_LICENSE_GPL_2_PLUS
 
 #include <stdlib.h>
+#include <locale.h>
 #include <unistd.h>
 #ifndef _POSIX_SPAWN
 # define _POSIX_SPAWN (-1)
@@ -1178,6 +1179,13 @@ static void *Thread( void *obj )
         QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
 #endif
     QApplication app( argc, argv );
+#if !defined(_WIN32) && defined(VLC_MPV_RUNTIME_IDENTITY)
+    // Qt adopts the system locale; libmpv requires C numeric parsing even
+    // for locales whose decimal separator is already a dot. Establish this
+    // once before creating either playback controller or its worker threads.
+    // QLocale still owns localized UI text and number formatting.
+    setlocale(LC_NUMERIC, "C");
+#endif
     app.setProperty("initialStyle", app.style()->name());
 
     {

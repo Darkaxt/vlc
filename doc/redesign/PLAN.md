@@ -1,6 +1,26 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Linux004 closed1 in6m47s: exact native read is mapped at813,1067 on1920x1080,
+not the requested/restored660,330 Qt position; its lower407 rows are off-screen.
+GetImage73 returns BadMatch8, then later660,330 gives190644 chromatic pixels.
+The capture raced the window manager, not empty source images. Integrate an
+event-driven native-placement gate in the diagnostic bridge, followed by the
+existing frame/render-thread/server fences and unchanged real-picture assertion.
+No timed delay, action replay, pixel-wait or production renderer modification.
+Together with the proven numeric-locale correction, complete source readiness
+then run one normal retained four-architecture acceptance. Windows final9ab
+installed picture/EOF/uninstall and exact guest disposal now pass; session73951
+closed0, gate idle, sandbox_exit_verifiedtrue. Reconcile final source binding
+without repeating unchanged Windows workflows unnecessarily.
+Mac normal789 startup cause is now established: both original logs contain
+"Non-C locale detected" and pinned MPV mp_create returns null for that condition.
+Apply the documented post-QApplication LC_NUMERIC=C initialization on MPV-enabled
+Unix, before playback controller creation; no repeated locale changes at engine
+switch. Other categories and QLocale UI localization remain intact. Normal
+package/runtime acceptance must use the new production source; test-only reuse
+cannot qualify this correction. The original ARM launch observer remains owned
+and must reach inspected completion/cancellation with its exact process sample.
 Linux diagnostic42592898343/source2ba0 closed1 in9m37s with strict normal789
 reuse; compilation/packages were skipped. Artifact13662777484 preserves the
 failure. At that boundary the cached video has196175 chromatic pixels and the
