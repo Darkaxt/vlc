@@ -1,0 +1,24 @@
+diff --git a/src/utils/Filename.cpp b/src/utils/Filename.cpp
+--- a/src/utils/Filename.cpp
++++ b/src/utils/Filename.cpp
+@@ -290,13 +290,18 @@ std::stack<std::string> splitPath( const std::string& path, bool isDirectory )
+     std::stack<std::string> res;
+     std::string currPath = isDirectory ? toFolderPath( path )
+                                        : directory( path );
+-    auto ff = firstFolder( path );
++    const auto firstSeparator = path.find_first_of( DIR_SEPARATOR,
++                                                   path.find_first_not_of( DIR_SEPARATOR ) );
++    const auto rootPath = toFolderPath( path.substr( 0, firstSeparator ) );
+     if ( isDirectory == false )
+         res.push( fileName( path ) );
+     do
+     {
+         res.push( directoryName( currPath ) );
++        // Compare ancestry, not a basename that can recur deeper in the path.
++        if ( toFolderPath( currPath ) == rootPath )
++            break;
+         currPath = parentDirectory( currPath );
+-    } while ( res.top() != ff );
++    } while ( currPath.empty() == false );
+     return res;
+ }

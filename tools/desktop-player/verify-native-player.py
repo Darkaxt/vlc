@@ -72,7 +72,7 @@ def subtitle_choices(observation):
 
 def retain_x11_surface_observation(evidence, observation):
     """Read only the owned player's XIDs and backing pixmaps on its CI display."""
-    from Xlib import X, display, error
+    from Xlib import X, display, error as xerror
     from Xlib.ext import composite
     connection = display.Display()
     rows = []
@@ -92,7 +92,7 @@ def retain_x11_surface_observation(evidence, observation):
                     map_state=attributes.map_state, width=geometry.width, height=geometry.height)
                 # Naming existing storage does not redirect/reparent or change
                 # the rendering. The temporary X resource is freed below.
-                failed = error.CatchError()
+                failed = xerror.CatchError()
                 pixmap = resource.composite_name_window_pixmap(onerror=failed)
                 connection.sync()
                 if failed.get_error():
@@ -260,6 +260,7 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
         try:
             save('view-mounted', client.await_property('viewLoader', 'status', 1))
             initial = save('paused', client.await_core('state', 3))
+            assert initial['media_library_available'], 'Fresh native profile failed media-library initialization'
             if engine == 'mpv':
                 initial = save('native-video-ready', client.await_core('mpv_video_ready', True))
             assert initial['core']['engine'] == engine, initial['core']

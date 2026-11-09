@@ -72,6 +72,12 @@ public:
         format.setRenderableType(QSurfaceFormat::OpenGL);
         format.setVersion(3, 2);
         format.setProfile(QSurfaceFormat::CoreProfile);
+#ifndef __APPLE__
+        // The X11 compositor redirects an ARGB video hierarchy. A 24-bit GLX
+        // child leaves its parent's alpha zero when copied into that storage,
+        // making correctly rendered RGB pixels disappear during composition.
+        format.setAlphaBufferSize(8);
+#endif
         setFormat(format);
     }
     void initializeRenderContext() {

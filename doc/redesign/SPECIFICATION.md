@@ -4,6 +4,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 recovery evidence: preserve full ancestry when the Linux
+media-library root repeats an ancestor name. The0.14.1 splitter currently
+misdirects `/home/runner/.../home/data/...` to `/home/data/...`; EACCES is observed
+in the owned syscall trace. Correct the pinned source function with a bound
+patch and require real fresh-profile library initialization without creating
+unrelated paths. The Linux MPV output must preserve opaque video pixels through
+the X11 compositor's ARGB backing storage. Colored GL samples or functional UI
+checks do not satisfy actual-picture acceptance while composition is blank.
+These are current M15 recovery criteria, not new stages or relaxed acceptance.
+
 **8 November native desktop packages, R111/R112, already authorized:**
 
 The user requests macOS and Linux builds before contacting Juxtopposed, all

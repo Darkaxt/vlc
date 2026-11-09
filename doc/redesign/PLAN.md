@@ -1,6 +1,25 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Continuation42542019055 atb3e391a2 closed0 (watch55945 exit0); full native
+workflows, settings persistence and original normal-object restoration passed
+in both engines, with private managers/audio exited. This is UI-only evidence,
+not a final normal package qualification. Captures still fail actual-picture
+acceptance. The mkdir trace identifies the pinned library walking
+`/home/runner/work/.../home/data/...` as `/home/data/...`, then EACCES. Its actual
+C++ path functions reproduce four wrong destinations; the full-root ancestry
+patch passes the same five cases, including the ordinary path. Apply this
+content-bound correction to Linux's separately built0.14.1 dependency, retaining
+its source archive and all build objects. Mac/Windows dependency paths are not
+changed by this Linux-only build recipe. MPV's actual X11 child has depth24
+under the compositor's depth32 surface; its named backing pixmap has colored
+RGB pixels while the composed video's alpha is zero. Request an eight-bit
+alpha channel for this X11 GL view; Cocoa and Windows rendering remain unchanged.
+The integrated native picture and repaired fresh-library path still require
+normal package and real UI verification. A Python observation error handler
+also shadowed the imported Xlib error module after BadMatch; its alias is fixed.
+
+Earlier cf65 observation:
 UI-only42540568864 (cf65c128, normal32a9544c reused) closed1; watch89948
 observed exit1. Diagnostic Qt compilation and normal-object restoration passed;
 the native UI reached the open subtitle popup. Its actual track row is exposed

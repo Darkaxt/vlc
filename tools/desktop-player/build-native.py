@@ -519,6 +519,23 @@ def main():
         medialibrary_url = ('https://code.videolan.org/videolan/medialibrary/-/archive/0.14.1/'
                             'medialibrary-0.14.1.tar.bz2')
         medialibrary, record = source(work, 'medialibrary-0.14.1', medialibrary_url)
+        # splitPath() in this pinned ABI stops at a repeated first-folder name,
+        # e.g. /home/runner/work/home/... becomes /home/.... Preserve the full
+        # root ancestry, and bind both the patch and retained source bytes.
+        path_patch = ROOT / 'tools/desktop-player/patches/medialibrary-full-root.patch'
+        patch_sha = '0c055cb7a662b5f87169abb1c2dd24fbd810e8af950d501c476c4ac68fc22c53'
+        original_sha = '6b3adac32c933d838a67d8dcd8aba456ef038472182b5ce1b8e71e95db4abd4b'
+        patched_sha = '0d62af11c75d9f936ccdf757b634fb53a560d22ffeaac066804f6894bf591cca'
+        filename = medialibrary / 'src/utils/Filename.cpp'
+        if sha(path_patch) != patch_sha or sha(filename) not in (original_sha, patched_sha):
+            raise RuntimeError('Pinned medialibrary path repair input changed')
+        if sha(filename) == original_sha:
+            run('git', 'apply', '--check', path_patch, cwd=medialibrary)
+            run('git', 'apply', path_patch, cwd=medialibrary)
+        if sha(filename) != patched_sha:
+            raise RuntimeError('Pinned medialibrary path repair did not apply exactly')
+        record['patches'] = [{'file': path_patch.relative_to(ROOT).as_posix(), 'sha256': patch_sha,
+                              'original_file_sha256': original_sha, 'patched_file_sha256': patched_sha}]
         sources.append(record)
         meson(work, 'medialibrary', medialibrary, prefix, ['-Dlibvlc=disabled', '-Dlibtool_workaround=true'], env)
 
