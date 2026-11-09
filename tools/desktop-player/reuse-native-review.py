@@ -26,6 +26,7 @@ TEST_ONLY = {
     'tools/desktop-player/run-linux-review.py',
     'tools/desktop-player/install-ci-dependencies.sh',
     'tools/desktop-player/native-player-client.py',
+    'tools/desktop-player/native-jit-unwinder.py',
     'tools/desktop-player/test-native-packaging.py',
     'tools/desktop-player/compact-native-cache.py',
     'tools/desktop-player/diagnose-linux-startup.py',

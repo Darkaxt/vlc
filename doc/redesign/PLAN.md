@@ -1,6 +1,13 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+The new GDB-only unwinder must be named in the existing test-only runtime-reuse
+allowlist. Its omission is reproduced by the focused reuse regression before
+correction; the corrected case passes while rejecting all production/configuration
+changes. The already dispatched9b276ba4 run42565271784 remains owned by watch45709;
+inspect its actual guard/cleanup result before continuing from this corrected
+source. Required reuse prevents it from silently starting a normal rebuild.
+
 Caller-stack42564599618/c6d660e4 closed1 (original watch6130 exit1), with normal
 build/package generation skipped and owned managers/audio/cache retirement passed.
 Artifact13651415631 is888974488B, SHA256386b6d3da06073a43e2158f070d4a47da45a1037990f779d9e5c9254d5061465.

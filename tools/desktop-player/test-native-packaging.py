@@ -1332,6 +1332,7 @@ class NativePackagingTest(unittest.TestCase):
         reuse = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(reuse)
         self.assertTrue(reuse.test_only(['tools/desktop-player/verify-native-player.py',
+                                        'tools/desktop-player/native-jit-unwinder.py',
                                         'modules/gui/qt/maininterface/player_diagnostics.hpp',
                                         'tools/desktop-player/verify-linux-packages.py',
                                         'tools/desktop-player/run-linux-review.py',
