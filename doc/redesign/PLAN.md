@@ -1,6 +1,18 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Caller observation42562949898/d4d97b1f closed1 (original watch2191 exit1).
+Normal build and packaging remained skipped; owned managers/audio exited and
+the original normal objects/cache were retained. Artifact13650412546 is888971785B,
+SHA25634756eafa852adba63507364c040d92fb7ef1fd3b5fe2426759e990378920e54.
+The observed GDB virtual $fp differs from CPU rbp by392 bytes, so the explicit
+caller view read a zero return address from a synthetic frame. Preserve the actual
+rbp register before frame selection and inspect that saved frame instead. This
+corrects diagnostic evidence only; neither floating-entry nor shutdown recovery
+is yet verified. Continue the same retained UI-only investigation without normal
+recompilation; final Windows, both Mac architectures and Linux qualifications
+remain required before M16 publication.
+
 Synchronous Mesa control42562145851/0e2ca02d closed1 (watch41460 exit1).
 Actual renderer-control.json proves zero workers with unchanged normal runtime.
 Floating entry still faults, now on the GUI thread: a generated blend routine

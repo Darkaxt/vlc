@@ -37,6 +37,7 @@ def record_linux_fault(pid, code, executable, evidence, engine, env):
                     # Preserve its actual faulting instruction/registers and
                     # mapped object identities before the private core expires.
                     '-ex', 'p $_siginfo', '-ex', 'info threads', '-ex', 'info registers',
+                    '-ex', 'set $jit_rbp = $rbp',
                     '-ex', 'x/12i $pc', '-ex', 'x/24gx $sp',
                     '-ex', 'info proc mappings', '-ex', 'thread apply all bt',
                     # The observed x86 JIT epilogue uses a frame pointer, but
@@ -44,8 +45,12 @@ def record_linux_fault(pid, code, executable, evidence, engine, env):
                     # label this explicit caller view separately from the
                     # original fault stacks; the core itself is not modified.
                     '-ex', 'echo Saved JIT frame and explicit caller view:\\n',
-                    '-ex', 'x/16gx $fp',
-                    '-ex', 'frame view $fp+16 *(void**)($fp+8)',
+                    # GDB's virtual $fp is not the CPU's RBP in this JIT
+                    # frame. Preserve the actual register before changing
+                    # selected frames, rather than inspecting a synthetic CFA.
+                    '-ex', 'x/32gx $jit_rbp',
+                    '-ex', 'info symbol *(void**)($jit_rbp+8)',
+                    '-ex', 'frame view $jit_rbp+16 *(void**)($jit_rbp+8)',
                     '-ex', 'info frame', '-ex', 'bt',
                     str(executable), str(core)],
                     env=env, stdout=output, stderr=subprocess.STDOUT)
