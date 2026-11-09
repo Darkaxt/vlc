@@ -196,7 +196,7 @@ signals:
 
 protected:
     //override from QWindow
-    void exposeEvent(QExposeEvent *) override;
+    bool event(QEvent *) override;
     void resizeEvent(QResizeEvent *) override;
     void showEvent(QShowEvent *) override;
     void hideEvent(QHideEvent *) override;

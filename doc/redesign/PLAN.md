@@ -13,6 +13,24 @@ normal compilation/packaging. Windows9c run105 closed0/group-empty/mounts releas
 417 split-symbol mappings, actual packaged VLC+library EOF/shutdown and normal
 MPV P5/P8.1/P8.4 presentation/EOF/release pass. Installer qualification remains.
 All-architecture final qualification and publication remain pending.
+Root-cause source evidence: DummyRenderWindow::event consumes Expose and returns
+before QWindow dispatches the X11 subclass's exposeEvent; the actual9c journal
+records Expose on the restored root but the intended client-pixmap reset cannot
+run. Replace that dead override with X11 event observation, then delegate to the
+base to preserve its existing backing-store behavior. This narrow production
+correction does not affect Windows/Cocoa. It is source-ready, not accepted;
+observe the original running diagnostic first, then qualify the complete normal
+Linux result with the existing immediate actual-picture check and full workflow.
+Diagnostic2ed39a9a run42578230745 closed1 in6m50s: exact9c normal package reused,
+normal build/package skipped, all managers/audio/cache closed. The failed VLC
+restore has0 chromatic pixels; after the real playback clock advances it has
+190730 and the inspected full video/UI/subtitle picture is correct. Native
+main/video/UI windows are all map_state2 at both observations. This is a delayed
+restore/capture boundary, not permanently lost video. Keep the initial failure;
+the separate followup is not acceptance. Artifact13656406939 is898816160B,
+SHA25651f67da75a45791d8878dcbfe1b8b278aefe3610722715c587bdf5c8fa1d7324.
+Current retained Linux cache10220138403 is1969783719B. Selected response/picture/
+followup members have CRC/SHA checks; no whole-artifact download claim.
 
 Normal d1313137 run42571358014 closed0 (watch43942 exit0,24m53s).
 All five formats, both-engine EOF/exit, installed DEB/Fedora-RPM/strict-Snap,

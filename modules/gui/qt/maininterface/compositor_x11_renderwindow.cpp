@@ -532,11 +532,17 @@ void CompositorX11RenderWindow::resetClientPixmaps()
     }
 }
 
-void CompositorX11RenderWindow::exposeEvent(QExposeEvent* event)
+bool CompositorX11RenderWindow::event(QEvent* event)
 {
-    DummyRenderWindow::exposeEvent(event);
-    resetClientPixmaps();
-    emit requestUIRefresh();
+    // DummyRenderWindow consumes Expose before QWindow can dispatch the
+    // virtual exposeEvent(). Observe it here, after the server remaps the
+    // window, so cached redirected pixmaps cannot survive an unmap/remap.
+    if (event->type() == QEvent::Expose)
+    {
+        resetClientPixmaps();
+        emit requestUIRefresh();
+    }
+    return DummyRenderWindow::event(event);
 }
 
 void CompositorX11RenderWindow::resizeEvent(QResizeEvent* event)

@@ -4,6 +4,16 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 restore dispatch: the9c native journal records root Expose at
+restore, but DummyRenderWindow::event consumes that event before QWindow can
+call CompositorX11RenderWindow::exposeEvent. Thus its intended redirected-pixmap
+reset and refresh are unreachable. Observe Expose in the X11 compositor's event
+override before delegating to the existing base handler, retaining the dummy
+backing-store request and other event behavior. Require actual both-engine
+main/floating/expanded/restored pictures and all previous lifecycle criteria;
+the passing package/EOF checks cannot replace the failed immediate capture.
+The separate followup observation is diagnostic, not a delayed acceptance bypass.
+
 9 November R112 output-delivery acceptance: d1313137's green native workflow is
 insufficient for restored VLC picture acceptance: its immediate composed capture
 is gray and native root black although Qt Quick has rendered. X11 RenderTask
