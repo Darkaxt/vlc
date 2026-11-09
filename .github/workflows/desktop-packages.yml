@@ -54,6 +54,9 @@ jobs:
         run: python3 tools/desktop-player/select-ci-targets.py
   build:
     needs: matrix
+    permissions:
+      contents: read
+      actions: write
     strategy:
       fail-fast: false
       # Architectures own separate hosted machines and independent build caches.
@@ -158,11 +161,17 @@ jobs:
         if: ${{ always() && steps.native_artifacts.outcome == 'success' }}
         run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --uploaded-artifact "${{ steps.native_artifacts.outputs.artifact-id }}" --normal-source "${{ steps.review_reuse.outputs.normal_generation || github.sha }}"
       - name: Retain original native build for repair and resumption
+        id: saved_cache
         if: always()
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: .desktop-build
           key: ${{ steps.cache.outputs.cache-primary-key }}
+      - name: Retire superseded snapshots of the saved native cohort
+        if: ${{ always() && steps.saved_cache.outcome == 'success' && steps.cache.outputs.cache-primary-key != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --retire-saved-key "${{ steps.cache.outputs.cache-primary-key }}" --target "${{ matrix.target }}"
   cache-compaction:
     if: ${{ inputs.cache_compaction != '' }}
     runs-on: ${{ inputs.target == 'macos-intel' && 'macos-15-intel' || inputs.target == 'macos-arm64' && 'macos-15' || inputs.target == 'linux-aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}

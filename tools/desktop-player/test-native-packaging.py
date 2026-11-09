@@ -25,6 +25,58 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_remote_cache_retirement_is_exact_to_the_saved_cohort(self):
+        spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
+        cache = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cache)
+        prefix = 'native-linux-x86_64-' + 'a' * 64 + '-' + 'b' * 64 + '-'
+        ref = 'refs/heads/codex/native-desktop'
+        def row(identifier, suffix, **values):
+            return dict(id=identifier, key=prefix + suffix, ref=ref, version='v1',
+                        created_at='2026-11-09T01:00:00Z', **values)
+        current = row(2, '200')
+        current['created_at'] = '2026-11-09T02:00:00Z'
+        previous = row(1, '100-compact-150')
+        other_ref = row(3, '99'); other_ref['ref'] = 'refs/heads/master'
+        other_version = row(4, '98'); other_version['version'] = 'other-path-binding'
+        other_cohort = row(5, '97'); other_cohort['key'] = other_cohort['key'].replace('a' * 64, 'c' * 64)
+        newer = row(6, '201'); newer['created_at'] = '2026-11-09T03:00:00Z'
+        unrelated = row(7, 'notes')
+        rows = [current, previous, other_ref, other_version, other_cohort, newer, unrelated]
+        self.assertEqual(cache.retirement_candidates(rows, current['key'], ref, 'linux-x86_64'), [previous])
+        with self.assertRaisesRegex(RuntimeError, 'saved cache'):
+            cache.retirement_candidates(rows[1:], current['key'], ref, 'linux-x86_64')
+        with self.assertRaisesRegex(RuntimeError, 'saved cache'):
+            cache.retirement_candidates(rows + [current], current['key'], ref, 'linux-x86_64')
+        with self.assertRaisesRegex(RuntimeError, 'cohort'):
+            cache.retirement_candidates(rows, current['key'], ref, 'macos-intel')
+        responses = iter([rows, rows, [item for item in rows if item is not previous]])
+        def api(command, **kwargs):
+            endpoint = command[-1]
+            if '/runs?' in endpoint:
+                return json.dumps([{'workflow_runs': []}])
+            self.assertTrue(endpoint.endswith('actions/caches?per_page=100'), endpoint)
+            return json.dumps([{'actions_caches': next(responses)}])
+        with patch.dict(os.environ, GITHUB_REF=ref, GITHUB_RUN_ID='200'), \
+                patch.object(cache.subprocess, 'check_output', side_effect=api), \
+                patch.object(cache.subprocess, 'run') as remove, \
+                patch.object(Path, 'write_text') as receipt:
+            cache.retire_saved_cache(cache.ROOT / '.desktop-build', current['key'], 'linux-x86_64')
+        remove.assert_called_once_with(['gh', 'api', '--method', 'DELETE',
+            'repos/Darkaxt/vlc/actions/caches/1'], check=True)
+        self.assertEqual(json.loads(receipt.call_args.args[0])['retired'], [1])
+        def busy_api(command, **kwargs):
+            if '/runs?' in command[-1]:
+                return json.dumps([{'workflow_runs': [{'id': 201}]}])
+            return json.dumps([{'actions_caches': rows}])
+        with patch.dict(os.environ, GITHUB_REF=ref, GITHUB_RUN_ID='200'), \
+                patch.object(cache.subprocess, 'check_output', side_effect=busy_api), \
+                patch.object(cache.subprocess, 'run') as remove, \
+                patch.object(Path, 'write_text') as receipt:
+            cache.retire_saved_cache(cache.ROOT / '.desktop-build', current['key'], 'linux-x86_64')
+        remove.assert_not_called()
+        self.assertEqual(json.loads(receipt.call_args.args[0])['retired'], [])
+
     def test_subtitle_choice_selection_uses_the_rendered_group_on_each_qt_version(self):
         spec = importlib.util.spec_from_file_location('native_ui', HERE / 'verify-native-player.py')
         verifier = importlib.util.module_from_spec(spec)

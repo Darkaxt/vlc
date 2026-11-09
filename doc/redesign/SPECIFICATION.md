@@ -22,6 +22,15 @@ Apply that same HTTPS transport to the hosted runner's source-index setup,
 retaining its Ubuntu archive/ports publisher, suites and signed archive key.
 The HTTP index connection timed out before cache restoration in42554226977;
 this must not be misreported as a compiler failure or trigger a toolchain reset.
+The remote continuation policy must not accumulate every run's full cache and
+displace other architectures. After a replacement is saved and visible, retire
+only older caches with that exact target/toolchain/configuration, cache version
+and maintained branch. Preserve other cohorts/refs and another queued/running
+native workflow's consumers. Verify remote identity and removal, retaining the
+new continuation; do not increase a paid storage limit. The9 November inventory
+contains ten Linux snapshots and no remaining Mac cache despite the earlier
+verified Mac compaction. Record the unavoidable lost-cache restoration boundary
+honestly; preserve currently retained cohorts and prevent the same accumulation.
 
 9 November R112 recovery evidence: preserve full ancestry when the Linux
 media-library root repeats an ancestor name. The0.14.1 splitter currently

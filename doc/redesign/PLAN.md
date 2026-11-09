@@ -1,6 +1,20 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Current R111 retention reconciliation: GitHub lists ten snapshots of the same
+Linux cohort and no Intel/ARM Mac cache. The latest Linux9ce snapshot is
+10212805824/2057376187B; the normal e2 continuation restored it. Earlier Mac
+compaction remains verified historical evidence, but its subsequent warm reuse
+cannot be claimed because the remote snapshots are gone. The existing compactor
+now retires older same-target/toolchain/configuration snapshots only after the
+saved replacement is remotely present, with matching branch/cache version and
+no other queued/running native workflow. Other cohorts, refs, versions and newer
+cache records survive. Exact ID deletion and remote absence are verified through
+the documented GitHub cache API; no storage/billing limit is changed. Focused
+regression exercises cohort selection, missing/ambiguous replacement rejection,
+supported list/ID-delete calls and busy-owner preservation. Hosted retirement and
+the final architecture matrix still require execution after source reconciliation.
+
 Continuation42554226977 atf6284c38 closed1; original watch10660 exit1.
 Runner setup's hardcoded HTTP Ubuntu source index timed out on91.189.90.12:80
 (IPv6 also unreachable), leaving no deb-src indexes. No cache restoration,

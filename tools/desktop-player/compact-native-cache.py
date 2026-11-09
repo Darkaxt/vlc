@@ -18,6 +18,62 @@ RUNTIME = re.compile(r'Modern-VLC-Fork-[0-9.]+-(?:macos-[a-z0-9_]+\.zip|linux-[a
 NORMAL_FORMAT = re.compile(r'Modern-VLC-Fork-[0-9.]+-(?:macos-[a-z0-9_]+\.(?:zip|dmg)|linux-[a-z0-9_]+\.(?:tar\.xz|AppImage|deb|rpm|snap))')
 
 
+def retirement_candidates(rows, saved_key, ref, target):
+    """Retire superseded snapshots only after the replacement exists remotely."""
+    match = re.fullmatch(r'(native-' + re.escape(target) + r'-[0-9a-f]{64}-[0-9a-f]{64}-)[0-9]+', saved_key)
+    if not match:
+        raise RuntimeError('Invalid exact native cache cohort')
+    current = [row for row in rows if row['key'] == saved_key and row['ref'] == ref]
+    if len(current) != 1:
+        raise RuntimeError('No unique remotely saved cache; preserve all predecessors')
+    current = current[0]
+    prior_key = re.compile(re.escape(match.group(1)) + r'[0-9]+(?:-compact-[0-9]+)?')
+    return [row for row in rows if row['id'] != current['id'] and row['ref'] == ref
+            and row['version'] == current['version'] and prior_key.fullmatch(row['key'])
+            and row['created_at'] < current['created_at']]
+
+
+def retire_saved_cache(work, saved_key, target):
+    ref = os.environ['GITHUB_REF']
+    if (ref != 'refs/heads/codex/native-desktop' or not target
+            or work.resolve() != ROOT / '.desktop-build'):
+        raise RuntimeError('Remote cache retirement requires the exact maintained branch/workflow')
+    def rows(endpoint, field):
+        pages = json.loads(subprocess.check_output(['gh', 'api', '--paginate', '--slurp',
+            'repos/Darkaxt/vlc/' + endpoint], text=True))
+        return [item for page in pages for item in page[field]]
+    # A separately owned cache migration may still need a predecessor by exact
+    # key. Do not remove it while another queued/running workflow can consume it.
+    active = [run for status in ('queued', 'in_progress') for run in rows(
+        'actions/workflows/desktop-packages.yml/runs?branch=codex%2Fnative-desktop&status='
+        + status + '&per_page=100', 'workflow_runs') if run['id'] != int(os.environ['GITHUB_RUN_ID'])]
+    caches = rows('actions/caches?per_page=100', 'actions_caches')
+    candidates = retirement_candidates(caches, saved_key, ref, target)
+    result = {'saved_key': saved_key, 'ref': ref, 'target': target,
+              'candidates': candidates, 'retired': [], 'active_other_runs': [run['id'] for run in active]}
+    if active:
+        result['state'] = 'Preserved predecessors for another queued/running native workflow'
+    else:
+        fresh = {row['id']: row for row in rows('actions/caches?per_page=100', 'actions_caches')}
+        retirement_candidates(list(fresh.values()), saved_key, ref, target)
+        for row in candidates:
+            # Cache IDs are immutable; re-read before the exact deletion so a
+            # different cohort/ref can never be selected through a stale name.
+            original = fresh.get(row['id'], {})
+            if any(original.get(key) != row[key] for key in ('id', 'key', 'ref', 'version', 'created_at')):
+                raise RuntimeError('Remote cache identity changed before retirement')
+            subprocess.run(['gh', 'api', '--method', 'DELETE',
+                'repos/Darkaxt/vlc/actions/caches/' + str(row['id'])], check=True)
+            result['retired'].append(row['id'])
+        remaining = rows('actions/caches?per_page=100', 'actions_caches')
+        retirement_candidates(remaining, saved_key, ref, target)  # replacement still present
+        if set(result['retired']) & {row['id'] for row in remaining}:
+            raise RuntimeError('Retired native cache is still listed')
+        result['state'] = 'Saved replacement verified; superseded same-cohort caches retired'
+    (work / 'native-cache-retirement-remote.json').write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps(result, indent=2), flush=True)
+
+
 def sha(path):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
@@ -121,10 +177,16 @@ def main():
     parser.add_argument('--work', type=Path)
     parser.add_argument('--uploaded-artifact', type=int)
     parser.add_argument('--normal-source')
+    parser.add_argument('--retire-saved-key', help='Exact remotely saved replacement; retire only its superseded cohort')
     args = parser.parse_args()
     if (os.environ.get('GITHUB_ACTIONS') != 'true' or os.name != 'posix'
             or Path(os.environ['GITHUB_WORKSPACE']).resolve() != ROOT):
         raise RuntimeError('Cache compaction requires the exact owned hosted runner and completed upload')
+    if args.retire_saved_key:
+        if args.work is None:
+            parser.error('Remote retirement requires the retained work directory')
+        retire_saved_cache(args.work, args.retire_saved_key, args.target)
+        return
     if args.prepare_request:
         request = json.loads(args.prepare_request)
         key, source, artifact_id = request['key'], request['source'], request['artifact']
