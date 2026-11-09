@@ -1,6 +1,16 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+The Windows regression fixture originally wrote its extracted UTF-8 copyright
+line using the host locale. That changed the whole-file checksum despite the
+path functions passing. Make all fixture text I/O explicitly UTF-8: the exact
+patched source SHA256 is0d4c54031b80faa6824d118a7809e05b6b8faf5efe3192824d345c76374713e0.
+The actual C++ regression and GNU patch application pass with that identity.
+42543773574 is cancelled during dependency setup, before compilation, because
+its earlier expected checksum is known wrong; observe its original watch28163
+and native cleanup before dispatching the corrected continuation. Preserve the
+normal runtime/objects; this is a fixture/checksum repair, not a player failure.
+
 Normal42543310594 at6b85bda2 closed1 before Qt compilation: git apply returned0
 but skipped the dependency file because its extracted source is inside VLC's
 ignored work directory. The exact patched-file hash check prevented accepting

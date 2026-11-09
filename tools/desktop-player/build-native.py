@@ -525,7 +525,7 @@ def main():
         path_patch = ROOT / 'tools/desktop-player/patches/medialibrary-full-root.patch'
         patch_sha = '8945fa0efb6ac25cb178609cbb57f0f82b3f2fa600677f1448d9c5b2424c4e0c'
         original_sha = '6b3adac32c933d838a67d8dcd8aba456ef038472182b5ce1b8e71e95db4abd4b'
-        patched_sha = '0d62af11c75d9f936ccdf757b634fb53a560d22ffeaac066804f6894bf591cca'
+        patched_sha = '0d4c54031b80faa6824d118a7809e05b6b8faf5efe3192824d345c76374713e0'
         filename = medialibrary / 'src/utils/Filename.cpp'
         if sha(path_patch) != patch_sha or sha(filename) not in (original_sha, patched_sha):
             raise RuntimeError('Pinned medialibrary path repair input changed')

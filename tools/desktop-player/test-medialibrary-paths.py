@@ -32,7 +32,7 @@ def main():
     parser.add_argument('--expect-original-failure', action='store_true')
     args = parser.parse_args()
     if args.source.is_dir():
-        source = (args.source / 'src/utils/Filename.cpp').read_text()
+        source = (args.source / 'src/utils/Filename.cpp').read_text(encoding='utf-8')
     else:
         with tarfile.open(args.source) as archive:
             member, = [row for row in archive.getmembers() if row.name.endswith('/src/utils/Filename.cpp')]
@@ -42,11 +42,11 @@ def main():
         patched = args.scratch / 'patched-source'
         target = patched / 'src/utils/Filename.cpp'
         target.parent.mkdir(parents=True)
-        target.write_text(source, newline='\n')
+        target.write_text(source, encoding='utf-8', newline='\n')
         command = [args.patch_tool, '--batch', '--forward', '-p1', '-i', str(args.patch.resolve())]
         subprocess.run([*command, '--dry-run'], cwd=patched, check=True)
         subprocess.run(command, cwd=patched, check=True)
-        source = target.read_text()
+        source = target.read_text(encoding='utf-8')
     names = ('directory', 'directoryName', 'parentDirectory', 'fileName', 'firstFolder',
              'toFolderPath', 'splitPath')
     functions = '\n\n'.join(function(source, name) for name in names)
@@ -90,7 +90,7 @@ int main() {
 }
 '''
     unit = args.scratch / 'medialibrary-path-regression.cpp'
-    unit.write_text(program, newline='\n')
+    unit.write_text(program, encoding='utf-8', newline='\n')
     executable = args.scratch / 'medialibrary-path-regression.exe'
     subprocess.run([args.compiler, '-std=c++17', '-O3', '-g0', '-DNDEBUG', str(unit),
                     '-o', str(executable)], check=True)
