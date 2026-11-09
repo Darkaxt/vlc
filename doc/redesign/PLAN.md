@@ -1,6 +1,19 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+UI-only42560992544/c2f69e8a closed1 (original watch72731 exit1). No normal
+compilation or packaging ran. Floating entry reproduced the invalid generated
+code load (`vmovdqa (%rcx),%xmm9`, rcx7f585fbfe800) while the GUI thread was
+uploading MPV video through Mesa. Private fault registers/stacks were recovered;
+raw cores stayed private and managers/audio exited. This remains unexplained
+memory access, not a verified application repair. The next bounded diagnostic
+uses Mesa's supported zero-worker synchronous mode on the identical runtime to
+separate worker concurrency from the native transition. It is explicitly UI-only
+and cannot qualify packages or alter the normal one-worker acceptance setting.
+Artifact13649596685 is888974178B, SHA2560a176dcf5f77ec78ef7f0ef337c67a9f312064d025ec070519dcf63887e78105.
+The replacement cache10215072995 (1969746708B) is verified remotely; preceding
+same-cohort replacement was retired after save. All final delivery gaps below remain.
+
 UI-only42559436411/a73ca91c closed1 (original watch8107 exit1). Verified normal
 runtime reuse skipped normal compilation and package generation. Actual MPV
 main/subtitle pictures progressed; floating entry faulted SIGSEGV. GDB exited0

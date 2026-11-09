@@ -30,6 +30,11 @@ on:
         description: Diagnostic UI pass only; requires a verified unchanged normal runtime and does not qualify packages
         type: boolean
         default: false
+      llvmpipe_threads:
+        description: UI-only Mesa concurrency diagnostic; 1 preserves normal qualification
+        type: choice
+        options: ['1', '0']
+        default: '1'
       cache_compaction:
         description: Optional exact existing cache/artifact/source JSON for compiler-free retention migration
         type: string
@@ -109,7 +114,7 @@ jobs:
         run: sudo -n apt-get install -y --no-upgrade --no-install-recommends gdb
       - name: Exercise the actual Linux player on its owned display
         if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
-        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py ${{ inputs.native_ui_only && '--ui-only' || '' }} --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
+        run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py ${{ inputs.native_ui_only && '--ui-only' || '' }} --llvmpipe-threads "${{ inputs.llvmpipe_threads || '1' }}" --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Preserve package and failure evidence
         id: native_artifacts
         if: always()

@@ -81,7 +81,11 @@ def main():
     parser.add_argument('--trace-engine', choices=('vlc', 'mpv'), default='vlc')
     parser.add_argument('--ui-only', action='store_true',
         help='Observe UI only using a hash-verified reused normal runtime; not package qualification')
+    parser.add_argument('--llvmpipe-threads', choices=('0', '1'), default='1',
+        help='Diagnostic control: zero renders synchronously; only allowed for UI-only observation')
     args = parser.parse_args()
+    if args.llvmpipe_threads != '1' and not args.ui_only:
+        parser.error('The synchronous renderer control is diagnostic UI-only, not qualification')
     if args.ui_only:
         if args.packages_only or args.startup_trace:
             parser.error('UI-only observation cannot select package-only or startup diagnosis')
@@ -98,8 +102,11 @@ def main():
     env.update(HOME=str(home), XDG_RUNTIME_DIR=str(runtime),
         PULSE_RUNTIME_PATH=str(runtime / 'pulse'),
         PULSE_SERVER='unix:' + str(runtime / 'pulse/native'),
-        LIBGL_ALWAYS_SOFTWARE='1', LP_NUM_THREADS='1',
+        LIBGL_ALWAYS_SOFTWARE='1', LP_NUM_THREADS=args.llvmpipe_threads,
         MESA_SHADER_CACHE_DIR=str(session / 'mesa-cache'))
+    (session / 'renderer-control.json').write_text(json.dumps({
+        'software_rendering': True, 'llvmpipe_threads': int(args.llvmpipe_threads),
+        'diagnostic_only': args.ui_only, 'normal_runtime_changed': False}, indent=2) + '\n')
     connection = display.Display()
     root = connection.screen().root
     root.change_attributes(event_mask=X.StructureNotifyMask)
