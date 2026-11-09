@@ -156,6 +156,45 @@ def capture_native_core(pid, argv, case, observation):
     (case / 'original-core.json').write_text(json.dumps(result, indent=2) + '\n')
 
 
+def normal_launch(argv, environment, case, capture_core=False):
+    """Keep normal file-backed output; capture only the original child's fault."""
+    core = core_observation(case) if capture_core else None
+
+    def child_setup():
+        import resource
+        resource.setrlimit(resource.RLIMIT_CORE, (core['child_soft_limit'], core['hard_limit']))
+
+    try:
+        if core:
+            configure_core_observation(core)
+        with (case / 'stdout.log').open('wb') as stdout, (case / 'stderr.log').open('wb') as stderr:
+            if not core:
+                run(*argv, env=environment, stdout=stdout, stderr=stderr)
+                return
+            clean_environment = {key: value for key, value in environment.items()
+                if not any(word in key.upper() for word in ('TOKEN', 'SECRET', 'PASSWORD', 'CREDENTIAL'))}
+            print('+', ' '.join(map(str, argv)), flush=True)
+            # No pipe reader, debugger, new session, signal-mask change or
+            # playback deadline: preserve the failed normal check's launch path.
+            with subprocess.Popen(list(map(str, argv)), env=clean_environment,
+                    stdout=stdout, stderr=stderr, preexec_fn=child_setup) as process:
+                code = process.wait()
+                if code < 0:
+                    try:
+                        capture_native_core(process.pid, argv, case, core)
+                    except Exception as error:
+                        (case / 'core-capture-error.json').write_text(json.dumps({
+                            'pid':process.pid, 'normal_returncode':code,
+                            'diagnostic_error':str(error)}, indent=2) + '\n')
+                if code:
+                    raise subprocess.CalledProcessError(code, list(map(str, argv)))
+    finally:
+        if core:
+            configure_core_observation(core, restore=True)
+            (case / 'core-settings-restored.json').write_text(json.dumps({
+                'restored':True, 'original_settings':core['original_settings']}, indent=2) + '\n')
+
+
 def observe_launch(argv, environment, case, capture_core=False):
     """Stream one diagnostic launch and sample it; never impose an exit deadline."""
     spec = importlib.util.spec_from_file_location('owned_native_build', Path(__file__).with_name('build-native.py'))
@@ -264,8 +303,8 @@ def main():
     args = parser.parse_args()
     if args.observe_launch and args.trace_launch:
         parser.error('Select one diagnostic launch mechanism')
-    if args.capture_core and not args.observe_launch:
-        parser.error('Core capture requires the diagnostic observation path')
+    if args.capture_core and args.trace_launch:
+        parser.error('Core capture requires an untraced child')
     if args.observe_count != 1 and not args.observe_launch:
         parser.error('A launch census requires the diagnostic observation path')
     if platform.system() != 'Darwin':
@@ -314,8 +353,7 @@ def main():
                 elif args.observe_launch:
                     log = observe_launch(argv, env, engine_case, capture_core=args.capture_core)
                 else:
-                    with (engine_case / 'stdout.log').open('wb') as stdout, (engine_case / 'stderr.log').open('wb') as stderr:
-                        run(*argv, env=env, stdout=stdout, stderr=stderr)
+                    normal_launch(argv, env, engine_case, capture_core=args.capture_core)
             except subprocess.CalledProcessError as error:
                 print((engine_case / 'stderr.log').read_text(errors='replace')[-10000:], flush=True)
                 (engine_case / 'failure.json').write_text(json.dumps({'argv': list(map(str, argv)),

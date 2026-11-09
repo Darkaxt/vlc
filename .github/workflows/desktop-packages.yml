@@ -22,7 +22,7 @@ on:
         type: boolean
         default: false
       mac_fault_trace:
-        description: Capture native Mac launch faults under LLDB using unchanged packages; diagnostic only
+        description: Capture original untraced Mac faults with normal file-backed output and unchanged packages
         type: boolean
         default: false
       trace_engine:
@@ -119,7 +119,7 @@ jobs:
         run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --observe-launch "${{ inputs.trace_engine }}" --capture-core --observe-count 12
       - name: Capture native macOS fault on the unchanged normal package
         if: ${{ runner.os == 'macOS' && inputs.mac_fault_trace }}
-        run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --trace-launch
+        run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --capture-core
       - name: Exercise the actual native player
         if: ${{ !cancelled() && runner.os == 'macOS' && !inputs.startup_trace && !inputs.mac_fault_trace && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"

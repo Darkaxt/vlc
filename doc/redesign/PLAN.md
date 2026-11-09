@@ -18,6 +18,13 @@ ZIP launch reached EOF/Qt shutdown; core settings restored/read back. No fault
 or repair demonstrated. Run a bounded12 fresh-profile census against that same
 archive, stopping at the first failure with its original private core; this is
 diagnosis of an intermittent shutdown, not retry acceptance or a normal rebuild.
+Census42609672435 closed0: all12 untraced fresh profiles exited normally, with
+the original1346 ZIP hash unchanged. No original fault was captured or repaired.
+Unlike the failed normal launch, this observer pipes/streams combined output and
+creates a child session. Preserve normal separate file-backed stdout/stderr and
+process launch handling for the next Intel-only exact-package check; enable only
+private child core capture, restoring the hosted settings afterward. Check all
+four normal ZIP/DMG engine launches, stopping at the original failure. No build.
 
 Coordinated normal run42597474062/source1346af0b is closed: Apple Silicon,
 Linuxx86 and LinuxARM jobs succeeded; Intel failed as above. Mac ZIP/DMG normal

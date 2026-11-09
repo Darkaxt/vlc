@@ -2,6 +2,22 @@
 
 ## Native desktop port in progress (M15, 8 November)
 
+9 November Windows installer review: do not ask the user to open guest/review
+windows for routine qualification. Keep the installed Windows Sandbox gate's
+whole-workflow ownership and use its supported exact-guest `sandbox.connect`
+operation when a connected desktop is required. Readiness is the actual owned
+guest window, not an exited connection launcher or an administrator prompt.
+Read-only guest commands need no desktop connection. Use guest UIA inspection,
+window capture and normal Close/Restore actions without host desktop controls.
+Missing or empty gate output is not success or permission to bypass the gate;
+preserve the original request and diagnose the actual managed runtime boundary.
+
+The final1346 installer recovery guest51 completed lifecycle/profile protection,
+1646-member installed payload, both native EOF/shutdown checks, actual VLC/MPV
+pictures and verified uninstall. Original session30474 exited0 after exact guest
+disposal; its viewer processes also exited. The externally terminated guest50
+remains a failed partial observation. No host-player installation occurred.
+
 9 November UI-only42540568864 atcf65c128 failed the verifier's exact role45
 filter after opening Subtitles. Evidence13641118071: actual Qt6.4 row705 is an
 enabled actionable ListItem34, sibling of None700; Add-file723 has another parent.

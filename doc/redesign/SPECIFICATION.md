@@ -20,6 +20,11 @@ child to invent original stack evidence. Preserve its failure even if core
 collection fails. Repair only an evidenced cause and requalify affected
 normal packages before M15 closure; Windows and other architectures retain
 applicable unchanged evidence.
+The12-profile untraced census42609672435 did not reproduce the fault, but its
+streamed combined output/session differs from the failed normal check. Capture
+the original child through the normal separate file-backed output path, without
+a debugger, pipe reader, new session or timed playback limit. Preserve original
+fault status and private core restoration; no diagnostic pass implies a repair.
 
 9 November R112 Linux placement boundary:004's failed GetImage is mapped but
 located at813,1067 on a1920x1080 screen, while Qt already reports the restored

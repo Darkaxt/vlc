@@ -860,6 +860,33 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'readback differs'):
                 verifier.configure_core_observation(observed, restore=True)
 
+    def test_mac_normal_fault_capture_preserves_file_backed_launch_and_failure(self):
+        spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
+        verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+        case = Path(sys.argv_scratch) / ('mac-original-launch-' + uuid.uuid4().hex)
+        case.mkdir()
+        child = MagicMock(pid=712)
+        child.__enter__.return_value = child
+        child.wait.return_value = -4
+        observation = {'original_settings':{}, 'child_soft_limit':4096, 'hard_limit':4096}
+        with patch.object(verifier, 'core_observation', return_value=observation), \
+                patch.object(verifier, 'configure_core_observation') as configure, \
+                patch.object(verifier, 'capture_native_core') as capture, \
+                patch.object(verifier.subprocess, 'Popen', return_value=child) as launch, patch('builtins.print'):
+            with self.assertRaises(subprocess.CalledProcessError) as failure:
+                verifier.normal_launch(['vlc','--play-and-exit'],
+                    {'GH_TOKEN':'test-secret','LANG':'en_US.UTF-8'}, case, capture_core=True)
+        self.assertEqual(failure.exception.returncode, -4)
+        self.assertEqual(launch.call_count, 1)
+        options = launch.call_args.kwargs
+        self.assertEqual(options['env'], {'LANG':'en_US.UTF-8'})
+        self.assertEqual(Path(options['stdout'].name), case / 'stdout.log')
+        self.assertEqual(Path(options['stderr'].name), case / 'stderr.log')
+        self.assertTrue({'timeout','start_new_session','cwd'}.isdisjoint(options))
+        capture.assert_called_once_with(712, ['vlc','--play-and-exit'], case, observation)
+        self.assertEqual(configure.call_args_list[-1].kwargs, {'restore':True})
+        self.assertTrue(json.loads((case / 'core-settings-restored.json').read_text())['restored'])
+
     def test_normal_mac_formats_require_each_engines_own_eof(self):
         spec = importlib.util.spec_from_file_location('mac_packages', HERE / 'verify-macos-packages.py')
         verifier = importlib.util.module_from_spec(spec)
