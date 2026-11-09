@@ -4,6 +4,18 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+9 November R112 output-delivery acceptance: d1313137's green native workflow is
+insufficient for restored VLC picture acceptance: its immediate composed capture
+is gray and native root black although Qt Quick has rendered. X11 RenderTask
+must flush its final composite/clear before returning to its socket-notifier
+event loop, rather than relying on a later frame to deliver buffered requests.
+Test-only native capture must observe the independent compositor event queue
+after the Quick frame, without arbitrary delay or another forced redraw. Reject
+blank/gray native captures of the colored fixture and inspect actual pictures.
+Preserve the passing normal package/EOF/profile and stable-XID evidence, and
+the distinct shutdown-only QML binding warnings; do not suppress log errors or
+silently equate a nonempty PNG with a correctly presented frame.
+
 9 November R112 native-identity correction: the first floating-root show replaces
 its XID800049 with80004d while the compositor keeps the old drawable. Exact
 Qt6.4.2 XCB source sets a recreation reason when stays-on-top changes after

@@ -130,6 +130,10 @@ void RenderTask::render(unsigned int requestId)
 
     xcb_clear_area(m_conn, 0, m_wid,
                    0, 0, 0, 0);
+    // This connection has a socket notifier, not xcb_wait_for_event().
+    // Deliver this frame before going idle instead of leaving it buffered
+    // until a later video/UI frame (notably after restoring a paused window).
+    xcb_flush(m_conn);
 
     m_refreshRequestId++;
 }

@@ -247,6 +247,10 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
 
     def save(label, result):
         inspect_result(result)
+        if platform.system() == 'Linux' and result.get('native_capture_saved'):
+            assert result.get('native_composition_fenced'), 'Native capture raced the X11 render thread'
+            assert result.get('native_capture_chromatic_pixels', 0) > 0, (
+                'The colored native fixture produced a blank/gray capture', label)
         if label in ('main-picture', 'subtitle-picture', 'floating-picture',
                      'expanded-picture', 'restored-picture', 'handover-picture', 'replacement-picture'):
             inspect_cocoa_video_placement(result)

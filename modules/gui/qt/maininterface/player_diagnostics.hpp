@@ -5,6 +5,7 @@
 #define VLC_PLAYER_DIAGNOSTICS_HPP
 #ifdef VLC_PLAYER_DIAGNOSTICS
 #include <QAccessible>
+#include <QAbstractEventDispatcher>
 #include <QAbstractItemView>
 #include <QAbstractScrollArea>
 #include <QAbstractSpinBox>
@@ -55,6 +56,7 @@
 #include <QSaveFile>
 #include <QSet>
 #include <QScreen>
+#include <QThread>
 #include <memory>
 #include <cmath>
 #include <cstdlib>
@@ -1268,6 +1270,17 @@ private:
                             && pixels.save(QDir(m_directory).filePath(id + QStringLiteral("-native.png"))));
                         result.insert(QStringLiteral("native_capture_width"), pixels.width());
                         result.insert(QStringLiteral("native_capture_height"), pixels.height());
+                        const QImage nativeImage = pixels.toImage().convertToFormat(QImage::Format_RGB32);
+                        int chromaticPixels = 0;
+                        for (int y = 0; y < nativeImage.height(); ++y) {
+                            const auto row = reinterpret_cast<const QRgb *>(nativeImage.constScanLine(y));
+                            for (int x = 0; x < nativeImage.width(); ++x) {
+                                const int high = qMax(qRed(row[x]), qMax(qGreen(row[x]), qBlue(row[x])));
+                                const int low = qMin(qRed(row[x]), qMin(qGreen(row[x]), qBlue(row[x])));
+                                if (high >= 100 && high - low >= 80) ++chromaticPixels;
+                            }
+                        }
+                        result.insert(QStringLiteral("native_capture_chromatic_pixels"), chromaticPixels);
                         result.insert(QStringLiteral("native_capture_boundary"), QStringLiteral("QScreen owned top-level window; includes compositor and possible occlusion"));
 #ifndef __APPLE__
                         if (nativeId && nativeWindow->screen()) {
@@ -1306,19 +1319,53 @@ private:
                     }
                     respond(id, result);
                 };
+                const auto finishAfterComposition = [this, window, command, finish](const QJsonObject &extra) {
+#ifdef QT_HAS_X11_COMPOSITOR
+                    const auto output = nativeTopLevel(window);
+                    if (command.value(QStringLiteral("capture_native")).toBool() && output
+                        && output->inherits("vlc::CompositorX11RenderWindow")) {
+                        // frameSwapped queues the X11 RenderTask before this GUI
+                        // callback. A fence on that same thread observes its
+                        // completed render, rather than racing native capture
+                        // against the independent compositor or sleeping.
+                        const auto threads = output->findChildren<QThread *>(QString(), Qt::FindDirectChildrenOnly);
+                        if (threads.size() != 1 || !threads.front()->eventDispatcher()) {
+                            auto failed = extra;
+                            failed.insert(QStringLiteral("native_composition_fence_failed"), true);
+                            finish(failed);
+                            return;
+                        }
+                        const QPointer<PlayerDiagnostics> owner(this);
+                        const bool queued = QMetaObject::invokeMethod(threads.front()->eventDispatcher(), [owner, finish, extra] {
+                            if (owner) QMetaObject::invokeMethod(owner.data(), [finish, extra] {
+                                auto observed = extra;
+                                observed.insert(QStringLiteral("native_composition_fenced"), true);
+                                finish(observed);
+                            }, Qt::QueuedConnection);
+                        }, Qt::QueuedConnection);
+                        if (!queued) {
+                            auto failed = extra;
+                            failed.insert(QStringLiteral("native_composition_fence_failed"), true);
+                            finish(failed);
+                        }
+                        return;
+                    }
+#endif
+                    finish(extra);
+                };
                 if (command.value(QStringLiteral("capture")).toBool() && window) {
                     auto grab = window->contentItem()->grabToImage();
                     if (grab) {
-                        connect(grab.data(), &QQuickItemGrabResult::ready, this, [this, grab, id, finish] {
-                            finish({{QStringLiteral("capture_saved"), grab->saveToFile(QDir(m_directory).filePath(id + QStringLiteral(".png")))},
+                        connect(grab.data(), &QQuickItemGrabResult::ready, this, [this, grab, id, finishAfterComposition] {
+                            finishAfterComposition({{QStringLiteral("capture_saved"), grab->saveToFile(QDir(m_directory).filePath(id + QStringLiteral(".png")))},
                                     {QStringLiteral("capture_elapsed_ms"), m_clock.elapsed()}});
                         });
                         return;
                     }
-                    finish({{QStringLiteral("capture_saved"), false}});
+                    finishAfterComposition({{QStringLiteral("capture_saved"), false}});
                     return;
                 }
-                finish({});
+                finishAfterComposition({});
             }, Qt::ConnectionType(Qt::QueuedConnection | Qt::SingleShotConnection));
             window->update();
         };

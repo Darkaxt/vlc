@@ -1,6 +1,32 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Normal d1313137 run42571358014 closed0 (watch43942 exit0,24m53s).
+All five formats, both-engine EOF/exit, installed DEB/Fedora-RPM/strict-Snap,
+native integrated workflows, worker-join regression, profile preservation and
+cache/source closure pass. Actual inspected MPV main/subtitle/floating/expanded/
+restored and VLC main/floating/expanded pictures are correct. The root journal
+now keeps XID800049 through MPV floating creation/show; original missing-drawable
+errors are absent. VLC's immediate restored capture is uniform gray and its
+native root capture black, while Quick content is ready. Do not count restored
+VLC picture acceptance as passed from the green workflow alone.
+RenderTask flushes before drawing but leaves its final composite/clear buffered
+when returning to its socket-notifier event loop; XCB polling does not flush it.
+Deliver the finished frame at render end. The diagnostic capture also waits for
+Quick rather than the separate X11 renderer: fence its FIFO render event queue
+before taking native pixels, without a sleep or forcing another redraw. Reject
+blank/gray captures of the colored fixture using measured chromatic pixels;
+manual inspection of all actual pictures remains required. These complete
+bounded production/capture changes are source ready for one retained normal
+Linux qualification, not verified yet. No final architecture matrix/release.
+The logs also retain library/ImageExt binding warnings at quit, after live
+workflow completion; distinguish those from the former in-workflow failures.
+Artifact13653544324 is2121270707B, SHA256
+df55ff338f5477cc33dc4ee1df1a1e20417fd1e4c10727f9d4504212408001ec.
+Selected members have CRC/SHA checks; no whole-artifact download claim. Current
+cache10218534036 retains1969809053B. Browser59529 closed0: close15 acknowledged,
+separate end16 released/native0. All current native/retrieval sessions exited.
+
 Window-lifecycle observation42570074351/bf2b9391 closed1 (watch39510 exit1).
 It reused the exact57 normal runtime without normal compilation/packages.
 The floating root changes XID800049 to80004d during first show, without Qt
