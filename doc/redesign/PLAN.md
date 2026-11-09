@@ -1,48 +1,44 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
-Intel1346 normal ZIP VLC launch exited with SIGILL(-4) after EOF/input teardown
-but before Qt event-loop exit. Its reproduction and diagnostic42603941318's four
-LLDB launches exit0 without capturing the original fault. These are diagnostic
-results, not repair or normal package acceptance. Preserve artifact13667725080
-and logs. The next Intel-only continuation uses required unchanged-package reuse
-and an untraced original child with a bounded child-only core limit. Read the
-existing OS core capability;55c's diagnostic preflight stopped before launch
-because the default destination is unavailable. Scope the core destination to
-owned scratch on the disposable hosted runner, restore/read back its original
-settings in finally, strip child CI credentials and keep raw cores private.
-Retain and inspect only that child's original fault core. No user-host changes,
-new normal build, SDK or production mutation.
-Private-core continuation42608676926 closed0: one untraced fresh-profile VLC
-ZIP launch reached EOF/Qt shutdown; core settings restored/read back. No fault
-or repair demonstrated. Run a bounded12 fresh-profile census against that same
-archive, stopping at the first failure with its original private core; this is
-diagnosis of an intermittent shutdown, not retry acceptance or a normal rebuild.
-Census42609672435 closed0: all12 untraced fresh profiles exited normally, with
-the original1346 ZIP hash unchanged. No original fault was captured or repaired.
-Unlike the failed normal launch, this observer pipes/streams combined output and
-creates a child session. Preserve normal separate file-backed stdout/stderr and
-process launch handling for the next Intel-only exact-package check; enable only
-private child core capture, restoring the hosted settings afterward. Check all
-four normal ZIP/DMG engine launches, stopping at the original failure. No build.
+Normal source1346af0b includes upstream978212a. Coordinated run42597474062 is
+closed: Apple Silicon, Linuxx86 and LinuxARM succeeded. Their normal Mac ZIP/DMG
+and Linux5-format checks, real DEB/Fedora RPM/Snap installation/removal and actual
+9-view VLC/MPV workflows pass. Independent corresponding-source, architecture,
+MPV closure and license audits pass for all4 native targets, including Intel:
+source members3570/1085/1098/3572 and runtime closure members41/188/187/37.
 
-Coordinated normal run42597474062/source1346af0b is closed: Apple Silicon,
-Linuxx86 and LinuxARM jobs succeeded; Intel failed as above. Mac ZIP/DMG normal
-EOF, strict signature/bundle checks, Linux portable and installed dpkg/Fedora
-RPM/snapd checks passed. Actual main/subtitle/floating/expanded/restored/handover/
-image/audio/replacement pictures in both engine workflows have been inspected
-successfully for all three successful native targets. LinuxARM corresponding
-source members independently verify (1098 members, one part); final architecture,
-runtime and license reconciliation remains required.
-Current Windows1346 archives/source/symbol maps, fresh VLC+ML EOF and all six
-P5/P8.1/P8.4 placement/presentation cases pass. NSIS ticket351 closed0 with empty
-Linux group and released mounts. Guest50 terminated externally during lifecycle;
-its partial result remains failed. Owned recovery guest51/773273fa completed
-installer lifecycle,1646-member payload, both normal EOF/shutdown checks, actual
-VLC/MPV pictures and verified uninstall. Session30474 closed0; guest and viewer
-processes exited. The user requires no further manual review-window chores.
-No host installation or publication. Intel normal acceptance and final
-architecture/source/license reconciliation still block M15 closure.
+Windows1346 portable/7z/source/symbol maps, fresh VLC+ML EOF and all6 DV
+placement/presentation cases pass. NSIS ticket351 closed0/group empty/mounts
+released. Guest50 terminated externally; its partial result remains failed.
+Recovery guest51/773273fa verified installer lifecycle,1646-member payload,
+both native EOF/shutdown checks, actual VLC/MPV pictures and uninstall. Original
+session30474 closed0; guest/viewer processes exited. No host installation.
+Routine guest connection/capture must use the owned Sandbox gate without asking
+the user to open review windows. Its current empty status output is not admission;
+the existing Coordinator maintainer's pending correction retains ownership.
+
+Intel original normal ZIP VLC failed SIGILL(-4) after EOF/input teardown, before
+Qt exit. Preserve original artifact13667725080 and failed logs. LLDB reproduction
+and42603941318's4 traced launches exit0; they neither capture nor clear the fault.
+42607281506 stopped at the default core-path preflight before player launch.
+Private-core42608676926 and12-profile census42609672435 exit0 without a fault;
+the latter streams output/creates a child session, unlike the original check.
+File-backed42611631808 also closed0: all4 normal ZIP/DMG VLC/MPV EOF/exit checks
+pass,4208 bundle members identical and signatures verified. Compilation skipped;
+private core destination restored on the disposable hosted runner. No user-host
+settings changes. These passing results establish no cause or repair.
+Original Intel9-view pictures render but are obscured by the prior Apple crash
+dialog; they are not unobscured native UI acceptance.
+
+M15's remaining internal acceptance blockers are the unexplained Intel fault,
+unobscured Intel UI evidence if shipped, and final scope/source reconciliation.
+The user has been asked whether to withhold Intel and release the verified
+platforms or hold the whole release. No waiver or partial-publication authority
+is inferred. No build, guest or diagnostic is left running. Verified assets and
+recovery evidence are retained; the spent Intel2,561,232,158-byte transport ZIP
+was transactionally removed after independent extraction/source/runtime audits.
+M16 and publication remain pending that material scope decision.
 
 Prior diagnostic progression (historical; current next actions above):
 Linux004 closed1 in6m47s: exact native read is mapped at813,1067 on1920x1080,
@@ -1831,7 +1827,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Verified Windows1.1.11 preserved. Upstream97-commit merge integrated. MacARM d8 normal ZIP/DMG and actual Metal VLC/MPV main/floating/restored pictures/subtitles pass. Windows full upstream normal build, all417 PE/symbol mappings, VLC+ML EOF/release, real WASAPI, MPV SDR/DV presentation and P5/P8.1/P8.4 reference pixels pass. Integrated handover/stop/restart, backend/library controls, embedded/external subtitle timing and floating workflows pass; protected profiles unchanged. SDK/objects retained. | R111 remaining architectures/formats and final package/source/license qualification; R112 new Mac Cocoa runtime cohort and final matrix; R113 final normal one-revision binding and remaining native visual/package inspection. | Intel optional MetalLayer guard and Linux direct ELF/interpreter resolution await actual workflows. Internal acceptance blockers; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Integrated upstream978212a, normal source1346. Windows portable/7z/NSIS,417 split-symbol PE mappings, native VLC+ML EOF, MPV SDR/DV and all6 P5/P8.1/P8.4 checks pass; installed VLC/MPV pictures, upgrade/profile/uninstall and guest disposal verified. MacARM ZIP/DMG both-engine EOF/signatures and actual9-view workflows pass. Linuxx86/ARM all5 formats and real DEB/RPM/Snap installation/removal pass; actual9-view workflows in both engines pass. Independent complete source, architecture, MPV runtime and license audits pass for all4 native targets. Intel's later original file-backed4-format/engine checks pass without explaining its earlier fault. | Intel shutdown diagnosis/repair, unobscured native UI acceptance if shipped, and final scope/one-revision reconciliation. | Original Intel SIGILL remains unexplained;42611631808 closed0 without a fault/core. Earlier Intel UI captures are obstructed by its crash-report dialog. Material release-scope question pending; no waiver inferred. Internal acceptance blockers; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch
