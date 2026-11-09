@@ -303,6 +303,7 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
     m_floatingRoot->setPosition(area.right() + 1 - m_floatingRoot->width() - 16,
                                 area.bottom() + 1 - m_floatingRoot->height() - 16);
 #ifdef QT_HAS_X11_COMPOSITOR
+    if (!m_videoSurfaceProvider->prepareWindowTransfer()) return false;
     static_cast<CompositorX11RenderWindow *>(m_rootWindow.get())->setVideoWindow(nullptr);
 #endif
     m_videoWindow->setParent(m_floatingRoot.get());
@@ -317,6 +318,9 @@ bool CompositorPlatform::showFloatingPlayer(Qt::WindowStates previousState)
     m_videoWindow->show();
     m_floatingView->show();
     m_floatingView->raise();
+#ifdef QT_HAS_X11_COMPOSITOR
+    m_videoSurfaceProvider->finishWindowTransfer();
+#endif
     m_floatingView->rootObject()->setProperty("ready", true);
     return true;
 #endif
@@ -326,6 +330,7 @@ void CompositorPlatform::hideFloatingPlayer()
 {
     if (!m_floatingRoot || !m_mainCtx || !m_mainCtx->floatingPlayer()) return;
 #ifdef QT_HAS_X11_COMPOSITOR
+    if (!m_videoSurfaceProvider->prepareWindowTransfer()) return;
     static_cast<CompositorX11RenderWindow *>(m_floatingRoot.get())->setVideoWindow(nullptr);
 #endif
     m_videoWindow->setParent(m_rootWindow.get());
@@ -339,6 +344,9 @@ void CompositorPlatform::hideFloatingPlayer()
     m_floatingRoot->hide();
     m_videoWindow->show();
     m_quickWindow->raise();
+#ifdef QT_HAS_X11_COMPOSITOR
+    m_videoSurfaceProvider->finishWindowTransfer();
+#endif
 }
 
 void CompositorPlatform::restoreFloatingPlayer()

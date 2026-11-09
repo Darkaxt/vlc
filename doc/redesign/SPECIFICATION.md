@@ -14,6 +14,23 @@ must retain its own diagnostic error without replacing the player failure.
 Keep cores private and upload only bounded stack text and fault metadata.
 Use immutable package13648345770 for compiler-free shutdown reproduction;
 passing functional or earlier package checks does not resolve either crash.
+The captured normal fault shows SQLite statement-cache destruction concurrent
+with an unfinished history worker. MediaLib must join its canceled/running
+ThreadRunner work before its underlying VLC medialibrary can be released.
+Preserve normal asynchronous cancellation elsewhere; verify a worker-held
+shutdown regression and real fresh-profile MPV EOF/teardown without suppressing
+exceptions, discarding settings or deleting databases.
+The read-only unwinder in42565557922 identifies MPV's next-frame timing query
+flushing an older Mesa raster scene after floating transfer. Finish pending GL
+work before the old native drawable/redirection is released, suppress drawing
+during that ownership transfer and resume after placement. Verify main/floating/
+expanded/restored actual pictures and clean lifecycle in both engines; a source
+barrier alone is not proof of recovery. Scope that transition to the X11 backend.
+An unsuccessful/no-op cache compaction must preserve its previous valid source
+retention receipt. The failed9b test-only guard replaced that proof with an
+incomplete-generation record, making the next compactor reject already archived
+source copies as missing. Keep unsuccessful attempt evidence separate, and
+re-establish a complete bound receipt through the next normal generation.
 
 R111 pipeline cache reconciliation, 9 November: normal80a67f13 compilation
 completes before the source collector repeatedly downloads ordinary Debian

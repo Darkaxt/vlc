@@ -41,6 +41,8 @@
 #include <wrl/client.h>
 #else
 #include "mpv/render_gl.h"
+#include "maininterface/mainctx.hpp"
+#include "maininterface/videosurface.hpp"
 #include <QGuiApplication>
 #include <QLibrary>
 #include <QOffscreenSurface>

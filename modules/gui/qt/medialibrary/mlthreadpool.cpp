@@ -166,6 +166,11 @@ void ThreadRunner::destroy()
     }
 }
 
+void ThreadRunner::waitForDone()
+{
+    m_threadPool.waitForDone();
+}
+
 void ThreadRunner::cancelTask(const QObject* object, quint64 taskId)
 {
     assert(taskId != 0);

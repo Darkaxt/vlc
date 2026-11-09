@@ -15,6 +15,7 @@ class GlView final : public QWindow {
     QOffscreenSurface cleanupSurface;
     std::function<void(QString)> report;
     std::atomic_bool updatePending{false};
+    bool transferringWindow = false;
 
     static void *getProcAddress(void *, const char *name) {
         return reinterpret_cast<void *>(QOpenGLContext::currentContext()->getProcAddress(name));
@@ -28,7 +29,7 @@ class GlView final : public QWindow {
             }, Qt::QueuedConnection);
     }
     void draw() {
-        if (!render || !isExposed() || !width() || !height()) return;
+        if (!render || transferringWindow || !isExposed() || !width() || !height()) return;
         if (!context.makeCurrent(this)) { report(tr("The native MPV OpenGL view could not be made current.")); return; }
         api->render_context_update(render);
         const qreal dpr = devicePixelRatio();
@@ -100,6 +101,22 @@ public:
         report({});
     }
     void update() { draw(); }
+    bool prepareWindowTransfer() {
+        Q_ASSERT(QThread::currentThread() == thread());
+        transferringWindow = true;
+        if (!render) return true;
+        if (!context.makeCurrent(&cleanupSurface)) {
+            transferringWindow = false;
+            report(tr("The native MPV render surface could not be prepared for transfer."));
+            return false;
+        }
+        // A timing query in the next frame can flush the previous scene.
+        // Complete that scene while its old X11 drawable/redirection exists.
+        context.functions()->glFinish();
+        context.doneCurrent();
+        return true;
+    }
+    void finishWindowTransfer() { transferringWindow = false; draw(); }
     void releaseRenderContext() {
         if (!render) return;
         const bool current = context.makeCurrent(&cleanupSurface);
@@ -194,6 +211,13 @@ public:
                 }
             if (!parent) { report(tr("Qt could not attach the native MPV video view.")); return; }
             view = new GlView(api, player, [this](const QString &error) { report(error); });
+#ifdef QT_HAS_X11_COMPOSITOR
+            auto provider = intf->p_mi->getVideoSurfaceProvider();
+            QObject::connect(provider, &VideoSurfaceProvider::windowAboutToTransfer, view,
+                [this](bool& ready) { ready = view->prepareWindowTransfer() && ready; }, Qt::DirectConnection);
+            QObject::connect(provider, &VideoSurfaceProvider::windowTransferred, view,
+                [this] { view->finishWindowTransfer(); }, Qt::DirectConnection);
+#endif
             view->setParent(parent);
             view->resize(640, 360);
             view->initializeRenderContext();

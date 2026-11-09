@@ -19,6 +19,8 @@
 #include <QTest>
 #include <QSignalSpy>
 #include <QWaitCondition>
+#include <QSemaphore>
+#include <thread>
 #include "../medialibrary/mlthreadpool.hpp"
 #include "qtestcase.h"
 
@@ -638,6 +640,32 @@ private slots:
         QVERIFY(barrierPost.wait(TASK_TIMEOUT));
 
         CHECK_TASK_TIMEOUT(taskRet);
+    }
+
+    void testResourceOwnerWaitsForRunningTask()
+    {
+        // Keep this runner on the resource owner's thread, as MediaLib does.
+        auto runner = new ThreadRunner();
+        Dummy target;
+        QSemaphore started, release;
+        std::atomic_bool finished = false;
+        runner->runOnThread<Ctx>(&target, [&](Ctx&) {
+            started.release();
+            release.acquire();
+            finished = true;
+        }, [](quint64, Ctx&) { QFAIL("A shutdown task must not invoke its UI callback"); }, "resource-history");
+        started.acquire();
+        QVERIFY(!finished);
+        runner->destroy();
+        std::thread finishWork([&] { release.release(); });
+        runner->waitForDone();
+        const bool joined = finished;
+        finishWork.join();
+        QVERIFY(joined);
+        QSignalSpy deleted(runner, &QObject::destroyed);
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::MetaCall);
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+        QCOMPARE(deleted.count(), 1);
     }
 
     void testRunnerDestroyedDuringExecution()

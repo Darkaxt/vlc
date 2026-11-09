@@ -1,6 +1,31 @@
 # VLC redesign stages and reconciliation
 
 **9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+The read-only unwinder42565557922/8833ff67 closed1 (original watch28033 exit1).
+Actual full stack identifies MPV timer_pool_start/pass_upload_image calling
+Mesa BeginQuery -> lp_setup_begin_query -> set_scene_state -> queued rasterization.
+The fault is in previously queued rectangles at the first post-transfer frame.
+Original fault stacks/registers remain intact; managers/audio exited and normal
+objects were restored. Artifact13651596996 is888972312B, SHA256527445086ea2cc3f3e6a88505a8cc925aac1b9bbafc73ee2baf366955d264e14.
+Its compaction failed because the preceding unsuccessful guard run overwrote
+the valid source-retention proof with an incomplete-generation receipt, not
+because a published source archive was shown corrupt. Cache saving/retirement
+still ran. The source correction preserves old proof on no-op and records that
+attempt separately; a focused regression passes both no-op paths. A complete
+normal generation will establish fresh complete-source retention provenance.
+
+Current cohesive source candidate: GUI-synchronous X11 provider transfer hooks
+finish pending MPV GL work before old drawable redirection/reparenting, suppress
+draws during transfer and resume after placement. Windows/Cocoa do not invoke
+these hooks. The prepared library shutdown joins running history work, with an
+existing Qt runner regression before install. Linux private reference profiles
+select the actual dark setting. Source/syntax/ownership review is complete;
+none of these production repairs has native acceptance yet. Freeze this complete
+candidate for one retained normal Linux continuation, with normal one-worker
+Mesa settings, the full two-engine/picture/EOF/installed-package workflows and
+fresh source/cache closure. Repair any actual failure in this same stage before
+the final shared-revision architecture matrix. No second ACTIVE stage or release.
+
 The new GDB-only unwinder must be named in the existing test-only runtime-reuse
 allowlist. Its omission is reproduced by the focused reuse regression before
 correction; the corrected case passes while rejecting all production/configuration

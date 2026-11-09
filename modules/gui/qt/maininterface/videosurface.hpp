@@ -58,7 +58,14 @@ public:
 
     bool supportsThreadedSurfaceUpdates() const { return m_threadedSurfaceUpdates; };
 
+    // Synchronous GUI-thread ownership transfer. Native renderers finish work
+    // that still targets the old window before its backing storage is moved.
+    bool prepareWindowTransfer() { bool ready = true; emit windowAboutToTransfer(ready); return ready; }
+    void finishWindowTransfer() { emit windowTransferred(); }
+
 signals:
+    void windowAboutToTransfer(bool& ready);
+    void windowTransferred();
     void ctxChanged(MainCtx*);
     bool videoEnabledChanged(bool);
     bool hasVideoEmbedChanged(bool);

@@ -669,6 +669,9 @@ def main():
         image_links = image_dependencies.verify_mac_links(image_work, build) if native_mac else None
         run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
         run(build / 'src/test_input_clock', cwd=build, env=env)
+        run('make', '-j1', 'test_thread_runner', *make_flags, cwd=build / 'modules/gui/qt', env=env)
+        run(build / 'modules/gui/qt/test_thread_runner', 'testResourceOwnerWaitsForRunningTask',
+            cwd=build, env=env)
         run('make', '-j1', 'install', *make_flags, cwd=build, env=env)
     finally:
         retain_bootstrap_sources(work, tracked_sources)

@@ -44,6 +44,8 @@ public:
     void setMaxThreadCount(size_t threadCount);
 
     void destroy();
+    // Join running work after destroy(), before releasing resources it uses.
+    void waitForDone();
     void cancelTask(const QObject* object, quint64 taskId);
 
     template<typename Ctx>

@@ -25,6 +25,27 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_incomplete_compaction_preserves_the_valid_retention_receipt(self):
+        spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
+        cache = importlib.util.module_from_spec(spec); spec.loader.exec_module(cache)
+        root = Path(sys.argv_scratch) / ('retention-noop-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'; work.mkdir(parents=True)
+        original = b'{"state":"compacted","uploaded_artifact":123,"source_commit":"original"}\n'
+        receipt = work / 'native-cache-retention.json'; receipt.write_bytes(original)
+        env = {'GITHUB_ACTIONS':'true', 'GITHUB_WORKSPACE':str(root), 'RUNNER_TEMP':str(root)}
+        for state in ('No package generation; original compiler continuation preserved',
+                      'Incomplete new package; original compiler continuation preserved'):
+            with patch.object(cache, 'ROOT', root), \
+                 patch.object(cache, 'os', SimpleNamespace(name='posix', environ=env)), \
+                 patch.object(cache, 'compact', return_value={'state':state}), \
+                 patch.object(sys, 'argv', ['compact-native-cache.py', '--work', str(work),
+                    '--uploaded-artifact', '456', '--normal-source', 'f' * 40]):
+                cache.main()
+            self.assertEqual(receipt.read_bytes(), original)
+            attempt = json.loads((work / 'native-cache-compaction-attempt.json').read_text())
+            self.assertEqual(attempt['state'], state)
+            self.assertEqual(attempt['uploaded_artifact'], 456)
+
     def test_remote_cache_retirement_is_exact_to_the_saved_cohort(self):
         spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
         cache = importlib.util.module_from_spec(spec)

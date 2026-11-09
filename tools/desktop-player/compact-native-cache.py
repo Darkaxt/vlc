@@ -214,7 +214,11 @@ def main():
     result = compact(args.work, scratch, args.normal_source)
     result['uploaded_artifact'] = args.uploaded_artifact
     result.setdefault('complete_source_artifact', args.uploaded_artifact)
-    (args.work / 'native-cache-retention.json').write_text(json.dumps(result, indent=2) + '\n')
+    # A failed/incomplete new generation has not replaced the retained normal
+    # generation. Its no-op must not erase the earlier uploaded-source proof.
+    receipt = ('native-cache-retention.json' if result['state'] == 'compacted'
+               else 'native-cache-compaction-attempt.json')
+    (args.work / receipt).write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2), flush=True)
 
 

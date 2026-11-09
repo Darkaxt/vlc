@@ -214,10 +214,12 @@ def check_engine(executable, root, fixture, replacements, engine, software_decod
     home = case / 'home'; home.mkdir()
     upstream_roots = seed_upstream_profile(home)
     before_upstream = profile_hashes(home, upstream_roots)
-    if platform.system() == 'Darwin':
+    if platform.system() in ('Darwin', 'Linux'):
         # Select the actual fork setting for the Figma dark reference. Preserve
         # the hosted machine's system appearance and synthetic upstream profile.
-        settings = home / 'Library/Preferences/io.github.darkaxt.modern-vlc/vlc-qt-interface.ini'
+        settings = (home / 'Library/Preferences/io.github.darkaxt.modern-vlc/vlc-qt-interface.ini'
+                    if platform.system() == 'Darwin' else
+                    home / 'config/modern-vlc/vlc/vlc-qt-interface.conf')
         settings.parent.mkdir(parents=True)
         settings.write_text('[MainWindow]\ncolor-scheme-index=2\n')
     token = uuid.uuid4().hex + uuid.uuid4().hex

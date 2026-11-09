@@ -42,6 +42,10 @@ MediaLib::MediaLib(qt_intf_t *_intf, vlc::playlist::PlaylistController* playlist
 MediaLib::~MediaLib()
 {
     m_runner->destroy();
+    // destroy() cancels queued callbacks, but an already running ML operation
+    // still owns the raw m_ml pointer. Finish it before libvlc releases ML and
+    // its SQLite connection/statement cache after the Qt interface closes.
+    m_runner->waitForDone();
 }
 
 static void convertMLItemToPlaylistMedias(vlc_medialibrary_t* ml, const MLItemId & itemId, const QStringList &options, QVector<vlc::playlist::Media>& medias)
