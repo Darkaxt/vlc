@@ -3,7 +3,16 @@
 **10 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
 
 Current normal runtime source is608ac3c4 (upstream72d7d1e), pushed on the native
-desktop branch. Native matrix42814777751/watch17719 is owned and running.
+desktop branch. Native matrix42814777751 is closed: both Mac jobs passed; the
+two Linux jobs failed only during exact corresponding-source downloads after
+their normal builds completed. Packaging-only producer4cb10915 is pushed and
+retains application608. x86 continuation42826842789/watch83713 closed1 after
+Ubuntu returned only343930 of458134 bytes for the libraw1394 original archive.
+ARM42827330717/watch76931 completed packaging and actual native playback checks
+and is uploading its artifacts. Both retained the normal player and skipped
+compilation. The x86 repair seeds verified Debian originals under content hashes;
+the collector still independently requires current authenticated APT identity,
+hashes, sizes and descriptor closure. No historical cache binding is imported.
 Windows normal108/14a1428b669c7fa57c65305c5b17aa27/session69972 closed0:
 410 configured plugins,417 split-symbol PE mappings, no OOM, group empty and
 private mounts released. Player step625s/618s CPU; dependency objects retained.
@@ -41,8 +50,12 @@ MacARM job129825079436 passed. Both9-view native contact sheets were inspected;
 the retrieved ZIP/DMG/symbol/source assets passed hashes and complete3570-member
 source,41-member MPV closure, architecture and license audits. Spent outer ZIP
 2506101201 bytes was retired by cleanup6ff78f1532109983e393766273bfdf1e.
-Intel129825079423 reached normal ZIP/DMG runtime qualification, with no current
-fault observed at this checkpoint.
+Intel129825079423 passed all4 ordinary ZIP/DMG VLC/MPV EOF/exit checks, strict
+signatures and4208-member bundle identity. Both current9-view native contact
+sheets were inspected unobscured. Artifact13768558551 passed full retrieval,
+3572-member corresponding-source,37-member MPV closure,535-member architecture
+and3288-member legal audits. Spent2561508278-byte outer ZIP was retired through
+cleanup2d8cb881404f21358e7c997b15cb4efe; assets and receipts remain.
 
 Installer guest f82f3f759521df07024fb87ac32e5fc3 reached VLC EOF in headless System
 context but did not reach Qt exit. Original request c9f050fdab35506ec6642d683513b926
@@ -53,6 +66,13 @@ installed gate recovery boundary needs diagnosis/repair before a new guest;
 prepared logged-in playback separates actual pictures from headless installer
 lifecycle. This is not an established production VLC shutdown cause. Exact
 private support packet is in installed-source-review/sandbox-stop-608-support.md.
+The user explicitly authorized sending that report. Skill Creator owns the
+Coordinator repair. Its guarded continuation settled only the accepted Stop:
+the exact worker, exec and viewer are absent; original sessions28410/97323 have
+closed. Native/workflow130 and tree_exit_verified=true preserve cancellation;
+the original application request remains OUTCOME_UNKNOWN, with no replay.
+Coordinator0.27.2 has passed protected installation/readiness and is finishing
+qualification. Wait for its owner's release before starting a new guest.
 
 Direct user steering now requires actual upstream integration/delivery within
 M15 and rejects the historical unreproduced Intel incident as a blanket hold on
@@ -61,9 +81,13 @@ incident without a repair claim and run the ordinary affected package/UI checks
 on the final integrated source. Pinned upstream master72d7d1e526b10bd3543641ebddd814180a6ccd12
 adds17 commits to978212a4: parser format correctness, GBM failure ownership,
 macOS native-library repairs, Qt page ownership and dependency generation.
-Finish the cohesive merge/integration before one coordinated affected acceptance;
-reuse native SDK/objects and preserve all prior evidence. No competing writer or
-native package job is active; only the user's Notepad++ reads this checkout.
+The cohesive merge is committed and pushed; finish the affected Linux package
+qualification, current installed Windows acceptance and final source
+reconciliation before M16. Both current Mac targets are qualified. Reuse native
+SDK/objects and preserve all prior evidence. No competing VLC source writer is
+active; the Coordinator maintainer owns only its gate repair.
+
+Historical1346 qualification and Intel incident (not current launch clearance):
 Normal source1346af0b includes upstream978212a. Coordinated run42597474062 is
 closed: Apple Silicon, Linuxx86 and LinuxARM succeeded. Their normal Mac ZIP/DMG
 and Linux5-format checks, real DEB/Fedora RPM/Snap installation/removal and actual
@@ -94,11 +118,11 @@ settings changes. These passing results establish no cause or repair.
 Original Intel9-view pictures render but are obscured by the prior Apple crash
 dialog; they are not unobscured native UI acceptance.
 
-M15's remaining acceptance work is the current upstream merge, affected normal
+At the1346 checkpoint, remaining work was the upstream merge, affected normal
 packages, unobscured Intel UI evidence and final source reconciliation. The
 historical Intel fault remains an unresolved incident, not a blanket release
-hold under the10 November user clarification. No build, guest or diagnostic is
-left running. Verified assets and
+hold under the10 November user clarification. That checkpoint had no build,
+guest or diagnostic left running. Verified assets and
 recovery evidence are retained; the spent Intel2,561,232,158-byte transport ZIP
 was transactionally removed after independent extraction/source/runtime audits.
 M16 and publication follow the integrated affected acceptance, without another

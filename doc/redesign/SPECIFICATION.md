@@ -36,6 +36,13 @@ dependency archives from a previously verified source carrier, retaining that
 carrier's provenance; never substitute a newer dependency or application tree.
 Record and include a separately committed packaging producer. A completed or
 ambiguous generation must refuse this continuation instead of being overwritten.
+The x86 continuation subsequently received only343930 of458134 bytes for
+libraw1394_2.1.2.orig.tar.gz. Recover complete Debian originals from the already
+verified source carrier into content-addressed cache names. Do not import its
+source-binding.json or unqualified filenames: the unchanged collector must still
+select the exact installed version through authenticated current APT metadata
+and verify every consumed hash, size and descriptor closure. This removes a
+repeated transport dependency without changing runtime inputs or recompiling.
 
 9 November R112 Intel shutdown: normal1346 ZIP VLC exits SIGILL(-4) after
 input teardown and before Qt shutdown. The single LLDB reproduction exits0;

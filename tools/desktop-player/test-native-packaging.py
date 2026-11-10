@@ -105,6 +105,50 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'differs from the current dependency pin'):
                 recovery.seed_part(archive,{member:'0' * 64},[pin],work)
 
+    def test_recovered_originals_require_current_authenticated_apt_hashes(self):
+        spec = importlib.util.spec_from_file_location('source_recovery',HERE / 'resume-linux-source-inputs.py')
+        recovery = importlib.util.module_from_spec(spec); spec.loader.exec_module(recovery)
+        spec = importlib.util.spec_from_file_location('source_collector',HERE / 'collect-native-sources.py')
+        collector = importlib.util.module_from_spec(spec); spec.loader.exec_module(collector)
+        root = Path(sys.argv_scratch) / ('source-consumer-' + uuid.uuid4().hex)
+        value = b'complete original, not a truncated network transfer'
+        checksum = hashlib.sha256(value).hexdigest()
+        descriptor = ('Source: example\nVersion: 1.0\nChecksums-Sha256:\n '
+                      + checksum + ' ' + str(len(value)) + ' example_1.0.orig.tar.gz\n').encode()
+        members = {'debian/example/1.0/example_1.0.dsc':descriptor,
+                   'debian/example/1.0/example_1.0.orig.tar.gz':value}
+        expected = {name:hashlib.sha256(data).hexdigest() for name,data in members.items()}
+        data = io.BytesIO()
+        with zipfile.ZipFile(data,'w') as archive:
+            for name,content in members.items(): archive.writestr(name,content)
+        with zipfile.ZipFile(data) as archive:
+            copied = recovery.seed_debian_originals(archive,expected,root)
+        self.assertEqual(len(copied),2)
+        cache = root / 'corresponding-source-inputs/debian/example/1.0'
+        self.assertFalse((cache / 'source-binding.json').exists())
+        self.assertFalse((cache / 'example_1.0.dsc').exists())
+        rows = {Path(name).name:{'sha256':expected[name],'bytes':len(content)}
+                for name,content in members.items()}
+        indexes = 'Package: example\nVersion: 1.0\nChecksums-Sha256:\n' + ''.join(
+            ' ' + row['sha256'] + ' ' + str(row['bytes']) + ' ' + name + '\n'
+            for name,row in rows.items())
+        uris = '\n'.join("'https://archive.ubuntu.com/ubuntu/pool/main/e/example/" + name
+                         + "' " + name + ' ' + str(row['bytes']) + ' SHA256:' + row['sha256']
+                         for name,row in rows.items())
+        destination = root / 'staged'; destination.mkdir()
+        with patch.object(collector,'retrieve',side_effect=AssertionError('No network needed')):
+            collector.collect_debian_source('example','1.0',destination,cache,(indexes,uris))
+        self.assertEqual((destination / 'example_1.0.orig.tar.gz').read_bytes(),value)
+        # A different current APT identity cannot consume the historical bytes.
+        other = root / 'other'; other.mkdir()
+        with zipfile.ZipFile(data) as archive:
+            recovery.seed_debian_originals(archive,expected,other)
+        other_cache = other / 'corresponding-source-inputs/debian/example/1.0'
+        with patch.object(collector,'retrieve',side_effect=OSError('different authenticated input')):
+            with self.assertRaisesRegex(RuntimeError,'different authenticated input'):
+                collector.collect_debian_source('example','1.0',destination,other_cache,
+                    (indexes.replace(checksum,'0'*64),uris))
+
     def test_ci_release_sources_use_the_original_asset_without_retry_or_fallback(self):
         import source_transport as transport
         target = Path('/owned/exact.download')

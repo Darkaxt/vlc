@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import platform
+import re
 import shutil
 import subprocess
 import urllib.error
@@ -51,6 +52,58 @@ def seed_part(archive, expected, pins, work):
                 with target.open('xb') as stream:
                     stream.write(value)
             copied.append({'file':member, 'sha256':row['sha256'], 'cache':str(target)})
+    return copied
+
+
+def seed_debian_originals(archive, expected, work):
+    """Seed content-addressed originals; current APT metadata still selects them.
+
+    Never seed source-binding.json or unqualified plain filenames. The collector
+    independently checks the installed version and current authenticated APT
+    hashes before consuming any recovered byte.
+    """
+    copied = []
+    for member in sorted(expected):
+        path = PurePosixPath(member)
+        if len(path.parts) != 4 or path.parts[0] != 'debian' or path.suffix != '.dsc':
+            continue
+        package, version = path.parts[1:3]
+        if not re.fullmatch(r'[a-z0-9][a-z0-9+.-]*', package):
+            raise RuntimeError('Unsafe recovered source package')
+        descriptor = archive.read(member)
+        if hashlib.sha256(descriptor).hexdigest() != expected[member]:
+            raise RuntimeError('Recovered descriptor checksum differs')
+        text = descriptor.decode('utf-8')
+        if not re.search(r'^Source: ' + re.escape(package) + r'$', text, re.M) or not re.search(
+                r'^Version: ' + re.escape(urllib.parse.unquote(version)) + r'$', text, re.M):
+            raise RuntimeError('Recovered descriptor identity differs')
+        section = re.search(r'^Checksums-Sha256:\n((?:[ \t].*(?:\n|$))+)', text, re.M)
+        if not section:
+            raise RuntimeError('Recovered descriptor has no SHA256 closure')
+        rows = {path.name: (expected[member], len(descriptor))}
+        for line in section[1].splitlines():
+            checksum, size, name = line.split()
+            if (name in rows or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9+._~%-]*', name)
+                    or not re.fullmatch('[0-9a-f]{64}', checksum) or not size.isdecimal()):
+                raise RuntimeError('Invalid recovered descriptor member')
+            rows[name] = (checksum, int(size))
+        cache = work / 'corresponding-source-inputs' / Path(*path.parent.parts)
+        for name, (checksum, size) in rows.items():
+            original = (path.parent / name).as_posix()
+            if expected.get(original) != checksum:
+                raise RuntimeError('Historical source index differs from its descriptor')
+            value = descriptor if name == path.name else archive.read(original)
+            if len(value) != size or hashlib.sha256(value).hexdigest() != checksum:
+                raise RuntimeError('Recovered original source checksum/size differs')
+            cache.mkdir(parents=True, exist_ok=True)
+            target = cache / (checksum[:16] + '-' + name)
+            if target.exists():
+                if target.is_symlink() or digest(target) != checksum:
+                    raise RuntimeError('Existing dependency cache differs; preserve it')
+            else:
+                with target.open('xb') as stream:
+                    stream.write(value)
+            copied.append({'file':original, 'sha256':checksum, 'cache':str(target)})
     return copied
 
 
@@ -108,7 +161,7 @@ def main():
         prefix = indices[0].filename.removesuffix('NATIVE-SOURCE-ASSETS.json')
         for part in index['parts']:
             expected = {row['file']:row['sha256'] for row in part['members']}
-            if not any(name.startswith('debian/' + pin['source_package'] + '/' + pin['version'] + '/') for pin in pins for name in expected):
+            if not any(name.startswith('debian/') and name.endswith('.dsc') for name in expected):
                 continue
             name = part['name']
             if Path(name).name != name or '/' in name or '\\' in name:
@@ -120,8 +173,10 @@ def main():
                 raise RuntimeError('Historical source carrier checksum differs')
             with zipfile.ZipFile(target) as archive:
                 copied.extend(seed_part(archive, expected, pins, args.work))
+                copied.extend(seed_debian_originals(archive, expected, args.work))
+    copied = list({row['file']:row for row in copied}.values())
     required = {row['sha256'] for pin in pins for row in [pin['descriptor'], *pin['files']]}
-    if {row['sha256'] for row in copied} != required or len(copied) != len(required):
+    if not required.issubset({row['sha256'] for row in copied}):
         raise RuntimeError('Historical carrier does not cover the exact archived input closure')
     # Checkout timestamps must not turn the later diagnostic-hook build into a
     # whole-player rebuild. Restore only byte-identical tracked inputs and the
