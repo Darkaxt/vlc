@@ -1,6 +1,53 @@
 # VLC redesign stages and reconciliation
 
-**10 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+**10 November current qualification: M15 COMPLETE; M16 ACTIVE;1.1.12 unpublished.**
+
+Final M15 reconciliation passed for the frozen application608ac3c4 across Windows x64,
+Mac Apple Silicon/Intel and Linux x86_64/aarch64. Linux x86 continuation
+42842708115/watch14078 completed0, including all5 formats, actual installed
+DEB/RPM/Snap playback/removal and both9-view workflows. Artifact13781125996's
+whole SHA16ed4cbd01a7c27b4fb99ea70bf2dbcd4edd7be90d65b06b0fca16ea70588b8a
+and all assets were verified;1113 source members,188 MPV closure members,
+1025 architecture members and363 legal members pass. Both contact sheets were
+inspected. The spent2124114628-byte outer ZIP was retired through5d8dd0160877c80702901207212ba317,
+without residuals. M15-reconciliation-608.json records R111/R112/R113 with no
+unresolved current acceptance or tracked deferrals. Existing earlier failures
+remain historical evidence, including the disclosed unreproduced Intel incident.
+M16 now owns README/platform downloads, one normal1.1.12 release, independent
+published retrieval and the retained/weekly binding. No further player build or
+UI/crash census is required. Coordinator0.27.3 cutover is complete.
+
+Pre-final checkpoint (historical, before final Linux retrieval): both Mac
+architectures and Linux ARM are qualified on application608ac3c4. ARM artifact
+13775962555 was independently retrieved: all5 formats, actual DEB/Fedora RPM/Snap
+install/playback/removal, both9-view engine workflows, complete1105-member source,
+187-member MPV closure,1022 architecture and361 legal members pass. Its spent
+2054237121-byte outer ZIP was transactionally retired; assets/receipts remain.
+Linux x86 continuation42842708115/watch14078 is still completing corresponding
+sources/packages with producer72e5f588 and no player compilation. Do not restart
+the original normal build or repeat passed platform/UI checks.
+
+Current Windows guest bbd66aae0d45654300cfb7bb96175a88 passed actual install,
+upgrade/data preservation, complete payload identity and uninstall lifecycle.
+Both installed VLC/MPV reached natural EOF, released resources and finished Qt
+shutdown. Installed VLC's composed picture was captured and inspected. The
+additional installed MPV picture was not captured before the Coordinator owner's
+requested cutover; it is not claimed passed. Existing actual portable MPV/DV
+evidence remains valid for the byte-identical runtime. Final Windows reconciliation
+compares the complete installed and portable1646-member manifest byte-for-byte,
+checks both installed EOF/shutdown logs and all6 current actual MPV presentation
+receipts against that manifest's Qt image. It passes without another launch;
+the extra duplicate installed screenshot is not a new acceptance requirement.
+The actual installer lifecycle/playback and actual current runtime pixels satisfy
+R111/R112 together. Evidence: windows-608-final-reconciliation.json. The guest was released
+normally through workflow.end: COMPLETED, native/workflow0, tree_exit_verified.
+Its temporary client's null-result formatting error occurred after that successful
+release; no guest action was replayed. The subsequent Coordinator0.27.3 cutover completed. Historical failed guest evidence below is preserved.
+
+The user rejects repeated verification as a moving release boundary. Accept
+applicable completed checks, disclose the historical unreproduced Intel fault,
+and finish only the outstanding package/delivery criteria. No crash census,
+new tiny UI review, speculative polish or player rebuild is required.
 
 Current normal runtime source is608ac3c4 (upstream72d7d1e), pushed on the native
 desktop branch. Native matrix42814777751 is closed: both Mac jobs passed; the
@@ -1915,8 +1962,8 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Prior1346 qualification is retained: Windows portable/7z/NSIS,417 split-symbol PE mappings, native VLC+ML EOF, MPV SDR/DV and all6 P5/P8.1/P8.4 checks; installed VLC/MPV pictures, upgrade/profile/uninstall and guest disposal. MacARM ZIP/DMG both-engine EOF/signatures and actual9-view workflows. Linuxx86/ARM all5 formats, real DEB/RPM/Snap installation/removal and both-engine9-view workflows. Complete source/runtime/license audits for all4 native targets. Intel's later normal file-backed4-format/engine checks passed. | Integrate upstream72d7d1e; qualify affected normal packages on the common source, including unobscured Intel UI; final reconciliation. | New source acceptance is pending. Historical Intel SIGILL is unexplained, not claimed repaired and, per direct10Nov instruction, not a blanket release hold or reason to omit Intel. Normal Mac checks preserve the original process/output route and collect its own postmortem only on a new fault. No pending release-scope question; no deferrals. |
-| M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
+| M15 Native desktop engines and packages | COMPLETE | Application608ac3c4/upstream72d7d1e qualified across Windows x64, both Mac architectures and Linux x86_64/aarch64. All required package formats, actual installed lifecycle/data preservation/removal, both-engine native pictures/workflows, clean exit, complete corresponding sources, symbols and runtime/license/architecture audits pass. Compiler-free Linux continuations preserve exact runtime bytes. M15-reconciliation-608.json binds the inspected receipts. | None. | No current acceptance blockers or deferrals. Historical unreproduced Intel shutdown fault is disclosed without a cause/repair claim; direct user instruction rejects a blanket release hold. |
+| M16 Integrated desktop release | ACTIVE | M15 complete; all qualified assets staged for normal1.1.12. README platform downloads, original YouTube/Figma references, native screenshots and comparison provenance updated. | Publish the complete normal release, independently retrieve/verify its assets, verify retained/weekly bindings and retire superseded artifacts after current consumers exit. | No implementation blocker; final delivery remains required. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch
 verifies origin Darkaxt/vlc, upstream videolan/vlc and upstream default master.

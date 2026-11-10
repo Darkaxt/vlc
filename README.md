@@ -1,16 +1,30 @@
 # Modern VLC Fork
 
-A Windows desktop fork of VLC that brings Juxtopposed's redesign to a working
+A desktop fork of VLC for Windows, macOS and Linux that brings Juxtopposed's redesign to a working
 Qt/QML player, while retaining VLC's playback capabilities and an optional MPV
 engine. This is an independent community fork, not an official VideoLAN release.
 
 ## Download
 
-Get the Windows x64 portable package from the
+Get the package for your platform from the
 [latest release](https://github.com/Darkaxt/vlc/releases/latest).
-Extract the portable ZIP and run `vlc.exe`. Corresponding source, optional debug
-symbols and SHA-256 checksums are provided separately with each release.
-The portable package includes a native module index for its exact plugins, so
+
+| Platform | Packages | Native qualification |
+| --- | --- | --- |
+| Windows x64 | Portable ZIP/7z, per-user installer | VLC/MPV playback, installer upgrade/data preservation/uninstall, Dolby Vision conversion |
+| macOS Apple Silicon | App ZIP, DMG | Native VLC/MPV playback and both package formats on macOS 15 |
+| macOS Intel | App ZIP, DMG | Native VLC/MPV playback and both package formats on macOS 15 |
+| Linux x86_64 and aarch64 | tar.xz, AppImage, DEB, RPM, Snap | Ubuntu 24.04, installed DEB, Fedora 45 RPM and strict Snap playback |
+
+For Windows portable, extract the archive and run `vlc.exe`. The installer uses
+the fork's own per-user directory and preserves its profile on upgrade/uninstall.
+macOS packages are ad-hoc signed, without Developer ID signing or notarization;
+Windows packages retain the project's unsigned distribution policy.
+Corresponding source, matching optional debug symbols and SHA-256 checksums are
+separate downloads. Download all source parts and the index for the same platform.
+These larger source/symbol archives are not required to run the player.
+
+The Windows portable package includes a native module index for its exact plugins, so
 startup does not have to load every plugin DLL just to discover its metadata.
 VLC still validates changed plugins normally.
 
@@ -45,8 +59,10 @@ The volume wedge follows the saved accent for the active engine. Closing the flo
 - Redesigned player, media library, first-run guide and settings.
 - VLC and MPV playback engines, with in-session switching that preserves position
   and play/pause state.
-- MPV playback with integrated libplacebo/libdovi processing for supported
+- Windows MPV playback with integrated libplacebo/libdovi processing for supported
   Dolby Vision sources, converted to the verified Windows SDR output path.
+- Native MPV playback on macOS/Linux in the same redesigned player. Those builds
+  use ordinary MPV; the custom Windows Dolby Vision path is not claimed there.
 - Seek previews and inline subtitle cue bands for supported text tracks, with
   cue navigation,50ms timing buttons and drag-to-sync inside the progress bar.
 - Live VLC audio visualization inside the seekbar, with colors inverted across
@@ -89,6 +105,15 @@ the engine's saved accent. Section dividers, field sizes, flip segments,
 synchronization sliders and the preset footer follow the reference. Values come
 from the current media and engine; unsupported controls remain unavailable.
 The native image is an exact crop of the rendered Qt interface.
+
+| Native macOS player | Native Linux player |
+| --- | --- |
+| ![Actual macOS MPV playback in the redesigned Qt player](doc/redesign/screenshots/player-macos-native.png) | ![Actual Linux MPV playback in the redesigned Qt player](doc/redesign/screenshots/player-linux-native.png) |
+
+These are actual native captures from the 1.1.12 qualification, using a generated
+video/subtitle fixture and isolated profiles. The Figma comparisons above remain
+the design references; these captures demonstrate the same interface on the new
+platforms, without private media.
 
 ![Live scope inside the seekbar, using a synthetic audio fixture](doc/redesign/screenshots/seekbar-scope-native.png)
 

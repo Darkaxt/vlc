@@ -2,7 +2,7 @@
   "source_commit": "f75f8fc837c31b40ab2ef663dc50a043050d8a94",
   "qt_plugin_sha256": "d93a3308f4b00aeff00818797919fdbd3c5346c6a33b1c5739b9a2b6148066e6",
   "purpose": "Selected public README comparisons requested by user; isolated empty profiles, no private media",
-  "captures_are": "Actual app-rendered Qt UI, not a desktop/video composition claim",
+  "captures_are": "Actual Qt UI and native captures; each file entry states its composition and media scope",
   "files": [
     {
       "file": "player-mpv.png",
@@ -88,6 +88,26 @@
       ],
       "source_commit": "43a84b62565c5587a79e10cbca208b1ccc91ee65",
       "applicability": "R106 actual Qt inline subtitle seekbar, synthetic embedded text fixture; no desktop/private media."
+    },
+    {
+      "file": "player-macos-native.png",
+      "capture": "7e4427a6763d48d4b285ef1e9215d8d2-native.png",
+      "capture_sha256": "6a4e93d578d2676999e614b063d1ec039aa0fea45ca72a0aa5b940ce36f9e477",
+      "sha256": "6a4e93d578d2676999e614b063d1ec039aa0fea45ca72a0aa5b940ce36f9e477",
+      "crop": null,
+      "source_commit": "608ac3c4ae5865fe5238446b3ec4313c7e22716d",
+      "artifact": 13767196096,
+      "applicability": "Actual accepted native MPV composed picture; generated native.mkv and text subtitle fixture, isolated profile; no private media or retouching"
+    },
+    {
+      "file": "player-linux-native.png",
+      "capture": "a9e49e9c40d2473db44a10965337e907-composed.png",
+      "capture_sha256": "638f74440d4c941aa949617a81915e0198c6e2fcc03255e323e1856f50457baa",
+      "sha256": "638f74440d4c941aa949617a81915e0198c6e2fcc03255e323e1856f50457baa",
+      "crop": null,
+      "source_commit": "608ac3c4ae5865fe5238446b3ec4313c7e22716d",
+      "artifact": 13781125996,
+      "applicability": "Actual accepted native MPV composed picture; generated native.mkv and text subtitle fixture, isolated profile; no private media or retouching"
     }
   ]
 }

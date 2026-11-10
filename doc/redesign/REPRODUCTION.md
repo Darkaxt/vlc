@@ -1,5 +1,41 @@
 # Desktop reproduction and recovery
 
+## Current1.1.12 cohort (10 November)
+
+The frozen application/runtime commit is
+`608ac3c4ae5865fe5238446b3ec4313c7e22716d`, containing upstream
+`72d7d1e526b10bd3543641ebddd814180a6ccd12`. Later packaging/documentation
+commits do not change that compiled player. Windows source producer is
+`a683cb3c0103a9102b4fd6b9240fed0ff75efd5d`; Linux ARM continuation producer is
+`4cb109158fee38d90f4df3d72d10c1f075194cc3`, Linux x86 producer is
+`72e5f588a478e9915a87ef476d49f8c941afae75`. Each source carrier includes the
+actual separately committed producer. Both Mac packages use application608.
+
+Run42842708115 is the original x86 packaging continuation. It restores the
+retained608 native build, recovers authenticated/hash-bound Debian originals
+from artifact13666219755, and uses `resume-packages` without invoking the player
+compiler. It must not be replaced by another normal build. ARM42827330717 and
+both Mac jobs in42814777751 already passed. Reuse their inspected qualification;
+do not repeat platform checks merely because a report or documentation changes.
+
+Windows normal108/14a1428b669c7fa57c65305c5b17aa27 completed on the native-ext4
+cohort. Its normal runtime,410 plugins and417 split-symbol mappings are retained
+at the existing build binding. Final archives are under
+`D:/VLC-Redesign/build/windows-x64/scratch-share/release-1.1.12-608ac3c4` and the
+NSIS setup under `scratch-share/installer-1.1.12-608ac3c4`. No NTFS compilation,
+cold SDK setup, resource increase or configure rerun is part of this continuation.
+
+Installed verification used owned guestbbd66aae0d45654300cfb7bb96175a88. Actual
+install/upgrade/data preservation/uninstall,1646-member identity and both-engine
+natural EOF/Qt shutdown passed. Its installed VLC image was inspected; current
+MPV presentation is reused from the exact same installed/portable manifest and
+Qt image. The extra uncompleted installed MPV screenshot is not called a passing
+capture. `windows-608-final-reconciliation.json` records this reuse explicitly.
+The guest completed0 with tree exit verified; it is not a resumable live guest.
+Coordinator0.27.3 cutover is complete. The spent mapped runtime was retired with
+transactioned87cd49e1793acf8030f1c885f49958 (371439818 bytes, no residuals);
+small qualification receipts/logs/profile and the current deliverables remain.
+
 ## Native desktop port in progress (M15, 8 November)
 
 9 November Windows installer review: do not ask the user to open guest/review
