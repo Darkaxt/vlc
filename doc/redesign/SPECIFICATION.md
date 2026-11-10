@@ -5,9 +5,10 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 ## Authority and current authorization
 
 10 November user clarification: weekly maintenance must integrate and deliver
-verified upstream changes, not stop at a backlog count. The current sole owner
-integrates them within ACTIVE M15; another active writer still prohibits competing
-mutation. Pin upstream master72d7d1e526b10bd3543641ebddd814180a6ccd12 (17 commits
+verified upstream changes, not stop at a backlog count. The sole owner integrated
+this scope within M15 (now COMPLETE; M16 delivery also COMPLETE); another active
+writer still prohibits competing mutation. Pin upstream
+master72d7d1e526b10bd3543641ebddd814180a6ccd12 (17 commits
 beyond978212a4), preserve the Figma design, engines, profiles and retained objects,
 and verify the affected integrated package cohort before the normal1.1.12 release.
 The user rejected withholding all platforms, including Mac, for the historical

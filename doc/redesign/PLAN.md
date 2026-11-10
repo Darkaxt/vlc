@@ -1,6 +1,38 @@
 # VLC redesign stages and reconciliation
 
-**10 November current qualification: M15 COMPLETE; M16 ACTIVE;1.1.12 unpublished.**
+**10 November delivery: M15 COMPLETE; M16 COMPLETE; normal1.1.12 published and independently verified.**
+
+Normal release [redesign-v1.1.12](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.12)
+delivers Windows x64, macOS Apple Silicon/Intel and Linux x86_64/aarch64 with all35
+qualified packages, complete corresponding sources, optional symbols and checksums.
+Every published asset was independently downloaded and SHA256 matched; the
+published Windows ZIP passed fresh unprimed both-engine EOF/resources/Qt exit0.
+Actual current native pictures are reused only after whole-package identity;
+the inactive-desktop MPV capture limitation is preserved, not called a picture pass.
+README includes the original YouTube/Figma credits, comparisons and actual native
+Mac/Linux screenshots. Both remote branches are synchronized; application/tag
+source remains608ac3c4, separate packager producers remain in the delivered manifest.
+
+Read-only retained verification ef4a37957ec6c5c06267a08b64d139a2 completed0:
+source/configuration,410 plugins,417 stripped PE/symbol mappings, current codec
+and image link maps pass; group empty, no OOM, private mounts released. No build
+or initialization occurred. Native runtime is `/scratch/upstream-1.1.12-608ac3c4/runtime`,
+symbols its sibling `upstream-1.1.12-608ac3c4-symbols`; canonical pipeline remains
+`/scratch/preview-1.1.8/compilation`, normal108 complete and next109 absent.
+Windows mirror is `D:/VLC-Redesign/build/windows-x64/scratch-share/delivered-1.1.12`.
+The weekly automation retains its Monday schedule and now binds this delivery;
+the sole owner must integrate compatible upstream changes, not merely count them.
+Older1.1.11 release entry was retired with Git tags/history preserved. Qualified
+evidence and recovery receipts are retained under `D:/VLC-Redesign/releases/1.1.12/verification`.
+Spent staging and obsolete local1.1.11 packages were retired transactionally after
+consumer checks; `M16-delivery-closure.json` records exact totals and receipt IDs.
+Historical M6 native Linux cleanup-backend residuals remain explicitly inventoried;
+they do not authorize raw deletion or disposal of the continuing native build.
+No further crash census, tiny UI review, taskbar-size experiment or player rebuild
+is required for this delivered cohort. S9 remains NOT STARTED.
+
+Historical qualification checkpoints follow; their pending wording is superseded
+by the delivered state above.
 
 Final M15 reconciliation passed for the frozen application608ac3c4 across Windows x64,
 Mac Apple Silicon/Intel and Linux x86_64/aarch64. Linux x86 continuation
@@ -1963,7 +1995,7 @@ implementation stage only.
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
 | M15 Native desktop engines and packages | COMPLETE | Application608ac3c4/upstream72d7d1e qualified across Windows x64, both Mac architectures and Linux x86_64/aarch64. All required package formats, actual installed lifecycle/data preservation/removal, both-engine native pictures/workflows, clean exit, complete corresponding sources, symbols and runtime/license/architecture audits pass. Compiler-free Linux continuations preserve exact runtime bytes. M15-reconciliation-608.json binds the inspected receipts. | None. | No current acceptance blockers or deferrals. Historical unreproduced Intel shutdown fault is disclosed without a cause/repair claim; direct user instruction rejects a blanket release hold. |
-| M16 Integrated desktop release | ACTIVE | M15 complete; all qualified assets staged for normal1.1.12. README platform downloads, original YouTube/Figma references, native screenshots and comparison provenance updated. | Publish the complete normal release, independently retrieve/verify its assets, verify retained/weekly bindings and retire superseded artifacts after current consumers exit. | No implementation blocker; final delivery remains required. |
+| M16 Integrated desktop release | COMPLETE | Normal1.1.12 published across all five native targets; all35 independent downloads hash-verified, fresh delivered Windows lifecycle and actual-picture reuse reconciled; retained native/weekly binding, README references/screenshots and transactional retirement verified. | None for this delivery. | Historical Intel incident disclosed; M6 native cleanup limitation remains explicitly recorded. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch
 verifies origin Darkaxt/vlc, upstream videolan/vlc and upstream default master.

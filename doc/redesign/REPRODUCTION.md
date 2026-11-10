@@ -2,6 +2,29 @@
 
 ## Current1.1.12 cohort (10 November)
 
+Normal1.1.12 is published and all35 delivered assets were independently retrieved
+and hash-verified. Final evidence is `D:/VLC-Redesign/releases/1.1.12/verification`.
+The old1.1.11 release entry/local packages and spent staging have been retired;
+Git tags/history and required predecessor evidence are preserved. Use the current
+release `assets` directory for downloads and its separate portable folder for
+`vlc.exe`; do not use historical staging paths below as installed launchers.
+
+Retained native source is608ac3c4; normal108 is complete and next109 absent.
+Read `D:/VLC-Redesign/build/windows-x64/build-retention.json` and `native-storage.json`.
+Current private runtime is `/scratch/upstream-1.1.12-608ac3c4/runtime`, symbols
+`/scratch/upstream-1.1.12-608ac3c4-symbols`, canonical pipeline
+`/scratch/preview-1.1.8/compilation`. Windows mirror is `scratch-share/delivered-1.1.12`.
+The read-only helper is `verify-retained-build-1.1.12.py`, staged through
+`with-isolated-toolchain.py --native --scratch /mnt/d/VLC-Redesign/build/windows-x64`
+with arguments `/scratch/retention-delivery-1.1.12.json`,
+`--runtime=/scratch/upstream-1.1.12-608ac3c4/runtime` and
+`--image-link-plan=/work/build/win64/player-image-inputs.json`.
+Use the installed WSL gate and actual new source-ready receipt, not a replay of
+closed workflow ef4a37957ec6c5c06267a08b64d139a2. Its source/configuration,
+417 PE/symbol pairs and exact codec/image mappings passed without compiling;
+Linux group is empty and private mounts released. Preserve ext4 dependency objects,
+the 4GiB VM /3.5GiB workload /512MiB swap /one CPU and compiler job limits.
+
 The frozen application/runtime commit is
 `608ac3c4ae5865fe5238446b3ec4313c7e22716d`, containing upstream
 `72d7d1e526b10bd3543641ebddd814180a6ccd12`. Later packaging/documentation
