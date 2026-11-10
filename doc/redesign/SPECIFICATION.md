@@ -18,6 +18,14 @@ native UI checks still apply to both Mac architectures. Capture a newly occurrin
 fault on its original process; do not run further reproduction censuses merely
 to turn the historical incident into a blanket publication gate.
 
+10 November R113 packaging correction: source archiving must drain Git stdout
+through actual EOF before closing and awaiting its original process. The tar end
+marker is insufficient completion evidence. A packaging-only repair may archive
+the exact already-built ancestor without recompiling the player; retain that
+application commit, record the separately committed packager identity, and include
+its actual script in the source carrier. Runtime and complete dependency source
+bindings must continue to match the selected built application commit.
+
 9 November R112 Intel shutdown: normal1346 ZIP VLC exits SIGILL(-4) after
 input teardown and before Qt shutdown. The single LLDB reproduction exits0;
 it does not explain or clear the original fault. Preserve the normal archive,

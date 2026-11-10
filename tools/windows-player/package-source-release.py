@@ -38,6 +38,16 @@ class SourceReader:
         return data
 
 
+def finish_archive_process(process):
+    """Tar EOF precedes producer EOF: consume final padding before closing."""
+    try:
+        while process.stdout.read(1024 * 1024):
+            pass
+    finally:
+        process.stdout.close()
+    return process.wait()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source-commit', required=True)
@@ -59,7 +69,13 @@ def main():
     destination, scratch = args.destination.resolve(), args.scratch.resolve()
     assert destination.is_relative_to(Path('D:/VLC-Redesign'))
     assert scratch.parent.parent == Path('D:/Temp') and scratch.parent.name.startswith(('vlc-s7-', 'vlc-s8-')) and not scratch.exists()
-    assert subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip() == args.source_commit
+    packager_commit = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
+    # A packaging-only correction may archive the exact already-built ancestor.
+    # Runtime/source identity below remains bound to args.source_commit.
+    subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', args.source_commit, packager_commit], check=True)
+    packager_source = Path(__file__).read_bytes()
+    assert subprocess.check_output(['git', '-C', str(repo), 'show',
+        packager_commit + ':tools/windows-player/package-source-release.py']) == packager_source
     assert not subprocess.check_output(['git', '-C', str(repo), 'ls-tree', args.source_commit,
         '--', 'share/skins2/default/subX/font.otf']).strip(), 'Removed font must not be redistributed'
     dependencies = json.loads((args.notices / 'manifest.json').read_text())
@@ -132,8 +148,7 @@ def main():
                             if item.issym() or item.islnk():
                                 records.append({'path': relative, 'link_target': item.linkname})
             finally:
-                process.stdout.close()
-                result = process.wait()
+                result = finish_archive_process(process)
             assert result == 0, (scratch / 'git-archive.stderr').read_text(errors='replace')
         for item in selected:
             if item['archive'] in pending:
@@ -164,6 +179,7 @@ def main():
                                     'sha256': item['sha256']})
             assert not pending, 'Required source absent from the baseline package: ' + repr(sorted(pending))
         add_bytes(output, 'dependency-source-and-notice-manifest.json', (args.notices / 'manifest.json').read_bytes())
+        add_bytes(output, 'packaging/package-source-release.py', packager_source)
         if args.mpv_buildinfo:
             add_bytes(output, 'MPV-BUILDINFO.json', args.mpv_buildinfo.read_bytes())
             cohort_path = args.mpv_buildinfo.parent / 'VLC-PLUGIN-BUILDINFO.json'
@@ -197,6 +213,7 @@ def main():
             'No downloaded Delicious font, user profile, credential, task-generated playback media, SDK or VM is included.\n')
         add_bytes(output, 'README-SOURCE.txt', readme.encode())
         manifest = {'schema': 'vlc_redesign.corresponding_source.v1', 'source_commit': args.source_commit,
+            'packager_commit': packager_commit,
             'version': args.version, 'files': records,
             'host_only_inputs': dependencies['host_only_inputs'], 'private_font_payload_included': False}
         if args.baseline_source:
@@ -204,6 +221,7 @@ def main():
         info = json.dumps(manifest, indent=2).encode() + b'\n'
         add_bytes(output, 'SOURCE-MANIFEST.json', info)
     result = {'archive': str(archive), 'bytes': archive.stat().st_size, 'sha256': digest(archive),
+        'packager_commit': packager_commit,
         'source_commit': args.source_commit, 'version': args.version,
         'delivery_verification': 'Pending independent archive and published readback.'}
     (destination / 'source-package-result.json').write_text(json.dumps(result, indent=2) + '\n')

@@ -1,6 +1,30 @@
 # VLC redesign stages and reconciliation
 
 **10 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+
+Current normal runtime source is608ac3c4 (upstream72d7d1e), pushed on the native
+desktop branch. Native matrix42814777751/watch17719 is owned and running.
+Windows normal108/14a1428b669c7fa57c65305c5b17aa27/session69972 closed0:
+410 configured plugins,417 split-symbol PE mappings, no OOM, group empty and
+private mounts released. Player step625s/618s CPU; dependency objects retained.
+The actual portable ZIP's fresh-profile VLC+ML EOF/Qt shutdown passed. NSIS
+9a97cb5ebd9c905c401d16883e62863c/session17337 is packaging that payload.
+Readiness293ef03668f5db2e068aca7750e507c2 owns both finite targets. Its original
+b0771104 failed before dispatch because native report scratch required D:/Temp;
+the same receipt's corrected attempt3 used exact scoped D: report/TEMP paths.
+
+R113 source packaging exposed tar EOF preceding Git stdout EOF. With the exact
+application prefix, closing at the tar marker reproduced Git141; draining10240
+remaining bytes returned0. The focused producer regression now passes. Preserve
+the built608 runtime cohort: the corrected packager archives that exact ancestor,
+records its separate committed producer and includes that producer's actual source.
+This packaging-only correction requires no new player compilation. The failed
+partial source carrier is not a deliverable and will be transactionally retired
+before corrected source assembly. Linuxx86's native build completed but source
+collection failed when Ubuntu disconnected during cjson1.7.17-1 retrieval;
+retained objects/cache and the original job evidence remain available for scoped
+transport recovery. No new player crash is inferred from that download failure.
+
 Direct user steering now requires actual upstream integration/delivery within
 M15 and rejects the historical unreproduced Intel incident as a blanket hold on
 all platforms or Mac. No release-scope question remains pending. Preserve the
