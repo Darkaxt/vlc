@@ -1,6 +1,16 @@
 # VLC redesign stages and reconciliation
 
-**9 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+**10 November current qualification: M15 ACTIVE; M16 NOT STARTED;1.1.12 unpublished.**
+Direct user steering now requires actual upstream integration/delivery within
+M15 and rejects the historical unreproduced Intel incident as a blanket hold on
+all platforms or Mac. No release-scope question remains pending. Preserve the
+incident without a repair claim and run the ordinary affected package/UI checks
+on the final integrated source. Pinned upstream master72d7d1e526b10bd3543641ebddd814180a6ccd12
+adds17 commits to978212a4: parser format correctness, GBM failure ownership,
+macOS native-library repairs, Qt page ownership and dependency generation.
+Finish the cohesive merge/integration before one coordinated affected acceptance;
+reuse native SDK/objects and preserve all prior evidence. No competing writer or
+native package job is active; only the user's Notepad++ reads this checkout.
 Normal source1346af0b includes upstream978212a. Coordinated run42597474062 is
 closed: Apple Silicon, Linuxx86 and LinuxARM succeeded. Their normal Mac ZIP/DMG
 and Linux5-format checks, real DEB/Fedora RPM/Snap installation/removal and actual
@@ -31,14 +41,15 @@ settings changes. These passing results establish no cause or repair.
 Original Intel9-view pictures render but are obscured by the prior Apple crash
 dialog; they are not unobscured native UI acceptance.
 
-M15's remaining internal acceptance blockers are the unexplained Intel fault,
-unobscured Intel UI evidence if shipped, and final scope/source reconciliation.
-The user has been asked whether to withhold Intel and release the verified
-platforms or hold the whole release. No waiver or partial-publication authority
-is inferred. No build, guest or diagnostic is left running. Verified assets and
+M15's remaining acceptance work is the current upstream merge, affected normal
+packages, unobscured Intel UI evidence and final source reconciliation. The
+historical Intel fault remains an unresolved incident, not a blanket release
+hold under the10 November user clarification. No build, guest or diagnostic is
+left running. Verified assets and
 recovery evidence are retained; the spent Intel2,561,232,158-byte transport ZIP
 was transactionally removed after independent extraction/source/runtime audits.
-M16 and publication remain pending that material scope decision.
+M16 and publication follow the integrated affected acceptance, without another
+release-scope decision.
 
 Prior diagnostic progression (historical; current next actions above):
 Linux004 closed1 in6m47s: exact native read is mapped at813,1067 on1920x1080,
@@ -1827,7 +1838,7 @@ implementation stage only.
 
 | Stage | Status | Acceptance satisfied | Acceptance remaining | Blockers/deferrals |
 | --- | --- | --- | --- | --- |
-| M15 Native desktop engines and packages | ACTIVE | Integrated upstream978212a, normal source1346. Windows portable/7z/NSIS,417 split-symbol PE mappings, native VLC+ML EOF, MPV SDR/DV and all6 P5/P8.1/P8.4 checks pass; installed VLC/MPV pictures, upgrade/profile/uninstall and guest disposal verified. MacARM ZIP/DMG both-engine EOF/signatures and actual9-view workflows pass. Linuxx86/ARM all5 formats and real DEB/RPM/Snap installation/removal pass; actual9-view workflows in both engines pass. Independent complete source, architecture, MPV runtime and license audits pass for all4 native targets. Intel's later original file-backed4-format/engine checks pass without explaining its earlier fault. | Intel shutdown diagnosis/repair, unobscured native UI acceptance if shipped, and final scope/one-revision reconciliation. | Original Intel SIGILL remains unexplained;42611631808 closed0 without a fault/core. Earlier Intel UI captures are obstructed by its crash-report dialog. Material release-scope question pending; no waiver inferred. Internal acceptance blockers; no deferrals. |
+| M15 Native desktop engines and packages | ACTIVE | Prior1346 qualification is retained: Windows portable/7z/NSIS,417 split-symbol PE mappings, native VLC+ML EOF, MPV SDR/DV and all6 P5/P8.1/P8.4 checks; installed VLC/MPV pictures, upgrade/profile/uninstall and guest disposal. MacARM ZIP/DMG both-engine EOF/signatures and actual9-view workflows. Linuxx86/ARM all5 formats, real DEB/RPM/Snap installation/removal and both-engine9-view workflows. Complete source/runtime/license audits for all4 native targets. Intel's later normal file-backed4-format/engine checks passed. | Integrate upstream72d7d1e; qualify affected normal packages on the common source, including unobscured Intel UI; final reconciliation. | New source acceptance is pending. Historical Intel SIGILL is unexplained, not claimed repaired and, per direct10Nov instruction, not a blanket release hold or reason to omit Intel. Normal Mac checks preserve the original process/output route and collect its own postmortem only on a new fault. No pending release-scope question; no deferrals. |
 | M16 Integrated desktop release | NOT STARTED | Existing release channel and standing delivery authority established. | Reconcile M15's integrated upstream/native revision, publish one normal multi-platform release with sources/symbols/checksums, independently retrieve/verify and rebind weekly maintenance/retire superseded artifacts. | Depends on M15; no partial publication. |
 
 Upstream sync requested8 November after deployment-pipeline repair. Fetch

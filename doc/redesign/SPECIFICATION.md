@@ -4,6 +4,20 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+10 November user clarification: weekly maintenance must integrate and deliver
+verified upstream changes, not stop at a backlog count. The current sole owner
+integrates them within ACTIVE M15; another active writer still prohibits competing
+mutation. Pin upstream master72d7d1e526b10bd3543641ebddd814180a6ccd12 (17 commits
+beyond978212a4), preserve the Figma design, engines, profiles and retained objects,
+and verify the affected integrated package cohort before the normal1.1.12 release.
+The user rejected withholding all platforms, including Mac, for the historical
+Intel shutdown incident after the same package passed subsequent normal checks.
+Retain that unexplained SIGILL and its evidence honestly; do not claim a repair,
+omit Intel or require another release-scope answer. Current normal package and
+native UI checks still apply to both Mac architectures. Capture a newly occurring
+fault on its original process; do not run further reproduction censuses merely
+to turn the historical incident into a blanket publication gate.
+
 9 November R112 Intel shutdown: normal1346 ZIP VLC exits SIGILL(-4) after
 input teardown and before Qt shutdown. The single LLDB reproduction exits0;
 it does not explain or clear the original fault. Preserve the normal archive,
