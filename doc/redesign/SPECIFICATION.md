@@ -26,6 +26,17 @@ application commit, record the separately committed packager identity, and inclu
 its actual script in the source carrier. Runtime and complete dependency source
 bindings must continue to match the selected built application commit.
 
+R113 continuation: the10 November Linux jobs completed compilation and native
+dependency audit before source transport failed (cjson disconnect on x86;
+pcre2 snapshot HTTP504 on ARM, later HTTP503). Resume the original staged
+payload and retained compiler cohort without invoking the normal build again.
+Verify its source/toolchain and native bytes before/after completing sources and
+all package formats. Explicit recovery may seed exact checksum-pinned original
+dependency archives from a previously verified source carrier, retaining that
+carrier's provenance; never substitute a newer dependency or application tree.
+Record and include a separately committed packaging producer. A completed or
+ambiguous generation must refuse this continuation instead of being overwritten.
+
 9 November R112 Intel shutdown: normal1346 ZIP VLC exits SIGILL(-4) after
 input teardown and before Qt shutdown. The single LLDB reproduction exits0;
 it does not explain or clear the original fault. Preserve the normal archive,

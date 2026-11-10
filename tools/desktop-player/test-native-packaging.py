@@ -25,6 +25,86 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_package_continuation_keeps_original_native_bytes_and_source(self):
+        root = Path(sys.argv_scratch) / ('package-resume-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'
+        source, producer = 'a' * 40, 'b' * 40
+        out = work / 'packages' / source
+        app = out / 'Modern-VLC-Fork-1.1.12-linux-x86_64'
+        app.mkdir(parents=True)
+        (root / '.desktop-toolchain').mkdir()
+        (root / '.desktop-toolchain/binding.json').write_bytes(b'exact SDK')
+        (work / 'toolchain-binding.json').write_bytes(b'exact SDK')
+        (work / 'native-build.json').write_text(json.dumps({'source_commit':source,'architecture':'x86_64'}))
+        (work / 'package-output.json').write_text(json.dumps({'source_commit':source,'directory':str(out)}))
+        binary = app / 'player'; binary.write_bytes(b'\x7fELFunchanged original native player')
+        (app / 'NATIVE-PACKAGE.json').write_text(json.dumps({
+            'state':'architecture and dependency closure verified','errors':[],
+            'architecture':'x86_64','members':[{'file':'player'}]}))
+        def git_output(*argv):
+            if 'show' in argv:
+                return '#define VERSION "1.1.12"'
+            if 'diff' in argv:
+                return 'tools/desktop-player/package-native.py'
+            return producer
+        with patch.object(package,'ROOT',root), patch.object(package,'MAC',False), \
+                patch.object(package.platform,'machine',return_value='x86_64'), \
+                patch.object(package,'output',side_effect=git_output), \
+                patch.object(package,'run') as run, \
+                patch.object(package,'finish_linux_packages') as finish, \
+                patch.object(package,'finish_package_status') as status:
+            package.resume_linux_packages(work,source)
+            finish.assert_called_once_with(work,app,out,'1.1.12','x86_64')
+            status.assert_called_once_with(work,out,'1.1.12','x86_64',source,producer)
+            run.assert_called_once_with('git','-C',root,'merge-base','--is-ancestor',source,'HEAD')
+            receipt = json.loads((work / 'package-continuation.json').read_text())
+            self.assertFalse(receipt['compiler_invoked'])
+            self.assertEqual(receipt['source_commit'],source)
+            self.assertEqual(binary.read_bytes(),b'\x7fELFunchanged original native player')
+            (out / 'PACKAGE-STATUS.json').write_text('{}')
+            with self.assertRaisesRegex(RuntimeError,'Completed or ambiguous'):
+                package.resume_linux_packages(work,source)
+
+    def test_package_continuation_rejects_changed_player_source(self):
+        # The successful fixture above exercises real files. This boundary must
+        # fail before reading or changing any staged native payload.
+        root = Path(sys.argv_scratch) / ('package-resume-reject-' + uuid.uuid4().hex)
+        work = root / '.desktop-build'; work.mkdir(parents=True)
+        source = 'a' * 40; out = work / 'packages' / source
+        (root / '.desktop-toolchain').mkdir()
+        (root / '.desktop-toolchain/binding.json').write_bytes(b'exact SDK')
+        (work / 'toolchain-binding.json').write_bytes(b'exact SDK')
+        (work / 'native-build.json').write_text(json.dumps({'source_commit':source,'architecture':'x86_64'}))
+        (work / 'package-output.json').write_text(json.dumps({'source_commit':source,'directory':str(out)}))
+        with patch.object(package,'ROOT',root), patch.object(package,'MAC',False), \
+                patch.object(package.platform,'machine',return_value='x86_64'), \
+                patch.object(package,'run'), \
+                patch.object(package,'output',return_value='modules/gui/qt/qt.cpp'), \
+                patch.object(package,'finish_linux_packages') as finish:
+            with self.assertRaisesRegex(RuntimeError,'Player/configuration source changed'):
+                package.resume_linux_packages(work,source)
+            finish.assert_not_called()
+
+    def test_archived_source_recovery_requires_current_pinned_bytes(self):
+        spec = importlib.util.spec_from_file_location('source_recovery',HERE / 'resume-linux-source-inputs.py')
+        recovery = importlib.util.module_from_spec(spec); spec.loader.exec_module(recovery)
+        value = b'original descriptor'
+        checksum = hashlib.sha256(value).hexdigest()
+        member = 'debian/example/1.0/example.dsc'
+        pin = {'source_package':'example','version':'1.0','descriptor':{
+            'url':'https://snapshot.ubuntu.com/ubuntu/date/pool/example.dsc','sha256':checksum},'files':[]}
+        work = Path(sys.argv_scratch) / ('source-seed-' + uuid.uuid4().hex)
+        data = io.BytesIO()
+        with zipfile.ZipFile(data,'w') as archive:
+            archive.writestr(member,value)
+        with zipfile.ZipFile(data) as archive:
+            copied = recovery.seed_part(archive,{member:checksum},[pin],work)
+        self.assertEqual(len(copied),1)
+        self.assertEqual(Path(copied[0]['cache']).read_bytes(),value)
+        with zipfile.ZipFile(data) as archive:
+            with self.assertRaisesRegex(RuntimeError,'differs from the current dependency pin'):
+                recovery.seed_part(archive,{member:'0' * 64},[pin],work)
+
     def test_ci_release_sources_use_the_original_asset_without_retry_or_fallback(self):
         import source_transport as transport
         target = Path('/owned/exact.download')

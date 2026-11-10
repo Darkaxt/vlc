@@ -697,6 +697,11 @@ exec "$root/bin/vlc" --intf=qt "$@"
         VLC_LIBEXEC_PATH=str(app / 'libexec/vlc')))
     verify_bundled_mpv(work, app / 'lib/mpv')
     audit_package(app, app / 'bin/vlc', arch, app / 'NATIVE-PACKAGE.json')
+    finish_linux_packages(work, app, out, version, arch)
+
+
+def finish_linux_packages(work, app, out, version, arch):
+    """Complete formats after the native payload has been staged and audited."""
     runtime_pins = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
     runtime = work / ('appimage-runtime-' + arch)
     if not runtime.exists():
@@ -768,12 +773,16 @@ tar -xzf %{{SOURCE0}} -C %{{buildroot}}
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=('stage-mpv', 'packages'))
+    parser.add_argument('operation', choices=('stage-mpv', 'packages', 'resume-packages'))
     parser.add_argument('--work', required=True, type=Path)
     parser.add_argument('--prefix', required=True, type=Path)
+    parser.add_argument('--built-source')
     args = parser.parse_args()
     if args.operation == 'stage-mpv':
         stage_mpv(args.work.resolve(), args.prefix.resolve())
+        return
+    if args.operation == 'resume-packages':
+        resume_linux_packages(args.work.resolve(), args.built_source)
         return
     version = re.search(r'"(\d+\.\d+\.\d+)"',
         (ROOT / 'modules/gui/qt/dialogs/help/fork_release.hpp').read_text()).group(1)
@@ -791,15 +800,66 @@ def main():
         package_mac(args.work, args.work / 'installed', out, version, architecture)
     else:
         package_linux(args.work, args.work / 'installed', out, version, architecture)
+    finish_package_status(args.work, out, version, architecture, commit)
+
+
+def finish_package_status(work, out, version, architecture, commit, producer=None):
     symbols = out / f'Modern-VLC-Fork-{version}-{platform.system().lower()}-{architecture}-symbols.zip'
     with zipfile.ZipFile(symbols, 'w', zipfile.ZIP_DEFLATED) as archive:
-        for path in (args.work / 'symbols').rglob('*'):
+        for path in (work / 'symbols').rglob('*'):
             if path.is_file():
-                archive.write(path, path.relative_to(args.work / 'symbols'))
+                archive.write(path, path.relative_to(work / 'symbols'))
     (out / 'PACKAGE-STATUS.json').write_text(json.dumps({
-        'version': version, 'source_commit': output('git', '-C', ROOT, 'rev-parse', 'HEAD'),
+        'version': version, 'source_commit': commit, 'packager_commit': producer or commit,
         'state': 'GENERATED; native release qualification not yet performed',
         'assets': [{'name': p.name, 'sha256': sha(p)} for p in out.iterdir() if p.is_file()]}, indent=2) + '\n')
+
+
+def resume_linux_packages(work, source):
+    if MAC or not source or not re.fullmatch('[0-9a-f]{40}', source):
+        raise RuntimeError('Resume requires the exact built Linux source')
+    built = json.loads((work / 'native-build.json').read_text())
+    pointer = json.loads((work / 'package-output.json').read_text())
+    out = work / 'packages' / source
+    arch = platform.machine()
+    if built['source_commit'] != source or pointer['source_commit'] != source or built['architecture'] != arch:
+        raise RuntimeError('Retained built source or architecture differs')
+    if Path(pointer['directory']).resolve() != out.resolve():
+        raise RuntimeError('Retained package path differs')
+    if (ROOT / '.desktop-toolchain/binding.json').read_bytes() != (work / 'toolchain-binding.json').read_bytes():
+        raise RuntimeError('Retained installed toolchain differs')
+    if (out / 'PACKAGE-STATUS.json').exists() or (work / 'linux-package-staging' / source).exists():
+        raise RuntimeError('Completed or ambiguous package generation cannot be resumed')
+    allowed = {'tools/desktop-player/package-native.py', 'tools/desktop-player/collect-native-sources.py',
+        'tools/desktop-player/resume-linux-source-inputs.py', 'tools/desktop-player/test-native-packaging.py',
+        '.github/workflows/desktop-packages.yml', 'tools/windows-player/package-source-release.py',
+        'tools/windows-player/test_source_release.py', 'tools/desktop-player/select-ci-targets.py'}
+    run('git', '-C', ROOT, 'merge-base', '--is-ancestor', source, 'HEAD')
+    changed = output('git', '-C', ROOT, 'diff', '--name-only', source, 'HEAD').splitlines()
+    if any(path not in allowed and not path.startswith('doc/redesign/') for path in changed):
+        raise RuntimeError('Player/configuration source changed; package-only continuation refused')
+    version_text = output('git', '-C', ROOT, 'show', source + ':modules/gui/qt/dialogs/help/fork_release.hpp')
+    version = re.search(r'"(\d+\.\d+\.\d+)"', version_text).group(1)
+    app = out / f'Modern-VLC-Fork-{version}-linux-{arch}'
+    audit = json.loads((app / 'NATIVE-PACKAGE.json').read_text())
+    if audit['state'] != 'architecture and dependency closure verified' or audit['errors'] or audit['architecture'] != arch:
+        raise RuntimeError('Original staged native audit did not pass')
+    if any(path.is_file() for path in out.iterdir()):
+        raise RuntimeError('Existing package files require original-output reconciliation')
+    before = {path.relative_to(app.resolve()).as_posix(): sha(path)
+              for path in {entry.resolve() for entry in app.rglob('*') if native(entry)}}
+    if not before or set(before) != {row['file'] for row in audit['members']}:
+        raise RuntimeError('Original native payload differs from its audited member set')
+    producer = output('git', '-C', ROOT, 'rev-parse', 'HEAD')
+    finish_linux_packages(work, app, out, version, arch)
+    after = {path.relative_to(app.resolve()).as_posix(): sha(path)
+             for path in {entry.resolve() for entry in app.rglob('*') if native(entry)}}
+    if before != after:
+        raise RuntimeError('Package continuation changed native player bytes')
+    receipt = {'source_commit':source, 'packager_commit':producer, 'compiler_invoked':False,
+        'native_payload_sha256':before, 'native_payload_unchanged':True}
+    (work / 'package-continuation.json').write_text(json.dumps(receipt, indent=2)+'\n')
+    finish_package_status(work, out, version, arch, source, producer)
 
 
 if __name__ == '__main__':

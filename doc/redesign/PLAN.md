@@ -8,7 +8,9 @@ Windows normal108/14a1428b669c7fa57c65305c5b17aa27/session69972 closed0:
 410 configured plugins,417 split-symbol PE mappings, no OOM, group empty and
 private mounts released. Player step625s/618s CPU; dependency objects retained.
 The actual portable ZIP's fresh-profile VLC+ML EOF/Qt shutdown passed. NSIS
-9a97cb5ebd9c905c401d16883e62863c/session17337 is packaging that payload.
+9a97cb5ebd9c905c401d16883e62863c/session17337 closed0, group empty. Its setup
+and portable/source/symbol/7z archives passed independent hash/binding checks;
+all6 current P5/P8.1/P8.4 placement/presentation/EOF/release cases pass.
 Readiness293ef03668f5db2e068aca7750e507c2 owns both finite targets. Its original
 b0771104 failed before dispatch because native report scratch required D:/Temp;
 the same receipt's corrected attempt3 used exact scoped D: report/TEMP paths.
@@ -19,11 +21,38 @@ remaining bytes returned0. The focused producer regression now passes. Preserve
 the built608 runtime cohort: the corrected packager archives that exact ancestor,
 records its separate committed producer and includes that producer's actual source.
 This packaging-only correction requires no new player compilation. The failed
-partial source carrier is not a deliverable and will be transactionally retired
-before corrected source assembly. Linuxx86's native build completed but source
+partial source carrier was transactionally retired; corrected source assembly
+completed with application608 and separate packager a683cb3c, without rebuilding.
+Linuxx86's native build completed but source
 collection failed when Ubuntu disconnected during cjson1.7.17-1 retrieval;
 retained objects/cache and the original job evidence remain available for scoped
 transport recovery. No new player crash is inferred from that download failure.
+LinuxARM also completed its build/audit before Canonical's PCRE snapshot returned
+HTTP504; a fresh exact endpoint probe returned503. The previous verified LinuxARM
+source artifact13666219755 contains the same three checksum-pinned originals.
+R113 now completes the retained partial payload directly and explicitly seeds
+only those identical originals, without compiling the player or overwriting a
+completed generation. Source/toolchain/native-byte checks and the separate
+packaging producer bind this continuation. Normal affected Linux package/UI
+qualification still follows. Do not rerun the original full build: its existing
+partial package directory would correctly reject duplicate assembly.
+
+MacARM job129825079436 passed. Both9-view native contact sheets were inspected;
+the retrieved ZIP/DMG/symbol/source assets passed hashes and complete3570-member
+source,41-member MPV closure, architecture and license audits. Spent outer ZIP
+2506101201 bytes was retired by cleanup6ff78f1532109983e393766273bfdf1e.
+Intel129825079423 reached normal ZIP/DMG runtime qualification, with no current
+fault observed at this checkpoint.
+
+Installer guest f82f3f759521df07024fb87ac32e5fc3 reached VLC EOF in headless System
+context but did not reach Qt exit. Original request c9f050fdab35506ec6642d683513b926
+and session28410 remain preserved. Supported Stop97323 is unsettled: original
+worker337472 is absent, while its exact wsb exec334184 and guest viewer303424
+remain. No direct process kill, raw wsb or host fallback is permitted. The
+installed gate recovery boundary needs diagnosis/repair before a new guest;
+prepared logged-in playback separates actual pictures from headless installer
+lifecycle. This is not an established production VLC shutdown cause. Exact
+private support packet is in installed-source-review/sandbox-stop-608-support.md.
 
 Direct user steering now requires actual upstream integration/delivery within
 M15 and rejects the historical unreproduced Intel incident as a blanket hold on

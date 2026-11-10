@@ -635,7 +635,7 @@ def collect_appimage(work, destination):
     return {'runtime_sha256': sha(binary), 'original_build': pins['original_build'], 'sources': records}
 
 
-def runtime_notices(destination, app):
+def runtime_notices(destination, app, generation):
     target = app / ('Contents/Resources/licenses' if platform.system() == 'Darwin' else 'licenses')
     target.mkdir(parents=True, exist_ok=True)
     for source, name in [('COPYING', 'GPL-2.0.txt'), ('COPYING.LIB', 'LGPL-2.1.txt'),
@@ -644,7 +644,7 @@ def runtime_notices(destination, app):
             ('modules/gui/qt/pixmaps/redesign/mpv-display-source.json', 'MPV-ICON-DISPLAY.json'),
             ('doc/redesign/resources/s7/FLUENT-ICONS-LICENSE.txt', 'FLUENT-ICONS-MIT.txt'),
             ('doc/redesign/resources/s7/THIRD-PARTY-NOTICES.md', 'THIRD-PARTY-NOTICES.md')]:
-        blob = subprocess.check_output(['git', '-C', str(ROOT), 'show', 'HEAD:' + source])
+        blob = subprocess.check_output(['git', '-C', str(ROOT), 'show', generation + ':' + source])
         (target / name).write_bytes(blob)
     # Copy actual copyright/licenses, never the source archives into the player.
     for legal in sorted(destination.rglob('*')):
@@ -717,9 +717,27 @@ def collect(work, app, out, generation):
         run('git', '-C', ROOT, 'archive', '--format=tar.gz', '--prefix=Modern-VLC-Fork/',
             '--output=' + str(application), generation)
     manifest['application'] = {'file': application.name, 'sha256': sha(application)}
+    producer = output('git', '-C', ROOT, 'rev-parse', 'HEAD')
+    recovered_inputs = work / 'source-input-recovery.json'
+    if recovered_inputs.is_file():
+        retained = destination / 'dependency-input-recovery.json'
+        shutil.copy2(recovered_inputs, retained)
+        manifest['dependency_input_recovery'] = {'file':retained.name,'sha256':sha(retained)}
+    if producer != generation:
+        scripts = ('tools/desktop-player/package-native.py', 'tools/desktop-player/collect-native-sources.py',
+                   'tools/desktop-player/resume-linux-source-inputs.py', 'tools/desktop-player/source_transport.py',
+                   'tools/desktop-player/select-ci-targets.py', '.github/workflows/desktop-packages.yml')
+        production = destination / 'packaging-producer'; production.mkdir(exist_ok=True)
+        for relative in scripts:
+            committed = subprocess.check_output(['git', '-C', str(ROOT), 'show', producer + ':' + relative])
+            if (ROOT / relative).read_bytes() != committed:
+                raise RuntimeError('Packaging producer has uncommitted changes: ' + relative)
+            target = production / relative; target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(committed)
+        manifest['packaging_producer'] = {'commit':producer, 'scripts':list(scripts)}
     manifest['status'] = 'complete'
     (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    runtime_notices(destination, app)
+    runtime_notices(destination, app, generation)
     # Preserve every source/notices/recipe member, grouped into bounded assets.
     # Compressed source archives are stored without a second compression pass.
     files = sorted(path for path in destination.rglob('*') if path.is_file() and '.git' not in path.parts

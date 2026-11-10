@@ -17,6 +17,18 @@ on:
         description: Exact source SHA of that artifact (required in package-check mode)
         type: string
         default: ''
+      resume_packages:
+        description: Complete a failed Linux source/format assembly from its exact retained build, without compiling
+        type: boolean
+        default: false
+      source_seed_artifact:
+        description: Verified prior complete source artifact for exact archived dependency inputs
+        type: string
+        default: ''
+      source_seed_commit:
+        description: Original application commit of that source artifact
+        type: string
+        default: ''
       startup_trace:
         description: Diagnose a normal native launch (Linux recovered artifact or Mac retained ZIP); not acceptance
         type: boolean
@@ -62,6 +74,10 @@ jobs:
       - id: select
         env:
           TARGET: ${{ inputs.target || 'macos-arm64' }}
+          RESUME_PACKAGES: ${{ inputs.resume_packages || false }}
+          BUILT_SOURCE: ${{ inputs.package_source }}
+          SOURCE_SEED_COMMIT: ${{ inputs.source_seed_commit }}
+          SOURCE_SEED_ARTIFACT: ${{ inputs.source_seed_artifact }}
         run: python3 tools/desktop-player/select-ci-targets.py
   build:
     needs: matrix
@@ -95,6 +111,7 @@ jobs:
         id: cache
         with:
           path: .desktop-build
+          fail-on-cache-miss: ${{ inputs.resume_packages || false }}
           key: native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'tools/desktop-player/native-inputs.json', 'contrib/src/medialibrary/**') }}-${{ github.run_id }}
           restore-keys: |
             native-${{ matrix.target }}-${{ steps.toolchain.outputs.sha256 }}-${{ hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'tools/desktop-player/native-inputs.json', 'contrib/src/medialibrary/**') }}-
@@ -102,15 +119,32 @@ jobs:
             ${{ runner.os == 'macOS' && format('native-{0}-{1}-{2}-', matrix.target, runner.os, hashFiles('configure.ac', 'modules/gui/qt/qt6.pro', 'modules/gui/qt/player/mpv/source-portable.json', 'contrib/src/medialibrary/**')) || '' }}
       - name: Check unchanged normal package for test-only repair
         id: review_reuse
+        if: ${{ !inputs.resume_packages }}
         run: python3 tools/desktop-player/reuse-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" ${{ inputs.native_ui_only && '--require-reuse' || '' }}
       - name: Verify owned native command cancellation
+        if: ${{ !inputs.resume_packages }}
         run: python3 tools/desktop-player/test-native-build-cancellation.py --receipt "$RUNNER_TEMP/native-command-cancellation.json"
       - name: Build native redesign and packages
         id: normal_build
-        if: steps.review_reuse.outputs.reuse != 'true'
+        if: ${{ !inputs.resume_packages && steps.review_reuse.outputs.reuse != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 tools/desktop-player/build-native.py --work "$GITHUB_WORKSPACE/.desktop-build"
+      - name: Recover exact archived source inputs for original Linux packaging
+        if: ${{ inputs.resume_packages && runner.os == 'Linux' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SEED_ARTIFACT: ${{ inputs.source_seed_artifact }}
+          SEED_COMMIT: ${{ inputs.source_seed_commit }}
+          BUILT_SOURCE: ${{ inputs.package_source }}
+        run: python3 tools/desktop-player/resume-linux-source-inputs.py --artifact "$SEED_ARTIFACT" --source "$SEED_COMMIT" --built-source "$BUILT_SOURCE" --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/original-source-recovery"
+      - name: Complete original Linux packages without rebuilding the player
+        id: packaging_resume
+        if: ${{ inputs.resume_packages }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILT_SOURCE: ${{ inputs.package_source }}
+        run: python3 tools/desktop-player/package-native.py resume-packages --work "$GITHUB_WORKSPACE/.desktop-build" --prefix "$GITHUB_WORKSPACE/.desktop-build/deps" --built-source "$BUILT_SOURCE"
       - name: Verify recovered normal macOS ZIP and DMG applications
         if: ${{ runner.os == 'macOS' && !inputs.startup_trace && !inputs.mac_fault_trace }}
         run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --capture-core
@@ -124,10 +158,10 @@ jobs:
         if: ${{ !cancelled() && runner.os == 'macOS' && !inputs.startup_trace && !inputs.mac_fault_trace && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: python3 tools/desktop-player/prepare-native-review.py --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Install Linux crash observer
-        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
+        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.packaging_resume.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: sudo -n apt-get install -y --no-upgrade --no-install-recommends gdb
       - name: Exercise the actual Linux player on its owned display
-        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
+        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.normal_build.outcome == 'success' || steps.packaging_resume.outcome == 'success' || steps.review_reuse.outputs.reuse == 'true') }}
         run: xvfb-run -a -s '-screen 0 1920x1080x24 +extension GLX' /usr/bin/python3 tools/desktop-player/run-linux-review.py ${{ inputs.native_ui_only && '--ui-only' || '' }} --llvmpipe-threads "${{ inputs.llvmpipe_threads || '1' }}" --work "$GITHUB_WORKSPACE/.desktop-build" --review-root "$RUNNER_TEMP/native-player-review"
       - name: Preserve package and failure evidence
         id: native_artifacts
@@ -139,10 +173,12 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
           path: |
-            .desktop-build/packages/${{ steps.review_reuse.outputs.normal_generation || github.sha }}/**
+            .desktop-build/packages/${{ inputs.resume_packages && inputs.package_source || steps.review_reuse.outputs.normal_generation || github.sha }}/**
             .desktop-build/native-build.json
             .desktop-build/generation-retention.json
             .desktop-build/package-output.json
+            .desktop-build/package-continuation.json
+            .desktop-build/source-input-recovery.json
             .desktop-build/review-reuse.json
             .desktop-build/qml-deployment/${{ steps.review_reuse.outputs.normal_generation || github.sha }}.json
             .desktop-build/native-link-bindings.json
@@ -182,7 +218,7 @@ jobs:
             ${{ runner.temp }}/native-command-cancellation.json
       - name: Separate uploaded package copies from compiler continuation
         if: ${{ always() && steps.native_artifacts.outcome == 'success' }}
-        run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --uploaded-artifact "${{ steps.native_artifacts.outputs.artifact-id }}" --normal-source "${{ steps.review_reuse.outputs.normal_generation || github.sha }}"
+        run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --uploaded-artifact "${{ steps.native_artifacts.outputs.artifact-id }}" --normal-source "${{ inputs.resume_packages && inputs.package_source || steps.review_reuse.outputs.normal_generation || github.sha }}"
       - name: Retain original native build for repair and resumption
         id: saved_cache
         if: always()
