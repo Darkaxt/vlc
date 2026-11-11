@@ -126,6 +126,10 @@ public:
     bool m_mpvVolumeReady = false;
     bool m_mpvHistoryReady = false;
     double m_mpvResumePosition = 0.;
+    bool m_favorite = false;
+    bool m_favoriteAvailable = false;
+    bool m_favoriteInput = false;
+    quint64 m_favoriteRevision = 0;
 
     //callbacks
     vlc_player_listener_id* m_player_listener = nullptr;

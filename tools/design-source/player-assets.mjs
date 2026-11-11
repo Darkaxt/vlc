@@ -13,6 +13,7 @@ export const icons = [
   ['2115:7492', 'snapshot'], ['2127:7779', 'bookmark'],
   ['2146:9032', 'hdr'], ['2154:9680', 'zoom'], ['6073:14046', 'quit'],
   ['2139:8439', 'pip'],
+  ['2430:14629', 'favorite'], ['2430:14666', 'favorite-active'],
   ['2437:14888', 'edit'],
   ['2139:8985', 'settings-info'], ['1803:2957', 'settings-general'], ['999:4960', 'settings-interface'],
   ['3046:10386', 'settings-privacy'], ['1089:4450', 'settings-controls'],

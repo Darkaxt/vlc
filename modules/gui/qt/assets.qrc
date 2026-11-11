@@ -55,6 +55,10 @@
         <file alias="speed.svg">pixmaps/redesign/speed.svg</file>
         <file alias="snapshot.svg">pixmaps/redesign/snapshot.svg</file>
         <file alias="bookmark.svg">pixmaps/redesign/bookmark.svg</file>
+        <file alias="favorite.svg">pixmaps/redesign/favorite.svg</file>
+        <file alias="favorite-active.svg">pixmaps/redesign/favorite-active.svg</file>
+        <file alias="favorite.svg">pixmaps/redesign/favorite.svg</file>
+        <file alias="favorite-active.svg">pixmaps/redesign/favorite-active.svg</file>
         <file alias="hdr.svg">pixmaps/redesign/hdr.svg</file>
         <file alias="zoom.svg">pixmaps/redesign/zoom.svg</file>
         <file alias="quit.svg">pixmaps/redesign/quit.svg</file>

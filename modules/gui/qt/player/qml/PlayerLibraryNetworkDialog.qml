@@ -47,7 +47,9 @@ T.Popup {
         hoverEnabled: true; activeFocusOnTab: true
         property bool primary: false
         Accessible.name: text; Accessible.onPressAction: clicked()
-        contentItem: Label { text: button.text; horizontalAlignment: Text.AlignHCenter; font.pixelSize: PlayerStyle.px(14); color: button.primary ? "#2e2e2e" : PlayerStyle.foreground }
+        contentItem: Label { text: button.text; horizontalAlignment: Text.AlignHCenter; font.pixelSize: PlayerStyle.px(14); // A faded accent no longer backs the dark label, so disabled
+        // text switches to the theme foreground to stay legible.
+        color: button.primary && button.enabled ? "#2e2e2e" : PlayerStyle.foreground; opacity: button.enabled ? 1 : 0.55 }
         background: Rectangle { opacity: button.enabled ? 1 : 0.25; radius: PlayerStyle.px(6); color: button.primary ? PlayerStyle.accent : button.hovered ? PlayerStyle.hover : "transparent"; border.width: button.visualFocus ? PlayerStyle.px(2) : 0; border.color: PlayerStyle.accent }
     }
     contentItem: ColumnLayout {

@@ -233,6 +233,9 @@ public:
     Q_PROPERTY(VLCTime ABLoopA READ getABLoopA NOTIFY ABLoopAChanged FINAL)
     Q_PROPERTY(VLCTime ABLoopB READ getABLoopB NOTIFY ABLoopBChanged FINAL)
     Q_PROPERTY(bool recording READ isRecording WRITE setRecording NOTIFY recordingChanged FINAL)
+    // Media-library favorite state of the current input, for either engine.
+    Q_PROPERTY(bool currentFavorite READ isCurrentFavorite NOTIFY currentFavoriteChanged FINAL)
+    Q_PROPERTY(bool currentFavoriteAvailable READ isCurrentFavoriteAvailable NOTIFY currentFavoriteChanged FINAL)
     Q_PROPERTY(RendererManager* rendererManager READ getRendererManager CONSTANT FINAL)
 
     // High resolution time fed by SMPTE Timer
@@ -440,6 +443,10 @@ public slots:
     //misc
     bool isRecording() const;
     void setRecording(bool record);
+    bool isCurrentFavorite() const;
+    bool isCurrentFavoriteAvailable() const;
+    void toggleCurrentFavorite();
+    void refreshCurrentFavorite();
     void setABloopState(ABLoopState);
     ABLoopState getABloopState() const;
     VLCTime getABLoopA() const;
@@ -534,6 +541,7 @@ signals:
 
     //misc
     void recordingChanged( bool );
+    void currentFavoriteChanged();
     void ABLoopStateChanged(ABLoopState);
     void ABLoopAChanged(VLCTime);
     void ABLoopBChanged(VLCTime);

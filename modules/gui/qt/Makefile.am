@@ -871,6 +871,8 @@ libqt_plugin_la_RES = \
 	pixmaps/redesign/speed.svg \
 	pixmaps/redesign/snapshot.svg \
 	pixmaps/redesign/bookmark.svg \
+	pixmaps/redesign/favorite.svg \
+	pixmaps/redesign/favorite-active.svg \
 	pixmaps/redesign/hdr.svg \
 	pixmaps/redesign/zoom.svg \
 	pixmaps/redesign/quit.svg \

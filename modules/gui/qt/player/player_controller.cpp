@@ -25,6 +25,7 @@
 #include "player_controller_p.hpp"
 #include "mpv_playback.hpp"
 #include "maininterface/mainctx.hpp"
+#include "medialibrary/medialib.hpp"
 #include "util/shared_input_item.hpp"
 
 #include <vlc_actions.h>           /* ACTION_ID */
@@ -1287,6 +1288,11 @@ PlayerController::PlayerController( qt_intf_t *_p_intf )
     connect( &d_ptr->m_position_timer, &QTimer::timeout, this, &PlayerController::updatePositionFromTimer );
     connect( &d_ptr->m_time_timer, &QTimer::timeout, this, &PlayerController::updateTimeFromTimer );
     connect(this, &PlayerController::inputChanged, this, &PlayerController::stillImagePreviewChanged);
+    // Both engines emit inputChanged; the stored URL outlives a stopped input.
+    connect(this, &PlayerController::inputChanged, this, [this](bool hasInput) {
+        d_ptr->m_favoriteInput = hasInput;
+        refreshCurrentFavorite();
+    });
     connect(this, &PlayerController::lengthChanged, this, &PlayerController::stillImagePreviewChanged);
     connect(this, &PlayerController::playbackEngineChanged, this, &PlayerController::stillImagePreviewChanged);
     connect(this, &PlayerController::stillImagePreviewChanged, this, [this] { emit seekableChanged(isSeekable()); });
@@ -2111,6 +2117,69 @@ void PlayerController::restorePlaybackPos()
     if (!synced)
         return;
     vlc_player_RestorePlaybackPos( d->m_player );
+}
+
+bool PlayerController::isCurrentFavorite() const
+{
+    Q_D(const PlayerController);
+    return d->m_favorite;
+}
+
+bool PlayerController::isCurrentFavoriteAvailable() const
+{
+    Q_D(const PlayerController);
+    return d->m_favoriteAvailable;
+}
+
+void PlayerController::refreshCurrentFavorite()
+{
+    Q_D(PlayerController);
+    const auto revision = ++d->m_favoriteRevision;
+    auto *library = d->p_intf->p_mi ? d->p_intf->p_mi->getMediaLibrary() : nullptr;
+    const bool available = library && d->m_favoriteInput && d->m_url.isValid() && !d->m_url.isEmpty();
+    if (d->m_favorite || d->m_favoriteAvailable != available) {
+        d->m_favorite = false;
+        d->m_favoriteAvailable = available;
+        emit currentFavoriteChanged();
+    }
+    if (!available)
+        return;
+    struct State { bool favorite = false; };
+    library->runOnMLThread<State>(this, [uri = d->m_url.toEncoded()](vlc_medialibrary_t *ml, State &state) {
+        auto *media = vlc_ml_get_media_by_mrl(ml, uri.constData());
+        if (!media) return;
+        state.favorite = media->b_is_favorite;
+        vlc_ml_media_release(media);
+    }, [this, d, revision](quint64, State &state) {
+        if (revision != d->m_favoriteRevision || d->m_favorite == state.favorite) return;
+        d->m_favorite = state.favorite;
+        emit currentFavoriteChanged();
+    }, "favorite");
+}
+
+void PlayerController::toggleCurrentFavorite()
+{
+    Q_D(PlayerController);
+    auto *library = d->p_intf->p_mi ? d->p_intf->p_mi->getMediaLibrary() : nullptr;
+    if (!library || !d->m_favoriteAvailable) return;
+    const bool target = !d->m_favorite;
+    const auto revision = ++d->m_favoriteRevision;
+    d->m_favorite = target;
+    emit currentFavoriteChanged();
+    struct State { bool applied = false; };
+    // An explicit favorite registers non-indexed input as external media,
+    // exactly as playback history does, so both engines share one record.
+    library->runOnMLThread<State>(this, [uri = d->m_url.toEncoded(), target](vlc_medialibrary_t *ml, State &state) {
+        auto *media = vlc_ml_get_media_by_mrl(ml, uri.constData());
+        if (!media) media = vlc_ml_new_external_media(ml, uri.constData());
+        if (!media) return;
+        state.applied = vlc_ml_media_set_favorite(ml, media->i_id, target) == VLC_SUCCESS;
+        vlc_ml_media_release(media);
+    }, [this, d, revision, target](quint64, State &state) {
+        if (state.applied || revision != d->m_favoriteRevision) return;
+        d->m_favorite = !target;
+        emit currentFavoriteChanged();
+    }, "favorite");
 }
 
 void PlayerController::acknowledgeRestoreCallback()

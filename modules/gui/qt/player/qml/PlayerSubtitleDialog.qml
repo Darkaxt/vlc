@@ -163,7 +163,7 @@ T.Popup {
             RowLayout {
                 Layout.fillWidth: true
                 Field { id: query; objectName: "remoteSubtitleQuery"; Layout.fillWidth: true; placeholderText: qsTr("Title"); onAccepted: if (!RemoteSubtitles.busy) RemoteSubtitles.search(text, language.text) }
-                Field { id: language; Layout.preferredWidth: PlayerStyle.px(90); placeholderText: qsTr("Language"); text: "en"; maximumLength: 8 }
+                Field { id: language; Layout.preferredWidth: PlayerStyle.px(90); placeholderText: qsTr("Language"); maximumLength: 8; text: { const parts = Qt.locale().name.toLowerCase().split("_"); return ["pt","zh"].includes(parts[0]) && parts.length > 1 ? parts[0] + "-" + parts[1] : (/^[a-z]{2,3}$/.test(parts[0]) ? parts[0] : "en") } }
                 Button { objectName: "remoteSubtitleSearch"; text: qsTr("Search"); enabled: RemoteSubtitles.configured && !RemoteSubtitles.busy && query.text.length >= 2; onClicked: RemoteSubtitles.search(query.text, language.text) }
             }
             Label { objectName: "remoteSubtitleStatus"; Layout.fillWidth: true; text: RemoteSubtitles.status; color: PlayerStyle.sectionForeground; font.pixelSize: PlayerStyle.px(12) }

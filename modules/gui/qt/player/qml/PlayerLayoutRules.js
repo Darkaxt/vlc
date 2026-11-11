@@ -15,11 +15,11 @@ var zones=['topLeft','topCenter','topRight','bottomLeft','bottomCenter','bottomR
 var controls=['more','browser','divider','folder','filename','fullscreen','previous','play','next','elapsed','seek','duration',
               'mute','volume','tools','subtitles','audio','queue','spacer','speed','forward10','backward10','forward15','backward15',
               'stop','repeat','shuffle','record','snapshot','pip','hdr','zoom','sidebar','quit','settings','home','thumbnail','artist',
-              'playlistname','properties','replay','chapters','bookmark','bookmarks','playlists']
+              'playlistname','properties','replay','chapters','favorite','bookmark','bookmarks','playlists']
 var palette=['spacer','divider','speed','forward10','backward10','forward15','backward15','stop','repeat',
              'shuffle','record','snapshot','pip','hdr','zoom','sidebar','quit','settings',
              'home','thumbnail','filename','artist','folder','playlistname','properties','replay','chapters',
-             'bookmark','bookmarks','playlists']
+             'favorite','bookmark','bookmarks','playlists']
 function copy(value) { return JSON.parse(JSON.stringify(value)) }
 function exactKeys(value,keys) {
     return value && typeof value==='object' && !Array.isArray(value)

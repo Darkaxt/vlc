@@ -39,7 +39,7 @@ void MLMediaModel::setMediaIsFavorite(const QModelIndex &index, bool isFavorite)
     m_mediaLib->runOnMLThread(this, [id = media->getId().id, isFavorite](vlc_medialibrary_t *ml)
     {
         vlc_ml_media_set_favorite(ml, id, isFavorite);
-    });
+    }, "favorite"); // ordered with the player's favorite-state refresh
 
     media->setIsFavorite(isFavorite);
 

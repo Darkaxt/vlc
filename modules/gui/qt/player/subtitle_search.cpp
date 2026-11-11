@@ -153,12 +153,15 @@ void SubtitleSearch::request(const QByteArray &method, const QUrl &url, const QJ
 void SubtitleSearch::login(const QString &username, const QString &password)
 {
     if (m_provider != 0) { fail(tr("This provider uses its API key; an account password is not sent.")); return; }
-    cancel(); m_status = tr("Signing in to OpenSubtitles…");
+    // A new sign-in must not carry a previous account's token or VIP host.
+    cancel(); m_token.clear(); m_openSubtitlesHost = QStringLiteral("api.opensubtitles.com");
+    m_status = tr("Signing in to OpenSubtitles…");
     request("POST", api(QStringLiteral("/login")), {{QStringLiteral("username"), username}, {QStringLiteral("password"), password}}, true,
         [this](const QByteArray &bytes, const QByteArray &) {
             QJsonObject data; if (!parseResponse(bytes, data)) return;
             const auto token = data.value(QStringLiteral("token")).toString().toUtf8();
-            const auto host = data.value(QStringLiteral("base_url")).toString();
+            // Accept the documented host with or without scheme/trailing slash.
+            const auto host = QUrl::fromUserInput(data.value(QStringLiteral("base_url")).toString()).host().toLower();
             if (token.isEmpty() || (host != QLatin1String("api.opensubtitles.com") && host != QLatin1String("vip-api.opensubtitles.com"))) { fail(tr("OpenSubtitles returned an unsupported login response.")); return; }
             m_token = token; m_openSubtitlesHost = host; m_status = tr("Signed in for this VLC session.");
         });

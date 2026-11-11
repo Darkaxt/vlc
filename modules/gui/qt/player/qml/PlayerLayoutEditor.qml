@@ -12,7 +12,7 @@ Item {
     id:editor
     visible:PlayerCustomization.editing
     property string selectedControl:"spacer"
-    readonly property var paletteText:({speed:qsTr("Playback\nSpeed"),forward10:qsTr("Forward\n10s"),backward10:qsTr("Backward\n10s"),forward15:qsTr("Forward\n15s"),backward15:qsTr("Backward\n15s"),pip:qsTr("Picture in\nPicture"),sidebar:qsTr("Right\nSidebar"),playlistname:qsTr("Playlist\nName")})
+    readonly property var paletteText:({speed:qsTr("Playback\nSpeed"),forward10:qsTr("Forward\n10s"),backward10:qsTr("Backward\n10s"),forward15:qsTr("Forward\n15s"),backward15:qsTr("Backward\n15s"),pip:qsTr("Picture in\nPicture"),sidebar:qsTr("Right\nSidebar"),playlistname:qsTr("Playlist\nName"),favorite:qsTr("Favorite")})
     function removeDropped(zone,index){PlayerCustomization.remove(zone,index)}
     readonly property var available:Rules.palette.concat(Rules.controls.filter(key=>Rules.palette.indexOf(key)<0&&!PlayerCustomization.contains(key)))
     PlayerLayoutControl{id:catalog;controlKey:"divider";visible:false}
@@ -90,7 +90,7 @@ Item {
                                     anchors.horizontalCenter:parent.horizontalCenter;width:choice.iconWidth;height:choice.iconHeight
                                     Rectangle{anchors.fill:parent;color:choice.modelData==="thumbnail"?PlayerStyle.hover:"transparent";border.width:PlayerStyle.px(1);border.color:PlayerStyle.sectionForeground}
                                     Rectangle{anchors.centerIn:parent;width:PlayerStyle.px(1);height:PlayerStyle.px(24);color:PlayerStyle.foreground;visible:choice.modelData==="divider"}
-                                    IconImage{smooth:false;anchors.centerIn:parent;width:PlayerStyle.px(24);height:width;visible:!["spacer","divider","thumbnail"].includes(choice.modelData);source:"qrc:/redesign/icons/"+(["filename","artist","folder","playlistname"].includes(choice.modelData)?"settings-info":catalog.glyphs[choice.modelData]||"settings-info")+".svg";color:PlayerStyle.foreground;sourceSize:Qt.size(width,height)}
+                                    IconImage{smooth:false;anchors.centerIn:parent;width:PlayerStyle.px(24);height:width;visible:!["spacer","divider","thumbnail"].includes(choice.modelData);source:"qrc:/redesign/icons/"+(["filename","artist","folder","playlistname"].includes(choice.modelData)?"settings-info":(choice.modelData==="favorite"?"favorite":catalog.glyphs[choice.modelData])||"settings-info")+".svg";color:PlayerStyle.foreground;sourceSize:Qt.size(width,height)}
                                 }
                                 Text{width:parent.width;text:editor.paletteText[choice.modelData]||choice.label;horizontalAlignment:Text.AlignHCenter;color:PlayerStyle.foreground;font.family:PlayerStyle.fontFamily;font.pixelSize:PlayerStyle.px(14);wrapMode:Text.WordWrap;textFormat:Text.PlainText}
                             }

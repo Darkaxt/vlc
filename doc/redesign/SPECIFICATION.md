@@ -1354,6 +1354,19 @@ Video reference: 9:22-13:54.
 | R32 | Create/manage stored playlists; add selections from other views; pin playlists and folders; show recent and resumable media on home. Define watched state and pin persistence and honor history/privacy choices. Verify restart persistence and queue/playlist independence. | S4 |
 | R33 | Provide clear entry points for files, folders, discs, network URL/playlist, capture device, clipboard, recent media, conversion and streaming/casting where upstream supports them. Separate the ordinary open path from conversion/stream configuration. Verify one real network playlist and retain the complete upstream action inventory; do not ship third-party channel lists by default. | S4, S5 |
 
+The library item context menu follows the Figma file context menu with the
+existing media-library owners: Play, Enqueue, Add to playlist, Pin/unpin,
+Add to / Remove from favorites (`MLMediaModel::setMediaIsFavorite`), Mark as
+watched/unwatched for video, Stream… and Convert / Save… (the upstream
+streaming dialog), Show in File Explorer/Finder and Go to source for local media,
+and Properties & metadata (the upstream media information dialog). The optional
+`favorite` player control (Figma `2430:14629`/`2430:14666`) mirrors and toggles
+the playing input's library favorite for both VLC and MPV; non-indexed input is
+registered as external media exactly as playback history does. Library and player
+favorite writes share one ordered ML queue. Still open from the same Figma menu:
+Add Subtitle/Audio Tracks for non-playing items, playlist Shuffle/Export, and the
+Add Subtitles dialog's folder/computer dropdown structure.
+
 R32's Home follows Figma `6261:15078`: Continue Watching, Listen Again and Frequently Visited Folders. The folder shelf ranks indexed, present local folders by their media's native playback counts, then last-played date, using only media still in native history. It is empty after history clearing and is not instantiated when playback history is disabled. Pins remain navigation shortcuts, independently of this ranking. Folder addresses are available through Go to folder address and Alt+D; the default chrome retains Figma's breadcrumb row.
 
 ## Bookmarks shortcuts and preferences

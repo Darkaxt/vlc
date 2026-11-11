@@ -94,7 +94,7 @@ void PlayerController::initializeMpvPlayback()
             cancelEngineRestart();
             d->m_mpvHistoryReady = d->m_mpvLoaded;
         }
-        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playback", "%s", qtu(error));
+        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playback")), "%s", qtu(error));
     });
     connect(d->m_mpv.get(), &MpvPlayback::changed, this, [this, d](const QString &name, const QVariant &value) {
         if (name == QStringLiteral("time-pos") || name == QStringLiteral("duration")) {
@@ -217,7 +217,7 @@ void PlayerController::initializeMpvPlayback()
         if (d->m_engineRestorePending || d->m_engineSeekPending) cancelEngineRestart();
         if (!error.isEmpty()) {
             msg_Err(d->p_intf, "MPV playback failed: %s", qtu(error));
-            vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playback", "%s", qtu(error));
+            vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playback")), "%s", qtu(error));
         }
         // A superseded input ending while its replacement playlist is being
         // parsed must not advance past the user's newly selected container.
@@ -284,7 +284,7 @@ bool PlayerController::parseMpvPlaylist(input_item_t *item, bool paused)
     if (!container) return false;
     auto *parser = d->p_intf->p_mi ? d->p_intf->p_mi->getNetworkPreparser() : nullptr;
     if (!parser) {
-        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playlist", "%s",
+        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playlist")), "%s",
             qtu(tr("VLC's playlist parser is unavailable. Switch to VLC playback or open a media file directly.")));
         return true;
     }
@@ -334,7 +334,7 @@ bool PlayerController::parseMpvPlaylist(input_item_t *item, bool paused)
         VLC_PREPARSER_TYPE_PARSE | VLC_PREPARSER_OPTION_SUBITEMS, &callbacks, context);
     if (!pending->request) {
         delete context;
-        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playlist", "%s", qtu(tr("The playlist could not be opened.")));
+        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playlist")), "%s", qtu(tr("The playlist could not be opened.")));
         return true;
     }
     d->m_mpvPlaylistRequest = pending;
@@ -342,7 +342,7 @@ bool PlayerController::parseMpvPlaylist(input_item_t *item, bool paused)
         d->m_mpvPlaylistRequest.reset();
         vlc_preparser_req_Release(pending->request);
         delete context;
-        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playlist", "%s", qtu(tr("The playlist parser could not start.")));
+        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playlist")), "%s", qtu(tr("The playlist parser could not start.")));
     }
     return true;
 }
@@ -352,7 +352,7 @@ void PlayerController::loadMpvItem(input_item_t *item, bool paused)
     Q_D(PlayerController);
     assert(d->m_mpv && item);
     if (!d->m_mpv->isAvailable()) {
-        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playback", "%s", qtu(d->m_mpv->error()));
+        vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playback")), "%s", qtu(d->m_mpv->error()));
         return;
     }
     if (d->m_currentItem.get() == item && isStarted()) { d->m_mpv->set(QStringLiteral("pause"), paused); return; }
@@ -441,7 +441,7 @@ void PlayerController::switchPlaybackEngine(const QString &engine)
             vlc::Compositor::PlatformCompositor
 #endif
         ) {
-            vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playback", "%s",
+            vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playback")), "%s",
                 qtu(tr("MPV requires this platform's native Qt video compositor. VLC remains selected.")));
             return;
         }
@@ -449,7 +449,7 @@ void PlayerController::switchPlaybackEngine(const QString &engine)
         if (!d->m_mpvCandidate->isAvailable()) {
             const auto error = d->m_mpvCandidate->error();
             d->m_mpvCandidate.reset();
-            vlc_dialog_display_error(VLC_OBJECT(d->p_intf), "MPV playback", "%s", qtu(error));
+            vlc_dialog_display_error(VLC_OBJECT(d->p_intf), qtu(tr("MPV playback")), "%s", qtu(error));
             return;
         }
     }

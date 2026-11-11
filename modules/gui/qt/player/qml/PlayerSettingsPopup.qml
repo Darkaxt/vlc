@@ -501,8 +501,8 @@ T.Popup {
                     Section { text: qsTr("Playback engine") }
                     RowLayout {
                         x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); height: PlayerStyle.px(48)
-                        Button { Layout.fillWidth: true; text: "VLC"; checked: Player.playbackEngine==="vlc"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("vlc") }
-                        Button { Layout.fillWidth: true; text: "MPV"; checked: Player.playbackEngine==="mpv"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("mpv") }
+                        Button { Layout.fillWidth: true; text: "VLC"; Accessible.description: qsTr("VLC playback engine"); Accessible.checkable: true; Accessible.checked: checked; checked: Player.playbackEngine==="vlc"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("vlc") }
+                        Button { Layout.fillWidth: true; text: "MPV"; Accessible.description: Qt.platform.os === "windows" ? qsTr("MPV playback engine with Dolby Vision") : qsTr("MPV playback engine"); Accessible.checkable: true; Accessible.checked: checked; checked: Player.playbackEngine==="mpv"; enabled: !Player.engineSwitching; onClicked: Player.switchPlaybackEngine("mpv") }
                     }
                     Label { visible: Player.engineSwitching; x: PlayerStyle.px(20); width: parent.width-PlayerStyle.px(40); text: qsTr("Switching engines… Playback will resume at the same position."); font.pixelSize: PlayerStyle.px(12); color: PlayerStyle.sectionForeground }
                     Toggle { text: qsTr("Show Audio Waveform"); checked: MediaTools.waveformVisible; onToggled: enabled => MediaTools.waveformVisible=enabled }

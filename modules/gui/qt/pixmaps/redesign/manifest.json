@@ -99,6 +99,22 @@
       "sha256": "44729c627aca19824229926a8b4acb4f8790df23deef96b92648eb63b89b530d"
     },
     {
+      "id": "2430:14629",
+      "name": "name=favorite, direction=default, state=default, value=default, EQ=default, two-tone=no",
+      "filename": "favorite.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "723e5556a183dfecda367f121b6b76c3985824ffcf361de0ae28cd5c1c37fa1e"
+    },
+    {
+      "id": "2430:14666",
+      "name": "name=favorite, direction=default, state=active, value=default, EQ=default, two-tone=no",
+      "filename": "favorite-active.svg",
+      "width": 24,
+      "height": 24,
+      "sha256": "fbcb13e853b0d174ef12ee6b060de44816fa65564a200650bc797e1430323d66"
+    },
+    {
       "id": "2437:14888",
       "name": "name=edit, direction=default, state=default, value=default, EQ=default, two-tone=no",
       "filename": "edit.svg",

@@ -2,6 +2,25 @@
 
 **10 November delivery: M15 COMPLETE; M16 COMPLETE; normal1.1.12 published and independently verified.**
 
+**11 November post-1.1.12 Figma/QA follow-up (branch `claude/figma-qa-fixes`): SOURCE INTEGRATED, COMPILE-CHECKED; RUNTIME UNVERIFIED; NOT RELEASED.**
+Implemented: optional `favorite` player control for both engines and the Figma
+library item-menu actions (favorites, watched, Stream/Convert, show in folder,
+go to source, properties); legible disabled network-dialog Save; MPV surface
+resize no longer blocks the UI while the render thread waits on a Qt window call
+(confirmed deadlock cycle with `compositor.cpp` window Enable/Disable); release-build
+guard in `~MpvPlayback`; OpenSubtitles re-login clears the old token/VIP host and
+parses `base_url`; translatable MPV dialog titles; engine buttons expose checked
+state; subtitle search language follows the UI locale. QA items found not to be
+defects: preparser release order, thumbnailer callback lifetime, icon-button names.
+Evidence: icon extractor tests 9/9 and `check-customization.mjs` pass; WSL gate
+ticket `e3dc03037503fa0466a8d363a1d0a1d3` attempt 3 (workflow `7e289d9e9e6195285b89c260cdda36fb`,
+exit 0) compiled all changed C++ (including moc) `-fsyntax-only` with the retained
+1.1.12 flags, 0 warnings, and all changed QML/JS with the pinned qmlcachegen with no
+new diagnostics. Remaining: full plugin build, both-engine native runtime check of
+the new menu/control (including `streamingDialog` URL conversion from QML), Figma
+Add Subtitle/Audio Tracks for non-playing items, playlist Shuffle/Export, and the
+Add Subtitles dialog dropdown/breadcrumb structure.
+
 Normal release [redesign-v1.1.12](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.12)
 delivers Windows x64, macOS Apple Silicon/Intel and Linux x86_64/aarch64 with all35
 qualified packages, complete corresponding sources, optional symbols and checksums.

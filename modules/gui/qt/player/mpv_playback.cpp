@@ -19,6 +19,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QWaitCondition>
 #include <QSize>
 #include <QUrl>
 #include <atomic>
@@ -207,7 +208,11 @@ class Surface final : public QObject {
     mpv_render_context *render = nullptr;
     vlc_window_t *window = nullptr;
     bool enabled = false, closing = false, firstPresented = false;
+    // True while this render thread is inside a Qt window call, which waits
+    // for the UI thread. The UI must not wait for this thread meanwhile.
+    bool windowCallActive = false;
     QMutex sizeLock;
+    QWaitCondition resizeDrawn;
     std::atomic_bool updatePending{false};
     ComPtr<ID3D11Device> device;
     ComPtr<ID3D11DeviceContext> deviceContext;
@@ -243,8 +248,25 @@ class Surface final : public QObject {
         // resizing/presenting on the existing render owner before that commit,
         // including while paused; a queued draw leaves an old-sized surface
         // exposed during a sidebar collapse. Never block a thread on itself.
-        if (QThread::currentThread() == self->thread()) self->draw(true);
-        else QMetaObject::invokeMethod(self, [self] { self->draw(true); }, Qt::BlockingQueuedConnection);
+        if (QThread::currentThread() == self->thread()) { self->draw(true); return; }
+        // Wait for the resized frame unless this thread blocks on the UI in
+        // vlc_window_Enable/Disable/Delete (closing or video activation);
+        // an unconditional blocking call deadlocks both threads then. The
+        // queued draw still runs; the object context drops it after deletion.
+        auto drawn = std::make_shared<bool>(false);
+        QMetaObject::invokeMethod(self, [self, drawn] {
+            self->draw(true);
+            QMutexLocker lock(&self->sizeLock);
+            *drawn = true; self->resizeDrawn.wakeAll();
+        }, Qt::QueuedConnection);
+        QMutexLocker lock(&self->sizeLock);
+        while (!*drawn && !self->closing && !self->windowCallActive)
+            self->resizeDrawn.wait(&self->sizeLock);
+    }
+    template<class F> auto windowCall(F &&call) {
+        { QMutexLocker lock(&sizeLock); windowCallActive = true; resizeDrawn.wakeAll(); }
+        struct Clear { Surface *self; ~Clear() { QMutexLocker lock(&self->sizeLock); self->windowCallActive = false; } } clear{this};
+        return call();
     }
     void draw(bool force = false) {
         QMutexLocker lock(&sizeLock);
@@ -280,10 +302,10 @@ public:
     void setVideoActive(bool active) {
         if (closing || !window || active == enabled) return;
         if (active) {
-            if (vlc_window_Enable(window) != VLC_SUCCESS) { report(tr("The embedded MPV video surface could not be enabled.")); return; }
+            if (windowCall([this] { return vlc_window_Enable(window); }) != VLC_SUCCESS) { report(tr("The embedded MPV video surface could not be enabled.")); return; }
             enabled = true;
             draw(true);
-        } else { vlc_window_Disable(window); enabled = false; firstPresented = false; }
+        } else { windowCall([this] { vlc_window_Disable(window); }); enabled = false; firstPresented = false; }
     }
     void initialize() {
         try {
@@ -322,7 +344,7 @@ public:
             }();
             const vlc_window_owner_t windowOwner{&callbacks, this};
             vlc_window_cfg_t cfg{}; cfg.width = 640; cfg.height = 360;
-            window = vlc_window_New(VLC_OBJECT(intf), "qt", &windowOwner, &cfg);
+            window = windowCall([&] { return vlc_window_New(VLC_OBJECT(intf), "qt", &windowOwner, &cfg); });
             if (!window || window->type != VLC_WINDOW_TYPE_DCOMP)
                 throw tr("MPV requires this player's DirectComposition video surface. Select VLC for another compositor.");
             visual = static_cast<IDCompositionVisual *>(window->handle.dcomp_visual);
@@ -348,6 +370,7 @@ public:
             QMutexLocker lock(&sizeLock);
             if (closing) return;
             closing = true;
+            resizeDrawn.wakeAll();
         }
         if (render) {
             api->render_context_set_update_callback(render, nullptr, nullptr);
@@ -693,12 +716,18 @@ MpvPlayback::~MpvPlayback()
     // prepareToClose must finish while the UI can service window callbacks.
     // Before the event loop has ever run, no render surface exists and the
     // native core can be destroyed directly on the constructor's owner thread.
-    if (d->player && d->events && !d->events->isRunning()) {
-        assert(!d->surface);
+    if (d->player && !d->surface && (!d->events || !d->events->isRunning())) {
         d->api->terminate_destroy(d->player); d->player = nullptr;
     }
-    assert(!d->player);
-    assert(!d->events || !d->events->isRunning());
+    // Release builds compile out assert(). An owner that skipped
+    // prepareToClose must not destroy a running reader thread (QThread aborts)
+    // or free a core it still reads: report it and leave both to process exit.
+    if (d->player || (d->events && d->events->isRunning())) {
+        msg_Err(d->intf, "MPV playback destroyed before prepareToClose completed; native resources are left to process exit");
+        assert(!"MpvPlayback destroyed before prepareToClose completed");
+        if (d->events && d->events->isRunning()) (void)d->events.release();
+        d->player = nullptr;
+    }
 }
 bool MpvPlayback::isAvailable() const { return d->player && d->error.isEmpty() && !d->closing; }
 bool MpvPlayback::isMediaLoaded() const { return isAvailable() && d->loaded; }

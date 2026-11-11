@@ -123,6 +123,19 @@ FocusScope {
     function setSelectionWatched(played) {
         for (const row of selectedRows) activeModel.setItemPlayed(activeModel.index(row,0),played)
     }
+    function selectionFavorite() {
+        if (!(activeModel instanceof MLMediaModel) || !selectedRows.length) return false
+        return selectedRows.every(row => !!activeModel.getDataAt(row).isFavorite)
+    }
+    function setSelectionFavorite(favorite) {
+        for (const row of selectedRows) activeModel.setMediaIsFavorite(activeModel.index(row,0),favorite)
+        // The playback control mirrors the playing item's library favorite.
+        Player.refreshCurrentFavorite()
+    }
+    function streamSelection(stream) {
+        const urls = selectedRows.map(row => activeModel.getDataAt(row).mrl).filter(url => !!url && url.toString() !== "")
+        if (urls.length) DialogsProvider.streamingDialog(urls, stream)
+    }
     function pin(row) {
         const data = activeModel.getDataAt(row)
         if (data.id) LibraryState.togglePin(data.id.toString(), data.title || data.name || qsTr("Untitled"), category)
@@ -599,6 +612,7 @@ FocusScope {
                             const point = mapToItem(root,event.x,event.y)
                             itemMenu.x = Math.max(PlayerStyle.px(8),Math.min(point.x,root.width-itemMenu.width-PlayerStyle.px(8)))
                             itemMenu.y = Math.max(PlayerStyle.px(8),Math.min(point.y,root.height-itemMenu.height-PlayerStyle.px(8)))
+                            itemMenu.target = root.activeModel instanceof MLMediaModel ? root.activeModel.getDataAt(entry.index) : null
                             itemMenu.open()
                         }
                     }
@@ -713,6 +727,7 @@ FocusScope {
     }
     LibraryMenu {
         id: itemMenu
+        property var target: null
         background: LibraryGlass {
             backgroundSource: root; active: itemMenu.opened; radius: PlayerStyle.px(10)
             color: PlayerStyle.dark ? Qt.rgba(25/255,25/255,25/255,0.95) : Qt.rgba(213/255,213/255,213/255,0.95)
@@ -721,6 +736,15 @@ FocusScope {
         MenuAction { text: qsTr("Enqueue"); onClicked: { root.enqueue(); itemMenu.close() } }
         MenuAction { text: qsTr("Add to playlist"); onClicked: { itemMenu.close(); playlistPicker.open() } }
         MenuAction { text: qsTr("Pin / unpin"); visible: ["folders","playlists"].includes(root.category); onClicked: { root.pin(root.currentRow); itemMenu.close() } }
+        // Media actions from the Figma file context menu, backed by the
+        // existing media-library model and dialogs owners.
+        MenuAction { visible: !!itemMenu.target; text: root.selectionFavorite() ? qsTr("Remove from favorites") : qsTr("Add to favorites"); AccessibleCompat.id: "libraryFavorite"; onClicked: { root.setSelectionFavorite(!root.selectionFavorite()); itemMenu.close() } }
+        MenuAction { visible: !!itemMenu.target && !!itemMenu.target.isVideo; text: itemMenu.target && itemMenu.target.isNew === false ? qsTr("Mark as unwatched") : qsTr("Mark as watched"); onClicked: { root.setSelectionWatched(!(itemMenu.target && itemMenu.target.isNew === false)); itemMenu.close() } }
+        MenuAction { visible: !!itemMenu.target; text: qsTr("Stream…"); onClicked: { itemMenu.close(); root.streamSelection(true) } }
+        MenuAction { visible: !!itemMenu.target; text: qsTr("Convert / Save…"); onClicked: { itemMenu.close(); root.streamSelection(false) } }
+        MenuAction { visible: !!itemMenu.target && !!itemMenu.target.isLocal; text: Qt.platform.os === "windows" ? qsTr("Show in File Explorer") : Qt.platform.os === "osx" ? qsTr("Show in Finder") : qsTr("Show in folder"); onClicked: { itemMenu.close(); Qt.openUrlExternally(root.activeModel.getParentURL(root.activeModel.index(root.currentRow,0))) } }
+        MenuAction { visible: !!itemMenu.target && !!itemMenu.target.isLocal && root.category !== "folderMedia"; text: qsTr("Go to source"); onClicked: { itemMenu.close(); root.openAddress(root.activeModel.getParentURL(root.activeModel.index(root.currentRow,0)).toString()) } }
+        MenuAction { visible: !!itemMenu.target && root.selectedRows.length === 1; text: qsTr("Properties & metadata"); onClicked: { itemMenu.close(); DialogsProvider.mediaInfoDialog(itemMenu.target.id) } }
     }
     PlayerLibraryNetworkDialog { id: networkDialog; parent: MainCtx.intfMainWindow.contentItem; backgroundSource: root }
     Loader {
