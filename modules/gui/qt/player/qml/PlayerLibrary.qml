@@ -779,7 +779,9 @@ FocusScope {
         x: (parent.width - width) / 2; y: (parent.height - height) / 2
     }
     Connections {
-        target: MediaLib
+        // MediaLib is absent with --no-media-library; never reference it then.
+        target: root.libraryAvailable ? MediaLib : null
+        ignoreUnknownSignals: true
         function onPlaylistExported(success, file) { root.status = success ? qsTr("Playlist exported to %1").arg(file) : qsTr("Could not export the playlist.") }
     }
     PlayerLibraryNetworkDialog { id: networkDialog; parent: MainCtx.intfMainWindow.contentItem; backgroundSource: root }
