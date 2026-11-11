@@ -58,6 +58,11 @@ public:
     Q_INVOKABLE void addAndPlay(const QUrl& mrl, const QStringList &options = {});
     Q_INVOKABLE void addAndPlay(const QVariantList&itemIdList, const QStringList &options = {});
     Q_INVOKABLE void insertIntoPlaylist(size_t index, const QVariantList &itemIds /*QList<MLParentId>*/, const QStringList &options = {});
+    // Library playlist actions: play a shuffled copy, or export it as M3U8.
+    Q_INVOKABLE void addAndPlayShuffled(const QVariantList &itemIdList);
+    Q_INVOKABLE void exportToFile(const QVariantList &itemIdList, const QString &suggestedName);
+    // Resolves library items (including playlists/folders) to their media URLs.
+    Q_INVOKABLE void mediaUrls(const QVariantList &itemIdList, QJSValue callback);
 
     Q_INVOKABLE void reload();
 
@@ -166,6 +171,7 @@ public:
     void cancelMLTask(const QObject* object, quint64 taskId);
 
 signals:
+    void playlistExported(bool success, const QString &file);
     void discoveryStarted();
     void discoveryCompleted();
     void parsingProgressChanged( quint32 percent );

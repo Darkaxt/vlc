@@ -1363,9 +1363,17 @@ and Properties & metadata (the upstream media information dialog). The optional
 `favorite` player control (Figma `2430:14629`/`2430:14666`) mirrors and toggles
 the playing input's library favorite for both VLC and MPV; non-indexed input is
 registered as external media exactly as playback history does. Library and player
-favorite writes share one ordered ML queue. Still open from the same Figma menu:
-Add Subtitle/Audio Tracks for non-playing items, playlist Shuffle/Export, and the
-Add Subtitles dialog's folder/computer dropdown structure.
+favorite writes share one ordered ML queue. Add subtitle tracks… and Add audio
+tracks… work for local video, folders and stored playlists without playing them:
+subtitles open the Add Subtitles dialog with the selected media matched against
+subtitle files beside them; audio files are paired by the same name/episode rules.
+Both are saved as identity-checked per-file associations and applied when that
+media starts on either engine (VLC associated input / MPV `sub-add`/`audio-add`).
+Stored playlists add Figma's Shuffle (play a shuffled copy with random order on)
+and Export playlist… (M3U8 with titles/durations). The Add Subtitles dialog
+follows Figma: target dropdown (this file/selected media, this folder, current
+queue), source dropdown (From Computer / Find Online) and a folder breadcrumb.
+ML playlists have no native favorite flag, so the playlist menu has no Favorite.
 
 R32's Home follows Figma `6261:15078`: Continue Watching, Listen Again and Frequently Visited Folders. The folder shelf ranks indexed, present local folders by their media's native playback counts, then last-played date, using only media still in native history. It is empty after history clearing and is not instantiated when playback history is disabled. Pins remain navigation shortcuts, independently of this ranking. Folder addresses are available through Go to folder address and Alt+D; the default chrome retains Figma's breadcrumb row.
 

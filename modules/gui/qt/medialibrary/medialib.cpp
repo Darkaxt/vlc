@@ -22,6 +22,14 @@
 #include "util/shared_input_item.hpp"
 
 #include <utility>
+#include <algorithm>
+#include <random>
+
+#include <QDir>
+#include <QFileDialog>
+#include <QRegularExpression>
+#include <QSaveFile>
+#include <QStandardPaths>
 
 #include <QQmlEngine>
 
@@ -219,6 +227,112 @@ void MediaLib::addAndPlay(const QVariantList& itemIdList, const QStringList &opt
     [this](quint64, Context& ctx){
         if (!ctx.medias.empty())
             m_playlistController->append(ctx.medias, true);
+    });
+}
+
+void MediaLib::addAndPlayShuffled(const QVariantList& itemIdList)
+{
+    struct Context {
+        QVector<vlc::playlist::Media> medias;
+    };
+    runOnMLThread<Context>(this,
+    //ML thread
+    [itemIdList]
+    (vlc_medialibrary_t* ml, Context& ctx)
+    {
+        convertQVariantListToPlaylistMedias(ml, itemIdList, {}, ctx.medias);
+    },
+    //UI thread
+    [this](quint64, Context& ctx){
+        if (ctx.medias.empty())
+            return;
+        // Start from a random item too; random order then covers the rest.
+        std::shuffle(ctx.medias.begin(), ctx.medias.end(), std::mt19937{std::random_device{}()});
+        m_playlistController->setRandom(true);
+        m_playlistController->append(ctx.medias, true);
+    });
+}
+
+void MediaLib::exportToFile(const QVariantList& itemIdList, const QString& suggestedName)
+{
+    QString name = suggestedName.trimmed();
+    name.replace(QRegularExpression(QStringLiteral("[\\/:*?\"<>|]")), QStringLiteral("_"));
+    if (name.isEmpty())
+        name = qtr("Playlist");
+    QString file = QFileDialog::getSaveFileName(nullptr, qtr("Export playlist"),
+        QDir(QStandardPaths::writableLocation(QStandardPaths::MusicLocation)).filePath(name + QStringLiteral(".m3u8")),
+        qtr("M3U8 playlist (*.m3u8)"));
+    if (file.isEmpty())
+        return;
+    if (!file.endsWith(QStringLiteral(".m3u8"), Qt::CaseInsensitive))
+        file += QStringLiteral(".m3u8");
+
+    struct Context {
+        QVector<vlc::playlist::Media> medias;
+    };
+    runOnMLThread<Context>(this,
+    //ML thread
+    [itemIdList]
+    (vlc_medialibrary_t* ml, Context& ctx)
+    {
+        convertQVariantListToPlaylistMedias(ml, itemIdList, {}, ctx.medias);
+    },
+    //UI thread
+    [this, file](quint64, Context& ctx){
+        QSaveFile out(file);
+        bool ok = out.open(QIODevice::WriteOnly | QIODevice::Text);
+        if (ok) {
+            QByteArray data("#EXTM3U\n");
+            for (const auto &media : ctx.medias) {
+                input_item_t *item = media.raw();
+                if (!item)
+                    continue;
+                char *uri = input_item_GetURI(item);
+                char *title = input_item_GetTitleFbName(item);
+                const vlc_tick_t duration = input_item_GetDuration(item);
+                if (uri) {
+                    const qint64 seconds = duration > 0 ? SEC_FROM_VLC_TICK(duration) : -1;
+                    data += "#EXTINF:" + QByteArray::number(seconds) + "," + QByteArray(title ? title : "").replace('\n', ' ') + "\n";
+                    data += QByteArray(uri) + "\n";
+                }
+                free(uri);
+                free(title);
+            }
+            ok = out.write(data) == data.size() && out.commit();
+        }
+        if (!ok)
+            msg_Err(m_intf, "could not export the playlist to %s", qtu(file));
+        emit playlistExported(ok, file);
+    });
+}
+
+void MediaLib::mediaUrls(const QVariantList& itemIdList, QJSValue callback)
+{
+    if (!callback.isCallable())
+        return;
+    struct Context {
+        QVector<vlc::playlist::Media> medias;
+    };
+    runOnMLThread<Context>(this,
+    //ML thread
+    [itemIdList]
+    (vlc_medialibrary_t* ml, Context& ctx)
+    {
+        convertQVariantListToPlaylistMedias(ml, itemIdList, {}, ctx.medias);
+    },
+    //UI thread
+    [this, callback](quint64, Context& ctx) {
+        auto jsEngine = qjsEngine(this);
+        if (!jsEngine)
+            return;
+        QStringList urls;
+        for (const auto &media : ctx.medias) {
+            char *uri = media.raw() ? input_item_GetURI(media.raw()) : nullptr;
+            if (uri)
+                urls.append(QString::fromUtf8(uri));
+            free(uri);
+        }
+        callback.call({jsEngine->toScriptValue(urls)});
     });
 }
 

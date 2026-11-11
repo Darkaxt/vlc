@@ -136,6 +136,28 @@ FocusScope {
         const urls = selectedRows.map(row => activeModel.getDataAt(row).mrl).filter(url => !!url && url.toString() !== "")
         if (urls.length) DialogsProvider.streamingDialog(urls, stream)
     }
+    // Media URLs of the selection; playlists and folders resolve to contents.
+    function selectionUrls(callback) {
+        if (activeModel instanceof MLMediaModel) {
+            callback(selectedRows.map(row => activeModel.getDataAt(row).mrl).filter(url => !!url && url.toString() !== "").map(url => url.toString()))
+            return
+        }
+        selectedIds().then(ids => { if (ids.length) MediaLib.mediaUrls(ids, callback) })
+    }
+    function addSubtitleTracks() {
+        selectionUrls(urls => {
+            if (!urls.length) { status = qsTr("The selection has no media files."); return }
+            librarySubtitles.media = urls
+            librarySubtitles.open()
+        })
+    }
+    function addAudioTracks() {
+        selectionUrls(urls => {
+            if (!urls.length) { status = qsTr("The selection has no media files."); return }
+            MediaTools.browseAudioTracks(urls)
+            status = MediaTools.status
+        })
+    }
     function pin(row) {
         const data = activeModel.getDataAt(row)
         if (data.id) LibraryState.togglePin(data.id.toString(), data.title || data.name || qsTr("Untitled"), category)
@@ -736,6 +758,9 @@ FocusScope {
         MenuAction { text: qsTr("Enqueue"); onClicked: { root.enqueue(); itemMenu.close() } }
         MenuAction { text: qsTr("Add to playlist"); onClicked: { itemMenu.close(); playlistPicker.open() } }
         MenuAction { text: qsTr("Pin / unpin"); visible: ["folders","playlists"].includes(root.category); onClicked: { root.pin(root.currentRow); itemMenu.close() } }
+        // Figma playlist context menu actions.
+        MenuAction { visible: root.category === "playlists"; text: qsTr("Shuffle"); AccessibleCompat.id: "libraryShufflePlaylist"; onClicked: { itemMenu.close(); root.selectedIds().then(ids => { if (ids.length) MediaLib.addAndPlayShuffled(ids) }) } }
+        MenuAction { visible: root.category === "playlists" && root.selectedRows.length === 1; text: qsTr("Export playlist…"); AccessibleCompat.id: "libraryExportPlaylist"; onClicked: { itemMenu.close(); const data = root.activeModel.getDataAt(root.currentRow); root.selectedIds().then(ids => { if (ids.length) MediaLib.exportToFile(ids, data.name || data.title || "") }) } }
         // Media actions from the Figma file context menu, backed by the
         // existing media-library model and dialogs owners.
         MenuAction { visible: !!itemMenu.target; text: root.selectionFavorite() ? qsTr("Remove from favorites") : qsTr("Add to favorites"); AccessibleCompat.id: "libraryFavorite"; onClicked: { root.setSelectionFavorite(!root.selectionFavorite()); itemMenu.close() } }
@@ -744,7 +769,18 @@ FocusScope {
         MenuAction { visible: !!itemMenu.target; text: qsTr("Convert / Save…"); onClicked: { itemMenu.close(); root.streamSelection(false) } }
         MenuAction { visible: !!itemMenu.target && !!itemMenu.target.isLocal; text: Qt.platform.os === "windows" ? qsTr("Show in File Explorer") : Qt.platform.os === "osx" ? qsTr("Show in Finder") : qsTr("Show in folder"); onClicked: { itemMenu.close(); Qt.openUrlExternally(root.activeModel.getParentURL(root.activeModel.index(root.currentRow,0))) } }
         MenuAction { visible: !!itemMenu.target && !!itemMenu.target.isLocal && root.category !== "folderMedia"; text: qsTr("Go to source"); onClicked: { itemMenu.close(); root.openAddress(root.activeModel.getParentURL(root.activeModel.index(root.currentRow,0)).toString()) } }
+        MenuAction { visible: (!!itemMenu.target && !!itemMenu.target.isLocal && !!itemMenu.target.isVideo) || ["playlists","folders"].includes(root.category); text: qsTr("Add subtitle tracks…"); AccessibleCompat.id: "libraryAddSubtitles"; onClicked: { itemMenu.close(); root.addSubtitleTracks() } }
+        MenuAction { visible: (!!itemMenu.target && !!itemMenu.target.isLocal && !!itemMenu.target.isVideo) || ["playlists","folders"].includes(root.category); text: qsTr("Add audio tracks…"); AccessibleCompat.id: "libraryAddAudio"; onClicked: { itemMenu.close(); root.addAudioTracks() } }
         MenuAction { visible: !!itemMenu.target && root.selectedRows.length === 1; text: qsTr("Properties & metadata"); onClicked: { itemMenu.close(); DialogsProvider.mediaInfoDialog(itemMenu.target.id) } }
+    }
+    PlayerSubtitleDialog {
+        id: librarySubtitles
+        parent: MainCtx.intfMainWindow.contentItem
+        x: (parent.width - width) / 2; y: (parent.height - height) / 2
+    }
+    Connections {
+        target: MediaLib
+        function onPlaylistExported(success, file) { root.status = success ? qsTr("Playlist exported to %1").arg(file) : qsTr("Could not export the playlist.") }
     }
     PlayerLibraryNetworkDialog { id: networkDialog; parent: MainCtx.intfMainWindow.contentItem; backgroundSource: root }
     Loader {

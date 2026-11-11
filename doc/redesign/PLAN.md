@@ -2,7 +2,7 @@
 
 **10 November delivery: M15 COMPLETE; M16 COMPLETE; normal1.1.12 published and independently verified.**
 
-**11 November post-1.1.12 Figma/QA follow-up (branch `claude/figma-qa-fixes`): SOURCE INTEGRATED, COMPILE-CHECKED; RUNTIME UNVERIFIED; NOT RELEASED.**
+**11 November 1.1.13 Figma/QA follow-up: SOURCE COMPLETE; 1.1.13 RELEASE IN PROGRESS.**
 Implemented: optional `favorite` player control for both engines and the Figma
 library item-menu actions (favorites, watched, Stream/Convert, show in folder,
 go to source, properties); legible disabled network-dialog Save; MPV surface
@@ -16,10 +16,11 @@ Evidence: icon extractor tests 9/9 and `check-customization.mjs` pass; WSL gate
 ticket `e3dc03037503fa0466a8d363a1d0a1d3` attempt 3 (workflow `7e289d9e9e6195285b89c260cdda36fb`,
 exit 0) compiled all changed C++ (including moc) `-fsyntax-only` with the retained
 1.1.12 flags, 0 warnings, and all changed QML/JS with the pinned qmlcachegen with no
-new diagnostics. Remaining: full plugin build, both-engine native runtime check of
-the new menu/control (including `streamingDialog` URL conversion from QML), Figma
-Add Subtitle/Audio Tracks for non-playing items, playlist Shuffle/Export, and the
-Add Subtitles dialog dropdown/breadcrumb structure.
+new diagnostics. Follow-up adds the remaining Figma items: library Add subtitle/
+audio tracks for non-playing media (persistent per-file associations applied on
+both engines), stored-playlist Shuffle and Export (M3U8), and the Add Subtitles
+dialog target/source dropdowns with folder breadcrumb. Version is 1.1.13; the
+normal five-platform 1.1.13 build/qualification/publication is the next stage.
 
 Normal release [redesign-v1.1.12](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.12)
 delivers Windows x64, macOS Apple Silicon/Intel and Linux x86_64/aarch64 with all35

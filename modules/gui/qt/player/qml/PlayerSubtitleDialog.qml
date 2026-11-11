@@ -8,16 +8,38 @@ T.Popup {
     id: dialog
     property bool online: false
     property bool showSaved: false
+    // Library items that need not be playing; empty means the current media.
+    property var media: []
+    readonly property var targets: media.length ? media : (Player.url.toString().length ? [Player.url] : [])
+    function folderOf(url) { const s = String(url); return s.substring(0, s.lastIndexOf("/")) }
+    function applyScope(index) {
+        if (index === 2) { MediaTools.browseQueueSubtitles(); return }
+        if (!targets.length) return
+        if (index === 1) MediaTools.matchFolder(folderOf(targets[0]))
+        else MediaTools.matchMedia(targets)
+    }
+    readonly property string breadcrumb: {
+        const first = MediaTools.matches.length ? MediaTools.matches[0].media : (targets.length ? targets[0] : "")
+        if (!String(first).startsWith("file:")) return ""
+        const parts = decodeURIComponent(folderOf(first)).replace(/^file:\/*/, "").split("/").filter(p => p.length && !/^[A-Za-z]:$/.test(p))
+        return parts.slice(-4).join(" / ")
+    }
     width: Math.max(0, Math.min(PlayerStyle.px(1048), parent.width - PlayerStyle.px(40)))
     height: Math.max(0, Math.min(PlayerStyle.px(800), parent.height - PlayerStyle.px(80)))
     padding: PlayerStyle.px(20)
     modal: true
     focus: true
     closePolicy: T.Popup.CloseOnEscape
-    onClosed: RemoteSubtitles.cancel()
+    onClosed: { RemoteSubtitles.cancel(); media = [] }
     onAboutToShow: {
+        if (media.length) {
+            online = false; showSaved = false; scope.currentIndex = 0
+            query.text = decodeURIComponent(String(media[0]).split("/").pop()).replace(/\.[^.]*$/, "")
+            MediaTools.matchMedia(media)
+            return
+        }
         if (!query.text.length) query.text = Player.title
-        if (!online && MediaTools.matches.length === 0) MediaTools.prepareMatches([Player.url], [])
+        if (!online && MediaTools.matches.length === 0) applyScope(0)
     }
     readonly property Item retainedBackdrop: background
     background: LibraryGlass { backgroundSource: dialog.parent; active: dialog.opened; radius: PlayerStyle.px(10) }
@@ -60,24 +82,47 @@ T.Popup {
             Label { text: qsTr("Add Subtitles"); font.pixelSize: PlayerStyle.px(24); Layout.fillWidth: true }
             PlayerIconButton { glyph: "close"; description: qsTr("Close subtitle dialog"); onClicked: dialog.close() }
         }
+        // Figma "Add Subtitles": target dropdown, source dropdown, folder path.
         RowLayout {
             Layout.fillWidth: true
-            Button { text: qsTr("From Computer"); checked: !dialog.online; onClicked: { RemoteSubtitles.cancel(); dialog.online = false } }
-            Button { text: qsTr("Find Online"); checked: dialog.online; onClicked: dialog.online = true }
-            Item { Layout.fillWidth: true }
+            spacing: PlayerStyle.px(8)
+            PlayerSettingsChoice {
+                id: scope
+                visible: !dialog.online
+                Layout.preferredWidth: PlayerStyle.px(180)
+                label: qsTr("Add subtitles to")
+                model: dialog.media.length ? [qsTr("To Selected Media"), qsTr("To This Folder")] : [qsTr("To This File"), qsTr("To This Folder"), qsTr("To Current Queue")]
+                onActivated: dialog.applyScope(currentIndex)
+            }
+            PlayerSettingsChoice {
+                Layout.preferredWidth: PlayerStyle.px(180)
+                label: qsTr("Subtitle source")
+                model: [qsTr("From Computer"), qsTr("Find Online")]
+                currentIndex: dialog.online ? 1 : 0
+                onActivated: { if (currentIndex === 0) RemoteSubtitles.cancel(); dialog.online = currentIndex === 1 }
+            }
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: PlayerStyle.px(32)
+                radius: PlayerStyle.px(4)
+                color: PlayerStyle.timeline
+                visible: dialog.breadcrumb.length > 0
+                Accessible.role: Accessible.StaticText
+                Accessible.name: qsTr("Folder %1").arg(dialog.breadcrumb)
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: PlayerStyle.px(8); anchors.rightMargin: PlayerStyle.px(8)
+                    PlayerIconButton { glyph: "folder"; description: qsTr("Choose another folder"); implicitWidth: PlayerStyle.px(24); implicitHeight: PlayerStyle.px(24); onClicked: MediaTools.browseSubtitleFolder() }
+                    Label { Layout.fillWidth: true; text: dialog.breadcrumb; wrapMode: Text.NoWrap; elide: Text.ElideLeft }
+                }
+            }
+            Item { Layout.fillWidth: true; visible: dialog.breadcrumb.length === 0 }
         }
         ColumnLayout {
             visible: !dialog.online
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: PlayerStyle.px(12)
-            RowLayout {
-                Layout.fillWidth: true
-                Button { Layout.fillWidth: true; Layout.preferredWidth: 0; text: qsTr("To This File…"); onClicked: MediaTools.browseSubtitle() }
-                Button { Layout.fillWidth: true; Layout.preferredWidth: 0; text: qsTr("To This Folder…"); onClicked: MediaTools.browseSubtitleFolder() }
-                Button { Layout.fillWidth: true; Layout.preferredWidth: 0; text: qsTr("To Current Queue…"); onClicked: MediaTools.browseQueueSubtitles() }
-                Item { Layout.fillWidth: true }
-            }
             Label { Layout.fillWidth: true; text: qsTr("Automatic matches are suggestions. Choose ambiguous or unmatched files manually. Unmatched media stays unchanged."); color: PlayerStyle.sectionForeground; font.pixelSize: PlayerStyle.px(12) }
             ListView {
                 id: matches

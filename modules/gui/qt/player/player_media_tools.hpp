@@ -53,6 +53,8 @@ public:
     void setWaveformVisible(bool);
     Q_INVOKABLE void prepareMatches(const QVariantList &media, const QVariantList &subtitles);
     Q_INVOKABLE void matchFolder(const QUrl &folder);
+    Q_INVOKABLE void matchMedia(const QVariantList &media);
+    Q_INVOKABLE void browseAudioTracks(const QVariantList &media);
     Q_INVOKABLE void matchQueue(const QVariantList &subtitles);
     Q_INVOKABLE void chooseMatch(int row, const QUrl &subtitle);
     Q_INVOKABLE bool saveMatches();
@@ -99,7 +101,8 @@ private:
     void readState();
     bool writeState(const QJsonObject &state);
     QString mediaKey(const QUrl &url) const;
-    bool validAssociation(const QUrl &media, const QJsonObject &association) const;
+    bool validAssociation(const QUrl &media, const QJsonObject &association, const QString &field = QStringLiteral("subtitle")) const;
+    bool addAudioTrack(const QUrl &audio);
     void report(const QString &text);
     qt_intf_t *m_intf;
     PlayerController *m_player;

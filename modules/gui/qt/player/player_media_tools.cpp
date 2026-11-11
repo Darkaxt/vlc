@@ -238,12 +238,13 @@ QJsonObject PlayerMediaTools::identity(const QUrl &url) const
             {QStringLiteral("fingerprint"), QString::fromLatin1(hash.result().toHex())},
             {QStringLiteral("fingerprintScope"), full ? QStringLiteral("full") : QStringLiteral("first-last-64KiB")}};
 }
-bool PlayerMediaTools::validAssociation(const QUrl &media, const QJsonObject &a) const
+bool PlayerMediaTools::validAssociation(const QUrl &media, const QJsonObject &a, const QString &field) const
 {
     const auto current = identity(media);
+    const QUrl associated(a.value(field).toString());
     return !mediaKey(media).isEmpty() && !current.isEmpty() && current == a.value(QStringLiteral("mediaIdentity")).toObject()
-        && !mediaKey(QUrl(a.value(QStringLiteral("subtitle")).toString())).isEmpty()
-        && identity(QUrl(a.value(QStringLiteral("subtitle")).toString())) == a.value(QStringLiteral("subtitleIdentity")).toObject();
+        && !mediaKey(associated).isEmpty()
+        && identity(associated) == a.value(field + QStringLiteral("Identity")).toObject();
 }
 void PlayerMediaTools::prepareMatches(const QVariantList &media, const QVariantList &subtitles)
 {
@@ -277,6 +278,64 @@ void PlayerMediaTools::matchFolder(const QUrl &folder)
         if (extensions.contains(f.suffix().toLower())) media.append(QUrl::fromLocalFile(f.absoluteFilePath()));
     for (const auto &f : subtitleFiles(dir)) subs.append(QUrl::fromLocalFile(f));
     prepareMatches(media, subs);
+}
+void PlayerMediaTools::matchMedia(const QVariantList &media)
+{
+    // Library items need not be playing: offer the subtitle files beside each
+    // selected local medium, then reuse the normal matching rules.
+    QVariantList local, subs; QSet<QString> folders;
+    for (const auto &v : media) {
+        const QUrl url(v.toString());
+        if (!url.isLocalFile() || mediaKey(url).isEmpty()) continue;
+        local.append(url);
+        const auto folder = QFileInfo(url.toLocalFile()).absolutePath();
+        if (folders.size() < 64 && !folders.contains(folder)) {
+            folders.insert(folder);
+            for (const auto &f : subtitleFiles(QDir(folder))) subs.append(QUrl::fromLocalFile(f));
+        }
+    }
+    if (local.isEmpty()) { m_matches.clear(); emit matchesChanged(); report(tr("Subtitles can only be associated with local media files.")); return; }
+    prepareMatches(local, subs);
+}
+void PlayerMediaTools::browseAudioTracks(const QVariantList &media)
+{
+    QList<QUrl> local;
+    for (const auto &v : media) { const QUrl url(v.toString()); if (url.isLocalFile() && !mediaKey(url).isEmpty()) local.append(url); }
+    if (local.isEmpty()) { report(tr("Audio tracks can only be associated with local media files.")); return; }
+    const auto files = QFileDialog::getOpenFileNames(nullptr, tr("Add audio tracks"), QFileInfo(local.first().toLocalFile()).absolutePath(),
+        tr("Audio (*.mka *.mp3 *.aac *.ac3 *.eac3 *.dts *.flac *.m4a *.ogg *.opus *.wav *.wma *.thd);;All files (*)"), nullptr, QFileDialog::DontUseNativeDialog);
+    if (files.isEmpty()) return;
+    auto associations = m_state.value(QStringLiteral("audioAssociations")).toObject();
+    int saved = 0, unmatched = 0;
+    for (const auto &url : local) {
+        // One medium takes the single chosen file; several media are paired by
+        // the same file-name/episode rules as subtitles, never by list order.
+        const auto candidates = local.size() == 1 && files.size() == 1 ? files : SubtitleData::match(url.toLocalFile(), files);
+        if (candidates.size() != 1) { ++unmatched; continue; }
+        const auto audio = QUrl::fromLocalFile(candidates.first());
+        if (mediaKey(audio).isEmpty()) { ++unmatched; continue; }
+        associations.insert(mediaKey(url), QJsonObject{{QStringLiteral("mediaIdentity"), identity(url)},
+            {QStringLiteral("audio"), audio.toString(QUrl::FullyEncoded)}, {QStringLiteral("audioIdentity"), identity(audio)}});
+        ++saved;
+    }
+    if (associations.size() > 2048) { report(tr("Saved associations reached the 2048-file limit; remove old associations first.")); return; }
+    if (saved == 0) { report(tr("No audio file matched the selected media; choose files with matching names.")); return; }
+    auto state = m_state; state[QStringLiteral("audioAssociations")] = associations;
+    if (!writeState(state)) return;
+    const auto current = associations.value(mediaKey(m_player->getUrl())).toObject();
+    if (!current.isEmpty() && isCurrentMedia(m_player->getUrl()) && validAssociation(m_player->getUrl(), current, QStringLiteral("audio")))
+        addAudioTrack(QUrl(current.value(QStringLiteral("audio")).toString()));
+    report(unmatched ? tr("Audio tracks saved for %1 media; %2 unmatched media stay unchanged.").arg(saved).arg(unmatched)
+                     : tr("Audio tracks saved for %1 media.").arg(saved));
+    emit changed();
+}
+bool PlayerMediaTools::addAudioTrack(const QUrl &audio)
+{
+    if (m_player->AddAssociatedMedia(AUDIO_ES, audio.toString(QUrl::FullyEncoded), true, true, false) != VLC_SUCCESS) {
+        report(tr("The player could not add this audio track to the current input.")); return false;
+    }
+    m_manualAudioChoice = true; // keep the explicitly associated track over language preferences
+    return true;
 }
 void PlayerMediaTools::matchQueue(const QVariantList &subtitles)
 {
@@ -363,7 +422,9 @@ void PlayerMediaTools::forgetAssociation(const QUrl &media)
         key = QUrl::fromLocalFile(path).toString(QUrl::FullyEncoded);
     }
     a.remove(key); state[QStringLiteral("associations")] = a;
-    if (writeState(state)) report(tr("Saved association removed. The currently selected subtitle is unchanged."));
+    auto audio = state.value(QStringLiteral("audioAssociations")).toObject();
+    audio.remove(key); state[QStringLiteral("audioAssociations")] = audio;
+    if (writeState(state)) { report(tr("Saved association removed. The currently selected tracks are unchanged.")); emit changed(); }
 }
 QVariantList PlayerMediaTools::associations() const
 {
@@ -371,6 +432,10 @@ QVariantList PlayerMediaTools::associations() const
     for (auto it = saved.begin(); it != saved.end(); ++it)
         rows.append(QVariantMap{{QStringLiteral("media"), QUrl(it.key())},
             {QStringLiteral("subtitle"), QUrl(it.value().toObject().value(QStringLiteral("subtitle")).toString())}});
+    const auto audio = m_state.value(QStringLiteral("audioAssociations")).toObject();
+    for (auto it = audio.begin(); it != audio.end(); ++it)
+        rows.append(QVariantMap{{QStringLiteral("media"), QUrl(it.key())},
+            {QStringLiteral("subtitle"), QUrl(it.value().toObject().value(QStringLiteral("audio")).toString())}});
     return rows;
 }
 bool PlayerMediaTools::associateAndSave(const QUrl &subtitle)
@@ -920,6 +985,11 @@ void PlayerMediaTools::inputChanged()
         if (!a.isEmpty()) {
             if (validAssociation(media, a)) addSubtitle(QUrl(a.value(QStringLiteral("subtitle")).toString()));
             else report(tr("The saved media or subtitle changed/missing; select it again to confirm the association."));
+        }
+        const auto audio = m_state.value(QStringLiteral("audioAssociations")).toObject().value(mediaKey(media)).toObject();
+        if (!audio.isEmpty()) {
+            if (validAssociation(media, audio, QStringLiteral("audio"))) addAudioTrack(QUrl(audio.value(QStringLiteral("audio")).toString()));
+            else report(tr("The saved media or audio file changed/missing; add the audio track again."));
         }
     }
     loadTimeline(); emit changed();
