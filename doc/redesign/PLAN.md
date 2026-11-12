@@ -2,7 +2,11 @@
 
 **10 November delivery: M15 COMPLETE; M16 COMPLETE; normal1.1.12 published and independently verified.**
 
-**11 November 1.1.13 Figma/QA follow-up: SOURCE COMPLETE; 1.1.13 RELEASE IN PROGRESS.**
+**13 November 1.1.13: published as [redesign-v1.1.13](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.13) from `da236561`, with 33 assets. Every asset was downloaded back and its SHA256 matched.**
+Windows: setup lifecycle in Windows Sandbox, plus natural-EOF playback on the installed VLC and MPV engines. macOS arm64/Intel: CI run 43021259187, ZIP/DMG on both engines with strict signatures. Linux x86_64 (43063167659) and aarch64 (43066141962): native UI workflows on both engines, DEB install/purge, Fedora 45 RPM installation and format extraction passed. Linux packages were completed from the retained players without recompiling.
+**Tracked deferral: [issue #1](https://github.com/Darkaxt/vlc/issues/1).** The two `.snap` packages are withheld because their strict Snap install test could not run: the Snap Store was unreachable from GitHub runners from 11 to 12 November. The manifest lists them under `withheld_assets`, and the bytes are held under `releases/1.1.13/held-snap`. To resume, dispatch the reuse qualification for each target in turn. Only `doc/redesign/` or test-only commits may land on `codex/native-desktop` until then. The root `README.md` still describes Snap in its platform table; update it when the snaps are published.
+
+**11 November 1.1.13 Figma/QA follow-up: SOURCE COMPLETE.**
 Implemented: optional `favorite` player control for both engines and the Figma
 library item-menu actions (favorites, watched, Stream/Convert, show in folder,
 go to source, properties); legible disabled network-dialog Save; MPV surface
