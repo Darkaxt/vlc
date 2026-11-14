@@ -67,8 +67,8 @@ def main():
         assert [item['name'] for item in previous['files']] == pins['runtime']['files']
     else:
         assert not manifest_path.exists(), 'Supply the exact previous build identity before refreshing it'
-    patch = repo / pins['runtime']['patch']
-    assert digest(patch) == pins['runtime']['patch_sha256']
+    # The MPV source pin carries its own changes; no local source patch is applied.
+    assert 'patch' not in pins['runtime'] and pins['runtime']['source_changes']
     records = []
     for pin in pins['sources']:
         archive = pin.get('archive') or pin['repository'].split('/')[1] + '-' + pin['commit'] + '.tar.gz'
@@ -130,7 +130,7 @@ def main():
                 'registry_sha256': digest(registry), 'api_headers_sha256': headers,
                 'build_script': pins['runtime']['build_script'], 'build_script_sha256': digest(recipe),
                 'install_helper_sha256': digest(repo / 'tools/windows-player/install-ffmpeg-files.py'),
-                'patch': pins['runtime']['patch'], 'patch_sha256': digest(patch),
+                'source_changes': pins['runtime']['source_changes'],
                 'sdk_dependency_notices_manifest_sha256': digest(sdk_notices),
                 'system_dependencies': ['Graphics-driver Vulkan loader (System32/vulkan-1.dll); not redistributed'],
                 'output': 'D3D11 presentation of libplacebo BT.709/sRGB SDR conversion; no native Dolby Vision signaling claim',

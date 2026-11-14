@@ -1,6 +1,6 @@
 {
-  "repository": "https://github.com/mpv-player/mpv",
-  "commit": "e471496c56f0f49c133bd88b50aed62b845f1909",
+  "repository": "https://github.com/Darkaxt/mpv",
+  "commit": "162b1ce46c19713c3d807962386b9a0cfc143b13",
   "license": "ISC; full original notice retained in each unchanged public API header",
   "headers": {
     "client.h": "f970b9ab5dc792a20c8a5d4eca5a4526fbadb594",
@@ -19,17 +19,16 @@
     "build_script": "tools/windows-player/build-mpv-runtime.sh",
     "identity": "Compile-time hashes generated from the source-built payloads; never read as runtime trust from a writable manifest",
     "files": ["libmpv-2.dll", "libspirv-cross-c-shared.dll"],
-    "patch": "tools/windows-player/patches/mpv-wasapi-session.patch",
-    "patch_sha256": "fc6f68dc77884c7f07a997219ef76c7809e868956d14e7d41d64cb8f1d5c6d28"
+    "source_changes": "Unpatched Darkaxt/mpv master; its commit 162b1ce4 carries the WASAPI explicit session and default-device role change formerly applied as a local build patch"
   },
   "host_tools": [
     {"name": "Jinja2", "version": "3.1.6", "archive": "jinja2-3.1.6.tar.gz", "root": "jinja2-3.1.6", "url": "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz", "sha256": "0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d", "distribution": "Build-only shader template generator; not linked or copied into the Windows product. Uses the pinned build image's MarkupSafe 2.1.5."}
   ],
   "sources": [
     {"repository": "https://gitlab.freedesktop.org/uchardet/uchardet", "version": "0.0.8", "archive": "uchardet-0.0.8.tar.xz", "url": "https://www.freedesktop.org/software/uchardet/releases/uchardet-0.0.8.tar.xz", "root": "uchardet-0.0.8", "sha256": "e97a60cfc00a1c147a674b097bb1422abd9fa78a2d9ce3f3fdcc2e78a34ac5f0", "group": "text"},
-    {"repository": "mpv-player/mpv", "commit": "e471496c56f0f49c133bd88b50aed62b845f1909", "sha256": "562674ce7a0f6ac0681291037abc4c8595e0d1202d86d27eb341113eb7d984ba", "group": "core"},
+    {"repository": "Darkaxt/mpv", "commit": "162b1ce46c19713c3d807962386b9a0cfc143b13", "sha256": "fd781a1c7b0742822960f7a6a04c1df0d888e501d9902c88f94a0d8402509c5c", "group": "core"},
     {"repository": "FFmpeg/FFmpeg", "commit": "9a861e9687d30e657d59521817cad18405995983", "sha256": "c1b0fd16eae5b06838e456ab58924553a94aba087e3ad2e7d983c288003d6f6a", "group": "core"},
-    {"repository": "haasn/libplacebo", "commit": "285d1cc8af2ab79b72ac662eb09736de8c12392b", "sha256": "6f2616cffcbb0fbd4109a80fb7bc9ce59e13ba24749ad4a3085bd80f90cb542d", "group": "core"},
+    {"repository": "haasn/libplacebo", "commit": "9fabf6d5057c40089afb020017c6347002b07308", "sha256": "7dcab00ae44905f30ce1201e13fff65602acd744b6dcd3f30301022ecf17f50b", "group": "core"},
     {"repository": "fastfloat/fast_float", "commit": "97b54ca9e75f5303507699d27c6b4f4efe4641a1", "sha256": "2b132274539286e41f37857cac22aa8441d21bd86d55de825a3342b149f66801", "group": "core"},
     {"repository": "google/shaderc", "commit": "2c8cae778eec0283b44acbe7ed1a386865d78799", "sha256": "e6d6492a363cdef271e466f67cae3ad0d48f7e748491b8e2fe51424c08e391ad", "group": "shaders"},
     {"repository": "KhronosGroup/glslang", "commit": "168d452a4f460d24b588fed08477a81c44ee27a1", "sha256": "c167b2474af06cbab93abae8249efaf88fb79a09f30488e2a24d399e4258ce7a", "group": "shaders"},

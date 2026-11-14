@@ -1451,8 +1451,12 @@ build destinations. `prepare-mpv-review.py` records the initial reference input;
 the shipped S8 engine must instead come from the maintained source build.
 
 `modules/gui/qt/player/mpv/source.json` records the exact core and shader source
-commits/archive hashes, the unchanged C API headers and the native WASAPI-session
-patch. Fetch its core/shader archive groups with `prepare-mpv-sources.py`; preserve
+commits/archive hashes and the unchanged C API headers. Since 1.1.14 the Windows
+engine builds unpatched Darkaxt/mpv master `162b1ce46c19713c3d807962386b9a0cfc143b13`
+(NuvioDV's Dolby Vision line, which carries the former local WASAPI-session patch as
+its own commit) with unpatched libplacebo `9fabf6d5057c40089afb020017c6347002b07308`
+and the unchanged FFmpeg pin. NuvioDV's AnimeJaNai libplacebo patches only touch the
+Vulkan swapchain and are not used by the D3D11 render API. Fetch its core/shader archive groups with `prepare-mpv-sources.py`; preserve
 existing completed inputs rather than fetching them again. The old nightly DLL
 is a diagnostic reference, not corresponding-source proof for the new runtime.
 
@@ -1583,8 +1587,8 @@ source archives, maintained recipe/patch and matching installed public headers.
 The player build generates `mpv_runtime_identity.hpp` from those payload hashes
 and compiles the hashes into Qt. Loading requires the complete matching app-local
 DLL set; the writable JSON is provenance, not runtime authorization. Native
-mmdevice remains the Windows volume/mute persistence owner. The patched MPV
-runtime joins its existing session/endpoint and supplies only above-unity gain.
+mmdevice remains the Windows volume/mute persistence owner. The MPV
+runtime (WASAPI explicit session in Darkaxt/mpv) joins its existing session/endpoint and supplies only above-unity gain.
 
 Before the MPV build, run `prepare-mpv-sources.py --host-inputs --scratch
 D:/Temp/vlc-s8-20261029` to fetch the hash-pinned Jinja2 3.1.6 source archive.

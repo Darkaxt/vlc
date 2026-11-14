@@ -25,13 +25,12 @@ build)
     ;;
 setup)
     test ! -e "$base"
-    printf '%s  %s\n' fc6f68dc77884c7f07a997219ef76c7809e868956d14e7d41d64cb8f1d5c6d28 /scratch/mpv-wasapi-session.patch | sha256sum -c -
     mkdir -p "$base/source" "$prefix"
     cd /scratch/mpv-source-inputs
     printf '%s  %s\n' \
-      562674ce7a0f6ac0681291037abc4c8595e0d1202d86d27eb341113eb7d984ba mpv-e471496c56f0f49c133bd88b50aed62b845f1909.tar.gz \
+      fd781a1c7b0742822960f7a6a04c1df0d888e501d9902c88f94a0d8402509c5c mpv-162b1ce46c19713c3d807962386b9a0cfc143b13.tar.gz \
       c1b0fd16eae5b06838e456ab58924553a94aba087e3ad2e7d983c288003d6f6a FFmpeg-9a861e9687d30e657d59521817cad18405995983.tar.gz \
-      6f2616cffcbb0fbd4109a80fb7bc9ce59e13ba24749ad4a3085bd80f90cb542d libplacebo-285d1cc8af2ab79b72ac662eb09736de8c12392b.tar.gz \
+      7dcab00ae44905f30ce1201e13fff65602acd744b6dcd3f30301022ecf17f50b libplacebo-9fabf6d5057c40089afb020017c6347002b07308.tar.gz \
       2b132274539286e41f37857cac22aa8441d21bd86d55de825a3342b149f66801 fast_float-97b54ca9e75f5303507699d27c6b4f4efe4641a1.tar.gz \
       e6d6492a363cdef271e466f67cae3ad0d48f7e748491b8e2fe51424c08e391ad shaderc-2c8cae778eec0283b44acbe7ed1a386865d78799.tar.gz \
       c167b2474af06cbab93abae8249efaf88fb79a09f30488e2a24d399e4258ce7a glslang-168d452a4f460d24b588fed08477a81c44ee27a1.tar.gz \
@@ -39,9 +38,9 @@ setup)
       05d8af89737bde57571c48dbd36714c9f520a69623e14de72c3be6b600e277d6 SPIRV-Tools-b707790a898e44038547df54580022fc1cf89c3d.tar.gz \
       3d54721c7db5cf955c6b5f01be2702ea1154c86d5ef322685a3738788a093b3e SPIRV-Cross-7affe74d77f93a622bb5002789d5332d32e512ee.tar.gz | sha256sum -c -
     for item in \
-      mpv:e471496c56f0f49c133bd88b50aed62b845f1909 \
+      mpv:162b1ce46c19713c3d807962386b9a0cfc143b13 \
       FFmpeg:9a861e9687d30e657d59521817cad18405995983 \
-      libplacebo:285d1cc8af2ab79b72ac662eb09736de8c12392b \
+      libplacebo:9fabf6d5057c40089afb020017c6347002b07308 \
       shaderc:2c8cae778eec0283b44acbe7ed1a386865d78799 \
       SPIRV-Cross:7affe74d77f93a622bb5002789d5332d32e512ee; do
         name=${item%%:*}
@@ -63,9 +62,6 @@ setup)
         mkdir -p "$target"
         tar -xzf "$name-$commit.tar.gz" --strip-components=1 -C "$target"
     done
-    git -C "$base/source/mpv" apply --check /scratch/mpv-wasapi-session.patch
-    git -C "$base/source/mpv" apply /scratch/mpv-wasapi-session.patch
-    cp /scratch/mpv-wasapi-session.patch "$base/mpv-wasapi-session.patch"
     cat > "$base/cross.meson" <<EOF
 [binaries]
 c = ['x86_64-w64-mingw32-gcc', '-B$crt/', '-B$prefix/lib/', '-B$sdk/lib/']
