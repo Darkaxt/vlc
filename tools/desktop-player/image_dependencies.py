@@ -55,6 +55,36 @@ def definitions(repo, names=('zlib', 'png')):
     return result
 
 
+def mac_archive_dependencies(flags, cache):
+    """Keep the libraries CMake found, including paths outside the selected SDK.
+
+    libarchive's .pc reduces ADDITIONAL_LIBS to bare -l names. Darwin's
+    SDK-bound linker does not search Homebrew's /usr/local/lib by default.
+    Resolve those names from the actual release cache instead of guessing an
+    extra search directory or changing the dependency selection.
+    """
+    variables = {'z': ('ZLIB_LIBRARY', 'ZLIB_LIBRARY_RELEASE'),
+        'bz2': ('BZIP2_LIBRARY_RELEASE',), 'b2': ('LIBB2_LIBRARY',),
+        'lz4': ('LZ4_LIBRARY',), 'zstd': ('ZSTD_LIBRARY',)}
+    values = dict((line.split(':', 1)[0], line.split('=', 1)[1]) for line in cache.splitlines()
+                  if re.match(r'^[A-Za-z0-9_]+:(FILEPATH|UNINITIALIZED)=', line))
+    resolved, bindings = [], []
+    for flag in flags:
+        if not flag.startswith('-l'):
+            resolved.append(flag)
+            continue
+        keys = variables.get(flag[2:], ())
+        paths = {values[key] for key in keys if key in values and not values[key].endswith('-NOTFOUND')}
+        if len(paths) != 1:
+            raise RuntimeError('No unique CMake-selected archive dependency: ' + flag)
+        filename = Path(paths.pop())
+        if not filename.is_absolute() or not filename.is_file():
+            raise RuntimeError('CMake-selected archive dependency is missing: ' + str(filename))
+        resolved.append(str(filename))
+        bindings.append({'flag': flag, 'file': str(filename), 'sha256': digest(filename)})
+    return resolved, bindings
+
+
 def mac_link_rules(work, prefix, archive_only=False):
     """Inherited by recursive GNU make; retain configured global flags."""
     maps = work / 'link-maps'
@@ -97,6 +127,9 @@ def verify_mac_links(work, build, archive_only=False):
     for item in receipt['libraries']:
         if digest(libraries[item['name']]) != item['library_sha256']:
             raise RuntimeError('Updated image archive changed after compilation')
+        for dependency in item.get('dependency_bindings', []):
+            if digest(Path(dependency['file'])) != dependency['sha256']:
+                raise RuntimeError('Archive dependency changed after compilation: ' + dependency['flag'])
     links = []
     for filename in sorted((work / 'link-maps').glob('*.map')):
         plugin = build / 'modules/.libs' / ('lib' + filename.stem + '_plugin.dylib')
@@ -276,6 +309,9 @@ def build(repo, work, prefix, archives, env, toolchain=None, archive_only=False)
             if '-larchive' not in libs:
                 raise RuntimeError('Updated libarchive static link flags lack the archive')
             record['static_link_flags'] = [str(library) if flag == '-larchive' else flag for flag in libs]
+            if not toolchain:
+                record['static_link_flags'], record['dependency_bindings'] = mac_archive_dependencies(
+                    record['static_link_flags'], (directory / 'CMakeCache.txt').read_text())
         records.append(record)
     if archive_only:
         receipt = {'libraries': records}

@@ -189,6 +189,10 @@ jobs:
             .desktop-build/native-contrib-overlays/images/build-receipt.json
             .desktop-build/native-contrib-overlays/images/link-receipt.json
             .desktop-build/native-contrib-overlays/images/link-maps/*.map
+            .desktop-build/native-contrib-overlays/archive/build-receipt.json
+            .desktop-build/native-contrib-overlays/archive/link-receipt.json
+            .desktop-build/native-contrib-overlays/archive/link-maps/*.map
+            .desktop-build/native-contrib-overlays/archive/libarchive-*/build/CMakeCache.txt
             .desktop-toolchain/**
             .desktop-build/sources/*
             .desktop-sources/**/manifest.json
@@ -227,7 +231,7 @@ jobs:
           path: .desktop-build
           key: ${{ steps.cache.outputs.cache-primary-key }}
       - name: Retire superseded snapshots of the saved native cohort
-        if: ${{ always() && steps.saved_cache.outcome == 'success' && steps.cache.outputs.cache-primary-key != '' }}
+        if: ${{ always() && github.ref == 'refs/heads/codex/native-desktop' && steps.saved_cache.outcome == 'success' && steps.cache.outputs.cache-primary-key != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 tools/desktop-player/compact-native-cache.py --work "$GITHUB_WORKSPACE/.desktop-build" --retire-saved-key "${{ steps.cache.outputs.cache-primary-key }}" --target "${{ matrix.target }}"

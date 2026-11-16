@@ -546,6 +546,34 @@ class NativePackagingTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'changed after compilation'):
             images.verify_mac_links(work, build)
 
+    def test_mac_archive_dependencies_keep_cmake_selected_paths(self):
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        dependencies = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dependencies)
+        root = Path(sys.argv_scratch) / ('archive-deps-' + uuid.uuid4().hex)
+        root.mkdir()
+        libraries = {}
+        for name in ('archive.a', 'z.a', 'bz2.tbd', 'b2.dylib', 'lz4.a', 'zstd.dylib'):
+            path = root / ('lib' + name)
+            path.write_bytes(name.encode())
+            libraries[name.split('.')[0]] = path
+        cache = '\n'.join(key + ':FILEPATH=' + str(libraries[name]) for key, name in (
+            ('ZLIB_LIBRARY', 'z'), ('BZIP2_LIBRARY_RELEASE', 'bz2'),
+            ('LIBB2_LIBRARY', 'b2'), ('LZ4_LIBRARY', 'lz4'), ('ZSTD_LIBRARY', 'zstd')))
+        cache = cache.replace('ZLIB_LIBRARY:FILEPATH=', 'ZLIB_LIBRARY:UNINITIALIZED=')
+        flags = ['-Lmissing-default-search-directory', str(libraries['archive']),
+                 '-lz', '-lbz2', '-lb2', '-llz4', '-lzstd']
+        resolved, bindings = dependencies.mac_archive_dependencies(flags, cache)
+        self.assertEqual(resolved[1:], [str(libraries[name]) for name in
+                         ('archive', 'z', 'bz2', 'b2', 'lz4', 'zstd')])
+        self.assertEqual([row['flag'] for row in bindings], flags[2:])
+        self.assertEqual(bindings[2]['sha256'], dependencies.digest(libraries['b2']))
+        with self.assertRaisesRegex(RuntimeError, 'No unique CMake-selected archive dependency'):
+            dependencies.mac_archive_dependencies(flags, cache.replace('LIBB2_LIBRARY', 'OTHER'))
+        with self.assertRaisesRegex(RuntimeError, 'CMake-selected archive dependency is missing'):
+            dependencies.mac_archive_dependencies(flags, cache.replace(str(libraries['b2']),
+                                                  str(root / 'absent/libb2.dylib')))
+
     def test_archive_overlay_requires_exact_pin_and_actual_mac_archive_linkage(self):
         spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
         dependencies = importlib.util.module_from_spec(spec)
