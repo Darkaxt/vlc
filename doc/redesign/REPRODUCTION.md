@@ -2,10 +2,20 @@
 
 ## Weekly1.1.15 continuation (16 November)
 
-M18 is not delivered. Read PLAN for current source and managed operation
-identities; pipeline115 is the completed9c958ffb normal cohort, with diagnostic114
-and unchanged Windows MPV162b1ce4. Keep its objects and exact symbol mappings.
-The final Windows common-source restaging is pending the Mac link correction.
+M18 is not yet delivered. Read PLAN for current qualification/publication state.
+The final normal application source is b7af94fe, pipeline117 COMPLETE, with
+Windows MPV162b1ce4 unchanged. Retain its objects and exact417 symbol mappings;
+next118 must be absent. Private runtime is `/scratch/upstream-1.1.15-7537485e/runtime`,
+symbols `/scratch/upstream-1.1.15-7537485e-symbols-full`; the historical753 directory
+name does not identify its actual source. Canonical pipeline remains
+`/scratch/preview-1.1.8/compilation`. Host mirror is
+`D:/VLC-Redesign/build/windows-x64/weekly-1.1.15-7537485e/assembled`.
+Both Linux targets and both Mac normal packages/native UI passed. Final installer
+and Windows actual SDR/P5 presentation passed; preserve the frozen evidence under
+`D:/VLC-Redesign/releases/1.1.15/verification`. Do not replay old builds or review
+launchers. The original inherited UPSTREAM-ASSEMBLY/plugin upstream field records
+resource assembly base72d7d1e5; full normal117 source b7af94fe includes upstream
+493793a3. Record these separate identities truthfully in the release index.
 Native make prints its actual compiler/linker commands so a failed dependency
 link can be traced through libtool rather than inferred from variable names.
 
@@ -19,7 +29,7 @@ application source identity. NSIS unknown-variable diagnostics fail packaging;
 guest acceptance uses the registered quoted silent uninstaller with a path
 containing spaces, preserving other installs and portable user files.
 
-## Current1.1.12 cohort (10 November)
+## Historical1.1.12 cohort (10 November)
 
 Normal1.1.12 is published and all35 delivered assets were independently retrieved
 and hash-verified. Final evidence is `D:/VLC-Redesign/releases/1.1.12/verification`.
