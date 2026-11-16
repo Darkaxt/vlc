@@ -837,7 +837,9 @@ def resume_linux_packages(work, source):
     allowed = {'tools/desktop-player/package-native.py', 'tools/desktop-player/collect-native-sources.py',
         'tools/desktop-player/resume-linux-source-inputs.py', 'tools/desktop-player/test-native-packaging.py',
         '.github/workflows/desktop-packages.yml', 'tools/windows-player/package-source-release.py',
-        'tools/windows-player/test_source_release.py', 'tools/desktop-player/select-ci-targets.py'}
+        'tools/windows-player/test_source_release.py', 'tools/desktop-player/select-ci-targets.py',
+        'tools/desktop-player/check-channel-mixer.c', 'tools/desktop-player/check-channel-mixer.mk',
+        'tools/windows-player/release_source.py'}
     run('git', '-C', ROOT, 'merge-base', '--is-ancestor', source, 'HEAD')
     changed = output('git', '-C', ROOT, 'diff', '--name-only', source, 'HEAD').splitlines()
     if any(path not in allowed and not path.startswith('doc/redesign/') for path in changed):

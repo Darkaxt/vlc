@@ -145,6 +145,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BUILT_SOURCE: ${{ inputs.package_source }}
         run: python3 tools/desktop-player/package-native.py resume-packages --work "$GITHUB_WORKSPACE/.desktop-build" --prefix "$GITHUB_WORKSPACE/.desktop-build/deps" --built-source "$BUILT_SOURCE"
+      - name: Verify corrected multi-frame mixer regression against retained Linux core
+        if: ${{ inputs.resume_packages && runner.os == 'Linux' }}
+        run: |
+          make -j1 -C .desktop-build/vlc-build/test -f Makefile -f "$GITHUB_WORKSPACE/tools/desktop-player/check-channel-mixer.mk" check_channel_mixer
+          .desktop-build/vlc-build/test/check_channel_mixer
       - name: Verify recovered normal macOS ZIP and DMG applications
         if: ${{ runner.os == 'macOS' && !inputs.startup_trace && !inputs.mac_fault_trace }}
         run: python3 tools/desktop-player/verify-macos-packages.py --work "$GITHUB_WORKSPACE/.desktop-build" --scratch "$RUNNER_TEMP/native-package-checks" --capture-core

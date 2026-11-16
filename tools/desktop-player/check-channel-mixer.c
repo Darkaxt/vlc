@@ -1,10 +1,7 @@
 /* Regression for the actual 6.1 -> 5.x worker, LGPL-2.1-or-later. */
-#undef NDEBUG
-#include <assert.h>
-
 #define MODULE_NAME check_channel_mixer
 #define MODULE_STRING "check_channel_mixer"
-#include "../../modules/audio_filter/channel_mixer/simple.c"
+#include <simple.c>
 
 int main(void)
 {
@@ -24,9 +21,10 @@ int main(void)
         unsigned channels = 5 + lfe;
         for (unsigned frame = 0; frame < 2; ++frame)
             for (unsigned channel = 0; channel < channels; ++channel)
-                assert(output[1 + frame * channels + channel] == expected[frame][channel]);
-        assert(output[0] == -1234.f);
-        assert(output[1 + 2 * channels] == -1234.f);
+                if (output[1 + frame * channels + channel] != expected[frame][channel])
+                    return 1;
+        if (output[0] != -1234.f || output[1 + 2 * channels] != -1234.f)
+            return 2;
     }
     return 0;
 }

@@ -726,7 +726,8 @@ def collect(work, app, out, generation):
     if producer != generation:
         scripts = ('tools/desktop-player/package-native.py', 'tools/desktop-player/collect-native-sources.py',
                    'tools/desktop-player/resume-linux-source-inputs.py', 'tools/desktop-player/source_transport.py',
-                   'tools/desktop-player/select-ci-targets.py', '.github/workflows/desktop-packages.yml')
+                   'tools/desktop-player/select-ci-targets.py', '.github/workflows/desktop-packages.yml',
+                   'tools/desktop-player/check-channel-mixer.c', 'tools/desktop-player/check-channel-mixer.mk')
         production = destination / 'packaging-producer'; production.mkdir(exist_ok=True)
         for relative in scripts:
             committed = subprocess.check_output(['git', '-C', str(ROOT), 'show', producer + ':' + relative])

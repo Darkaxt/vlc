@@ -2,6 +2,41 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Native run43876459830/source7537485e: Linux x86 completed its player build and
+upstream test_url, but source packaging again rejected zlib's downloaded checksum.
+Its compiler cache is retained; recover exact source from prior9c artifact14223716880
+with the supported package-only path, without recompiling the application. Read
+the original full job log, not a retry. The new mixer fixture's release build
+warning (`expected` unused) exposed config.h redefining NDEBUG after the first
+assert include. Do not count that optimized-away fixture as a regression pass.
+The test-only correction uses explicit return checks, includes the actual module
+through a controlled include path and keeps compiled application source7537485e.
+The updated source carriers include that actual test/packaging producer. Compile
+and execute the corrected fixture against the retained Linux/Windows core before
+claiming mixer acceptance; no player/dependency rebuild for this fixture repair.
+
+Current admission blocker (external dependency, original evidence retained):
+normal116/workflow5bfea3458b4f3a14e26274f509821ed0 compiled/installed in16.4s,
+then exact symbol verification rejected the410-pair Qt-only seed after full
+staging replaced those stripped plugins. Group empty, no OOM, mounts released;
+failure frozen under `verification/windows-symbol-failure116`. Prepared same-source
+117 recovery preserves all objects and the failed manifest, using a fresh
+incomplete full-graph manifest seeded only with the two untouched MPV pairs.
+No changed source or compiler retry is needed. The original ticket32f4065a
+reached its documented3-correction limit. Its supported build-close succeeded,
+but replacement prepare6688e11d68d0fbb739dce535a8cc7972 for the same M18/scope
+was refused STAGE_ALREADY_SUBMITTED by active Coordinator0.29.13. Do not rename
+the stage, edit native state, reuse pending installer9 or bypass the WSL gate.
+The source identifies the permanent unique-stage row as the cause. Read-only
+ownership inspection confirmed active Morphe Extended task01a101b0-60c8-7323-b675-61d19ddd5a5b
+already owns this exact0.29.14 repair in `D:/Temp/morphe-gate-renewal-20261116`;
+do not compete with that writer. Resolve by verifying the installed forward
+runtime and its supported closed-ticket renewal, then renew original32f4065a
+with its private owner capability and continue original116 as117. Final Windows
+normal regression/installer/picture acceptance, delivery and retained binding
+cannot close before that admission and actual continuation pass. Independent
+native run43876459830 on7537485e is already running; retain its watch/session.
+
 Current cohesive correction is source-ready, with native correctness unverified:
 forward all selected Darwin archive dependencies as ordered linker inputs, rather
 than letting libtool defer static archives after direct dylib/tbd arguments;
