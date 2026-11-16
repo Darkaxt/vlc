@@ -2,7 +2,8 @@
 
 ## Weekly1.1.15 continuation (16 November)
 
-M18 is not yet delivered. Read PLAN for current qualification/publication state.
+M18 is COMPLETE. Normal1.1.15 is published and all35 public assets independently
+downloaded/SHA256 verified. Read PLAN and M18-reconciliation-b7af94fe.json for closure.
 The final normal application source is b7af94fe, pipeline117 COMPLETE, with
 Windows MPV162b1ce4 unchanged. Retain its objects and exact417 symbol mappings;
 next118 must be absent. Private runtime is `/scratch/upstream-1.1.15-7537485e/runtime`,
@@ -12,8 +13,13 @@ name does not identify its actual source. Canonical pipeline remains
 `D:/VLC-Redesign/build/windows-x64/weekly-1.1.15-7537485e/assembled`.
 Both Linux targets and both Mac normal packages/native UI passed. Final installer
 and Windows actual SDR/P5 presentation passed; preserve the frozen evidence under
-`D:/VLC-Redesign/releases/1.1.15/verification`. Do not replay old builds or review
-launchers. The original inherited UPSTREAM-ASSEMBLY/plugin upstream field records
+`D:/VLC-Redesign/releases/1.1.15/verification`. The current read-only Windows helper
+is `D:/VLC-Redesign/build/windows-x64/verify-retained-build-1.1.15.py` (Python3.11,
+no arguments); it rejects a changed source/cohort and performs no Linux execution.
+Use build-retention.json for its hash, current source/symbol carriers and next118.
+The former1.1.12/13/14 release entries/local versions were retired only after this
+delivery passed; their tags and verified historical evidence are preserved on G:.
+Do not replay old builds or review launchers. The inherited UPSTREAM-ASSEMBLY/plugin field records
 resource assembly base72d7d1e5; full normal117 source b7af94fe includes upstream
 493793a3. Record these separate identities truthfully in the release index.
 Native make prints its actual compiler/linker commands so a failed dependency
@@ -30,6 +36,11 @@ guest acceptance uses the registered quoted silent uninstaller with a path
 containing spaces, preserving other installs and portable user files.
 
 ## Historical1.1.12 cohort (10 November)
+
+The following records its original delivery. Its release/local payload was retired
+after verified1.1.15 replacement on16 November. Original evidence is archived under
+`G:/VLC-Redesign/release-evidence/retired-by-1.1.15-20261116/1.1.12`; paths below
+describe that original execution and are not current launchers or retained inputs.
 
 Normal1.1.12 is published and all35 delivered assets were independently retrieved
 and hash-verified. Final evidence is `D:/VLC-Redesign/releases/1.1.12/verification`.

@@ -1,6 +1,6 @@
 # VLC redesign stages and reconciliation
 
-**16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
+**16 November weekly maintenance: M18 COMPLETE — normal1.1.15 published and independently verified on all five targets.**
 
 Current acceptance: normal application source is b7af94fe3f2c59ae4c96476f565ceb75d5c49c0a;
 later diagnostic/artifact producer is f19e8020972241bda9b99652f823a374bc8395ab.
@@ -24,12 +24,31 @@ quoted registered uninstall paths with spaces and preservation of other installs
 workflow ended0 with guest/viewer tree exit verified. This task changed no Coordinator
 code; it used the separately activated0.29.15 supported runtime.
 
-All33 versioned assets are staged, including complete corresponding sources and
-matching optional symbols. Remaining criteria: final provenance/index and retained
-binding reconciliation, normal publication of35 assets and independent public
-retrieval with fresh unprimed Windows both-engine lifecycle. Applicable unchanged
-native/picture evidence is reused after identical package hash verification.
-No1.1.15 release is published; M18 remains the only ACTIVE stage.
+Normal [redesign-v1.1.15](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.15)
+is Latest with all35 assets, immutable tag/source b7af94fe and integrated upstream
+493793a3. All35 public assets were independently retrieved and SHA256 verified,
+including complete sources, matching symbols and each platform source index.
+Fresh shipped-cache-unprimed Windows VLC and MPV lifecycle completed0 with natural
+EOF, release and no plugin/QML/runtime errors. The inactive MPV probe could not
+prove presentation: its original actual_picture=false result is retained, while
+the explicitly allowed actual SDR/P5 proof is reused after exact whole-ZIP and417
+PE mapping identity checks. No presentation criterion is waived or relaunch needed.
+The verified117 weekly binding is promoted; next118 is absent. Current normal
+runtime, native full symbols, SDK/MPV/codec objects and current Windows mirror are
+retained under build-retention.json. The maintained read-only Windows helper is
+`D:/VLC-Redesign/build/windows-x64/verify-retained-build-1.1.15.py`; it reads native
+ext4 paths without launching Linux, compiling or allocating private mounts.
+Obsolete1.1.12/13/14 release entries and local versions, replaced Windows mirror,
+duplicate carriers/symbol copies and exact task scratch were transactionally retired.
+Original tags/history and verified historical evidence on
+`G:/VLC-Redesign/release-evidence/retired-by-1.1.15-20261116` remain available.
+The pre-existing M6 native Linux cleanup backend boundary is preserved explicitly;
+no raw UNC/Linux deletion or discard of active native objects was attempted.
+M18 has no remaining software/delivery blocker or tracked deferral. S8 remains
+COMPLETE; S9 remains NOT STARTED. Final evidence is
+`D:/VLC-Redesign/releases/1.1.15/verification`; see M18-reconciliation-b7af94fe.json.
+Upstream was frozen at493793a3 for this coordinated acceptance. Its default branch
+is still master; b970733b was observed after the freeze and is outside this release.
 
 Earlier M18 checkpoints below are historical and superseded by this current state.
 
