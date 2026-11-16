@@ -3,6 +3,9 @@
 #define MODULE_STRING "check_channel_mixer"
 #include <simple.c>
 
+/* This is a test host, not a dynamic plugin exporting its own module symbol. */
+const char vlc_module_name[] = MODULE_STRING;
+
 int main(void)
 {
     const float input[] = {1, 2, 4, 6, 8, 10, 12, 21, 22, 24, 26, 28, 30, 32};

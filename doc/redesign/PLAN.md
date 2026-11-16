@@ -2,6 +2,35 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Current acceptance: normal application source remains b7af94fe; subsequent deltas
+are diagnostic/artifact tooling only. Both Linux targets passed native/package,
+actual installed strict Snap and affected core checks. Their complete artifacts,
+all source members and both-engine main/floating/Restore pictures were verified.
+Both Mac normal ZIP/DMG/signature/both-engine playback checks passed. Intel UI
+continuation43888855818 passed; its whole artifact and identical normal assets are
+verified, with picture inspection underway. AppleSilicon UI43892026989 was cancelled
+before runner allocation: GitHub explicitly reports hosted ARM capacity and no
+acquired runner. Continue that exact run through supported failed-job resumption;
+do not rebuild its normal player or repeat unchanged package checks.
+
+Windows admission is restored by the separately installed Coordinator0.29.14;
+this task made no Coordinator changes. Renewed receipt d322ddac1b66f4f11a0996ad935ec9d8
+preserves original32f4065a/M18 identity. Attempt1/eda337e7 completed normal117 in44s,
+with417 complete PE/symbol pairs and unchanged configuration, then its post-build
+driver requested test_url instead of the actual Windows test_url.exe target.
+Attempt3/00a99a0f compiled that URL test, then the standalone mixer test failed
+linking vlc_module_name. Existing upstream test hosts define that identity locally;
+the fixture now follows the same contract without changing its worker/checks or
+the application. Both failed workflows have empty groups, no OOM and released
+mounts. Retain completed117 and all SDK/MPV/codec objects. Correct only the test
+host/link/export path under this receipt; never repeat normal117 or its seeding.
+Installer attempt2 is still pending and unchanged. Remaining criteria: Windows
+test execution/export, normal actual pictures, fixed installer, AppleSilicon UI,
+final package/source/symbol reconciliation and independently verified publication.
+No1.1.15 release is published; M18 remains the only ACTIVE stage.
+
+Earlier M18 checkpoints below are historical and superseded by this current state.
+
 Current normal application source is b7af94fe3f2c59ae4c96476f565ceb75d5c49c0a;
 native run43881341331 retains the original five-target qualification. Linux ARM
 completed its package/native checks, including installed strict Snap, both-engine
