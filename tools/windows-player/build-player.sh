@@ -164,6 +164,10 @@ if test "$plugin_scope" = full; then
         --source "$source_root" --build "$build_root" --runtime "$runtime"
 fi
 if test "$plugin_scope" = current; then
+    # Qt also consumes libarchive for subtitle/font ZIP extraction. Its new
+    # link map and binary hash must accompany every Qt-only restaging, even
+    # when the codec libraries and all non-Qt plugins are retained unchanged.
+    python3 "$source_root/tools/windows-player/verify-upstream-codec-links.py" --source "$source_root" --build "$build_root" --runtime "$runtime"
     # This cohort has already passed the global release-profile rebuild. Only
     # Qt production sources changed, proven against the exact retained commit.
     python3 "$source_root/tools/windows-player/stage-full-plugins.py" \
