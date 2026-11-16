@@ -9,6 +9,11 @@ engine. This is an independent community fork, not an official VideoLAN release.
 Get the package for your platform from the
 [latest release](https://github.com/Darkaxt/vlc/releases/latest).
 
+Windows is currently [1.1.14](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.14).
+macOS and Linux are [1.1.13](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.13),
+including both Linux Snap packages, qualified under strict confinement and added
+on 16 November without recompiling the players.
+
 | Platform | Packages | Native qualification |
 | --- | --- | --- |
 | Windows x64 | Portable ZIP/7z, per-user installer | VLC/MPV playback, installer upgrade/data preservation/uninstall, Dolby Vision conversion |
