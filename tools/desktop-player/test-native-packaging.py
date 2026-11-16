@@ -26,6 +26,30 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_appimage_source_recovery_requires_both_index_and_current_pin(self):
+        spec = importlib.util.spec_from_file_location('source_recovery', HERE / 'resume-linux-source-inputs.py')
+        recovery = importlib.util.module_from_spec(spec); spec.loader.exec_module(recovery)
+        value = b'original pinned zlib source'
+        checksum = hashlib.sha512(value).hexdigest()
+        member = 'appimage-runtime/zlib/' + checksum[:16] + '-zlib.tar.gz'
+        pins = dict(runtime_commit='a' * 40, source_built=[], alpine=[dict(name='zlib',
+            source=dict(filename='zlib.tar.gz', sha512=checksum), recipe_files=[])])
+        runtime = dict(commit='a' * 40)
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, 'w') as writer:
+            writer.writestr(member, value)
+        work = Path(sys.argv_scratch) / ('appimage-source-' + uuid.uuid4().hex)
+        with zipfile.ZipFile(archive) as reader:
+            rows = recovery.seed_appimage_originals(reader, {member: hashlib.sha256(value).hexdigest()},
+                                                   pins, runtime, work)
+            self.assertEqual(Path(rows[0]['cache']).read_bytes(), value)
+            with self.assertRaisesRegex(RuntimeError, 'differs from its current pin'):
+                recovery.seed_appimage_originals(reader, {member: '0' * 64}, pins, runtime, work)
+            pins['alpine'][0]['source']['sha512'] = checksum[:16] + '0' * 112
+            with self.assertRaisesRegex(RuntimeError, 'differs from its current pin'):
+                recovery.seed_appimage_originals(reader, {member: hashlib.sha256(value).hexdigest()},
+                                                pins, runtime, work)
+
     def test_package_continuation_keeps_original_native_bytes_and_source(self):
         root = Path(sys.argv_scratch) / ('package-resume-' + uuid.uuid4().hex)
         work = root / '.desktop-build'

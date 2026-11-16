@@ -107,6 +107,41 @@ def seed_debian_originals(archive, expected, work):
     return copied
 
 
+def seed_appimage_originals(archive, expected, pins, runtime, work):
+    """Recover pinned AppImage inputs; do not accept a changed download hash."""
+    if pins['runtime_commit'] != runtime['commit']:
+        raise RuntimeError('AppImage source and runtime revisions differ')
+    copied = []
+    for component in [*pins['source_built'], *pins['alpine']]:
+        source = component.get('source', component)
+        rows = [source, *component.get('recipe_files', [])]
+        for row in rows:
+            name = row.get('filename') or PurePosixPath(urllib.parse.urlsplit(row['url']).path).name
+            if PurePosixPath(name).name != name or '\\' in name:
+                raise RuntimeError('Unsafe AppImage source name')
+            algorithm = 'sha256' if 'sha256' in row else 'sha512'
+            checksum = row[algorithm]
+            filename = checksum[:16] + '-' + name
+            member = 'appimage-runtime/' + component['name'] + '/' + filename
+            if member not in expected:
+                continue
+            value = archive.read(member)
+            if (hashlib.sha256(value).hexdigest() != expected[member] or
+                    hashlib.new(algorithm, value).hexdigest() != checksum):
+                raise RuntimeError('Recovered AppImage source differs from its current pin')
+            cache = work / 'corresponding-source-inputs/appimage' / runtime['commit'] / component['name']
+            cache.mkdir(parents=True, exist_ok=True)
+            target = cache / filename
+            if target.exists():
+                if target.is_symlink() or digest(target) != expected[member]:
+                    raise RuntimeError('Existing AppImage source cache differs; preserve it')
+            else:
+                with target.open('xb') as stream:
+                    stream.write(value)
+            copied.append({'file': member, 'sha256': expected[member], 'cache': str(target)})
+    return copied
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--artifact', type=int, required=True)
@@ -150,6 +185,8 @@ def main():
     if downloaded.stat().st_size != metadata['size_in_bytes'] or 'sha256:' + digest(downloaded) != metadata['digest']:
         raise RuntimeError('Historical source artifact bytes differ')
     pins = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['linux_archived_sources']
+    appimage_pins = json.loads((ROOT / 'tools/desktop-player/appimage-sources.json').read_text())
+    runtime = json.loads((ROOT / 'tools/desktop-player/native-inputs.json').read_text())['appimage_runtime']
     copied = []
     with zipfile.ZipFile(downloaded) as outer:
         indices = [row for row in outer.infolist() if row.filename.endswith('/packages/' + args.source + '/NATIVE-SOURCE-ASSETS.json')]
@@ -161,7 +198,8 @@ def main():
         prefix = indices[0].filename.removesuffix('NATIVE-SOURCE-ASSETS.json')
         for part in index['parts']:
             expected = {row['file']:row['sha256'] for row in part['members']}
-            if not any(name.startswith('debian/') and name.endswith('.dsc') for name in expected):
+            if not any((name.startswith('debian/') and name.endswith('.dsc')) or
+                       name.startswith('appimage-runtime/') for name in expected):
                 continue
             name = part['name']
             if Path(name).name != name or '/' in name or '\\' in name:
@@ -174,6 +212,7 @@ def main():
             with zipfile.ZipFile(target) as archive:
                 copied.extend(seed_part(archive, expected, pins, args.work))
                 copied.extend(seed_debian_originals(archive, expected, args.work))
+                copied.extend(seed_appimage_originals(archive, expected, appimage_pins, runtime, args.work))
     copied = list({row['file']:row for row in copied}.values())
     required = {row['sha256'] for pin in pins for row in [pin['descriptor'], *pin['files']]}
     if not required.issubset({row['sha256'] for row in copied}):

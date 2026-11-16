@@ -2,6 +2,39 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Latest verified checkpoint: diagnostic9c958ffb passed the owned inactive-desktop
+menu/engine/native-menu-close workflow at100%, plus floating Queue/drag/hover/
+Restore for both engines at100/150/200%; every process exited0, the input desktop
+and protected profiles stayed unchanged. Actual reference menu/Playback/expanded
+Queue captures were inspected; this is not actual composed-video proof. Exact
+results, screenshots, own synthetic geometry and helper are frozen under
+`releases/1.1.15/verification/windows-9c958ffb/native-ui`. No application source
+changed after9c in src/include/modules/share/contrib, so these checks remain
+applicable while host packaging/link correction continues. The earlier claim
+that the menu pass covered three DPIs was corrected; only floating did.
+
+Owned Sandbox46d07b739826e33dd4a0c69a4704f24c confirmed the original install's
+registered uninstall commands contain literal stray dollar signs. Its actual
+result is retained in `verification/installer-original-nsis-failure/guest-result.json`.
+The scoped original uninstaller removed that installation/registration with0;
+workflow.end completed0 with whole-tree exit. The corrected installer still needs
+the full guest pass. Installer8's actual outside failure is recorded on original
+receipt32f4065ac9e1ff764814f1552c768a0a/check windows-installer. Its source-ready
+correction must reissue the affected final normal projection under that receipt,
+after the current Mac diagnosis closes the known source gap. Do not manufacture
+another scope or replay normal114/115. Spent installer report scratch was removed
+by transactione076848c2314a229fba206cf501ce747 (4,084 bytes).
+
+Intel-only diagnostic run43872059420 pins f28443c521a and is queued, without jobs
+allocated yet; retain its original run/watch, not a duplicate dispatch. Linux
+x86 source recovery now also covers AppImage archives/recipe files from the
+current pinned runtime source graph: both the prior source-index SHA256 and the
+current SHA256/SHA512 must match before seeding the content-addressed cache.
+It preserves rejected downloads and never changes a dependency checksum. Prior
+complete x86 artifact14223716880/source9c958ffb contains the required exact zlib
+archive; its source index was retrieved for diagnosis, not whole-artifact release
+verification. Source recovery/packaging remains unexecuted on the current build.
+
 Current acceptance gaps: CI43863442063 completed: Linux ARM passed; Linux x86
 completed compilation but source packaging rejected the downloaded zlib1.3.2
 checksum; Apple Silicon was cancelled before allocation for hosted capacity;
