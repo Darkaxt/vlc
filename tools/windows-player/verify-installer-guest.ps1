@@ -16,7 +16,7 @@ if ($ExpectedSourceCommit -notmatch '^[0-9a-f]{40}$' -or $Version -notmatch '^\d
 $work = Join-Path $PSScriptRoot 'installer-acceptance'
 if (Test-Path -LiteralPath $work) { throw 'Preserve the original guest outcome before another invocation' }
 New-Item -ItemType Directory -Path $work | Out-Null
-$installation = Join-Path $work 'installed'
+$installation = Join-Path $work 'installed with spaces'
 $original = Join-Path $work 'original-vlc'
 $registration = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork'
 $manifest = Get-Content -LiteralPath (Join-Path $Payload 'FILE-MANIFEST.json') -Raw | ConvertFrom-Json
@@ -52,7 +52,25 @@ function Assert-Payload([string]$Directory=$installation) {
     }
     $copiedManifest = Join-Path $Directory 'FILE-MANIFEST.json'
     if ((Get-FileHash -LiteralPath $copiedManifest).Hash -ne (Get-FileHash -LiteralPath (Join-Path $Payload 'FILE-MANIFEST.json')).Hash) { throw 'Installed manifest differs' }
-    if ((Get-ItemProperty -LiteralPath $registration).InstallLocation -ne $Directory) { throw 'Fork registration has wrong installation' }
+    $entry = Get-ItemProperty -LiteralPath $registration
+    if ($entry.InstallLocation -ne $Directory) { throw 'Fork registration has wrong installation' }
+    $expectedCommand = '"' + (Join-Path $Directory 'uninstall.exe') + '"'
+    $record.registered_uninstaller = [ordered]@{
+        actual=$entry.UninstallString; quiet=$entry.QuietUninstallString; expected=$expectedCommand
+    }
+    if ($entry.UninstallString -ne $expectedCommand -or
+        $entry.QuietUninstallString -ne ($expectedCommand + ' /S') -or
+        $entry.QuietUninstallString -cnotmatch '^".+" /S$') {
+        throw 'Registered uninstaller commands do not target the owned quoted executable'
+    }
+}
+function Invoke-RegisteredUninstaller([string]$Directory, [string]$Label) {
+    $command = (Get-ItemProperty -LiteralPath $registration).QuietUninstallString
+    $parsed = [regex]::Match($command, '^"([^"]+)" (/S)$')
+    if (-not $parsed.Success -or $parsed.Groups[1].Value -ne (Join-Path $Directory 'uninstall.exe')) {
+        throw 'Refuse a registered command outside the owned installation'
+    }
+    return Invoke-OwnedProcess $parsed.Groups[1].Value @($parsed.Groups[2].Value) $Label
 }
 function Get-ProfileHashes {
     $profile = Join-Path $installation 'portable'
@@ -95,7 +113,7 @@ try {
     if ((Invoke-OwnedProcess $Installer @('/S', "/D=$installation") 'upgrade') -ne 0) { throw 'Upgrade failed' }
     Assert-Payload
     if ((Get-ProfileHashes) -ne $before) { throw 'Upgrade changed portable user data' }
-    $newer = Join-Path $work 'newer-installation'
+    $newer = Join-Path $work 'newer installation with spaces'
     if ((Invoke-OwnedProcess $Installer @('/S', "/D=$newer") 'second-installation') -ne 0) { throw 'Second installation failed' }
     Assert-Payload $newer
     if ((Invoke-OwnedProcess (Join-Path $installation 'uninstall.exe') @('/S') 'uninstall') -ne 0) { throw 'Uninstall failed' }
@@ -107,7 +125,8 @@ try {
         if (-not (Test-Path -LiteralPath (Join-Path $installation $name))) { throw "Uninstall removed extra data: $name" }
     }
     if ((Get-FileHash -LiteralPath $sentinel).Hash -ne $sentinelHash) { throw 'Unrelated VLC changed' }
-    if ((Invoke-OwnedProcess (Join-Path $newer 'uninstall.exe') @('/S') 'uninstall-current') -ne 0) { throw 'Current installation uninstall failed' }
+    if ((Invoke-RegisteredUninstaller $newer 'uninstall-current-registered-command') -ne 0) { throw 'Current installation uninstall failed' }
+    $record.registered_uninstaller_used = $true
     if (Test-Path -LiteralPath $registration) { throw 'Current uninstall retained its registration' }
     if (Test-Path -LiteralPath (Join-Path $newer 'vlc.exe')) { throw 'Current uninstall retained its program' }
     $record.lifecycle_passed = $true

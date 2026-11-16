@@ -71,7 +71,8 @@ def main():
     assert (args.dependency_notices / 'manifest.json').is_file()
     dependency_inventory = json.loads((args.dependency_notices / 'manifest.json').read_text())
     assert len(dependency_inventory.get('embedded_carriers_reviewed', [])) == 4
-    assert subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip() == args.source_commit
+    from release_source import packaging_identity
+    producer = packaging_identity(repo, args.source_commit)
     changes = subprocess.check_output(['git', '-C', str(repo), 'diff', '--name-only', 'HEAD'], text=True).splitlines()
     assert not any(path.startswith(('modules/', 'src/', 'share/', 'contrib/', 'tools/')) for path in changes), changes
     untracked = subprocess.check_output(['git', '-C', str(repo), 'ls-files', '--others', '--exclude-standard',
@@ -223,6 +224,7 @@ def main():
                 'the Vulkan runtime supplied by a compatible graphics driver.\n')
     build = {'schema': 'vlc_redesign.release_identity.v1', 'product': 'Modern VLC Fork',
         'version': args.version, 'source_commit': args.source_commit,
+        'packager_commit': producer['packager_commit'], 'packager_sources': producer['files'],
         'upstream_revision': (json.loads((runtime / 'VLC-PLUGIN-BUILDINFO.json').read_text())['upstream_commit']
             if (runtime / 'VLC-PLUGIN-BUILDINFO.json').is_file() else '392bc1d0abdb7396b6c97fef206efa1d23868e19'),
         'source_repository': 'https://github.com/Darkaxt/vlc', 'native': identity,

@@ -914,6 +914,28 @@ class NativePackagingTest(unittest.TestCase):
                 build.meson(work, 'mpv', src, prefix, options, {'CC': 'different'})
             run.assert_not_called()
 
+    def test_windows_packaging_producer_cannot_replace_application_sources(self):
+        path = HERE.parent / 'windows-player/release_source.py'
+        spec = importlib.util.spec_from_file_location('release_source', path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.validate_producer_delta(['tools/windows-player/fork-installer.nsi',
+            'tools/windows-player/package-release.py', 'doc/redesign/PLAN.md'])
+        for changed in ('src/player/aout.c', 'modules/gui/qt/player/FloatingPlayer.qml',
+                        'contrib/src/libarchive/rules.mak', 'tools/windows-player/build-player.sh',
+                        'doc/redesign/resources/s7/icon.svg'):
+            with self.assertRaisesRegex(RuntimeError, 'Packaging producer changes application/build inputs'):
+                module.validate_producer_delta([changed])
+
+    def test_windows_installer_rejects_unknown_nsis_variables(self):
+        path = HERE.parent / 'windows-player/package-windows-installer.py'
+        spec = importlib.util.spec_from_file_location('windows_installer', path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.verify_compiler_log('Total size: 84913552 bytes\n')
+        with self.assertRaisesRegex(RuntimeError, 'NSIS contains an unknown variable'):
+            module.verify_compiler_log('4 warnings:\n  6000: unknown variable/constant "x" detected, ignoring\n')
+
     def test_windows_configure_reads_current_codec_versions(self):
         path = HERE.parent / 'windows-player/configure-player.py'
         tree = ast.parse(path.read_text())

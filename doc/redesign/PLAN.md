@@ -2,6 +2,28 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Current acceptance gaps: CI43863442063 completed: Linux ARM passed; Linux x86
+completed compilation but source packaging rejected the downloaded zlib1.3.2
+checksum; Apple Silicon was cancelled before allocation for hosted capacity;
+Intel passed vlc-qt-check but the Qt plugin link has unresolved BZIP2/ZSTD
+references. Preserve original caches and use an Intel-only verbose link
+continuation to expose the actual libtool command before correcting it. No new
+player crash is established, and no Windows restaging starts until this cohesive
+source correction is complete. Recover the exact Linux source archive through
+the existing compiler-free package continuation, without changing its checksum.
+
+Installer8/f18e5ff974526c186b158279ff46c6ca completed compilation but its log
+contains NSIS6000 unknown-variable diagnostics in both uninstall registrations.
+The template quoting is corrected; packaging rejects those diagnostics, and the
+guest verifier must exercise actual registered commands with spaces in the
+installation path. Artifact-only producer/source separation is now explicit and
+the corresponding-source carrier includes the actual producer files. This is
+the existing R113 repair, with real guest acceptance still pending. Sandbox353
+failed before launch because its input paths overlapped a reserved mapping;
+corrected workflow46d07b739826e33dd4a0c69a4704f24c retains the same scratch and
+uses separate C:\\VlcPayload/C:\\VlcInstaller/C:\\VlcFixtures mappings. It is
+queued, with no guest application outcome yet. M18 remains the sole ACTIVE stage.
+
 Latest checkpoint: owned workflow09c56cfcb81e9a676cedd3dd68bc4448 completed0 with empty group, no OOM and released mounts. Diagnostic114/final normal115 both use9c958ffb and preserve409 non-Qt plugins,411 exact symbol pairs and3,319/3,345 objects, with unchanged configuration and MPV bytes. The1,933,885,440-byte export SHA256329d9969be22fa8f48b252b0d00d57edee8b03e8eaffbedc2a236129b1c4ae6f was verified before extraction; all417 final PE/symbol mappings pass and normal Qt lacks diagnostic hooks. Required Windows font download/ZIP extraction/onboarding/restart passed through the maintained verifier on this diagnostic counterpart (DPR1, light; both exits0 and input desktop preserved). Freeze its exact result/evidence before retiring test scratch. No other new UI/picture/delivery pass is claimed.
 
 CI43859161933 is still running: Apple Silicon acquired a runner; both Linux jobs reached actual native workflows. Intel133271286754 failed the same `vlc-qt-check` link. Its retained config.log proves qmake flattened libarchive and its private flags into QT_LIBS; ARCHIVE_LIBS rebinding cannot update that variable. The cohesive correction now substitutes the CMake-selected paths into configured QT_LIBS as an explicit make argument, retaining Qt framework order and omitting the redundant Qt-only LIBADD append. It records those actual consumer flags with existing native link bindings. Focused positive/missing-dependency regressions pass. This changes Mac build binding only, with no player C++/QML or Windows dependency change. Finish the original jobs and requalify the affected coherent source; do not blindly repeat passed workflows or claim an unexplained shutdown repair. M18 remains ACTIVE.

@@ -41,6 +41,24 @@ application commit, record the separately committed packager identity, and inclu
 its actual script in the source carrier. Runtime and complete dependency source
 bindings must continue to match the selected built application commit.
 
+16 November R113 Windows packaging repair: the native NSIS compiler reports
+unknown variables in both registered uninstaller strings. The template uses
+`$"` without the required backslash; use literal double quotes inside the
+existing single-quoted NSIS argument. Qualify the actual registered normal and
+quiet commands in the owned guest, including paths with spaces, and reject an
+unknown-variable compiler diagnostic before accepting an installer. Preserve
+per-user installation, exact shipped-file removal and unrelated profiles/files.
+The final application cohort remains `c45413636c10dee378aea303b518215bb6d33ffa`;
+reuse its compiled application/dependency cohort for this artifact-only repair.
+The outstanding Windows common-source projection is still required; the NSIS
+repair itself must not trigger another application or dependency rebuild.
+Record a separate descendant packaging producer, prove its delta contains only
+the scoped packaging/verifier/documentation files, and include its actual source
+scripts/template in the corresponding-source carrier. Bind portable and installer
+metadata to the compiled application commit and the actual packaging producer.
+This applies the existing R113 application/producer separation, not a new stage
+or a waiver of the common application-source and delivery requirements.
+
 R113 continuation: the10 November Linux jobs completed compilation and native
 dependency audit before source transport failed (cjson disconnect on x86;
 pcre2 snapshot HTTP504 on ARM, later HTTP503). Resume the original staged

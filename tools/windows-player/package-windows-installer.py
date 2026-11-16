@@ -21,6 +21,11 @@ def nsis_string(value):
     return value.replace('$', '$$').replace('"', '$\\"')
 
 
+def verify_compiler_log(text):
+    if re.search(r'6000: unknown variable/constant', text, re.I):
+        raise RuntimeError('NSIS contains an unknown variable; reject the installer and inspect its template')
+
+
 def verify_payload(payload, commit, version):
     info = json.loads((payload / 'BUILDINFO.json').read_text())
     manifest = json.loads((payload / 'FILE-MANIFEST.json').read_text())
@@ -70,7 +75,8 @@ def main():
     assert re.fullmatch('[0-9a-f]{40}', args.source_commit)
     assert re.fullmatch(r'\d+\.\d+\.\d+', args.version)
     repo = Path(__file__).resolve().parents[2]
-    assert subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip() == args.source_commit
+    from release_source import packaging_identity
+    producer = packaging_identity(repo, args.source_commit)
     assert not subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain'])
     payload = args.payload.resolve(strict=True)
     assert not args.work.exists() and not args.output.exists()
@@ -89,10 +95,12 @@ def main():
         done = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
     if done.returncode:
         raise RuntimeError('NSIS failed; inspect ' + str(args.work / 'makensis.log'))
+    verify_compiler_log((args.work / 'makensis.log').read_text())
     from release_symbols import pe_image
     image = pe_image(args.output)
     assert not image['debug_bytes'] and not image['coff_symbols']
     receipt = {'schema': 'modern-vlc.windows-installer.v1', 'source_commit': args.source_commit,
+        'packager_commit': producer['packager_commit'], 'packager_sources': producer['files'],
         'version': args.version, 'payload_manifest_sha256': digest(payload / 'FILE-MANIFEST.json'),
         'template_sha256': digest(script), 'removal_list_sha256': digest(remove),
         'nsis_version': subprocess.check_output(['makensis', '-VERSION'], text=True).strip(),

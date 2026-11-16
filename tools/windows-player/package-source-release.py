@@ -69,7 +69,9 @@ def main():
     destination, scratch = args.destination.resolve(), args.scratch.resolve()
     assert destination.is_relative_to(Path('D:/VLC-Redesign'))
     assert scratch.parent.parent == Path('D:/Temp') and scratch.parent.name.startswith(('vlc-s7-', 'vlc-s8-')) and not scratch.exists()
-    packager_commit = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
+    from release_source import packaging_identity
+    producer = packaging_identity(repo, args.source_commit)
+    packager_commit = producer['packager_commit']
     # A packaging-only correction may archive the exact already-built ancestor.
     # Runtime/source identity below remains bound to args.source_commit.
     subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', args.source_commit, packager_commit], check=True)
@@ -180,6 +182,10 @@ def main():
             assert not pending, 'Required source absent from the baseline package: ' + repr(sorted(pending))
         add_bytes(output, 'dependency-source-and-notice-manifest.json', (args.notices / 'manifest.json').read_bytes())
         add_bytes(output, 'packaging/package-source-release.py', packager_source)
+        for source in producer['files']:
+            blob = subprocess.check_output(['git', '-C', str(repo), 'show', packager_commit + ':' + source['path']])
+            assert hashlib.sha256(blob).hexdigest() == source['sha256']
+            add_bytes(output, 'packaging/producer/' + source['path'], blob)
         if args.mpv_buildinfo:
             add_bytes(output, 'MPV-BUILDINFO.json', args.mpv_buildinfo.read_bytes())
             cohort_path = args.mpv_buildinfo.parent / 'VLC-PLUGIN-BUILDINFO.json'
@@ -198,7 +204,9 @@ def main():
             add_bytes(output, 'RELEASE-SYMBOLS.json', args.release_symbols.read_bytes())
         readme = ('Modern VLC Fork ' + args.version + ' corresponding source\n\n'
             'Application commit: ' + args.source_commit + '\n'
+            'Packaging producer: ' + packager_commit + '\n'
             'The application/ tree is git archive of that exact commit, without Git history.\n'
+            'packaging/producer/ contains the separately recorded artifact-only producer delta.\n'
             'dependencies/ contains the recorded original source archives for linked libraries.\n'
             'See application/doc/redesign/REPRODUCTION.md for pinned tools, maintained patches,\n'
             'configuration, build, normal packaging, relinking and profile-preserving recovery.\n'
@@ -214,6 +222,7 @@ def main():
         add_bytes(output, 'README-SOURCE.txt', readme.encode())
         manifest = {'schema': 'vlc_redesign.corresponding_source.v1', 'source_commit': args.source_commit,
             'packager_commit': packager_commit,
+            'packager_sources': producer['files'],
             'version': args.version, 'files': records,
             'host_only_inputs': dependencies['host_only_inputs'], 'private_font_payload_included': False}
         if args.baseline_source:

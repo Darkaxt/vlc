@@ -1,5 +1,24 @@
 # Desktop reproduction and recovery
 
+## Weekly1.1.15 continuation (16 November)
+
+M18 is not delivered. Read PLAN for current source and managed operation
+identities; pipeline115 is the completed9c958ffb normal cohort, with diagnostic114
+and unchanged Windows MPV162b1ce4. Keep its objects and exact symbol mappings.
+The final Windows common-source restaging is pending the Mac link correction.
+Native make prints its actual compiler/linker commands so a failed dependency
+link can be traced through libtool rather than inferred from variable names.
+
+Windows artifact-only packaging may use a separately recorded descendant
+producer only when release_source.py verifies that its complete delta is in the
+explicit packaging/documentation allowlist. BUILDINFO, installer receipts and
+corresponding-source manifests retain the compiled application SHA separately;
+the source carrier includes every actual producer file and its hash. Any C++,
+QML, resource, dependency, configure or build-script delta requires a new compiled
+application source identity. NSIS unknown-variable diagnostics fail packaging;
+guest acceptance uses the registered quoted silent uninstaller with a path
+containing spaces, preserving other installs and portable user files.
+
 ## Current1.1.12 cohort (10 November)
 
 Normal1.1.12 is published and all35 delivered assets were independently retrieved

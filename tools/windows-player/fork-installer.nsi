@@ -64,8 +64,8 @@ Section "Modern VLC Fork"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "Publisher" "Darkaxt"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "InstallLocation" "$INSTDIR"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "DisplayIcon" "$INSTDIR\vlc.exe"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "UninstallString" '$"$INSTDIR\uninstall.exe$"'
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "QuietUninstallString" '$"$INSTDIR\uninstall.exe$" /S'
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "QuietUninstallString" '"$INSTDIR\uninstall.exe" /S'
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "NoModify" 1
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModernVLCFork" "NoRepair" 1
   CreateDirectory "$SMPROGRAMS\Modern VLC Fork"

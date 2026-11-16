@@ -691,7 +691,7 @@ def main():
             linked['qt_archive_consumer_libs'] = qt_libraries
             linked['archive_dependency_bindings'] = archive_record['dependency_bindings']
             link_binding.write_text(json.dumps(linked, indent=2) + '\n')
-        run('make', '-j1', *make_flags, cwd=build, env=env)
+        run('make', '-j1', 'V=1', *make_flags, cwd=build, env=env)
         image_links = image_dependencies.verify_mac_links(image_work, build) if native_mac else None
         archive_links = image_dependencies.verify_mac_links(archive_work, build, archive_only=True) if native_mac else None
         run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
