@@ -2,6 +2,36 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Current cohesive correction is source-ready, with native correctness unverified:
+forward all selected Darwin archive dependencies as ordered linker inputs, rather
+than letting libtool defer static archives after direct dylib/tbd arguments;
+retain exact CMake paths/hashes and both consumer link maps. Focused host checks
+pass. Intel diagnostic43872059420/f284 remains the original queued verbose
+continuation and must be inspected through completion; no duplicate diagnostic.
+
+Review of upstream cffc1352cda established a separate integration regression:
+DoWork_6_1_to_5_x advances6 floats although every input frame has7. The bounded
+fix keeps upstream's conditional output LFE write and restores7-float input
+stride. The new check-channel-mixer.c includes the actual production module and
+checks two distinct input frames for5.0/5.1 output plus boundary sentinels; its
+small make overlay uses the retained configured test Makefile without bootstrap
+or reconfigure. Native validation must compile/run this and upstream test_url.
+This is required affected regression work, not a new stage or a source-only
+completion claim. The common application source must now include both repairs.
+Windows original receipt's pending correction uses normal-mpv-full for run116
+because the non-Qt mixer plugin changed; keep the existing409-plugin guard for
+future Qt-only work, do not weaken it. Seed410 exact unchanged PE/symbol pairs
+(excluding the mixer as well as app/core/Qt), report actual reuse and retain
+SDK/MPV/codec objects. Diagnostic114's UI/core source remains unchanged and its
+affected UI evidence is applicable; final normal picture/installer/delivery
+still need acceptance. The NSIS fix alone does not justify player recompilation.
+
+Closed test scratch was removed after frozen evidence and confirmed exits:
+UI transactiondf08d419c3494422f726d459023e7f43 reclaimed1,066,926,997 bytes;
+guest transaction482eecbb0dc3cd07702b01b1fc89077b reclaimed13,329 bytes.
+Spent verified normal115 export carrier was removed by transaction500f6d2496641d3740e6e344aa88c899
+(1,933,885,440 bytes); extracted inputs and recovery receipts remain intact.
+
 Latest verified checkpoint: diagnostic9c958ffb passed the owned inactive-desktop
 menu/engine/native-menu-close workflow at100%, plus floating Queue/drag/hover/
 Restore for both engines at100/150/200%; every process exited0, the input desktop

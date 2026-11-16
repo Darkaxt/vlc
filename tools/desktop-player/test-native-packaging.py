@@ -612,9 +612,13 @@ class NativePackagingTest(unittest.TestCase):
             dict(flag='-l' + name, file='/cmake-selected/lib' + name + '.dylib')
             for name in ('z', 'bz2', 'b2', 'lz4', 'zstd')])
         resolved = shlex.split(dependencies.mac_qt_libraries(root, record))
-        self.assertEqual(resolved, flags[:2] + ['/selected/lib/libarchive.a'] +
-            [row['file'] for row in record['dependency_bindings']] + flags[-4:])
+        self.assertEqual(resolved, flags[:2] + ['-Wl,/selected/lib/libarchive.a'] +
+            ['-Wl,' + row['file'] for row in record['dependency_bindings']] + flags[-4:])
         self.assertNotIn('-lb2', resolved)
+        self.assertEqual(dependencies.mac_linker_inputs(['/SDK/lib/libbz2.tbd', '/brew/lib/libzstd.dylib']),
+                         ['-Wl,/SDK/lib/libbz2.tbd', '-Wl,/brew/lib/libzstd.dylib'])
+        with self.assertRaisesRegex(RuntimeError, 'linker separator'):
+            dependencies.mac_linker_inputs(['/unsafe,path/libarchive.a'])
         (qt / 'Makefile').write_text('QT_LIBS = -framework QtCore\n')
         with self.assertRaisesRegex(RuntimeError, 'qmake Qt archive dependency is missing'):
             dependencies.mac_qt_libraries(root, record)
@@ -641,7 +645,7 @@ class NativePackagingTest(unittest.TestCase):
             static_link_flags=[str(library), '-lz', '-lbz2'])]}))
         rules = dependencies.mac_link_rules(work, prefix, archive_only=True)
         line = next(line for line in rules.read_text().splitlines() if line.startswith('override ARCHIVE_LIBS = '))
-        self.assertEqual(shlex.split(line.split(' = ', 1)[1]), [str(library), '-lz', '-lbz2'])
+        self.assertEqual(shlex.split(line.split(' = ', 1)[1]), ['-Wl,' + str(library), '-lz', '-lbz2'])
         plugin = build / 'modules/.libs/libarchive_plugin.dylib'
         plugin.write_bytes(b'actual archive consumer')
         qt = build / 'modules/gui/qt/.libs/libqt_plugin.dylib'

@@ -18,6 +18,17 @@ unrelated SDK/MPV/codec objects and truthful provenance. The replacement release
 must be normal1.1.15 or higher and retain Windows MPV162b1ce4/libplacebo9fabf6d5.
 M18 owns cohesive integration, affected acceptance and final verified delivery.
 
+M18 integration repair: upstream cffc1352cda removed the unconditional output
+LFE write in DoWork_6_1_to_5_x, but also removed its input-pointer increment.
+The input remains seven floats per frame regardless of output LFE. Preserve the
+conditional output write and consume all seven input channels; verify multiple
+distinct frames for both5.0 and5.1 output, with output-boundary sentinels. This
+bounded audio-correctness repair belongs to M18's existing VLC preservation
+acceptance. Rebuild its affected plugin while retaining unrelated SDK/MPV and
+codec objects, and run the upstream URL parser regression alongside affected
+native acceptance. The final common application commit must include this repair
+and the Mac archive-link correction; the earlier c454 candidate is historical.
+
 10 November user clarification: weekly maintenance must integrate and deliver
 verified upstream changes, not stop at a backlog count. The sole owner integrated
 this scope within M15 (now COMPLETE; M16 delivery also COMPLETE); another active
@@ -48,8 +59,9 @@ existing single-quoted NSIS argument. Qualify the actual registered normal and
 quiet commands in the owned guest, including paths with spaces, and reject an
 unknown-variable compiler diagnostic before accepting an installer. Preserve
 per-user installation, exact shipped-file removal and unrelated profiles/files.
-The final application cohort remains `c45413636c10dee378aea303b518215bb6d33ffa`;
-reuse its compiled application/dependency cohort for this artifact-only repair.
+The application candidate when this packaging defect was found was
+`c45413636c10dee378aea303b518215bb6d33ffa`. Reuse its compiled dependencies;
+later required integration corrections retain their own common source identity.
 The outstanding Windows common-source projection is still required; the NSIS
 repair itself must not trigger another application or dependency rebuild.
 Record a separate descendant packaging producer, prove its delta contains only

@@ -85,6 +85,24 @@ def mac_archive_dependencies(flags, cache):
     return resolved, bindings
 
 
+def mac_linker_inputs(flags):
+    """Keep selected archives and dylibs in one ordered linker-input sequence.
+
+    Libtool defers .a arguments into deplibs, while absolute .tbd/.dylib
+    arguments stay in the compiler command before that deferred list. Forward
+    every selected absolute library through the linker so this split cannot
+    move a dependency before its archive (Darwin dead stripping can drop it).
+    """
+    result = []
+    for flag in flags:
+        if flag.startswith('/') or Path(flag).is_absolute():
+            if ',' in flag:
+                raise RuntimeError('A selected Darwin library path contains a linker separator')
+            flag = '-Wl,' + flag
+        result.append(flag)
+    return result
+
+
 def mac_qt_libraries(build, archive):
     """qmake flattened archive's flags into QT_LIBS, including vlc-qt-check.
 
@@ -98,7 +116,7 @@ def mac_qt_libraries(build, archive):
     replacements['-larchive'] = (Path(archive['prefix']) / 'lib' / archive['static_library']).as_posix()
     if '-larchive' not in flags:
         raise RuntimeError('The configured qmake Qt archive dependency is missing')
-    return shlex.join(replacements.get(flag, flag) for flag in flags)
+    return shlex.join(mac_linker_inputs([replacements.get(flag, flag) for flag in flags]))
 
 
 def mac_link_rules(work, prefix, archive_only=False):
@@ -109,7 +127,7 @@ def mac_link_rules(work, prefix, archive_only=False):
         record, = json.loads((work / 'build-receipt.json').read_text())['libraries']
         filename = work / 'mac-archive-links.mk'
         text = ('# Exact updated libarchive and its recorded static dependency order.\n'
-            'override ARCHIVE_LIBS = ' + shlex.join(record['static_link_flags']) + '\n'
+            'override ARCHIVE_LIBS = ' + shlex.join(mac_linker_inputs(record['static_link_flags'])) + '\n'
             'libarchive_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'
             'libarchive_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'archive.map') + '\n'
             'libqt_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'

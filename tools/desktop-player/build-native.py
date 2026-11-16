@@ -696,6 +696,11 @@ def main():
         archive_links = image_dependencies.verify_mac_links(archive_work, build, archive_only=True) if native_mac else None
         run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
         run(build / 'src/test_input_clock', cwd=build, env=env)
+        run('make', '-j1', 'test_url', *make_flags, cwd=build / 'src', env=env)
+        run(build / 'src/test_url', cwd=build, env=env)
+        run('make', '-j1', '-f', 'Makefile', '-f', ROOT / 'tools/desktop-player/check-channel-mixer.mk',
+            'check_channel_mixer', *make_flags, cwd=build / 'test', env=env)
+        run(build / 'test/check_channel_mixer', cwd=build, env=env)
         run('make', '-j1', 'test_thread_runner', *make_flags, cwd=build / 'modules/gui/qt', env=env)
         run(build / 'modules/gui/qt/test_thread_runner', 'testResourceOwnerWaitsForRunningTask',
             cwd=build, env=env)
