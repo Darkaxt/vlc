@@ -983,7 +983,8 @@ class NativePackagingTest(unittest.TestCase):
         spec.loader.exec_module(module)
         module.validate_producer_delta(['tools/windows-player/fork-installer.nsi',
             'tools/windows-player/package-release.py', 'doc/redesign/PLAN.md',
-            'tools/desktop-player/prepare-native-review.py'])
+            'tools/desktop-player/prepare-native-review.py',
+            'tools/desktop-player/reuse-native-review.py'])
         for changed in ('src/player/aout.c', 'modules/gui/qt/player/FloatingPlayer.qml',
                         'contrib/src/libarchive/rules.mak', 'tools/windows-player/build-player.sh',
                         'doc/redesign/resources/s7/icon.svg'):
@@ -1843,6 +1844,7 @@ class NativePackagingTest(unittest.TestCase):
                                         'tools/desktop-player/run-linux-review.py',
                                         'tools/windows-player/build-upstream-codecs.py',
                                         'tools/windows-player/compilation-pipeline.py',
+                                        'tools/windows-player/release_source.py',
                                         'doc/redesign/PLAN.md']))
         for path in ['modules/gui/qt/player/qml/PlayerView.qml', 'configure.ac',
                      'tools/desktop-player/build-native.py', 'tools/desktop-player/package-native.py']:

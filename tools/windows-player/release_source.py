@@ -16,6 +16,7 @@ PACKAGING_FILES = frozenset((
     # Builds a separate diagnostic payload, restoring normal objects afterward.
     # Its producer bytes are carried separately from the unchanged application.
     'tools/desktop-player/prepare-native-review.py',
+    'tools/desktop-player/reuse-native-review.py',
     'tools/desktop-player/check-channel-mixer.c',
     'tools/desktop-player/check-channel-mixer.mk',
     '.github/workflows/desktop-packages.yml',

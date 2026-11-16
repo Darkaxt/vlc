@@ -36,6 +36,7 @@ TEST_ONLY = {
     # build, packaging or player, and cannot alter their normal packages.
     'tools/windows-player/build-upstream-codecs.py',
     'tools/windows-player/compilation-pipeline.py',
+    'tools/windows-player/release_source.py',
 }
 
 
