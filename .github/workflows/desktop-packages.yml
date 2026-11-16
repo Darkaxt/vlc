@@ -180,6 +180,7 @@ jobs:
           path: |
             .desktop-build/packages/${{ inputs.resume_packages && inputs.package_source || steps.review_reuse.outputs.normal_generation || github.sha }}/**
             .desktop-build/native-build.json
+            .desktop-build/native-core-regressions.json
             .desktop-build/generation-retention.json
             .desktop-build/package-output.json
             .desktop-build/package-continuation.json

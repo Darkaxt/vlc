@@ -2,6 +2,23 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Run43876459830 is closed: Linux ARM passed its full package/native workflow;
+Linux x86 compiled and reached the known source-checksum failure; Apple Silicon
+was cancelled before runner allocation, with explicit hosted ARM capacity
+annotations; Intel linked the corrected Qt/archive graph and passed input-clock
+regressions, then this driver's raw URL-test invocation misclassified Automake77
+as failure. The test sets77 on optional IDN ENOSYS while continuing other URL
+checks; no player crash or URL mismatch was reported. The boundary now records
+that skip explicitly and preserves failure for every other nonzero status.
+The corrected mixer fixture remains active regardless of NDEBUG. Final native
+evidence must report URL pass versus skip separately. This final common source
+includes the test corrections; retain every completed SDK/player object and
+unchanged UI proof. The source753 candidate/92d packaging continuation are
+historical intermediate evidence, not the final delivered cohort. Existing
+package-only recovery43878768171 must finish under its original identity before
+the next source-bound normal cohort; never cancel it merely for duration.
+Windows admission remains waiting on the confirmed active0.29.14 repair owner.
+
 Native run43876459830/source7537485e: Linux x86 completed its player build and
 upstream test_url, but source packaging again rejected zlib's downloaded checksum.
 Its compiler cache is retained; recover exact source from prior9c artifact14223716880

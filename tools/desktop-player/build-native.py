@@ -82,7 +82,7 @@ def stop_command(process):
     print('NATIVE COMMAND GROUP EXITED', process.pid, flush=True)
 
 
-def run(*args, cwd=None, env=None):
+def run(*args, cwd=None, env=None, test_skip_code=None):
     print('+', ' '.join(map(str, args)), flush=True)
     signals = (signal.SIGINT, signal.SIGTERM)
     # Register the child before delivering cancellation received during spawn.
@@ -105,8 +105,12 @@ def run(*args, cwd=None, env=None):
         for sig, handler in previous.items():
             signal.signal(sig, handler)
         signal.pthread_sigmask(signal.SIG_SETMASK, mask)
-    if code:
+    if code and code == test_skip_code:
+        print('NATIVE TEST SKIP ' + json.dumps({'command': list(map(str, args)),
+              'exit_code': code}), flush=True)
+    elif code:
         raise subprocess.CalledProcessError(code, list(map(str, args)))
+    return code
 
 
 def output(*args, cwd=None):
@@ -697,10 +701,17 @@ def main():
         run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
         run(build / 'src/test_input_clock', cwd=build, env=env)
         run('make', '-j1', 'test_url', *make_flags, cwd=build / 'src', env=env)
-        run(build / 'src/test_url', cwd=build, env=env)
+        url_result = run(build / 'src/test_url', cwd=build, env=env, test_skip_code=77)
         run('make', '-j1', '-f', 'Makefile', '-f', ROOT / 'tools/desktop-player/check-channel-mixer.mk',
             'check_channel_mixer', *make_flags, cwd=build / 'test', env=env)
         run(build / 'test/check_channel_mixer', cwd=build, env=env)
+        (work / 'native-core-regressions.json').write_text(json.dumps({
+            'source_commit': output('git', 'rev-parse', 'HEAD', cwd=ROOT),
+            'url': {'exit_code': url_result, 'state': 'passed' if url_result == 0 else 'skipped',
+                'skip_reason': 'Optional IDN parsing returned ENOSYS' if url_result == 77 else None},
+            'channel_mixer': {'exit_code': 0, 'actual_production_module': True,
+                'checks': ['distinct consecutive6.1 frames', '5.0 output', '5.1 output', 'output sentinels']}
+        }, indent=2) + '\n')
         run('make', '-j1', 'test_thread_runner', *make_flags, cwd=build / 'modules/gui/qt', env=env)
         run(build / 'modules/gui/qt/test_thread_runner', 'testResourceOwnerWaitsForRunningTask',
             cwd=build, env=env)
