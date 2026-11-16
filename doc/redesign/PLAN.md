@@ -2,6 +2,27 @@
 
 **16 November weekly maintenance: M18 ACTIVE — integrate pinned upstream and deliver one complete 1.1.15 replacement.**
 
+Current normal application source is b7af94fe3f2c59ae4c96476f565ceb75d5c49c0a;
+native run43881341331 retains the original five-target qualification. Linux ARM
+completed its package/native checks, including installed strict Snap, both-engine
+natural EOF, URL0 and the corrected multiframe mixer0. Intel's normal ZIP/DMG
+both-engine/signature checks passed, with URL77 optional-IDN skip and mixer0;
+its diagnostic Qt build then failed `ld: library 'b2' not found`. The review
+driver omitted the normal build's verified make-time QT_LIBS argument. The bounded
+test-only correction reuses that exact recorded argument, verifies archive and
+dependency hashes and refuses a differing normal binding; focused positive and
+changed-input checks pass. Actual diagnostic link/UI acceptance is still required.
+Reuse the unchanged normal b7 packages/cache, without recompiling the application.
+Do not confuse always-uploaded artifacts with passing native UI acceptance.
+
+Windows remains externally unable to renew its closed32f4065a receipt under
+installed Coordinator0.29.13. The separate owner merged the0.29.14 repair but its
+protected installation failed; the user then explicitly stopped Coordinator work
+in that task. No update activated and no supported renewal is available here.
+Report this dependency; do not take over Coordinator, bypass its gate or rename
+M18. Prepared117 recovery and its retained objects remain intact. Continue the
+independent native checks and package preparation; no1.1.15 release is published.
+
 Run43876459830 is closed: Linux ARM passed its full package/native workflow;
 Linux x86 compiled and reached the known source-checksum failure; Apple Silicon
 was cancelled before runner allocation, with explicit hosted ARM capacity

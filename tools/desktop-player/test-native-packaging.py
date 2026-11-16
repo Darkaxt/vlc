@@ -26,6 +26,40 @@ spec.loader.exec_module(package)
 
 
 class NativePackagingTest(unittest.TestCase):
+    def test_mac_review_reuses_verified_normal_archive_link_inputs(self):
+        spec = importlib.util.spec_from_file_location('native_review', HERE / 'prepare-native-review.py')
+        review = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(review)
+        work = Path(sys.argv_scratch) / ('review-archive-' + uuid.uuid4().hex)
+        qt = work / 'vlc-build/modules/gui/qt'
+        qt.mkdir(parents=True)
+        overlay = work / 'native-contrib-overlays/archive'
+        overlay.mkdir(parents=True)
+        prefix = work / 'selected'
+        (prefix / 'lib').mkdir(parents=True)
+        archive, b2 = prefix / 'lib/libarchive.a', prefix / 'lib/libb2.dylib'
+        archive.write_bytes(b'normal archive')
+        b2.write_bytes(b'normal selected dependency')
+        (qt / 'Makefile').write_text('QT_LIBS = -larchive -lb2 -framework QtCore\n')
+        record = dict(prefix=prefix.as_posix(), static_library=archive.name,
+            library_sha256=review.digest(archive), dependency_bindings=[
+                dict(flag='-lb2', file=b2.as_posix(), sha256=review.digest(b2))])
+        (overlay / 'build-receipt.json').write_text(json.dumps({'libraries': [record]}))
+        expected = shlex.join(['-Wl,' + archive.as_posix(), '-Wl,' + b2.as_posix(), '-framework', 'QtCore'])
+        binding = work / 'native-link-bindings.json'
+        binding.write_text(json.dumps({'qt_archive_consumer_libs': expected}))
+        flags = review.review_make_flags(work, mac=True)
+        self.assertIn('QT_LIBS=' + expected, flags)
+        self.assertNotIn('-lb2', flags[-1])
+        self.assertEqual(review.review_make_flags(work, mac=False), flags[:2])
+        binding.write_text(json.dumps({'qt_archive_consumer_libs': '-lb2'}))
+        with self.assertRaisesRegex(RuntimeError, 'normal Qt archive link binding'):
+            review.review_make_flags(work, mac=True)
+        binding.write_text(json.dumps({'qt_archive_consumer_libs': expected}))
+        b2.write_bytes(b'changed dependency')
+        with self.assertRaisesRegex(RuntimeError, 'normal archive dependency changed'):
+            review.review_make_flags(work, mac=True)
+
     def test_appimage_source_recovery_requires_both_index_and_current_pin(self):
         spec = importlib.util.spec_from_file_location('source_recovery', HERE / 'resume-linux-source-inputs.py')
         recovery = importlib.util.module_from_spec(spec); spec.loader.exec_module(recovery)

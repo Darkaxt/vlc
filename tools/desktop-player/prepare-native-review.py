@@ -36,6 +36,30 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def review_make_flags(work, mac):
+    flags = ['PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY',
+             'PLAYER_DIAGNOSTICS_CPPFLAGS=-DVLC_PLAYER_DIAGNOSTICS']
+    if mac:
+        spec = importlib.util.spec_from_file_location('review_image_dependencies',
+            ROOT / 'tools/desktop-player/image_dependencies.py')
+        dependencies = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dependencies)
+        record, = json.loads((work / 'native-contrib-overlays/archive/build-receipt.json').read_text())['libraries']
+        libraries = [(Path(record['prefix']) / 'lib' / record['static_library'], record['library_sha256'])]
+        libraries.extend((Path(row['file']), row['sha256']) for row in record['dependency_bindings'])
+        if any(digest(path) != checksum for path, checksum in libraries):
+            raise RuntimeError('A verified normal archive dependency changed before diagnostic linking')
+        selected = dependencies.mac_qt_libraries(work / 'vlc-build', record)
+        normal = json.loads((work / 'native-link-bindings.json').read_text())
+        if selected != normal['qt_archive_consumer_libs']:
+            raise RuntimeError('Diagnostic inputs differ from the normal Qt archive link binding')
+        # qmake flattened archive's private dependencies into QT_LIBS. Use the
+        # same make-time argument as the normal build, rather than its stale
+        # configured -lb2 search. Do not overwrite the normal consumer link map.
+        flags.append('QT_LIBS=' + selected)
+    return flags
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', required=True, type=Path)
@@ -100,8 +124,9 @@ def main():
     packaged_plugin = payload / plugin_relative
     previous_dependencies = package.dependencies(packaged_plugin) if mac else []
     try:
-        flags = ['PLAYER_MPV_CPPFLAGS=-DVLC_MPV_RUNTIME_IDENTITY',
-                 'PLAYER_DIAGNOSTICS_CPPFLAGS=-DVLC_PLAYER_DIAGNOSTICS']
+        flags = review_make_flags(work, mac)
+        (review / 'diagnostic-link-inputs.json').write_text(json.dumps({
+            'make_flags': flags, 'normal_archive_inputs_verified': mac}, indent=2) + '\n')
         # The existing generator uses this configured Qt SDK and selected flags.
         # Do not touch the widely included header and rebuild the whole frontend.
         subprocess.run(['make', '-j1', '-f', 'Makefile', '-f',
