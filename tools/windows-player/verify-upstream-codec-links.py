@@ -62,6 +62,17 @@ def prepare_images(source, build, base, receipt):
         # embedded libz.a member. Relink it when its actual LIBADD rule changes.
         'libvlc_mp4.la: ' + str(build / 'player-image-links.mk'),
         'libpng_plugin_la_LIBADD = ' + str(prefix / 'lib/libpng16.a') + ' ' + str(prefix / 'lib/libz.a') + ' $(LIBM)']
+    archive = next((row for row in receipt.get('libraries', []) if row['library'] == 'archive'), None)
+    if archive:
+        if not any(row['target'] == 'libqt_plugin.la' for row in targets):
+            raise RuntimeError('Qt archive consumer lacks its actual link-map target')
+        library = Path(archive['prefix']) / 'lib' / archive['static_library']
+        assert sha(library) == archive['library_sha256']
+        # qmake also obtains libarchive through qt6.pro. Bind that real consumer
+        # explicitly, preserving every unrelated Qt/static dependency in order.
+        rules += ['vlc_qt_libs := $(filter-out -larchive %/libarchive.a,$(vlc_qt_libs)) ' +
+                  shlex.join(archive['static_link_flags']),
+                  'libqt_plugin.la: ' + str(library)]
     for row in targets:
         row['map'] = str(base / 'link-maps' / ('image-' + Path(row['target']).stem + '.map'))
         rules += [row['target'] + ': ' + ' '.join(map(str, libraries)) + ' ' + str(build / 'player-image-links.mk'),
@@ -90,9 +101,10 @@ def main():
         prepare_images(args.source, args.build, base, receipt)
         if not marker.exists() or json.loads(marker.read_text())['build_receipt_sha256'] != signature:
             for item in receipt['libraries']:
-                source = args.source / item.get('source', 'modules/codec/' + item['library'] + '.c')
-                assert source.is_file(), source
-                source.touch()
+                for relative in item.get('source_consumers', ['modules/codec/' + item['library'] + '.c']):
+                    source = args.source / relative
+                    assert source.is_file(), source
+                    source.touch()
             marker.write_text(json.dumps({'build_receipt_sha256': signature}) + '\n')
         return
     assert args.runtime and json.loads(marker.read_text())['build_receipt_sha256'] == signature
@@ -110,7 +122,16 @@ def main():
         assert old + '(' not in text, 'Old SDK archive selected'
         plugin = args.build / 'modules/.libs' / ('lib' + item['library'] + '_plugin.dll')
         assert plugin.is_file()
-        links.append(dict(item, link_map_sha256=sha(link_map), unstripped_plugin_sha256=sha(plugin)))
+        record = dict(item, link_map_sha256=sha(link_map), unstripped_plugin_sha256=sha(plugin))
+        if item['library'] == 'archive':
+            qt_map = image_maps['libqt_plugin.la']
+            qt_text = qt_map.read_text(errors='strict')
+            assert str(library) + '(' in qt_text, 'Qt did not link the updated archive'
+            assert old + '(' not in qt_text, 'Qt selected the old SDK archive'
+            qt_plugin = args.build / 'modules/gui/qt/.libs/libqt_plugin.dll'
+            record['qt_consumer'] = {'link_map_sha256': sha(qt_map),
+                'unstripped_plugin_sha256': sha(qt_plugin)}
+        links.append(record)
     observed = set()
     image_links = []
     for row in image_plan['targets']:

@@ -160,6 +160,9 @@ def main():
             linked = next(plugin for plugin in provenance['plugins']
                 if Path(plugin['file']).name == 'lib' + item['library'] + '_plugin.dll')
             assert linked['unstripped_sha256'] == item['unstripped_plugin_sha256']
+            if item['library'] == 'archive':
+                qt = next(row for row in provenance['plugins'] if Path(row['file']).name == 'libqt_plugin.dll')
+                assert qt['unstripped_sha256'] == item['qt_consumer']['unstripped_plugin_sha256']
         assert sha256(args.dependency_notices / patent['file']) == patent['sha256']
         shutil.copy2(runtime / 'VLC-CODEC-BUILDINFO.json', package / 'VLC-CODEC-BUILDINFO.json')
     for folder in ('plugins', 'lua', 'skins', 'hrtfs', 'locale'):

@@ -72,7 +72,7 @@ def main():
         '--repo', str(repo), '--work', str(archive_work), '--prefix', str(prefix),
         '--archives', '/scratch/mpv-source-inputs', '--toolchain', str(cross_path), '--archive-only'],
         env=env, check=True)
-    archive, = json.loads((archive_work / 'build-receipt.json').read_text())['libraries']
+    archive_record, = json.loads((archive_work / 'build-receipt.json').read_text())['libraries']
     patches = {
         'aom': ['0001-Do-not-force-_WIN32_WINNT.patch'],
         'mad': ['0001-CMake-case-of-AND-test.patch'],
@@ -181,8 +181,10 @@ def main():
         (home / 'build-receipt.json').write_text(json.dumps(record, indent=2) + '\n')
         records.append(record)
         print('UPSTREAM CODEC DONE ' + json.dumps(record), flush=True)
-    records.append(dict(archive, library='archive', pkg_config='libarchive',
-                        source='modules/stream_extractor/archive.c'))
+    records.append(dict(archive_record, library='archive', pkg_config='libarchive',
+        source_consumers=['modules/stream_extractor/archive.c',
+            'modules/gui/qt/player/subtitle_search.cpp',
+            'modules/gui/qt/maininterface/legacy_font_setup.cpp']))
     receipt = {'schema': 'vlc_redesign.upstream_codec_build.v1', 'libraries': records,
         'cross_sha256': sha(cross_path), 'sdk_unchanged': True, 'image_dependencies': images}
     (base / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

@@ -65,7 +65,10 @@ def mac_link_rules(work, prefix, archive_only=False):
         text = ('# Exact updated libarchive and its recorded static dependency order.\n'
             'override ARCHIVE_LIBS = ' + shlex.join(record['static_link_flags']) + '\n'
             'libarchive_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'
-            'libarchive_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'archive.map') + '\n')
+            'libarchive_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'archive.map') + '\n'
+            'libqt_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'
+            'libqt_plugin.la: libqt_plugin_la_LIBADD += ' + shlex.join(record['static_link_flags']) + '\n'
+            'libqt_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'qt.map') + '\n')
         if not filename.exists() or filename.read_text() != text:
             filename.write_text(text)
         return filename
@@ -97,6 +100,8 @@ def verify_mac_links(work, build, archive_only=False):
     links = []
     for filename in sorted((work / 'link-maps').glob('*.map')):
         plugin = build / 'modules/.libs' / ('lib' + filename.stem + '_plugin.dylib')
+        if archive_only and filename.stem == 'qt':
+            plugin = build / 'modules/gui/qt/.libs/libqt_plugin.dylib'
         if not plugin.is_file():
             raise RuntimeError('Image link map lacks its actual VLC plugin: ' + str(plugin))
         # Darwin ld can include non-UTF-8 symbol bytes. Match the exact archive
@@ -108,9 +113,10 @@ def verify_mac_links(work, build, archive_only=False):
         links.append({'plugin': str(plugin), 'unstripped_plugin_sha256': digest(plugin),
             'link_map_sha256': digest(filename), 'linked_updates': selected})
     if archive_only:
-        archive = [row for row in links if Path(row['plugin']).name == 'libarchive_plugin.dylib']
-        if len(archive) != 1 or set(archive[0]['linked_updates']) != {'libarchive'}:
-            raise RuntimeError('Archive plugin did not link the updated libarchive')
+        for name in ('libarchive_plugin.dylib', 'libqt_plugin.dylib'):
+            archive = [row for row in links if Path(row['plugin']).name == name]
+            if len(archive) != 1 or set(archive[0]['linked_updates']) != {'libarchive'}:
+                raise RuntimeError('Archive consumer did not link the updated libarchive: ' + name)
     else:
         png = [row for row in links if Path(row['plugin']).name == 'libpng_plugin.dylib']
         if len(png) != 1 or set(png[0]['linked_updates']) != {'png', 'zlib'}:

@@ -621,6 +621,14 @@ def main():
             '--repo', ROOT, '--work', archive_work, '--prefix', contrib,
             '--archives', work / 'sources', '--archive-only', env=env)
         archive_record, = json.loads((archive_work / 'build-receipt.json').read_text())['libraries']
+        archive_binding = archive_work / 'consumer-binding.json'
+        archive_signature = json.dumps(archive_record, sort_keys=True)
+        if not archive_binding.exists() or archive_binding.read_text() != archive_signature:
+            for relative in ('modules/stream_extractor/archive.c',
+                'modules/gui/qt/player/subtitle_search.cpp',
+                'modules/gui/qt/maininterface/legacy_font_setup.cpp'):
+                (ROOT / relative).touch()
+            archive_binding.write_text(archive_signature)
         sources.append({'name': 'native-contrib-libarchive-overlay',
             'version': archive_record['version'], 'url': archive_record['url'],
             'archive': archive_record['archive'], 'sha256': archive_record['archive_sha256']})

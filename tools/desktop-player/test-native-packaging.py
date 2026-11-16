@@ -571,11 +571,21 @@ class NativePackagingTest(unittest.TestCase):
         self.assertEqual(shlex.split(line.split(' = ', 1)[1]), [str(library), '-lz', '-lbz2'])
         plugin = build / 'modules/.libs/libarchive_plugin.dylib'
         plugin.write_bytes(b'actual archive consumer')
+        qt = build / 'modules/gui/qt/.libs/libqt_plugin.dylib'
+        qt.parent.mkdir(parents=True)
+        qt.write_bytes(b'actual Qt archive consumer')
         link_map = work / 'link-maps/archive.map'
         link_map.write_text('/old-sdk/libarchive.a(archive_read.o)\n')
         with self.assertRaisesRegex(RuntimeError, 'No updated archive member'):
             dependencies.verify_mac_links(work, build, archive_only=True)
         link_map.write_text(str(library) + '(archive_read.o)\n')
+        with self.assertRaisesRegex(RuntimeError, 'Archive consumer did not link'):
+            dependencies.verify_mac_links(work, build, archive_only=True)
+        qt_map = work / 'link-maps/qt.map'
+        qt_map.write_text('/old-sdk/libarchive.a(archive_read.o)\n')
+        with self.assertRaisesRegex(RuntimeError, 'No updated archive member'):
+            dependencies.verify_mac_links(work, build, archive_only=True)
+        qt_map.write_text(str(library) + '(archive_read.o)\n')
         result = dependencies.verify_mac_links(work, build, archive_only=True)
         self.assertEqual(result['links'][0]['unstripped_plugin_sha256'], dependencies.digest(plugin))
         library.write_bytes(b'changed after compilation')
