@@ -140,7 +140,15 @@ Item {
     // Implementation
     //---------------------------------------------------------------------------------------------
 
-    parent: T.Overlay.overlay
+    // Native drags keep their creation parent/window (upstream Qt6.8 fix).
+    // The fork's visible in-window queue drag still belongs to the overlay.
+    states: State {
+        when: !dragItem.nativeDragEnabled
+        ParentChange {
+            target: dragItem
+            parent: dragItem.T.Overlay.overlay
+        }
+    }
 
     visible: !nativeDragEnabled && Drag.active
 

@@ -25,17 +25,17 @@ def sha256(path):
 
 def verify_codec_sources(repo, commit, libraries, inventory):
     """Bind selected codec versions and archives to the delivered source revision."""
-    assert {item['library'] for item in libraries} == {'mpg123', 'zvbi', 'mad', 'aom'}
+    assert {item['library'] for item in libraries} == {'mpg123', 'zvbi', 'mad', 'aom', 'archive'}
     overrides = {item['library']: item for item in inventory['vlc_dependency_overrides']}
     for item in libraries:
-        component = item['library']
+        component = 'libarchive' if item['library'] == 'archive' else item['library']
         def source(name):
             return subprocess.check_output(['git', '-C', str(repo), 'show',
                 commit + ':contrib/src/' + component + '/' + name], text=True)
         version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
             source('rules.mak'), re.M).group(1)
         assert item['version'] == version, component
-        override = overrides[component]
+        override = overrides[item['library']]
         sums = {line.split()[1]: line.split()[0] for line in source('SHA512SUMS').splitlines() if line.strip()}
         assert override['version'] == version and override['archive'] == item['archive']
         assert override['upstream_sha512'] == item['sha512'] == sums[item['archive']]

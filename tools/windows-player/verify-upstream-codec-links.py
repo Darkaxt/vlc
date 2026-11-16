@@ -90,7 +90,7 @@ def main():
         prepare_images(args.source, args.build, base, receipt)
         if not marker.exists() or json.loads(marker.read_text())['build_receipt_sha256'] != signature:
             for item in receipt['libraries']:
-                source = args.source / 'modules/codec' / (item['library'] + '.c')
+                source = args.source / item.get('source', 'modules/codec/' + item['library'] + '.c')
                 assert source.is_file(), source
                 source.touch()
             marker.write_text(json.dumps({'build_receipt_sha256': signature}) + '\n')
@@ -129,7 +129,7 @@ def main():
     output = {'schema': 'vlc_redesign.upstream_codec_linkage.v1',
         'build_receipt_sha256': signature, 'libraries': links,
         'image_dependencies': dict(receipt['image_dependencies'], links=image_links),
-        'verification': 'Exact new archive member paths present and old SDK archive members absent in all four GNU linker maps'}
+        'verification': 'Exact selected archive member paths present and old SDK archive members absent in every recorded GNU linker map'}
     (args.runtime / 'VLC-CODEC-BUILDINFO.json').write_text(json.dumps(output, indent=2) + '\n')
     print(json.dumps(output), flush=True)
 

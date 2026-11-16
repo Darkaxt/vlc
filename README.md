@@ -9,10 +9,9 @@ engine. This is an independent community fork, not an official VideoLAN release.
 Get the package for your platform from the
 [latest release](https://github.com/Darkaxt/vlc/releases/latest).
 
-Windows is currently [1.1.14](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.14).
-macOS and Linux are [1.1.13](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.13),
-including both Linux Snap packages, qualified under strict confinement and added
-on 16 November without recompiling the players.
+Some maintenance releases update Windows alone. If Latest does not contain your
+platform, use its most recent matching package from the
+[release history](https://github.com/Darkaxt/vlc/releases).
 
 | Platform | Packages | Native qualification |
 | --- | --- | --- |

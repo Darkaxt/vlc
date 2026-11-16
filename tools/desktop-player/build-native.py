@@ -616,6 +616,14 @@ def main():
             sources.append({'name': 'native-contrib-' + item['name'] + '-overlay',
                 'version': item['version'], 'url': item['url'], 'archive': item['archive'],
                 'sha256': item['archive_sha256']})
+        archive_work = work / 'native-contrib-overlays/archive'
+        run('python3', ROOT / 'tools/desktop-player/image_dependencies.py',
+            '--repo', ROOT, '--work', archive_work, '--prefix', contrib,
+            '--archives', work / 'sources', '--archive-only', env=env)
+        archive_record, = json.loads((archive_work / 'build-receipt.json').read_text())['libraries']
+        sources.append({'name': 'native-contrib-libarchive-overlay',
+            'version': archive_record['version'], 'url': archive_record['url'],
+            'archive': archive_record['archive'], 'sha256': archive_record['archive_sha256']})
         # Prebuilt target libraries omit the native generators. Use upstream's
         # matching recipes (including Lua's 64-bit bytecode patch), rather than
         # a system luac/protoc that can generate incompatible serialized data.
@@ -664,9 +672,11 @@ def main():
         make_flags = native_make_flags(work, env)
         if native_mac:
             image_rules = image_dependencies.mac_link_rules(image_work, contrib)
-            env['MAKEFILES'] = str(image_rules)
+            archive_rules = image_dependencies.mac_link_rules(archive_work, contrib, archive_only=True)
+            env['MAKEFILES'] = str(image_rules) + ' ' + str(archive_rules)
         run('make', '-j1', *make_flags, cwd=build, env=env)
         image_links = image_dependencies.verify_mac_links(image_work, build) if native_mac else None
+        archive_links = image_dependencies.verify_mac_links(archive_work, build, archive_only=True) if native_mac else None
         run('make', '-j1', 'test_input_clock', *make_flags, cwd=build / 'src', env=env)
         run(build / 'src/test_input_clock', cwd=build, env=env)
         run('make', '-j1', 'test_thread_runner', *make_flags, cwd=build / 'modules/gui/qt', env=env)
@@ -680,6 +690,7 @@ def main():
         'platform': platform.platform(), 'architecture': arch, 'mpv': pin,
         'sources': sources, 'configuration': json.loads(config),
         'image_dependencies': image_links,
+        'archive_dependency': archive_links,
         'qualification': 'NOT RUN; build/packaging is not playback acceptance'}, indent=2) + '\n')
     run('python3', ROOT / 'tools/desktop-player/package-native.py', 'packages', '--work', work, '--prefix', prefix)
     retire_prior_package_generations(work)

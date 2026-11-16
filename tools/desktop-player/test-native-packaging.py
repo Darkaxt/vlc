@@ -6,6 +6,7 @@ import json
 import io
 import os
 import shutil
+import shlex
 import stat
 from pathlib import Path
 import subprocess
@@ -545,6 +546,42 @@ class NativePackagingTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'changed after compilation'):
             images.verify_mac_links(work, build)
 
+    def test_archive_overlay_requires_exact_pin_and_actual_mac_archive_linkage(self):
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        dependencies = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dependencies)
+        pin, = dependencies.definitions(HERE.parents[1], ('libarchive',))
+        self.assertEqual(pin['version'], '3.8.11')
+        self.assertEqual(pin['archive'], 'libarchive-3.8.11.tar.xz')
+        self.assertEqual(pin['sha512'],
+            '7e9145c51d389ae5fa4e64c9a791dcbe4960ae064ebefa40d73d6079180af17795d7d0f9dffc939f9d050b9be2669f45115bb89a9466f43617e731edab57ccf1')
+        root = Path(sys.argv_scratch) / ('archive-link-' + uuid.uuid4().hex)
+        work, prefix, build = root / 'archive', root / 'prefix', root / 'build'
+        work.mkdir(parents=True)
+        (prefix / 'lib').mkdir(parents=True)
+        (build / 'modules/.libs').mkdir(parents=True)
+        library = prefix / 'lib/libarchive.a'
+        library.write_bytes(b'new selected archive')
+        (work / 'build-receipt.json').write_text(json.dumps({'libraries': [dict(pin,
+            prefix=str(prefix), static_library=library.name,
+            library_sha256=dependencies.digest(library),
+            static_link_flags=[str(library), '-lz', '-lbz2'])]}))
+        rules = dependencies.mac_link_rules(work, prefix, archive_only=True)
+        line = next(line for line in rules.read_text().splitlines() if line.startswith('override ARCHIVE_LIBS = '))
+        self.assertEqual(shlex.split(line.split(' = ', 1)[1]), [str(library), '-lz', '-lbz2'])
+        plugin = build / 'modules/.libs/libarchive_plugin.dylib'
+        plugin.write_bytes(b'actual archive consumer')
+        link_map = work / 'link-maps/archive.map'
+        link_map.write_text('/old-sdk/libarchive.a(archive_read.o)\n')
+        with self.assertRaisesRegex(RuntimeError, 'No updated archive member'):
+            dependencies.verify_mac_links(work, build, archive_only=True)
+        link_map.write_text(str(library) + '(archive_read.o)\n')
+        result = dependencies.verify_mac_links(work, build, archive_only=True)
+        self.assertEqual(result['links'][0]['unstripped_plugin_sha256'], dependencies.digest(plugin))
+        library.write_bytes(b'changed after compilation')
+        with self.assertRaisesRegex(RuntimeError, 'changed after compilation'):
+            dependencies.verify_mac_links(work, build, archive_only=True)
+
     def test_image_dependency_policy_rejects_debug_and_preserves_both_source_pins(self):
         spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
         images = importlib.util.module_from_spec(spec)
@@ -829,6 +866,7 @@ class NativePackagingTest(unittest.TestCase):
         exec(compile(ast.Module(body=tree.body[start:start + 2], type_ignores=[]),
                      str(path), 'exec'), scope)
         self.assertEqual(scope['codec_modules']['AOM'], ('aom', '3.15.3', 'libaom.a'))
+        self.assertEqual(scope['codec_modules']['ARCHIVE'], ('libarchive', '3.8.11', 'libarchive.a'))
 
     def test_windows_release_codec_versions_follow_the_delivered_revision(self):
         path = HERE.parent / 'windows-player/package-release.py'
@@ -839,16 +877,17 @@ class NativePackagingTest(unittest.TestCase):
         scope = {'re': re, 'subprocess': subprocess}
         exec(compile(ast.Module(body=[function], type_ignores=[]), str(path), 'exec'), scope)
         libraries, overrides, archives = [], [], []
-        for component in ('mpg123', 'zvbi', 'mad', 'aom'):
+        for component in ('mpg123', 'zvbi', 'mad', 'aom', 'libarchive'):
             folder = HERE.parents[1] / 'contrib/src' / component
             version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
                                 (folder / 'rules.mak').read_text(), re.M).group(1)
             filename, checksum = next((line.split()[1], line.split()[0])
                 for line in (folder / 'SHA512SUMS').read_text().splitlines()
                 if '-' + version + '.tar.' in line)
-            libraries.append(dict(library=component, version=version, archive=filename,
+            library = 'archive' if component == 'libarchive' else component
+            libraries.append(dict(library=library, version=version, archive=filename,
                                   sha512=checksum, archive_sha256='a' * 64))
-            overrides.append(dict(library=component, version=version, archive=filename,
+            overrides.append(dict(library=library, version=version, archive=filename,
                                   upstream_sha512=checksum, sha256='a' * 64))
             archives.append(dict(archive=filename, sha256='a' * 64,
                 notices=[dict(archive_path='libaom-' + version + '/PATENTS', file='patent')]))

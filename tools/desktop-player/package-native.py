@@ -463,6 +463,10 @@ def package_mac(work, installed, out, version, arch):
     if not image_receipt.is_file():
         raise RuntimeError('macOS package lacks verified updated image archive linkage')
     shutil.copy2(image_receipt, resources / 'VLC-IMAGE-BUILDINFO.json')
+    archive_receipt = work / 'native-contrib-overlays/archive/link-receipt.json'
+    if not archive_receipt.is_file():
+        raise RuntimeError('macOS package lacks verified updated libarchive linkage')
+    shutil.copy2(archive_receipt, resources / 'VLC-ARCHIVE-BUILDINFO.json')
     iconset = work / 'Modern-VLC.iconset'; iconset.mkdir(exist_ok=True)
     shutil.copy2(ROOT / 'modules/gui/qt/pixmaps/redesign/app.png', iconset / 'icon_256x256.png')
     run('iconutil', '-c', 'icns', iconset, '-o', resources / 'Modern-VLC.icns')

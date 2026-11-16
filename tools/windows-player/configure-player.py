@@ -21,10 +21,11 @@ codec_prefix = os.environ.get('VLC_PLAYER_UPSTREAM_CODEC_PREFIX')
 codecs = Path(codec_prefix) if codec_prefix else None
 codec_modules = {}
 for component, module, library in (('mpg123', 'libmpg123', 'libmpg123.a'),
-        ('zvbi', 'zvbi-0.2', 'libzvbi.a'), ('aom', 'aom', 'libaom.a')):
+        ('zvbi', 'zvbi-0.2', 'libzvbi.a'), ('aom', 'aom', 'libaom.a'),
+        ('libarchive', 'libarchive', 'libarchive.a')):
     version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
         (args.source / 'contrib/src' / component / 'rules.mak').read_text(), re.M).group(1)
-    codec_modules[component.upper()] = (module, version, library)
+    codec_modules['ARCHIVE' if component == 'libarchive' else component.upper()] = (module, version, library)
 if extra:
     assert (extra / 'lib/pkgconfig/medialibrary.pc').is_file()
 assert (args.crt / 'dllcrt2.o').is_file()

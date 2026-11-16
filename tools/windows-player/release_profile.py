@@ -60,7 +60,7 @@ def configuration_sources_unchanged(source, previous):
     paths = ['configure.ac', 'bootstrap', 'm4', 'autotools', 'Makefile.am',
         '**/Makefile.am', 'include/vlc_version.h.in',
         'contrib/src/medialibrary', 'contrib/src/mpg123', 'contrib/src/zvbi',
-        'contrib/src/aom', 'contrib/src/mad',
+        'contrib/src/aom', 'contrib/src/mad', 'contrib/src/libarchive',
         'tools/windows-player/configure-player.py',
         'tools/windows-player/configure-upstream-player.sh',
         'tools/windows-player/release_profile.py']

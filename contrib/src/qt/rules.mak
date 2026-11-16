@@ -62,12 +62,12 @@ qt: qtbase-everywhere-src-$(QTBASE_VERSION_FULL).tar.xz .sum-qt
 	$(APPLY) $(SRC)/qt/0002-Mingw-own-regex-JIT-in-QThreadStorage.patch
 	$(APPLY) $(SRC)/qt/0003-Expose-the-existing-backing-store-swapchain.patch
 	$(APPLY) $(SRC)/qt/0001-qsimd.cpp-add-missing-stdlib.h-for-getenv.patch
+	$(APPLY) $(SRC)/qt/0001-rhi-d3d11-fix-availability-on-Windows-7-with-the-pla.patch
+	$(APPLY) $(SRC)/qt/0001-rhi-d3d11-emulate-constant-buffer-offsetting-if-ther.patch
 	$(MOVE)
 
 ifdef HAVE_WIN32
 QTBASE_CONFIG += -DFEATURE_directwrite=ON -DFEATURE_directwrite3=ON
-else
-QTBASE_CONFIG += -DFEATURE_freetype=ON -DFEATURE_system_freetype=ON
 endif
 
 QTBASE_CONFIG += -DFEATURE_framework=OFF
@@ -107,7 +107,7 @@ endif
 
 QTBASE_CONFIG += $(QTBASE_COMMON_CONFIG) \
     -DFEATURE_network=ON \
-    -DFEATURE_gif=OFF \
+    -DFEATURE_gif=OFF -DFEATURE_freetype=ON -DFEATURE_system_freetype=ON \
 	-DFEATURE_harfbuzz=ON -DFEATURE_system_harfbuzz=ON -DFEATURE_jpeg=ON -DFEATURE_system_jpeg=ON \
 	-DFEATURE_png=ON -DFEATURE_system_png=ON -DFEATURE_zlib=ON -DFEATURE_system_zlib=ON \
 	-DFEATURE_movie=OFF -DFEATURE_whatsthis=OFF -DFEATURE_lcdnumber=OFF -DFEATURE_testlib=ON \

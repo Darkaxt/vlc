@@ -15,13 +15,14 @@ def sha(path, algorithm='sha256'):
         return hashlib.file_digest(stream, algorithm).hexdigest()
 
 
-def stage_image_sources(repo, archives, retained):
-    """Stage only the two pinned source archives into native ext4 storage."""
+def stage_image_sources(repo, archives, retained, include_archive=False):
+    """Stage the selected pinned source archives into native ext4 storage."""
     spec = importlib.util.spec_from_file_location('image_source_inputs',
         repo / 'tools/desktop-player/image_dependencies.py')
     images = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(images)
-    for item in images.definitions(repo):
+    definitions = images.definitions(repo, ('zlib', 'png', 'libarchive')) if include_archive else images.definitions(repo)
+    for item in definitions:
         target = archives / item['archive']
         if target.exists():
             if sha(target, 'sha512') != item['sha512']:
@@ -60,12 +61,18 @@ def main():
         PKG_CONFIG_PATH=str(sdk / 'lib/pkgconfig'), PKG_CONFIG_SYSROOT_DIR='/')
     image_work = base / 'image-dependencies'
     stage_image_sources(repo, Path('/scratch/mpv-source-inputs'),
-        Path('/mnt/d/VLC-Redesign/build/windows-x64/mpv-source-inputs'))
+        Path('/mnt/d/VLC-Redesign/build/windows-x64/mpv-source-inputs'), include_archive=True)
     subprocess.run(['python3', '-B', str(repo / 'tools/desktop-player/image_dependencies.py'),
         '--repo', str(repo), '--work', str(image_work), '--prefix', str(prefix),
         '--archives', '/scratch/mpv-source-inputs', '--toolchain', str(cross_path)],
         env=env, check=True)
     images = json.loads((image_work / 'build-receipt.json').read_text())
+    archive_work = base / 'archive-dependencies'
+    subprocess.run(['python3', '-B', str(repo / 'tools/desktop-player/image_dependencies.py'),
+        '--repo', str(repo), '--work', str(archive_work), '--prefix', str(prefix),
+        '--archives', '/scratch/mpv-source-inputs', '--toolchain', str(cross_path), '--archive-only'],
+        env=env, check=True)
+    archive, = json.loads((archive_work / 'build-receipt.json').read_text())['libraries']
     patches = {
         'aom': ['0001-Do-not-force-_WIN32_WINNT.patch'],
         'mad': ['0001-CMake-case-of-AND-test.patch'],
@@ -174,6 +181,8 @@ def main():
         (home / 'build-receipt.json').write_text(json.dumps(record, indent=2) + '\n')
         records.append(record)
         print('UPSTREAM CODEC DONE ' + json.dumps(record), flush=True)
+    records.append(dict(archive, library='archive', pkg_config='libarchive',
+                        source='modules/stream_extractor/archive.c'))
     receipt = {'schema': 'vlc_redesign.upstream_codec_build.v1', 'libraries': records,
         'cross_sha256': sha(cross_path), 'sdk_unchanged': True, 'image_dependencies': images}
     (base / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

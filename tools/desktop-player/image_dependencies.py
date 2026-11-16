@@ -1,4 +1,4 @@
-"""Build the two source-bound VLC image/compression updates without replacing its SDK."""
+"""Build source-bound VLC image/compression and archive updates without replacing its SDK."""
 import argparse
 import hashlib
 import json
@@ -29,13 +29,18 @@ def verify_release(cache):
     return {key: values[key] for key in ('CMAKE_BUILD_TYPE', 'CMAKE_C_FLAGS', 'CMAKE_C_FLAGS_RELEASE')}
 
 
-def definitions(repo):
+def definitions(repo, names=('zlib', 'png')):
     result = []
     for name, template, location, patch in (
         ('zlib', 'zlib-{v}.tar.xz', 'https://github.com/madler/zlib/releases/download/v{v}/zlib-{v}.tar.xz',
          '0001-CMakeList.txt-force-static-library-name-to-z.patch'),
         ('png', 'libpng-{v}.tar.xz', 'https://downloads.sourceforge.net/project/libpng/libpng16/{v}/libpng-{v}.tar.xz',
-         '0001-Put-the-build-include-include-before-the-CMake-Platf.patch')):
+         '0001-Put-the-build-include-include-before-the-CMake-Platf.patch'),
+        ('libarchive', 'libarchive-{v}.tar.xz',
+         'https://github.com/libarchive/libarchive/releases/download/v{v}/libarchive-{v}.tar.xz',
+         '0001-zstd-use-GetNativeSystemInfo-to-get-the-number-of-th.patch')):
+        if name not in names:
+            continue
         recipe = repo / 'contrib/src' / name
         version = re.search(r'^' + name.upper() + r'_VERSION := ([0-9.]+)$',
                             (recipe / 'rules.mak').read_text(), re.M).group(1)
@@ -45,13 +50,25 @@ def definitions(repo):
         result.append({'name': name, 'version': version, 'archive': archive,
             'url': location.format(v=version), 'sha512': hashes[archive],
             'patches': {patch: digest(recipe / patch)}})
+        if name == 'libarchive':
+            result[-1]['pkg_static_sha256'] = digest(recipe.parent / 'pkg-static.sh')
     return result
 
 
-def mac_link_rules(work, prefix):
+def mac_link_rules(work, prefix, archive_only=False):
     """Inherited by recursive GNU make; retain configured global flags."""
     maps = work / 'link-maps'
     maps.mkdir(parents=True, exist_ok=True)
+    if archive_only:
+        record, = json.loads((work / 'build-receipt.json').read_text())['libraries']
+        filename = work / 'mac-archive-links.mk'
+        text = ('# Exact updated libarchive and its recorded static dependency order.\n'
+            'override ARCHIVE_LIBS = ' + shlex.join(record['static_link_flags']) + '\n'
+            'libarchive_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'
+            'libarchive_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'archive.map') + '\n')
+        if not filename.exists() or filename.read_text() != text:
+            filename.write_text(text)
+        return filename
     rules = ['# Exact updated image archives for VLC, including recursive module builds.',
         'override LIBZ = -L' + str(prefix / 'lib') + ' -lz',
         'override libpng_plugin_la_LIBADD = ' + str(prefix / 'lib/libpng16.a') +
@@ -70,7 +87,7 @@ def mac_link_rules(work, prefix):
     return filename
 
 
-def verify_mac_links(work, build):
+def verify_mac_links(work, build, archive_only=False):
     receipt = json.loads((work / 'build-receipt.json').read_text())
     libraries = {item['name']: Path(item['prefix']) / 'lib' / item['static_library']
                  for item in receipt['libraries']}
@@ -90,10 +107,16 @@ def verify_mac_links(work, build):
             raise RuntimeError('No updated archive member selected: ' + str(filename))
         links.append({'plugin': str(plugin), 'unstripped_plugin_sha256': digest(plugin),
             'link_map_sha256': digest(filename), 'linked_updates': selected})
-    png = [row for row in links if Path(row['plugin']).name == 'libpng_plugin.dylib']
-    if len(png) != 1 or set(png[0]['linked_updates']) != {'png', 'zlib'}:
-        raise RuntimeError('PNG plugin did not link both updated image archives')
-    result = dict(receipt, links=links, makefile_sha256=digest(work / 'mac-image-links.mk'))
+    if archive_only:
+        archive = [row for row in links if Path(row['plugin']).name == 'libarchive_plugin.dylib']
+        if len(archive) != 1 or set(archive[0]['linked_updates']) != {'libarchive'}:
+            raise RuntimeError('Archive plugin did not link the updated libarchive')
+    else:
+        png = [row for row in links if Path(row['plugin']).name == 'libpng_plugin.dylib']
+        if len(png) != 1 or set(png[0]['linked_updates']) != {'png', 'zlib'}:
+            raise RuntimeError('PNG plugin did not link both updated image archives')
+    result = dict(receipt, links=links, makefile_sha256=digest(
+        work / ('mac-archive-links.mk' if archive_only else 'mac-image-links.mk')))
     (work / 'link-receipt.json').write_text(json.dumps(result, indent=2) + '\n')
     return result
 
@@ -142,23 +165,39 @@ def prepare_source(archive, home, source, item, recipe, env):
         filename = recipe / patch
         if digest(filename) != item['patches'][patch]:
             raise RuntimeError('Image dependency patch changed after binding')
-        target = source / ('CMakeLists.txt' if item['name'] == 'zlib' else 'scripts/cmake/genout.cmake.in')
-        before = digest(target)
+        targets = {'zlib': ['CMakeLists.txt'], 'png': ['scripts/cmake/genout.cmake.in'],
+            'libarchive': ['libarchive/archive_write_add_filter_zstd.c',
+                'libarchive/archive_write_set_format_7zip.c',
+                'libarchive/archive_write_set_format_zip.c']}[item['name']]
+        before = {name: digest(source / name) for name in targets}
         subprocess.run(['git', 'apply', '--check', str(filename)], cwd=source, env=patch_env, check=True)
         subprocess.run(['git', 'apply', str(filename)], cwd=source, env=patch_env, check=True)
-        patched[target.relative_to(source).as_posix()] = digest(target)
-        if patched[target.relative_to(source).as_posix()] == before:
-            raise RuntimeError('Image dependency patch did not change its actual source')
+        for name in targets:
+            patched[name] = digest(source / name)
+            if patched[name] == before[name]:
+                raise RuntimeError('Dependency patch did not change its actual source: ' + name)
+    if item['name'] == 'libarchive':
+        # Same deterministic MinGW compatibility edit as the upstream recipe.
+        name = 'libarchive/archive_write_disk_windows.c'
+        target = source / name
+        target.write_text(target.read_text().replace(' | WINAPI_PARTITION_SYSTEM', ''))
+        patched[name] = digest(target)
+        helper = recipe.parent / 'pkg-static.sh'
+        if digest(helper) != item['pkg_static_sha256']:
+            raise RuntimeError('Archive static pkg-config transform changed after binding')
+        name = 'build/pkgconfig/libarchive.pc.in'
+        subprocess.run(['/bin/sh', str(helper), str(source / name)], env=env, check=True)
+        patched[name] = digest(source / name)
     marker.write_text(json.dumps({'identity': item, 'patched_sources': patched}, sort_keys=True) + '\n')
 
 
-def build(repo, work, prefix, archives, env, toolchain=None):
+def build(repo, work, prefix, archives, env, toolchain=None, archive_only=False):
     """Native macOS or the existing MinGW cross toolchain; one compiler job."""
     from source_transport import retrieve
     work.mkdir(parents=True, exist_ok=True)
     archives.mkdir(parents=True, exist_ok=True)
     records = []
-    for item in definitions(repo):
+    for item in definitions(repo, ('libarchive',) if archive_only else ('zlib', 'png')):
         archive = archives / item['archive']
         if not archive.exists():
             pending = archive.with_suffix(archive.suffix + '.pending')
@@ -182,11 +221,18 @@ def build(repo, work, prefix, archives, env, toolchain=None):
         if item['name'] == 'zlib':
             flags += ['-DZLIB_BUILD_SHARED=OFF', '-DZLIB_BUILD_STATIC=ON',
                       '-DZLIB_BUILD_TESTING=OFF', '-DZLIB_BUILD_EXAMPLES=OFF']
-        else:
+        elif item['name'] == 'png':
             flags += ['-DPNG_SHARED=OFF', '-DPNG_STATIC=ON', '-DPNG_TESTS=OFF',
                       '-DPNG_TOOLS=OFF', '-DPNG_FRAMEWORK=OFF', '-DPNG_DEBUG_POSTFIX:STRING=',
                       '-DZLIB_INCLUDE_DIR=' + str(prefix / 'include'),
                       '-DZLIB_LIBRARY=' + str(prefix / 'lib/libz.a')]
+        else:
+            flags += ['-DENABLE_CPIO=OFF', '-DENABLE_TAR=OFF', '-DENABLE_CAT=OFF',
+                '-DENABLE_UNZIP=OFF', '-DENABLE_LIBXML2=OFF', '-DENABLE_LZMA=OFF',
+                '-DENABLE_ICONV=OFF', '-DENABLE_EXPAT=OFF', '-DENABLE_TEST=OFF',
+                '-DENABLE_WERROR=OFF', '-DCMAKE_PREFIX_PATH=' + str(prefix),
+                '-DZLIB_INCLUDE_DIR=' + str(prefix / 'include'),
+                '-DZLIB_LIBRARY=' + str(prefix / 'lib/libz.a')]
         binding = {'flags': flags, 'source': item,
                    'toolchain_sha256': digest(toolchain) if toolchain else None}
         signature = home / 'configuration.json'
@@ -201,13 +247,34 @@ def build(repo, work, prefix, archives, env, toolchain=None):
         release = verify_release((directory / 'CMakeCache.txt').read_text())
         subprocess.run(['cmake', '--build', str(directory), '--parallel', '1'], env=env, check=True)
         subprocess.run(['cmake', '--install', str(directory)], env=env, check=True)
-        library = prefix / 'lib' / ('libz.a' if item['name'] == 'zlib' else 'libpng16.a')
+        library = prefix / 'lib' / {'zlib': 'libz.a', 'png': 'libpng16.a',
+                                  'libarchive': 'libarchive.a'}[item['name']]
         if not library.is_file():
             raise RuntimeError('Updated image library is missing: ' + str(library))
         record = dict(item, archive_sha256=digest(archive), prefix=str(prefix),
                       static_library=library.name, library_sha256=digest(library),
                       cmake_cache_sha256=digest(directory / 'CMakeCache.txt'), release_flags=release)
+        if archive_only:
+            pc_env = dict(env, PKG_CONFIG_PATH=str(prefix / 'lib/pkgconfig') +
+                          ':' + env.get('PKG_CONFIG_PATH', ''))
+            version = subprocess.check_output(['pkg-config', '--modversion', 'libarchive'], env=pc_env, text=True).strip()
+            if version != item['version']:
+                raise RuntimeError('Updated archive pkg-config selected a different library')
+            cflags = shlex.split(subprocess.check_output(['pkg-config', '--static', '--cflags', 'libarchive'],
+                                                         env=pc_env, text=True))
+            if '-DLIBARCHIVE_STATIC' not in cflags:
+                raise RuntimeError('Archive consumer flags must select the static Windows ABI')
+            record['static_cflags'] = cflags
+            libs = shlex.split(subprocess.check_output(['pkg-config', '--static', '--libs', 'libarchive'],
+                                                       env=pc_env, text=True))
+            if '-larchive' not in libs:
+                raise RuntimeError('Updated libarchive static link flags lack the archive')
+            record['static_link_flags'] = [str(library) if flag == '-larchive' else flag for flag in libs]
         records.append(record)
+    if archive_only:
+        receipt = {'libraries': records}
+        (work / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+        return receipt
     probe = work / 'abi-probe'
     probe.mkdir(exist_ok=True)
     probe_source = '''#include <string.h>
@@ -259,6 +326,7 @@ if __name__ == '__main__':
     for name in ('repo', 'work', 'prefix', 'archives'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--toolchain', type=Path)
+    parser.add_argument('--archive-only', action='store_true')
     args = parser.parse_args()
     print(json.dumps(build(args.repo, args.work, args.prefix, args.archives,
-                           os.environ.copy(), args.toolchain)), flush=True)
+                           os.environ.copy(), args.toolchain, args.archive_only)), flush=True)

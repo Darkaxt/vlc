@@ -42,12 +42,17 @@
     "contrib/src/aom/rules.mak": "8fe7c3492bca205d8d925f1cb3cf008b7f61e9387c916e1fdc3ecc709581f016",
     "contrib/src/main.mak": "d0194c2f66ce33036778e2e4a979a629c1893574f1585e9a46ab32d29d8fdb43",
     "contrib/src/qt/0001-qsimd.cpp-add-missing-stdlib.h-for-getenv.patch": "af1a61f6e23203c04f3b08d471c172414040e2d8bb94627edcecbb76c4fa5e7a",
-    "contrib/src/qt/rules.mak": "4add8494cae8b5fcc58b3f4ef244ee6dcb03cc7558e041217b4880167f9d1728",
+    "contrib/src/qt/rules.mak": "fb301b616061ba75d7c11242f1d9a27fb31e46507a767472b3b6cdcc1312a8fb",
+    "contrib/src/qt/0001-rhi-d3d11-fix-availability-on-Windows-7-with-the-pla.patch": "0397f5e89391fa598b6940adfd4259c8fe92795a7d9e0f0429e8d3687355433f",
+    "contrib/src/qt/0001-rhi-d3d11-emulate-constant-buffer-offsetting-if-ther.patch": "34a8f3b86d698701006367d5b91770bf310ce09d860f8282788b1f1f7be9d265",
+    "contrib/src/libarchive/rules.mak": "c5ad27f50e2ee5241751ce2981950b9e9f1a50584684a0dabc769b3ca7556f8e",
+    "contrib/src/libarchive/SHA512SUMS": "eaeb1f42c9be7eee34cddd69a18d3946f0f81ab5ad430885552ab733103b6a91",
     "contrib/src/qtshadertools/rules.mak": "23ccaac1dc03c3ec83827bb16e4b48963fe321c616d66051ba4293c24af5ca3c",
     "contrib/src/qtwayland/rules.mak": "347b2fed921affa2b25350ceb93ed9e127a1cbd9a4ac973ab6f071c074679422",
-    "extras/package/macosx/VLC.xcodeproj/project.pbxproj": "799077155dbcb08e649da747589342a827d461581375bf6503baaeada7b918e6"
+    "extras/package/macosx/VLC.xcodeproj/project.pbxproj": "446875aeb429820a0ed3fd0f1e6c5a905afe3e92841868fd3f00cedd01339c26",
+    "extras/ci/gitlab-ci.yml": "1fe421deb1793b6a8359887988fb2af20c9f4c19f49e2f093b2272d89fe12f69"
   },
-  "reviewed_prebuilt_recipe_delta_reason": "AOM3.15.3, libpng1.6.59 and zlib1.4 are rebuilt from exact source archives as explicit overlays. Qt recipes/mirrors are not used by the Homebrew Qt build; Xcode Cocoa GUI is disabled. Preserve all other libraries in the original pinned native archive.",
+  "reviewed_prebuilt_recipe_delta_reason": "AOM3.15.3, libpng1.6.59, zlib1.4 and libarchive3.8.11 are built from exact source archives as explicit overlays with actual archive-member link maps. Qt recipes/Windows7 RHI patches are not used by Homebrew Qt; Xcode Cocoa GUI is disabled and the GitLab Windows GCC image is not used by this native pipeline. Preserve all other libraries in the original pinned native archive.",
   "stock_libplacebo": {
     "version": "7.387.0",
     "repository": "haasn/libplacebo",
