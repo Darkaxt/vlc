@@ -4,6 +4,20 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+16 November R62/R111–R113 maintenance continuation: integrate upstream master
+`493793a33a2c013b5d8b4a6b223c27cdb771df0d` through normal merge history on the
+current Windows MPV162b1ce4 lineage, preserving the established five-platform
+release scope. The issue #1 Snap deferral is delivered and independently verified;
+its reuse-only source hold is lifted. Linux Ubuntu24.04/Qt6.4 remains a supported
+native target. Retain its existing Qt version guards and documented Qt6.4 binding/
+render-node workarounds when merging upstream's Qt6.8 minimum/removal commits;
+preserve upstream ancestry and compatible functional fixes. This is compatibility
+integration under the existing support contract, not a change to the Figma UI.
+Bind the updated libarchive recipe to the selected runtime/source graph, retaining
+unrelated SDK/MPV/codec objects and truthful provenance. The replacement release
+must be normal1.1.15 or higher and retain Windows MPV162b1ce4/libplacebo9fabf6d5.
+M18 owns cohesive integration, affected acceptance and final verified delivery.
+
 10 November user clarification: weekly maintenance must integrate and deliver
 verified upstream changes, not stop at a backlog count. The sole owner integrated
 this scope within M15 (now COMPLETE; M16 delivery also COMPLETE); another active
