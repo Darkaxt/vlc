@@ -574,6 +574,27 @@ class NativePackagingTest(unittest.TestCase):
             dependencies.mac_archive_dependencies(flags, cache.replace(str(libraries['b2']),
                                                   str(root / 'absent/libb2.dylib')))
 
+    def test_mac_qt_check_rebinds_qmake_archive_libraries_in_place(self):
+        spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
+        dependencies = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dependencies)
+        root = Path(sys.argv_scratch) / ('qt-archive-deps-' + uuid.uuid4().hex)
+        qt = root / 'modules/gui/qt'
+        qt.mkdir(parents=True)
+        flags = ['-F/usr/local/lib', '-L/selected/lib', '-larchive', '-lz', '-lbz2', '-lb2',
+                 '-llz4', '-lzstd', '-framework', 'QtSvg', '-framework', 'QtCore']
+        (qt / 'Makefile').write_text('QT_LIBS = ' + shlex.join(flags) + '\n')
+        record = dict(prefix='/selected', static_library='libarchive.a', dependency_bindings=[
+            dict(flag='-l' + name, file='/cmake-selected/lib' + name + '.dylib')
+            for name in ('z', 'bz2', 'b2', 'lz4', 'zstd')])
+        resolved = shlex.split(dependencies.mac_qt_libraries(root, record))
+        self.assertEqual(resolved, flags[:2] + ['/selected/lib/libarchive.a'] +
+            [row['file'] for row in record['dependency_bindings']] + flags[-4:])
+        self.assertNotIn('-lb2', resolved)
+        (qt / 'Makefile').write_text('QT_LIBS = -framework QtCore\n')
+        with self.assertRaisesRegex(RuntimeError, 'qmake Qt archive dependency is missing'):
+            dependencies.mac_qt_libraries(root, record)
+
     def test_archive_overlay_requires_exact_pin_and_actual_mac_archive_linkage(self):
         spec = importlib.util.spec_from_file_location('image_dependencies', HERE / 'image_dependencies.py')
         dependencies = importlib.util.module_from_spec(spec)

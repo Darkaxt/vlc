@@ -85,6 +85,22 @@ def mac_archive_dependencies(flags, cache):
     return resolved, bindings
 
 
+def mac_qt_libraries(build, archive):
+    """qmake flattened archive's flags into QT_LIBS, including vlc-qt-check.
+
+    Supply that configured variable as a make argument, preserving Qt/framework
+    order and rebinding only archive and its already selected dependencies.
+    """
+    configured, = re.findall(r'^QT_LIBS = (.*)$',
+                            (build / 'modules/gui/qt/Makefile').read_text(), re.M)
+    flags = shlex.split(configured)
+    replacements = {row['flag']: row['file'] for row in archive['dependency_bindings']}
+    replacements['-larchive'] = (Path(archive['prefix']) / 'lib' / archive['static_library']).as_posix()
+    if '-larchive' not in flags:
+        raise RuntimeError('The configured qmake Qt archive dependency is missing')
+    return shlex.join(replacements.get(flag, flag) for flag in flags)
+
+
 def mac_link_rules(work, prefix, archive_only=False):
     """Inherited by recursive GNU make; retain configured global flags."""
     maps = work / 'link-maps'
@@ -97,7 +113,6 @@ def mac_link_rules(work, prefix, archive_only=False):
             'libarchive_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'
             'libarchive_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'archive.map') + '\n'
             'libqt_plugin.la: ' + str(prefix / 'lib/libarchive.a') + ' ' + str(filename) + '\n'
-            'libqt_plugin.la: libqt_plugin_la_LIBADD += ' + shlex.join(record['static_link_flags']) + '\n'
             'libqt_plugin.la: LDFLAGS += -Wl,-map,' + str(maps / 'qt.map') + '\n')
         if not filename.exists() or filename.read_text() != text:
             filename.write_text(text)

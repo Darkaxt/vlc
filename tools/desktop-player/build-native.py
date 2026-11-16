@@ -682,6 +682,15 @@ def main():
             image_rules = image_dependencies.mac_link_rules(image_work, contrib)
             archive_rules = image_dependencies.mac_link_rules(archive_work, contrib, archive_only=True)
             env['MAKEFILES'] = str(image_rules) + ' ' + str(archive_rules)
+            # qt6.pro's pkg-config output is flattened into QT_LIBS. Rebinding
+            # ARCHIVE_LIBS alone cannot update vlc-qt-check or the Qt plugin.
+            qt_libraries = image_dependencies.mac_qt_libraries(build, archive_record)
+            make_flags.append('QT_LIBS=' + qt_libraries)
+            link_binding = work / 'native-link-bindings.json'
+            linked = json.loads(link_binding.read_text())
+            linked['qt_archive_consumer_libs'] = qt_libraries
+            linked['archive_dependency_bindings'] = archive_record['dependency_bindings']
+            link_binding.write_text(json.dumps(linked, indent=2) + '\n')
         run('make', '-j1', *make_flags, cwd=build, env=env)
         image_links = image_dependencies.verify_mac_links(image_work, build) if native_mac else None
         archive_links = image_dependencies.verify_mac_links(archive_work, build, archive_only=True) if native_mac else None
