@@ -11,6 +11,14 @@ read-only helper is `verify-retained-build-1.1.16.py` (Python3.11, no arguments)
 overlay records name their consuming plugin (`plugin: mkv|nfs`); link maps are looked up by
 that plugin, not by library name.
 
+Local release storage (user decision 23 November): each `releases/<version>/assets` keeps only
+the win64 portable ZIP, SHA256SUMS.txt and RELEASE-MANIFEST.json; every other asset exists only
+on GitHub. Windows packaging baselines (the previous win64 symbols ZIP and corresponding-source
+tarball) are downloaded from the URLs in build-retention.json into task scratch and checked
+against their recorded sha256 before use. The superseded predecessor's verification folder is
+archived to G: with every member's hash verified (1.1.15:
+`G:/VLC-Redesign/release-evidence/retired-by-1.1.16-20261123/1.1.15-verification.zip`).
+
 CI notes for the next run:
 - Workflow concurrency is per ref with cancel-in-progress false, so parallel retries need
   separate refs. Actions caches are ref-scoped and saved on failure: source downloads persist
