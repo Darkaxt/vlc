@@ -4,6 +4,17 @@ Version 1, registered 13 October 2026. Owner: Darkaxt. Upstream baseline: VLC ma
 
 ## Authority and current authorization
 
+23 November R62/R111–R113 weekly continuation (the Reframe weekly duty the owner
+requested on 18 November): integrate upstream master
+`391a3bf87302769a3e45143b8a2f9961be45db0e` and move the Windows MPV engine to plain
+Darkaxt/mpv master `eaa4384755899c318ee8e4abdba19dc80c92260f`, under the same
+five-platform release, source, symbol and license contracts. Upstream contrib security
+or version changes to libraries a shipped plugin links are bound through each
+platform's existing dependency path: the pinned VideoLAN archive on macOS, explicit
+source-built overlays on Windows' retained SDK, and distribution libraries on Linux.
+Each release is deployed to `D:/Tools/Modern VLC` with its portable profile preserved,
+and at most two release folders are kept locally.
+
 16 November R62/R111–R113 maintenance continuation: integrate upstream master
 `493793a33a2c013b5d8b4a6b223c27cdb771df0d` through normal merge history on the
 current Windows MPV162b1ce4 lineage, preserving the established five-platform

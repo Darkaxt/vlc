@@ -1022,7 +1022,7 @@ class NativePackagingTest(unittest.TestCase):
         scope = {'re': re, 'subprocess': subprocess}
         exec(compile(ast.Module(body=[function], type_ignores=[]), str(path), 'exec'), scope)
         libraries, overrides, archives = [], [], []
-        for component in ('mpg123', 'zvbi', 'mad', 'aom', 'libarchive'):
+        for component in ('mpg123', 'zvbi', 'mad', 'aom', 'libarchive', 'ebml', 'matroska', 'nfs'):
             folder = HERE.parents[1] / 'contrib/src' / component
             version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
                                 (folder / 'rules.mak').read_text(), re.M).group(1)

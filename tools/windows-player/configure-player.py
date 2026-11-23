@@ -1,5 +1,6 @@
 """Regenerate the pinned player configuration after its CRT/QtNetwork repairs."""
 import argparse
+import json
 import os
 from pathlib import Path
 import re
@@ -22,10 +23,14 @@ codecs = Path(codec_prefix) if codec_prefix else None
 codec_modules = {}
 for component, module, library in (('mpg123', 'libmpg123', 'libmpg123.a'),
         ('zvbi', 'zvbi-0.2', 'libzvbi.a'), ('aom', 'aom', 'libaom.a'),
-        ('libarchive', 'libarchive', 'libarchive.a')):
+        ('libarchive', 'libarchive', 'libarchive.a'), ('matroska', 'libmatroska', 'libmatroska.a'),
+        ('nfs', 'libnfs', 'libnfs.a')):
     version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
         (args.source / 'contrib/src' / component / 'rules.mak').read_text(), re.M).group(1)
     codec_modules['ARCHIVE' if component == 'libarchive' else component.upper()] = (module, version, library)
+# Further static archives pulled in through a module's pkg-config Requires.
+codec_dependencies = {'MATROSKA': [('libebml', re.search(r'^EBML_VERSION := ([0-9.]+)$',
+    (args.source / 'contrib/src/ebml/rules.mak').read_text(), re.M).group(1), 'libebml.a')]}
 if extra:
     assert (extra / 'lib/pkgconfig/medialibrary.pc').is_file()
 assert (args.crt / 'dllcrt2.o').is_file()
@@ -78,19 +83,29 @@ if not args.verify_only:
     if codecs:
         env['PKG_CONFIG_PATH'] = str(codecs / 'lib/pkgconfig') + ':' + env['PKG_CONFIG_PATH']
         env['PKG_CONFIG_LIBDIR'] = env['PKG_CONFIG_PATH']
+        # The overlay receipt records each release version and the version its
+        # pkg-config file reports (libnfs tags differ from its library version).
+        built = {row['pkg_config']: row for row in
+                 json.loads((codecs.parent / 'build-receipt.json').read_text())['libraries']}
         for variable, (module, expected_version, library) in codec_modules.items():
+            assert built[module]['version'] == expected_version, (module, built[module]['version'])
             version = subprocess.check_output(['pkg-config', '--modversion', module], env=env, text=True).strip()
-            assert version == expected_version, (module, version)
+            assert version == built[module].get('pkg_config_version', expected_version), (module, version)
+            for dependency, dependency_version, _ in codec_dependencies.get(variable, []):
+                found = subprocess.check_output(['pkg-config', '--modversion', dependency], env=env, text=True).strip()
+                assert found == dependency_version, (dependency, found)
             for suffix, option in (('_CFLAGS', '--cflags'), ('_LIBS', '--libs')):
                 key = variable + suffix
                 config = [entry for entry in config if not entry.startswith(key + '=')]
                 value = subprocess.check_output(['pkg-config', '--static', option, module], env=env, text=True).strip()
                 if suffix == '_LIBS':
                     # Bind the actual archive, independent of SDK -L ordering.
-                    flag = '-l' + library.removeprefix('lib').removesuffix('.a')
                     parts = shlex.split(value)
-                    assert flag in parts, (module, parts)
-                    value = shlex.join([str(codecs / 'lib' / library) if part == flag else part for part in parts])
+                    for archive in [library, *(row[2] for row in codec_dependencies.get(variable, []))]:
+                        flag = '-l' + archive.removeprefix('lib').removesuffix('.a')
+                        assert flag in parts, (module, parts)
+                        parts = [str(codecs / 'lib' / archive) if part == flag else part for part in parts]
+                    value = shlex.join(parts)
                 config.append(key + '=' + value)
     config = release_arguments(config)
     subprocess.run([str(args.source / 'configure'), *config], cwd=args.build, env=env, check=True)
@@ -115,10 +130,12 @@ if extra:
 if codecs:
     modules = (args.build / 'modules/Makefile').read_text()
     for variable, (_, _, library) in codec_modules.items():
-        assert re.search(r'^' + variable + r'_CFLAGS = -I' + re.escape(str(codecs / 'include')),
-            modules, re.M), variable
+        # pkg-config may emit a static-define flag (libebml) before the include.
+        cflags = shlex.split(re.search(r'^' + variable + r'_CFLAGS = (.*)$', modules, re.M).group(1))
+        assert '-I' + str(codecs / 'include') in cflags, (variable, cflags)
         libs = shlex.split(re.search(r'^' + variable + r'_LIBS = (.*)$', modules, re.M).group(1))
-        assert str(codecs / 'lib' / library) in libs, (variable, libs)
+        for archive in [library, *(row[2] for row in codec_dependencies.get(variable, []))]:
+            assert str(codecs / 'lib' / archive) in libs, (variable, libs)
     assert re.search(r'^MAD_CFLAGS = -I' + re.escape(str(codecs / 'include')), modules, re.M)
     assert re.search(r'^MAD_LIBS = -L' + re.escape(str(codecs / 'lib')) + r' -lmad$', modules, re.M)
 print('Verified the configured CRT, compiler flags and localization.' if args.verify_only else

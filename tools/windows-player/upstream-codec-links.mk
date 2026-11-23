@@ -9,6 +9,8 @@ libzvbi_plugin.la: $(upstream_codec_libdir)/libzvbi.a $(upstream_codec_recipe)
 libaom_plugin.la: $(upstream_codec_libdir)/libaom.a $(upstream_codec_recipe)
 libmad_plugin.la: $(upstream_codec_libdir)/libmad.a $(upstream_codec_recipe)
 libarchive_plugin.la: $(upstream_codec_libdir)/libarchive.a $(upstream_codec_recipe)
+libmkv_plugin.la: $(upstream_codec_libdir)/libebml.a $(upstream_codec_libdir)/libmatroska.a $(upstream_codec_recipe)
+libnfs_plugin.la: $(upstream_codec_libdir)/libnfs.a $(upstream_codec_recipe)
 # Qt is built explicitly by build-player.sh. Build the flat module graph in
 # this make process: recursive "all" discards the extra -f makefile arguments.
 all-am: $(BUILT_SOURCES)
@@ -19,6 +21,8 @@ libzvbi_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/zvbi.map
 libaom_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/aom.map
 libmad_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mad.map
 libarchive_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/archive.map
+libmkv_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/mkv.map
+libnfs_plugin.la: LDFLAGS += -Wl,-Map,$(upstream_codec_maps)/nfs.map
 # libmad's configure probe uses --with-mad; the link itself also binds the archive.
 MAD_LIBS = $(upstream_codec_libdir)/libmad.a
 

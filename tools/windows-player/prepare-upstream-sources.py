@@ -13,7 +13,7 @@ def main():
     parser.add_argument('--upstream-ref', required=True)
     parser.add_argument('--destination', required=True, type=Path)
     parser.add_argument('--receipt', required=True, type=Path)
-    parser.add_argument('--components', nargs='+', choices=['medialibrary', 'aom', 'mad', 'mpg123', 'zvbi', 'zlib', 'png'], default=['medialibrary'])
+    parser.add_argument('--components', nargs='+', choices=['medialibrary', 'aom', 'mad', 'mpg123', 'zvbi', 'zlib', 'png', 'ebml', 'matroska', 'nfs'], default=['medialibrary'])
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     revision = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', args.upstream_ref], text=True).strip()
@@ -27,7 +27,10 @@ def main():
         'mpg123': ('MPG123', 'mpg123-{v}.tar.bz2', 'https://downloads.sourceforge.net/project/mpg123/mpg123/{v}/mpg123-{v}.tar.bz2'),
         'zvbi': ('ZVBI', 'zvbi-{v}.tar.gz', 'https://github.com/zapping-vbi/zvbi/archive/refs/tags/v{v}.tar.gz'),
         'zlib': ('ZLIB', 'zlib-{v}.tar.xz', 'https://github.com/madler/zlib/releases/download/v{v}/zlib-{v}.tar.xz'),
-        'png': ('PNG', 'libpng-{v}.tar.xz', 'https://downloads.sourceforge.net/project/libpng/libpng16/{v}/libpng-{v}.tar.xz')}
+        'png': ('PNG', 'libpng-{v}.tar.xz', 'https://downloads.sourceforge.net/project/libpng/libpng16/{v}/libpng-{v}.tar.xz'),
+        'ebml': ('EBML', 'libebml-{v}.tar.xz', 'https://dl.matroska.org/downloads/libebml/libebml-{v}.tar.xz'),
+        'matroska': ('MATROSKA', 'libmatroska-{v}.tar.xz', 'https://dl.matroska.org/downloads/libmatroska/libmatroska-{v}.tar.xz'),
+        'nfs': ('NFS', 'libnfs-{v}.tar.gz', 'https://github.com/sahlberg/libnfs/archive/libnfs-{v}.tar.gz')}
     records = []
     for component in args.components:
         def source(name):

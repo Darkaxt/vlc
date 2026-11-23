@@ -61,6 +61,7 @@ def configuration_sources_unchanged(source, previous):
         '**/Makefile.am', 'include/vlc_version.h.in',
         'contrib/src/medialibrary', 'contrib/src/mpg123', 'contrib/src/zvbi',
         'contrib/src/aom', 'contrib/src/mad', 'contrib/src/libarchive',
+        'contrib/src/ebml', 'contrib/src/matroska', 'contrib/src/nfs',
         'tools/windows-player/configure-player.py',
         'tools/windows-player/configure-upstream-player.sh',
         'tools/windows-player/release_profile.py']

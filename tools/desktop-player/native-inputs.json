@@ -26,7 +26,7 @@
       ]
     }
   ],
-  "macos_contrib_commit": "e0baa29690f97c5d746643d59358fd6055eda8f6",
+  "macos_contrib_commit": "391a3bf87302769a3e45143b8a2f9961be45db0e",
   "macos_contrib_triplet_kernel": "19",
   "native_contrib_aom_overlay": {
     "version": "3.15.3",
@@ -48,11 +48,9 @@
     "contrib/src/libarchive/rules.mak": "c5ad27f50e2ee5241751ce2981950b9e9f1a50584684a0dabc769b3ca7556f8e",
     "contrib/src/libarchive/SHA512SUMS": "eaeb1f42c9be7eee34cddd69a18d3946f0f81ab5ad430885552ab733103b6a91",
     "contrib/src/qtshadertools/rules.mak": "23ccaac1dc03c3ec83827bb16e4b48963fe321c616d66051ba4293c24af5ca3c",
-    "contrib/src/qtwayland/rules.mak": "347b2fed921affa2b25350ceb93ed9e127a1cbd9a4ac973ab6f071c074679422",
-    "extras/package/macosx/VLC.xcodeproj/project.pbxproj": "446875aeb429820a0ed3fd0f1e6c5a905afe3e92841868fd3f00cedd01339c26",
-    "extras/ci/gitlab-ci.yml": "1fe421deb1793b6a8359887988fb2af20c9f4c19f49e2f093b2272d89fe12f69"
+    "contrib/src/qtwayland/rules.mak": "347b2fed921affa2b25350ceb93ed9e127a1cbd9a4ac973ab6f071c074679422"
   },
-  "reviewed_prebuilt_recipe_delta_reason": "AOM3.15.3, libpng1.6.59, zlib1.4 and libarchive3.8.11 are built from exact source archives as explicit overlays with actual archive-member link maps. Qt recipes/Windows7 RHI patches are not used by Homebrew Qt; Xcode Cocoa GUI is disabled and the GitLab Windows GCC image is not used by this native pipeline. Preserve all other libraries in the original pinned native archive.",
+  "reviewed_prebuilt_recipe_delta_reason": "The pinned VideoLAN archive (391a3bf8) already contains the merged recipes, including the libebml/libmatroska security patches and libnfs 8.0.1. AOM3.15.3, libpng1.6.59, zlib1.4 and libarchive3.8.11 are still built from exact source archives as explicit overlays with actual archive-member link maps. Qt recipes/Windows7 RHI patches are not used by Homebrew Qt. Preserve all other libraries in the pinned native archive.",
   "stock_libplacebo": {
     "version": "7.387.0",
     "repository": "haasn/libplacebo",

@@ -114,13 +114,14 @@ def main():
     for item in receipt['libraries']:
         library = Path(item['prefix']) / 'lib' / item['static_library']
         assert sha(library) == item['library_sha256']
-        link_map = image_maps.get('lib' + item['library'] + '_plugin.la',
-                                  base / 'link-maps' / (item['library'] + '.map'))
+        plugin_name = item.get('plugin', item['library'])
+        link_map = image_maps.get('lib' + plugin_name + '_plugin.la',
+                                  base / 'link-maps' / (plugin_name + '.map'))
         text = link_map.read_text(errors='strict')
         assert str(library) + '(' in text, 'No archive member linked: ' + str(library)
         old = '/work/build/contrib/x86_64-w64-mingw32/lib/' + item['static_library']
         assert old + '(' not in text, 'Old SDK archive selected'
-        plugin = args.build / 'modules/.libs' / ('lib' + item['library'] + '_plugin.dll')
+        plugin = args.build / 'modules/.libs' / ('lib' + plugin_name + '_plugin.dll')
         assert plugin.is_file()
         record = dict(item, link_map_sha256=sha(link_map), unstripped_plugin_sha256=sha(plugin))
         if item['library'] == 'archive':

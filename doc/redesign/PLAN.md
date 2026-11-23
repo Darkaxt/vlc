@@ -1,5 +1,30 @@
 # VLC redesign stages and reconciliation
 
+**23 November weekly maintenance: M19 ACTIVE — upstream 391a3bf8 and MPV eaa43847 for normal 1.1.16.**
+
+Requirements: R62 and R111–R113, with every delivered interface, playback, profile and
+runtime-provenance contract preserved. Branch `claude/weekly-upstream-20261123` starts
+from master `a3e1775b243` (M18 closure) and merges upstream master
+`391a3bf87302769a3e45143b8a2f9961be45db0e` (81 commits) through normal merge history.
+The merge is conflict-free; upstream changes to fork-modified Qt files are additive
+(Qt6.8 pending-QML-type cleanup, `qt-slider-colours`, the legacy volume control and
+the lyrics button's `Player.hasLyrics` visibility). Windows MPV moves from Darkaxt/mpv
+`162b1ce4` to master `eaa4384755899c318ee8e4abdba19dc80c92260f`: the plain branch,
+without AnimeJaNai. Its meson minimums for libplacebo and FFmpeg, the public client and
+render headers, and ao_wasapi are unchanged, so libplacebo `9fabf6d5`, FFmpeg
+`9a861e96` and the vendored headers stay. Dependency integration:
+the macOS prebuilt contrib pin moves to VideoLAN's `391a3bf8` archive, which
+already contains the merged recipes. Windows keeps its retained SDK and builds the
+upstream libebml/libmatroska security patches and libnfs 8.0.1 as explicit codec
+overlays, bound to the actual mkv/nfs plugin link maps. Linux keeps its distribution
+libraries. `fork_release.hpp` is 1.1.16.
+Acceptance: coherent source and version bump; MPV eaa43847 rebuild and Windows
+normal run118 with verified codec links; all five native targets with the established
+package, source, symbol and license gates; Windows Sandbox installer and both-engine
+playback; normal 1.1.16 publication, independent asset retrieval, deployment to
+`D:/Tools/Modern VLC` with its portable profile, retained-build binding and cleanup,
+keeping at most two local release folders.
+
 **16 November weekly maintenance: M18 COMPLETE — normal1.1.15 published and independently verified on all five targets.**
 
 Current acceptance: normal application source is b7af94fe3f2c59ae4c96476f565ceb75d5c49c0a;

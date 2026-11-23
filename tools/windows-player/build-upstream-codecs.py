@@ -84,13 +84,24 @@ def main():
             'zvbi-fix-clang-support.patch', '0001-configure-hardcode-liconv-instead-of-the-full-path.patch',
             '0009-fix-Android-usage-of-pthread.patch',
             '0001-fix-Windows-API-calls-when-UNICODE-is-defined.patch'],
+        # Upstream security fixes for the Matroska demuxer's parsers.
+        'ebml': ['0001-EbmlBinary-use-readFully-to-read-the-data.patch'],
+        'matroska': ['0001-KaxBlock-throw-an-exception-when-encountering-a-larg.patch'],
+        'nfs': [],
     }
+    # Static consumers that are not named after their library.
+    consumers = {'ebml': ('mkv', ['modules/demux/mkv/mkv.cpp']),
+        'matroska': ('mkv', ['modules/demux/mkv/mkv.cpp']),
+        'nfs': ('nfs', ['modules/access/nfs.c'])}
     names = {'aom': ('libaom-{v}.tar.gz', 'libaom.a', 'aom'),
         'mad': ('libmad-{v}.tar.gz', 'libmad.a', 'mad'),
         'mpg123': ('mpg123-{v}.tar.bz2', 'libmpg123.a', 'libmpg123'),
-        'zvbi': ('zvbi-{v}.tar.gz', 'libzvbi.a', 'zvbi-0.2')}
+        'zvbi': ('zvbi-{v}.tar.gz', 'libzvbi.a', 'zvbi-0.2'),
+        'ebml': ('libebml-{v}.tar.xz', 'libebml.a', 'libebml'),
+        'matroska': ('libmatroska-{v}.tar.xz', 'libmatroska.a', 'libmatroska'),
+        'nfs': ('libnfs-{v}.tar.gz', 'libnfs.a', 'libnfs')}
     records = []
-    for component in ('mpg123', 'zvbi', 'mad', 'aom'):
+    for component in ('mpg123', 'zvbi', 'mad', 'aom', 'ebml', 'matroska', 'nfs'):
         rules_dir = repo / 'contrib/src' / component
         version = re.search(r'^' + component.upper() + r'_VERSION := ([0-9.]+)$',
             (rules_dir / 'rules.mak').read_text(), re.M).group(1)
@@ -157,6 +168,11 @@ def main():
                 '-DENABLE_DOCS=OFF', '-DENABLE_APPS=OFF', '-DENABLE_EXAMPLES=OFF',
                 '-DENABLE_TOOLS=OFF', '-DENABLE_TESTS=OFF', '-DCONFIG_LIBYUV:STRING=0', '-DCONFIG_AV1_ENCODER=1'],
                 'mad': ['-DEXAMPLE=OFF'],
+                # utfcpp comes from the retained SDK; never fetch it at build time.
+                'ebml': ['-DFETCHCONTENT_FULLY_DISCONNECTED=ON'],
+                'matroska': [],
+                'nfs': ['-DENABLE_TLS=OFF', '-DENABLE_TESTS=OFF', '-DENABLE_UTILS=OFF',
+                    '-DENABLE_EXAMPLES=OFF', '-DENABLE_DOCUMENTATION=OFF'],
                 'mpg123': ['-DBUILD_LIBOUT123=OFF', '-DBUILD_PROGRAMS=OFF']}[component]
             if not (build / 'CMakeCache.txt').exists():
                 subprocess.run(['cmake', '-S', str(source / 'ports/cmake' if component == 'mpg123' else source),
@@ -169,12 +185,19 @@ def main():
                 policy.verify_aom_release_flags((build / 'CMakeCache.txt').read_text())
             subprocess.run(['cmake', '--build', str(build), '--parallel', '1'], env=env, check=True)
             subprocess.run(['cmake', '--install', str(build)], env=env, check=True)
+        pc_version = version
+        if component == 'nfs':
+            # libnfs release tags differ from the library version its pkg-config reports.
+            pc_version = re.search(r'AC_INIT\(\[libnfs\],\s*\[([0-9.]+)\]',
+                (source / 'configure.ac').read_text()).group(1)
         pc_path = prefix / 'lib/pkgconfig' / (pc + '.pc')
-        assert 'Version: ' + version in pc_path.read_text(), pc_path
+        assert re.search(r'^Version:\s*' + re.escape(pc_version) + r'\s*$', pc_path.read_text(), re.M), pc_path
         assert (prefix / 'lib' / library).is_file()
         record = dict(identity, library=component, version=version, prefix=str(prefix),
             archive_sha256=sha(archive), static_library=library,
-            library_sha256=sha(prefix / 'lib' / library), pkg_config=pc)
+            library_sha256=sha(prefix / 'lib' / library), pkg_config=pc, pkg_config_version=pc_version)
+        if component in consumers:
+            record['plugin'], record['source_consumers'] = consumers[component]
         if component == 'aom':
             record['release_flags'] = policy.verify_aom_release_flags((build / 'CMakeCache.txt').read_text())
             record['cmake_cache_sha256'] = sha(build / 'CMakeCache.txt')

@@ -25,7 +25,8 @@ def sha256(path):
 
 def verify_codec_sources(repo, commit, libraries, inventory):
     """Bind selected codec versions and archives to the delivered source revision."""
-    assert {item['library'] for item in libraries} == {'mpg123', 'zvbi', 'mad', 'aom', 'archive'}
+    assert {item['library'] for item in libraries} == {'mpg123', 'zvbi', 'mad', 'aom', 'archive',
+                                                       'ebml', 'matroska', 'nfs'}
     overrides = {item['library']: item for item in inventory['vlc_dependency_overrides']}
     for item in libraries:
         component = 'libarchive' if item['library'] == 'archive' else item['library']
