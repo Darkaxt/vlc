@@ -20,5 +20,16 @@ def retrieve(url, destination):
         # fallback to a different archive after an uncertain transfer.
         subprocess.run(['gh', 'release', 'download', tag, '--repo', owner + '/' + repo,
                         '--pattern', name, '--output', str(Path(destination))], check=True)
+    elif (os.environ.get('GITHUB_ACTIONS') == 'true' and parsed.scheme == 'https'
+            and parsed.netloc == 'archive.ubuntu.com' and parsed.path.startswith('/ubuntu/pool/')):
+        # Hosted runners intermittently receive 403s and truncated bodies from
+        # the global archive. Their own apt mirror serves the identical pool;
+        # the caller's original checksum still decides acceptance.
+        try:
+            urllib.request.urlretrieve(url, destination)
+        except OSError as error:
+            mirror = urllib.parse.urlunsplit(parsed._replace(netloc='azure.archive.ubuntu.com'))
+            print('SOURCE MIRROR ' + url + ' -> ' + mirror + ': ' + str(error), flush=True)
+            urllib.request.urlretrieve(mirror, destination)
     else:
         urllib.request.urlretrieve(url, destination)

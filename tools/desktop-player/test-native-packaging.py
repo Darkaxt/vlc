@@ -235,6 +235,38 @@ class NativePackagingTest(unittest.TestCase):
             transport.retrieve(url, target)
             direct.assert_called_once_with(url, target)
 
+    def test_ci_ubuntu_pool_sources_use_the_runner_mirror_after_a_global_failure(self):
+        import source_transport as transport
+        target = Path('/owned/exact.download')
+        url = 'https://archive.ubuntu.com/ubuntu/pool/main/a/acl/acl_2.3.2-1build1.1.debian.tar.xz'
+        mirror = 'https://azure.archive.ubuntu.com/ubuntu/pool/main/a/acl/acl_2.3.2-1build1.1.debian.tar.xz'
+        with patch.dict(transport.os.environ, {'GITHUB_ACTIONS':'true'}, clear=True), \
+                patch.object(transport.urllib.request, 'urlretrieve') as direct:
+            transport.retrieve(url, target)
+            direct.assert_called_once_with(url, target)
+            direct.reset_mock()
+            direct.side_effect = [OSError('HTTP Error 403: Forbidden'), None]
+            transport.retrieve(url, target)
+            self.assertEqual(direct.call_args_list, [unittest.mock.call(url, target),
+                                                     unittest.mock.call(mirror, target)])
+            direct.reset_mock()
+            direct.side_effect = OSError('both unavailable')
+            with self.assertRaisesRegex(OSError, 'both unavailable'):
+                transport.retrieve(url, target)
+            self.assertEqual(direct.call_count, 2)
+        # Outside hosted CI, and for other hosts, the original URL stays the only transport.
+        with patch.dict(transport.os.environ, {}, clear=True), \
+                patch.object(transport.urllib.request, 'urlretrieve', side_effect=OSError('offline')) as direct:
+            with self.assertRaises(OSError):
+                transport.retrieve(url, target)
+            direct.assert_called_once_with(url, target)
+        snapshot = 'https://snapshot.ubuntu.com/ubuntu/20261101T000000Z/pool/main/p/pcre2/pcre2_10.42.orig.tar.bz2'
+        with patch.dict(transport.os.environ, {'GITHUB_ACTIONS':'true'}, clear=True), \
+                patch.object(transport.urllib.request, 'urlretrieve', side_effect=OSError('offline')) as direct:
+            with self.assertRaises(OSError):
+                transport.retrieve(snapshot, target)
+            direct.assert_called_once_with(snapshot, target)
+
     def test_incomplete_compaction_preserves_the_valid_retention_receipt(self):
         spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')
         cache = importlib.util.module_from_spec(spec); spec.loader.exec_module(cache)
