@@ -159,8 +159,10 @@ def main():
         assert codecs['schema'] == 'vlc_redesign.upstream_codec_linkage.v1'
         patent = verify_codec_sources(repo, args.source_commit, codecs['libraries'], dependency_inventory)
         for item in codecs['libraries']:
+            # ebml and matroska both link into the mkv demuxer.
+            module = item.get('plugin', item['library'])
             linked = next(plugin for plugin in provenance['plugins']
-                if Path(plugin['file']).name == 'lib' + item['library'] + '_plugin.dll')
+                if Path(plugin['file']).name == 'lib' + module + '_plugin.dll')
             assert linked['unstripped_sha256'] == item['unstripped_plugin_sha256']
             if item['library'] == 'archive':
                 qt = next(row for row in provenance['plugins'] if Path(row['file']).name == 'libqt_plugin.dll')
