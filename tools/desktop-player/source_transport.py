@@ -33,7 +33,7 @@ def retrieve(url, destination, source=None):
             package, version = source
             mirrors.append('https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/'
                            + '/'.join(urllib.parse.quote(part, safe='+~')
-                                      for part in (package, version, PurePosixPath(parsed.path).name)))
+                                      for part in (package, version, urllib.parse.unquote(PurePosixPath(parsed.path).name))))
         try:
             urllib.request.urlretrieve(url, destination)
         except OSError as error:

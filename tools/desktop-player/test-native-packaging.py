@@ -268,6 +268,14 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaisesRegex(OSError, 'all unavailable'):
                 transport.retrieve(url, target, ('acl', '1:2.3.2-1build1.1'))
             self.assertEqual(direct.call_count, 3)
+            # Percent-encoded pool names map to the decoded Launchpad filename once.
+            encoded = 'https://archive.ubuntu.com/ubuntu/pool/main/f/freetype/freetype_2.13.2%2bdfsg.orig-ft2demos.tar.xz'
+            direct.reset_mock()
+            direct.side_effect = [OSError('HTTP Error 403'), OSError('HTTP Error 502'), None]
+            transport.retrieve(encoded, target, ('freetype', '2.13.2+dfsg-1ubuntu0.2'))
+            self.assertEqual(direct.call_args_list[-1], unittest.mock.call(
+                'https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/freetype/2.13.2+dfsg-1ubuntu0.2/'
+                'freetype_2.13.2+dfsg.orig-ft2demos.tar.xz', target))
         # Outside hosted CI, and for other hosts, the original URL stays the only transport.
         with patch.dict(transport.os.environ, {}, clear=True), \
                 patch.object(transport.urllib.request, 'urlretrieve', side_effect=OSError('offline')) as direct:
@@ -280,6 +288,24 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaises(OSError):
                 transport.retrieve(snapshot, target)
             direct.assert_called_once_with(snapshot, target)
+
+    def test_debian_source_fetch_names_the_package_for_encoded_pool_urls(self):
+        spec = importlib.util.spec_from_file_location('native_sources', HERE / 'collect-native-sources.py')
+        sources = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sources)
+        root = Path(sys.argv_scratch) / ('debian-fetch-' + uuid.uuid4().hex)
+        body = b'ft2demos'
+        seen = []
+        def download(url, destination, source=None):
+            seen.append(source)
+            Path(destination).write_bytes(body)
+        with patch.object(sources, 'retrieve', side_effect=download):
+            sources.fetch_source({'id': 'freetype=2.13.2+dfsg-1ubuntu0.2/freetype_2.13.2+dfsg.orig-ft2demos.tar.xz',
+                'url': 'https://archive.ubuntu.com/ubuntu/pool/main/f/freetype/freetype_2.13.2%2bdfsg.orig-ft2demos.tar.xz',
+                'sha256': hashlib.sha256(body).hexdigest()}, root)
+            sources.fetch_source({'id': 'other', 'url': 'https://example.org/other.tar.gz',
+                'sha256': hashlib.sha256(body).hexdigest()}, root)
+        self.assertEqual(seen, [('freetype', '2.13.2+dfsg-1ubuntu0.2'), None])
 
     def test_incomplete_compaction_preserves_the_valid_retention_receipt(self):
         spec = importlib.util.spec_from_file_location('native_cache', HERE / 'compact-native-cache.py')

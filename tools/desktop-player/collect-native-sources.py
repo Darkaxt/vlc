@@ -191,7 +191,7 @@ def fetch_source(record, directory):
             temporary = archive.with_name(archive.name + '.download')
             print('SOURCE FETCH ' + json.dumps({'id': record['id'], 'url': record['url']}), flush=True)
             try:
-                debian = re.fullmatch(r'([a-z0-9][a-z0-9+.-]*)=([A-Za-z0-9.+~:-]+)/' + re.escape(name), record['id'])
+                debian = re.fullmatch(r'([a-z0-9][a-z0-9+.-]*)=([A-Za-z0-9.+~:-]+)/' + re.escape(urllib.parse.unquote(name)), record['id'])
                 retrieve(record['url'], temporary, debian.groups() if debian else None)
             except OSError as error:
                 raise RuntimeError('Source transport failed: ' + record['id'] + ' at '
