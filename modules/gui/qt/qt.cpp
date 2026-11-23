@@ -112,6 +112,7 @@ extern "C" char **environ;
 #include <vlc_modules.h>
 #include "util/vlchotkeyconverter.hpp"
 #include "maininterface/compositor.hpp"
+#include "maininterface/mainui.hpp"
 #include "util/vlctick.hpp"
 #include "util/shared_input_item.hpp"
 #include "util/vlcqtmessagehandler.hpp"
@@ -344,6 +345,12 @@ static void ShowDialog   ( intf_thread_t *, int, int, intf_dialog_args_t * );
 #define RECENTPLAY_FILTER_TEXT N_( "List of words separated by | to filter" )
 #define RECENTPLAY_FILTER_LONGTEXT N_( "Regular expression used to filter " \
         "the recent items played in the player." )
+
+#define SLIDERCOL_TEXT N_( "Define the colors of the legacy volume slider" )
+#define SLIDERCOL_LONGTEXT N_( "Define the colors of the legacy volume slider\n" \
+                       "By specifying the 12 numbers separated by a ';'\n" \
+            "Default is '255;255;255;20;226;20;255;176;15;235;30;20'\n" \
+            "An alternative can be '30;30;50;40;40;100;50;50;160;150;150;255'")
 
 #define QT_MODE_TEXT N_( "Selection of the starting mode and look" )
 #define QT_MODE_LONGTEXT N_( "Start VLC with:\n" \
@@ -604,7 +611,8 @@ vlc_module_begin ()
     add_bool( "qt-error-dialogs", true, ERROR_TEXT,
               nullptr )
 
-    add_obsolete_string( "qt-slider-colours")
+    add_string( "qt-slider-colours", "153;210;153;20;210;20;255;199;15;245;39;29",
+                SLIDERCOL_TEXT, SLIDERCOL_LONGTEXT )
 
     add_bool( "qt-privacy-ask", true, PRIVACY_TEXT, nullptr )
         change_private ()
@@ -1812,6 +1820,9 @@ static void *ThreadCleanup( qt_intf_t *p_intf, CleanupReason cleanupReason )
     if ( p_intf->p_compositor &&  cleanupReason == CLEANUP_APP_TERMINATED)
     {
         p_intf->p_compositor.reset();
+
+        // the QML engines are destroyed along with the compositor
+        MainUI::clearPendingQMLTypes();
 
         delete p_intf->mainSettings;
         p_intf->mainSettings = nullptr;

@@ -37,6 +37,9 @@ public:
     VLC_USED
     QQuickItem* createRootItem();
 
+    // Clear the QML types registered by a destroyed MainUI, no QML engine must exist at this point
+    static void clearPendingQMLTypes();
+
 private:
     void registerQMLTypes();
     static void clearQMLTypes();

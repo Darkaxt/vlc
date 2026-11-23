@@ -53,6 +53,8 @@ typedef NS_ENUM(NSUInteger, VLCMediaLibraryParentGroupType) {
     VLCMediaLibraryParentGroupTypeVideoLibrary,
     VLCMediaLibraryParentGroupTypeRecentlyAddedVideos,
     VLCMediaLibraryParentGroupTypeRecentlyAddedAudios,
+    VLCMediaLibraryParentGroupTypeFavoriteAudios,
+    VLCMediaLibraryParentGroupTypeMostPlayedAudios,
     VLCMediaLibraryParentGroupTypeAllFavorites, // This should be last
 };
 
@@ -303,6 +305,8 @@ typedef NS_ENUM(NSUInteger, VLCMediaLibraryParentGroupType) {
 - (nullable instancetype)initWithExternalURL:(nullable NSURL *)url;
 - (nullable instancetype)initWithStreamURL:(nullable NSURL *)url;
 - (void)updatePlaybackStateFromMediaItem:(VLCMediaLibraryMediaItem *)mediaItem;
+
+- (int)markAsUnplayed;
 
 @property (readonly) vlc_ml_media_type_t mediaType;
 @property (readonly) NSString *readableMediaType;

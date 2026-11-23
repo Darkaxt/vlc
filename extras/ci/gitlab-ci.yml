@@ -29,7 +29,7 @@ variables:
     VLC_ANDROID_IMAGE: registry.videolan.org/vlc-debian-android:20260611225331
     VLC_SNAP_IMAGE: registry.videolan.org/vlc-ubuntu-snap:20260715210239
     VLC_UBUNTU_RASPBERRY_IMAGE: registry.videolan.org/vlc-ubuntu-raspberry:20260820132854
-    VLC_WASM_EMSCRIPTEN: registry.videolan.org/vlc-debian-wasm-emscripten:20260617104340
+    VLC_WASM_EMSCRIPTEN: registry.videolan.org/vlc-debian-wasm-emscripten:20261118055329
 
 .variables-debian: &variables-debian
         HOST_ARCH: x86_64
@@ -519,7 +519,12 @@ raspbian-arm:
         ./extras/package/macosx/build.sh $EXTRA_BUILD_FLAGS $NIGHTLY_EXTRA_BUILD_FLAGS -a $HOST_ARCH -x -j $NCPU
         # At least compile every targets
         make -j $NCPU check TESTS=
-        make -C modules -j $NCPU check-macosx
+        # only if modules/gui/macosx was modified
+        CHANGED_FILES_IN_PATH=$(git diff --name-only ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..${CI_COMMIT_SHA} "modules/gui/macosx")
+        if [ -n "${CHANGED_FILES_IN_PATH}" ]; then
+            echo "Building and Running GUI tests"
+            make -C modules -j $NCPU check-macosx
+        fi
     after_script:
       - export PATH="${CI_PROJECT_DIR}/extras/tools/build/bin:$PATH"
       - !reference [.ccache-common-apple, after_script]
