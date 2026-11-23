@@ -254,6 +254,20 @@ class NativePackagingTest(unittest.TestCase):
             with self.assertRaisesRegex(OSError, 'both unavailable'):
                 transport.retrieve(url, target)
             self.assertEqual(direct.call_count, 2)
+            # A named Debian source adds Launchpad's librarian as the last transport.
+            launchpad = ('https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/acl/1%3A2.3.2-1build1.1/'
+                         'acl_2.3.2-1build1.1.debian.tar.xz')
+            direct.reset_mock()
+            direct.side_effect = [OSError('HTTP Error 403: Forbidden'), OSError('HTTP Error 503'), None]
+            transport.retrieve(url, target, ('acl', '1:2.3.2-1build1.1'))
+            self.assertEqual(direct.call_args_list, [unittest.mock.call(url, target),
+                                                     unittest.mock.call(mirror, target),
+                                                     unittest.mock.call(launchpad, target)])
+            direct.reset_mock()
+            direct.side_effect = OSError('all unavailable')
+            with self.assertRaisesRegex(OSError, 'all unavailable'):
+                transport.retrieve(url, target, ('acl', '1:2.3.2-1build1.1'))
+            self.assertEqual(direct.call_count, 3)
         # Outside hosted CI, and for other hosts, the original URL stays the only transport.
         with patch.dict(transport.os.environ, {}, clear=True), \
                 patch.object(transport.urllib.request, 'urlretrieve', side_effect=OSError('offline')) as direct:
