@@ -1,5 +1,31 @@
 # Desktop reproduction and recovery
 
+## Weekly1.1.16 continuation (23 November)
+
+M19 is COMPLETE; read PLAN for closure. Normal1.1.16 (source af59bc42, upstream391a3bf8,
+Windows MPV eaa43847) is published and deployed. The retained Windows cohort is pipeline118
+(`/toolchain/scratch/upstream-1.1.16-af59bc42/runtime`, symbols `...-af59bc42-symbols`;
+canonical pipeline still `/scratch/preview-1.1.8/compilation`, next119 must be absent). Host
+mirror is `D:/VLC-Redesign/build/windows-x64/scratch-share/delivered-1.1.16-af59bc42`; the
+read-only helper is `verify-retained-build-1.1.16.py` (Python3.11, no arguments). New codec
+overlay records name their consuming plugin (`plugin: mkv|nfs`); link maps are looked up by
+that plugin, not by library name.
+
+CI notes for the next run:
+- Workflow concurrency is per ref with cancel-in-progress false, so parallel retries need
+  separate refs. Actions caches are ref-scoped and saved on failure: source downloads persist
+  across runs, but so does a failed `packages/<sha>` directory. A rerun at the same SHA on the
+  same ref then fails with "Package directory already exists"; a new commit avoids it.
+- Ubuntu pool downloads on hosted x86_64 runners may fail intermittently. The transport falls
+  back to azure.archive.ubuntu.com and then to
+  `https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/<src>/<version>/<file>`, using
+  the decoded filename because pool URLs encode `+` as `%2b`. It prints `SOURCE MIRROR` lines.
+- Resume mode needs `source_seed_commit`/`source_seed_artifact` covering the whole pinned
+  `linux_archived_sources` closure. No such seed existed for 1.1.16 (the pinned pcre2 dsc/diff
+  are absent from earlier carriers).
+- Hosted macOS arm64 runners may not be allocated; dispatch from a separate ref and do not
+  read an unallocated run as a player failure.
+
 ## Weekly1.1.15 continuation (16 November)
 
 M18 is COMPLETE. Normal1.1.15 is published and all35 public assets independently

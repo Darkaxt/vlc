@@ -1,6 +1,39 @@
 # VLC redesign stages and reconciliation
 
-**23 November weekly maintenance: M19 ACTIVE — upstream 391a3bf8 and MPV eaa43847 for normal 1.1.16.**
+**23 November weekly maintenance: M19 COMPLETE — normal 1.1.16 published, independently verified and deployed.**
+
+Normal [redesign-v1.1.16](https://github.com/Darkaxt/vlc/releases/tag/redesign-v1.1.16) is Latest
+with all 35 assets, tag target and compiled application source `af59bc42`, integrated upstream
+`391a3bf8` and Windows MPV `eaa43847`. All 35 public assets were downloaded again and SHA256
+verified (`verification/public-artifact-readback.json`); a name scan of 28,607 zip members and the
+JSON indexes found no private Dolby Vision clip or receipt. Artifact producers, each with the
+application source identical to `af59bc42` and recorded separately in RELEASE-MANIFEST.json:
+- Windows: normal run118 (workflow 2bc0bb95, exit 0, no OOM, group empty) and installer
+  (58dfe401); portable/source packaging from packaging-only `a5df991a` (package-release.py maps
+  mkv-linked codec records to `libmkv_plugin.dll`). Sandbox installer lifecycle and installed
+  VLC-native, MPV-native, MPV DV5 and DV8.1 playback passed.
+- linux-aarch64 and macos-intel: CI 45138321181 from `af59bc42`.
+- macos-arm64: CI 45190777678 from `af59bc42`. The first run's MPV->VLC handover left VLC
+  without a clock and its quit never returned; two reruns were never allocated a hosted runner
+  and the third passed in full. Classified intermittent, cause not established
+  (`verification/ci-macos-arm64-hang-45138321181.md`).
+- linux-x86_64: CI 45223060029 from tooling-only `d74b931f`. GitHub's x86_64 runners received
+  intermittent 403/502/503 and truncated bodies from archive.ubuntu.com and its azure mirror,
+  so `source_transport.py` now falls back, on hosted CI only, from archive.ubuntu.com to
+  azure.archive.ubuntu.com and then to Launchpad's librarian for named Debian source members.
+  The pinned checksum still decides acceptance. The resume path was unusable because no
+  complete seed covers the pinned archived closure; reruns at the same SHA on the same ref fail
+  with "Package directory already exists" because Actions caches save the failed package dir.
+Deployed to `D:/Tools/Modern VLC` from the public read-back portable ZIP (1651 files verified,
+live `portable/` profile carried over). The 1.1.16 cohort is promoted in build-retention.json
+(verify-retained-build-1.1.16.py passed: run118, next119 absent, 417 PE/symbol pairs, 410
+plugins); its Windows mirror is `scratch-share/delivered-1.1.16-af59bc42`. Local releases are
+1.1.15 and 1.1.16. Superseded 1.1.15 mirrors, packaging copies, the previous deploy tree and
+task scratch were retired by transaction 83ec9b70 (23,719 entries, 28.5 GB). Native ext4
+residuals (1.1.15 runtime/symbols, MPV 162b1ce4/e471496c trees and notices) stay inventoried
+under the existing M6 boundary: the installed cleanup helper has no Linux backend.
+
+Original M19 scope:
 
 Requirements: R62 and R111–R113, with every delivered interface, playback, profile and
 runtime-provenance contract preserved. Branch `claude/weekly-upstream-20261123` starts
