@@ -19,6 +19,15 @@ against their recorded sha256 before use. The superseded predecessor's verificat
 archived to G: with every member's hash verified (1.1.15:
 `G:/VLC-Redesign/release-evidence/retired-by-1.1.16-20261123/1.1.15-verification.zip`).
 
+Deploying the portable ZIP must keep each entry's mtime (25 November). The packaged
+`plugins/plugins.dat` records every plugin's mtime and size (VLC-PLUGIN-CACHE.json `mtime`);
+an extractor that writes fresh mtimes (Python `zipfile` open + copy) makes all ~410 entries
+stale, so every launch rescans the plugin DLLs: 19.9 s `plugins-ready` on a cold start against
+31 ms with a valid cache. After a deploy, a headless `vlc.exe --intf dummy --dummy-quiet
+vlc://quit` must log no "stale plugins cache" lines. File-association open commands need
+`--started-from-file`; without it, one-instance-when-started-from-file never applies and each
+opened file starts a new process.
+
 CI notes for the next run:
 - Workflow concurrency is per ref with cancel-in-progress false, so parallel retries need
   separate refs. Actions caches are ref-scoped and saved on failure: source downloads persist
